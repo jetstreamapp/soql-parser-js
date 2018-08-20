@@ -1,0 +1,15 @@
+{
+    "compilerOptions": {
+        "target": "es2015",
+        "module": "commonjs",
+        "lib": [
+            "es2015"
+        ],
+        "moduleResolution": "node",
+        "outDir": "build",
+        "noImplicitAny": false,
+        "inlineSourceMap": true,
+        "experimentalDecorators": true,
+        "emitDecoratorMetadata": true
+    }
+}

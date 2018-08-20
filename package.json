@@ -1,0 +1,35 @@
+{
+  "name": "soql-parser-js",
+  "version": "1.0.0",
+  "description": "",
+  "main": "/build/app/index.js",
+  "scripts": {
+    "clean": "rm -rf ./build/*",
+    "prestart": "npm run build",
+    "start": "node build/app/index.js",
+    "test": "mocha -r ts-node/register src/tests/**/*.spec.ts",
+    "prebuild2": "npm run antlr; npm run clean",
+    "prebuild": "npm run clean",
+    "build": "npm run tsc",
+    "tsc": "./node_modules/.bin/tsc",
+    "preantlr": "rm -rf src/generated/*",
+    "antlr": "./node_modules/.bin/antlr4ts -visitor src/SOQL.g4 -o src/generated/"
+  },
+  "author": "Austin Turner <paustint@gmail.com>",
+  "license": "Common Public Attribution License Version 1.0 (CPAL)",
+  "dependencies": {
+    "@types/lodash": "^4.14.116",
+    "antlr4ts": "0.4.1-alpha.0",
+    "lodash": "^4.17.10"
+  },
+  "devDependencies": {
+    "@types/chai": "^4.1.4",
+    "@types/mocha": "^5.2.5",
+    "@types/node": "8.0.14",
+    "antlr4ts-cli": "0.4.0-alpha.4",
+    "chai": "^4.1.2",
+    "mocha": "^5.2.0",
+    "ts-node": "^7.0.1",
+    "typescript": "2.4.1"
+  }
+}
