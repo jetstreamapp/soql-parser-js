@@ -39,43 +39,38 @@ This yields an object with the following structure
 
 ```javascript
 {
-    fields: [
+  fields: [
     {
-        text: 'UserId',
+      text: 'UserId',
     },
     {
-        fn: {
+      fn: {
         fnType: 'aggregate',
         name: 'COUNT',
         value: 'Id',
-        },
+      },
     },
-    ],
-    subqueries: [],
-    whereClauseGroups: [
+  ],
+  subqueries: [],
+  whereClauseGroups: [
     [
-        {
+      {
         field: 'LoginTime',
         operator: '>',
         value: '2010-09-20T22:16:30.000Z',
-        },
-        {
+      },
+      {
         field: 'LoginTime',
         operator: '<',
         value: '2010-09-21T22:16:30.000Z',
-        },
+      },
     ],
-    ],
-    name: 'LoginHistory',
-    groupBy: 'UserId',
+  ],
+  name: 'LoginHistory',
+  groupBy: 'UserId',
 }
 ```
 
 ## Special Thanks
 * This library is based on the ANTLR4 grammar file produced by Mulesoft here https://github.com/mulesoft/salesforce-soql-parser/blob/antlr4/SOQL.g4.
 * The following repository also was a help to get things started: https://github.com/petermetz/antlr-4-ts-test
-
-
-TODO;
-
-(make sure to give a shout out to the inspired by repo and mulesoft repo)
