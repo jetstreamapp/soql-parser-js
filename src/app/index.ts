@@ -63,7 +63,7 @@ const queries = [
   `SELECT Account.Name, (SELECT Contact.LastName FROM Account.Contacts) FROM Account`,
   `SELECT Name, (SELECT LastName FROM Contacts WHERE CreatedBy.Alias = 'x') FROM Account WHERE Industry = 'media'`,
   `SELECT Id, FirstName__c, Mother_of_Child__r.FirstName__c FROM Daughter__c WHERE Mother_of_Child__r.LastName__c LIKE 'C%'`,
-  `SELECT Name, (SELECT Name FROM Line_Items__r) FROM Merchandise__c WHERE Name LIKE ‘Acme%’`,
+  `SELECT Name, (SELECT Name FROM Line_Items__r) FROM Merchandise__c WHERE Name LIKE 'Acme%'`,
   `SELECT Id, Owner.Name FROM Task WHERE Owner.FirstName like 'B%'`,
   `SELECT Id, Who.FirstName, Who.LastName FROM Task WHERE Owner.FirstName LIKE 'B%'`,
   `SELECT Id, What.Name FROM Event`,
@@ -75,11 +75,10 @@ const queries = [
   `SELECT Id, Name, IsActive, SobjectType, DeveloperName, Description FROM RecordType`,
 ];
 
-const soql = queries[22];
-
-console.log('Parsing Query: ', soql);
-const query = parseQuery(soql, {
-  logging: true,
+const output = [];
+queries.forEach((soql, i) => {
+  const query = parseQuery(soql, {});
+  output.push({ testCase: i + 1, soql, output: query });
 });
 
-console.log(JSON.stringify(query, null, 2));
+console.log(JSON.stringify(output, null, 2));
