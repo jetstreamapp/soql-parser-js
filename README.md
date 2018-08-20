@@ -1,3 +1,81 @@
+# SOQL Parser JS
+## Status
+* This project is a work in progress and is considered an alpha
+* The goal of this project is to produce an npm module that will allow import into node projects (and ideally into the browser as well, but this is lower priority because of the size of the code required)
+
+## Description
+SOQL Parser JS will parse a SOQL query string into an object that is easy to work with and has the query broken down into usable parts.
+
+## TODO
+- [ ] Assess all property/function/variable names and make any adjustments
+- [ ] Analyze more SOQL parsing examples to ensure that output is appropriate
+- [ ] Include information on contributions
+- [ ] Keep examples up-to-date as the package is finalized
+- [ ] Figure out proper build/packaging for npm
+- [ ] Create typescript typings for the bundled JS
+- [ ] Figure out how/if we can create a bundle that is browser compatible and include examples
+    - [ ] Figure out what versions of a module should be supported
+
+## Examples
+(This is still a work in progress and will change once the npm bundle structure is figured out)
+
+These examples only work when working with the codebase directly for now until we have an npm module published.
+This assumes you are working directly in the app folder.
+
+See `./src/tests/TestCases.ts` for example queries and their generated output.
+
+```typescript
+import { parseQuery } from './SoqlParser';
+
+const soql = 'SELECT UserId, COUNT(Id) from LoginHistory WHERE LoginTime > 2010-09-20T22:16:30.000Z AND LoginTime < 2010-09-21T22:16:30.000Z GROUP BY UserId';
+
+const soqlQuery = parseQuery(soql);
+
+console.log(JSON.stringify(soqlQuery, null, 2));
+
+```
+
+This yields an object with the following structure
+
+```javascript
+{
+    fields: [
+    {
+        text: 'UserId',
+    },
+    {
+        fn: {
+        fnType: 'aggregate',
+        name: 'COUNT',
+        value: 'Id',
+        },
+    },
+    ],
+    subqueries: [],
+    whereClauseGroups: [
+    [
+        {
+        field: 'LoginTime',
+        operator: '>',
+        value: '2010-09-20T22:16:30.000Z',
+        },
+        {
+        field: 'LoginTime',
+        operator: '<',
+        value: '2010-09-21T22:16:30.000Z',
+        },
+    ],
+    ],
+    name: 'LoginHistory',
+    groupBy: 'UserId',
+}
+```
+
+## Special Thanks
+* This library is based on the ANTLR4 grammar file produced by Mulesoft here https://github.com/mulesoft/salesforce-soql-parser/blob/antlr4/SOQL.g4.
+* The following repository also was a help to get things started: https://github.com/petermetz/antlr-4-ts-test
+
+
 TODO;
 
 (make sure to give a shout out to the inspired by repo and mulesoft repo)
