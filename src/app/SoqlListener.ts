@@ -6,12 +6,13 @@
  */
 import { SOQLListener } from '../generated//SOQLListener';
 import * as Parser from '../generated/SOQLParser';
-import { SoqlQuery } from './models/SoqlQuery.model';
+import { SoqlQuery, Query, FunctionExp, OrderByClause } from './models/SoqlQuery.model';
 import { TerminalNode } from 'antlr4ts/tree';
 import * as _ from 'lodash';
 import { SoqlQueryConfig } from './SoqlParser';
+import { ContextSensitivityInfo } from 'antlr4ts/atn/ContextSensitivityInfo';
 
-type currItem = 'field' | 'from' | 'where' | 'having';
+type currItem = 'field' | 'from' | 'where' | 'groupby' | 'orderby' | 'having';
 
 interface Context {
   isSubQuery: boolean;
@@ -38,7 +39,7 @@ export class Listener implements SOQLListener {
     this.soqlQuery = new SoqlQuery();
   }
 
-  getSoqlQuery(): SoqlQuery {
+  getSoqlQuery(): Query {
     return this.context.isSubQuery ? this.soqlQuery.subqueries[this.context.currSubqueryIdx] : this.soqlQuery;
   }
 
@@ -126,7 +127,15 @@ export class Listener implements SOQLListener {
     if (this.config.logging) {
       console.log('enterAlias_name', ctx);
     }
-    this.context.tempData.alias = ctx.text;
+    if (this.context.currentItem === 'field') {
+      this.context.tempData.alias = ctx.text;
+    }
+    if (this.context.currentItem === 'having') {
+      this.context.tempData.fn.alias = ctx.text;
+    }
+    if (this.context.currentItem === 'orderby') {
+      this.context.tempData.fn.alias = ctx.text;
+    }
   }
   exitAlias_name(ctx: Parser.Alias_nameContext) {
     if (this.config.logging) {
@@ -266,6 +275,15 @@ export class Listener implements SOQLListener {
     if (this.config.logging) {
       console.log('enterFunction_name', ctx);
     }
+    if (this.context.currentItem === 'field') {
+      this.context.tempData.name = ctx.text;
+    }
+    if (this.context.currentItem === 'having') {
+      this.context.tempData.fn.name = ctx.text;
+    }
+    if (this.context.currentItem === 'orderby') {
+      this.context.tempData.fn.name = ctx.text;
+    }
   }
   exitFunction_name(ctx: Parser.Function_nameContext) {
     if (this.config.logging) {
@@ -286,10 +304,6 @@ export class Listener implements SOQLListener {
     if (this.config.logging) {
       console.log('enterFunction_aggregate', ctx);
     }
-    this.context.tempData = {
-      fnType: 'aggregate',
-      name: ctx.text,
-    };
   }
   exitFunction_aggregate(ctx: Parser.Function_aggregateContext) {
     if (this.config.logging) {
@@ -372,11 +386,14 @@ export class Listener implements SOQLListener {
     if (this.config.logging) {
       console.log('enterGroupby_clause', ctx);
     }
+    this.context.currentItem = 'groupby';
+    this.context.tempData = { field: null };
   }
   exitGroupby_clause(ctx: Parser.Groupby_clauseContext) {
     if (this.config.logging) {
       console.log('exitGroupby_clause', ctx);
     }
+    this.getSoqlQuery().groupBy = this.context.tempData;
   }
   enterHaving_clause(ctx: Parser.Having_clauseContext) {
     if (this.config.logging) {
@@ -394,13 +411,13 @@ export class Listener implements SOQLListener {
     if (this.config.logging) {
       console.log('enterOrderby_clause', ctx);
     }
+    this.context.currentItem = 'orderby';
     this.context.tempData = {};
   }
   exitOrderby_clause(ctx: Parser.Orderby_clauseContext) {
     if (this.config.logging) {
       console.log('exitOrderby_clause', ctx);
     }
-    this.getSoqlQuery().orderBy = this.context.tempData;
   }
   enterLimit_clause(ctx: Parser.Limit_clauseContext) {
     if (this.config.logging) {
@@ -510,6 +527,12 @@ export class Listener implements SOQLListener {
     if (this.config.logging) {
       console.log('enterFunction_call_spec', ctx);
     }
+    if (this.context.currentItem === 'field') {
+      this.context.tempData = {};
+    }
+    if (this.context.currentItem === 'having') {
+      this.context.tempData = {};
+    }
   }
   exitFunction_call_spec(ctx: Parser.Function_call_specContext) {
     if (this.config.logging) {
@@ -534,6 +557,16 @@ export class Listener implements SOQLListener {
     if (this.config.logging) {
       console.log('enterFunction_call', ctx);
     }
+    // COUNT(ID) or Count()
+    if (this.context.currentItem === 'field') {
+      this.context.tempData.text = ctx.text;
+    }
+    if (this.context.currentItem === 'having') {
+      this.context.tempData.fn.text = ctx.text;
+    }
+    if (this.context.currentItem === 'orderby') {
+      this.context.tempData.fn.text = ctx.text;
+    }
   }
   exitFunction_call(ctx: Parser.Function_callContext) {
     if (this.config.logging) {
@@ -554,7 +587,23 @@ export class Listener implements SOQLListener {
     if (this.config.logging) {
       console.log('enterFunction_parameter', ctx);
     }
-    this.context.tempData.value = ctx.text;
+    // Get correct fn object based on what is set in tempData (set differently for field vs having)
+    if (
+      this.context.currentItem === 'field' ||
+      this.context.currentItem === 'having' ||
+      this.context.currentItem === 'orderby'
+    ) {
+      const tempdataFnObj: FunctionExp = _.isObject(this.context.tempData.fn)
+        ? this.context.tempData.fn
+        : this.context.tempData;
+      if (_.isString(tempdataFnObj.parameter)) {
+        tempdataFnObj.parameter = [tempdataFnObj.parameter, ctx.text];
+      } else if (_.isArray(tempdataFnObj.parameter)) {
+        tempdataFnObj.parameter.push(ctx.text);
+      } else {
+        tempdataFnObj.parameter = ctx.text;
+      }
+    }
   }
   exitFunction_parameter(ctx: Parser.Function_parameterContext) {
     if (this.config.logging) {
@@ -727,10 +776,8 @@ export class Listener implements SOQLListener {
       };
     }
     if (this.context.currentItem === 'having') {
-      // FIXME: add type information for value
-      // TODO: we could also add the field if we wanted to instead of just the function
       this.context.tempData = {
-        fn: ctx.getChild(0).text,
+        fn: {},
         operator: ctx.getChild(1).text,
         value: ctx.getChild(2).text,
       };
@@ -889,6 +936,7 @@ export class Listener implements SOQLListener {
     if (this.config.logging) {
       console.log('enterGroup_by_rollup_clause', ctx);
     }
+    this.context.tempData.type = 'ROLLUP';
   }
   exitGroup_by_rollup_clause(ctx: Parser.Group_by_rollup_clauseContext) {
     if (this.config.logging) {
@@ -899,6 +947,7 @@ export class Listener implements SOQLListener {
     if (this.config.logging) {
       console.log('enterGroup_by_cube_clause', ctx);
     }
+    this.context.tempData.type = 'CUBE';
   }
   exitGroup_by_cube_clause(ctx: Parser.Group_by_cube_clauseContext) {
     if (this.config.logging) {
@@ -919,7 +968,13 @@ export class Listener implements SOQLListener {
     if (this.config.logging) {
       console.log('enterGroup_by_spec', ctx);
     }
-    this.getSoqlQuery().groupBy = ctx.text;
+    if (_.isArray(this.context.tempData.field)) {
+      this.context.tempData.field.push(ctx.text);
+    } else if (_.isString(this.context.tempData.field)) {
+      this.context.tempData.field = [this.context.tempData.field, ctx.text];
+    } else {
+      this.context.tempData.field = ctx.text;
+    }
   }
   exitGroup_by_spec(ctx: Parser.Group_by_specContext) {
     if (this.config.logging) {
@@ -940,10 +995,19 @@ export class Listener implements SOQLListener {
     if (this.config.logging) {
       console.log('enterOrder_by_spec', ctx);
     }
+    this.context.tempData = {};
   }
   exitOrder_by_spec(ctx: Parser.Order_by_specContext) {
     if (this.config.logging) {
       console.log('exitOrder_by_spec', ctx);
+    }
+    const soqlQuery = this.getSoqlQuery();
+    if (_.isNil(soqlQuery.orderBy)) {
+      soqlQuery.orderBy = this.context.tempData;
+    } else if (_.isArray(soqlQuery.orderBy)) {
+      (soqlQuery.orderBy as Array<OrderByClause>).push(this.context.tempData);
+    } else {
+      soqlQuery.orderBy = [soqlQuery.orderBy, this.context.tempData];
     }
   }
   enterOrder_by_direction_clause(ctx: Parser.Order_by_direction_clauseContext) {
@@ -973,9 +1037,12 @@ export class Listener implements SOQLListener {
     if (this.config.logging) {
       console.log('enterOrder_by_field', ctx);
     }
-    this.context.tempData = {
-      field: ctx.text,
-    };
+    // If order by is not a function, set field
+    if (ctx.getChild(0) instanceof Parser.Function_callContext) {
+      this.context.tempData.fn = { text: ctx.text };
+    } else {
+      this.context.tempData.field = ctx.text;
+    }
   }
   exitOrder_by_field(ctx: Parser.Order_by_fieldContext) {
     if (this.config.logging) {

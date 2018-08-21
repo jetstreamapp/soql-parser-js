@@ -65,11 +65,18 @@ export function getSoqlQueryContext(soql: string, config: Partial<SoqlQueryConfi
  */
 export function parseQuery(soql: string, config: Partial<SoqlQueryConfig> = {}): SoqlQuery {
   configureDefaults(config);
+  if (config.logging) {
+    console.time('parser');
+    console.log('Parsing Query:', soql);
+  }
   const soqlQueryContext: Soql_queryContext = getSoqlQueryContext(soql, config).soql_query();
   const listener = new Listener(config);
 
   // Walk the AST tree and trigger listeners
   ParseTreeWalker.DEFAULT.walk(listener as any, soqlQueryContext);
 
+  if (config.logging) {
+    console.timeEnd('parser');
+  }
   return listener.soqlQuery;
 }
