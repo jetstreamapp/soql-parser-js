@@ -77,16 +77,16 @@ const queries = [
   `SELECT LeadSource, COUNT(Name) cnt FROM Lead GROUP BY ROLLUP(LeadSource)`,
   `SELECT Status, LeadSource, COUNT(Name) cnt FROM Lead GROUP BY ROLLUP(Status, LeadSource)`,
   `SELECT Type, BillingCountry, GROUPING(Type) grpType, GROUPING(BillingCountry) grpCty, COUNT(id) accts FROM Account GROUP BY CUBE(Type, BillingCountry) ORDER BY GROUPING(Type), GROUPING(Id, BillingCountry), Name DESC NULLS FIRST, Id ASC NULLS LAST`,
+  `SELECT c.Name, c.Account.Name FROM Contact c`,
 ];
 
-const query = parseQuery(queries[29], { logging: true });
+// const query = parseQuery(queries[30], { logging: true });
+// console.log(JSON.stringify(query, null, 2));
 
-// const output = [];
-// queries.forEach((soql, i) => {
-//   const query = parseQuery(soql, {});
-//   output.push({ testCase: i + 1, soql, output: query });
-// });
+const output = [];
+queries.forEach((soql, i) => {
+  const query = parseQuery(soql, {});
+  output.push({ testCase: i + 1, soql, output: query });
+});
 
-// console.log(JSON.stringify(output, null, 2));
-
-console.log(JSON.stringify(query, null, 2));
+console.log(JSON.stringify(output, null, 2));

@@ -1,7 +1,8 @@
 export class SoqlQuery implements Query {
   fields: Field[];
   subqueries: Query[];
-  name: string;
+  sObject: string;
+  sObjectAlias?: string;
   whereClauseGroups: WhereClause[][];
   limit?: number;
   offset?: number;
@@ -26,7 +27,8 @@ export class SoqlQuery implements Query {
 export interface Query {
   fields: Field[];
   subqueries: Query[];
-  name: string;
+  sObject: string;
+  sObjectAlias?: string;
   whereClauseGroups: WhereClause[][];
   limit?: number;
   offset?: number;
@@ -42,6 +44,7 @@ export interface SelectStatement {
 
 export interface Field {
   text?: string;
+  alias?: string;
   relationshipFields?: string[];
   fn?: FunctionExp;
   subqueryObjName?: string; // populated if subquery

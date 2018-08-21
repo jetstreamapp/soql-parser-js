@@ -26,7 +26,7 @@ const testCases: TestCase[] = [
       ],
       subqueries: [],
       whereClauseGroups: [],
-      name: 'Account',
+      sObject: 'Account',
     },
   },
   {
@@ -53,7 +53,7 @@ const testCases: TestCase[] = [
           },
         ],
       ],
-      name: 'Contact',
+      sObject: 'Contact',
     },
   },
   {
@@ -67,7 +67,7 @@ const testCases: TestCase[] = [
       ],
       subqueries: [],
       whereClauseGroups: [],
-      name: 'Account',
+      sObject: 'Account',
       orderBy: {
         field: 'Name',
         order: 'DESC',
@@ -94,7 +94,7 @@ const testCases: TestCase[] = [
           },
         ],
       ],
-      name: 'Account',
+      sObject: 'Account',
       limit: 125,
     },
   },
@@ -117,7 +117,7 @@ const testCases: TestCase[] = [
           },
         ],
       ],
-      name: 'Account',
+      sObject: 'Account',
       orderBy: {
         field: 'BillingPostalCode',
         order: 'ASC',
@@ -140,7 +140,7 @@ const testCases: TestCase[] = [
       ],
       subqueries: [],
       whereClauseGroups: [],
-      name: 'Contact',
+      sObject: 'Contact',
     },
   },
   {
@@ -161,7 +161,7 @@ const testCases: TestCase[] = [
       ],
       subqueries: [],
       whereClauseGroups: [],
-      name: 'Lead',
+      sObject: 'Lead',
       groupBy: {
         field: 'LeadSource',
       },
@@ -185,7 +185,7 @@ const testCases: TestCase[] = [
       ],
       subqueries: [],
       whereClauseGroups: [],
-      name: 'Account',
+      sObject: 'Account',
       groupBy: {
         field: 'Name',
       },
@@ -214,7 +214,7 @@ const testCases: TestCase[] = [
       ],
       subqueries: [],
       whereClauseGroups: [],
-      name: 'Merchandise__c',
+      sObject: 'Merchandise__c',
       orderBy: {
         field: 'Name',
       },
@@ -235,7 +235,7 @@ const testCases: TestCase[] = [
       ],
       subqueries: [],
       whereClauseGroups: [],
-      name: 'Merchandise__c',
+      sObject: 'Merchandise__c',
       orderBy: {
         field: 'Name',
       },
@@ -259,7 +259,7 @@ const testCases: TestCase[] = [
       ],
       subqueries: [],
       whereClauseGroups: [],
-      name: 'Contact',
+      sObject: 'Contact',
     },
   },
   {
@@ -288,7 +288,7 @@ const testCases: TestCase[] = [
           },
         ],
       ],
-      name: 'Contact',
+      sObject: 'Contact',
     },
   },
   {
@@ -312,11 +312,11 @@ const testCases: TestCase[] = [
           ],
           subqueries: [],
           whereClauseGroups: [],
-          name: 'Contacts',
+          sObject: 'Contacts',
         },
       ],
       whereClauseGroups: [],
-      name: 'Account',
+      sObject: 'Account',
     },
   },
   {
@@ -342,11 +342,11 @@ const testCases: TestCase[] = [
           ],
           subqueries: [],
           whereClauseGroups: [],
-          name: 'Account.',
+          sObject: 'Account.',
         },
       ],
       whereClauseGroups: [],
-      name: 'Account',
+      sObject: 'Account',
     },
   },
   {
@@ -379,7 +379,7 @@ const testCases: TestCase[] = [
               },
             ],
           ],
-          name: 'Contacts',
+          sObject: 'Contacts',
         },
       ],
       whereClauseGroups: [
@@ -391,7 +391,7 @@ const testCases: TestCase[] = [
           },
         ],
       ],
-      name: 'Account',
+      sObject: 'Account',
     },
   },
   {
@@ -421,7 +421,7 @@ const testCases: TestCase[] = [
           },
         ],
       ],
-      name: 'Daughter__c',
+      sObject: 'Daughter__c',
     },
   },
   {
@@ -445,7 +445,7 @@ const testCases: TestCase[] = [
           ],
           subqueries: [],
           whereClauseGroups: [],
-          name: 'Line_Items__r',
+          sObject: 'Line_Items__r',
         },
       ],
       whereClauseGroups: [
@@ -457,7 +457,7 @@ const testCases: TestCase[] = [
           },
         ],
       ],
-      name: 'Merchandise__c',
+      sObject: 'Merchandise__c',
     },
   },
   {
@@ -483,7 +483,7 @@ const testCases: TestCase[] = [
           },
         ],
       ],
-      name: 'Task',
+      sObject: 'Task',
     },
   },
   {
@@ -513,7 +513,7 @@ const testCases: TestCase[] = [
           },
         ],
       ],
-      name: 'Task',
+      sObject: 'Task',
     },
   },
   {
@@ -531,7 +531,7 @@ const testCases: TestCase[] = [
       ],
       subqueries: [],
       whereClauseGroups: [],
-      name: 'Event',
+      sObject: 'Event',
     },
   },
   {
@@ -542,7 +542,7 @@ const testCases: TestCase[] = [
       fields: [],
       subqueries: [],
       whereClauseGroups: [],
-      name: 'Event',
+      sObject: 'Event',
     },
   },
   {
@@ -567,11 +567,11 @@ const testCases: TestCase[] = [
           ],
           subqueries: [],
           whereClauseGroups: [],
-          name: 'Notes',
+          sObject: 'Notes',
         },
       ],
       whereClauseGroups: [],
-      name: 'Account',
+      sObject: 'Account',
     },
   },
   {
@@ -613,11 +613,11 @@ const testCases: TestCase[] = [
           ],
           subqueries: [],
           whereClauseGroups: [],
-          name: 'OpportunityLineItems',
+          sObject: 'OpportunityLineItems',
         },
       ],
       whereClauseGroups: [],
-      name: 'Opportunity',
+      sObject: 'Opportunity',
     },
   },
   {
@@ -634,7 +634,7 @@ const testCases: TestCase[] = [
       ],
       subqueries: [],
       whereClauseGroups: [],
-      name: 'LoginHistory',
+      sObject: 'LoginHistory',
     },
   },
   {
@@ -669,7 +669,7 @@ const testCases: TestCase[] = [
           },
         ],
       ],
-      name: 'LoginHistory',
+      sObject: 'LoginHistory',
       groupBy: {
         field: 'UserId',
       },
@@ -701,7 +701,7 @@ const testCases: TestCase[] = [
       ],
       subqueries: [],
       whereClauseGroups: [],
-      name: 'RecordType',
+      sObject: 'RecordType',
     },
   },
   {
@@ -723,7 +723,7 @@ const testCases: TestCase[] = [
       ],
       subqueries: [],
       whereClauseGroups: [],
-      name: 'Opportunity',
+      sObject: 'Opportunity',
       groupBy: {
         field: 'CampaignId',
       },
@@ -757,7 +757,7 @@ const testCases: TestCase[] = [
       ],
       subqueries: [],
       whereClauseGroups: [],
-      name: 'Lead',
+      sObject: 'Lead',
       groupBy: {
         field: 'LeadSource',
         type: 'ROLLUP',
@@ -786,7 +786,7 @@ const testCases: TestCase[] = [
       ],
       subqueries: [],
       whereClauseGroups: [],
-      name: 'Lead',
+      sObject: 'Lead',
       groupBy: {
         field: ['Status', 'LeadSource'],
         type: 'ROLLUP',
@@ -832,7 +832,7 @@ const testCases: TestCase[] = [
       ],
       subqueries: [],
       whereClauseGroups: [],
-      name: 'Account',
+      sObject: 'Account',
       groupBy: {
         field: ['Type', 'BillingCountry'],
         type: 'CUBE',
@@ -863,6 +863,27 @@ const testCases: TestCase[] = [
           nulls: 'LAST',
         },
       ],
+    },
+  },
+  {
+    testCase: 31,
+    soql: 'SELECT c.Name, c.Account.Name FROM Contact c',
+    output: {
+      fields: [
+        {
+          text: 'Name',
+          alias: 'c',
+        },
+        {
+          text: 'Account.Name',
+          relationshipFields: ['Account', 'Name'],
+          alias: 'c',
+        },
+      ],
+      subqueries: [],
+      whereClauseGroups: [],
+      sObject: 'Contact',
+      sObjectAlias: 'c',
     },
   },
 ];
