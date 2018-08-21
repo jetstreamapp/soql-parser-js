@@ -1,6 +1,9 @@
 .antlr
 .sfdx
 build/tests
+lib
+lib-esm
+_bundles
 
 # Created by https://www.gitignore.io/api/node
 

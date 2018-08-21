@@ -10,11 +10,10 @@ import { SoqlQuery, Query, FunctionExp, OrderByClause } from './models/SoqlQuery
 import { TerminalNode } from 'antlr4ts/tree';
 import * as _ from 'lodash';
 import { SoqlQueryConfig } from './SoqlParser';
-import { ContextSensitivityInfo } from 'antlr4ts/atn/ContextSensitivityInfo';
 
-type currItem = 'field' | 'from' | 'where' | 'groupby' | 'orderby' | 'having';
+export type currItem = 'field' | 'from' | 'where' | 'groupby' | 'orderby' | 'having';
 
-interface Context {
+export interface Context {
   isSubQuery: boolean;
   currSubqueryIdx: number;
   currWhereConditionGroupIdx: number;
