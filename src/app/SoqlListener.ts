@@ -6,7 +6,7 @@
  */
 import { SOQLListener } from '../generated//SOQLListener';
 import * as Parser from '../generated/SOQLParser';
-import { SoqlQuery, Query, FunctionExp, OrderByClause } from './models/SoqlQuery.model';
+import { SoqlQuery, Query, FunctionExp, OrderByClause, LogicalOperator } from './models/SoqlQuery.model';
 import { TerminalNode } from 'antlr4ts/tree';
 import * as _ from 'lodash';
 import { SoqlQueryConfig } from './SoqlParser';
@@ -19,6 +19,7 @@ interface Context {
   currSubqueryIdx: number;
   currWhereConditionGroupIdx: number;
   currentItem: currItem;
+  inWhereClauseGroup: boolean;
   tempData: any;
 }
 
@@ -28,6 +29,7 @@ export class Listener implements SOQLListener {
     currSubqueryIdx: -1,
     currWhereConditionGroupIdx: 0,
     currentItem: null,
+    inWhereClauseGroup: false,
     tempData: null,
   };
 
@@ -37,6 +39,15 @@ export class Listener implements SOQLListener {
     config.logging = _.isBoolean(config.logging) ? config.logging : false;
     config.includeSubqueryAsField = _.isBoolean(config.includeSubqueryAsField) ? config.includeSubqueryAsField : true;
     this.soqlQuery = new SoqlQuery();
+  }
+
+  enterEveryRule(ctx: Parser.Keywords_alias_allowedContext) {
+    if (this.context.currentItem === 'where') {
+      // ctx instanceof TerminalNode && ['AND', 'OR'].includes(ctx.text)
+      // now we need to know if it is part of a group or not
+      // this.getSoqlQuery().addLogicalOperatorToWhereClause(ctx.text as LogicalOperator, this.context.inWhereClauseGroup);
+      console.log('TEXT:', ctx.text);
+    }
   }
 
   getSoqlQuery(): Query {
@@ -745,6 +756,8 @@ export class Listener implements SOQLListener {
     if (this.config.logging) {
       console.log('enterCondition1', ctx);
     }
+    // TODO: need to figure out all the places that we have AND / OR / ETC..
+    // need to traverse through all parens (could be multiple) to the base, then see which ones have te
   }
   exitCondition1(ctx: Parser.Condition1Context) {
     if (this.config.logging) {
@@ -1041,7 +1054,7 @@ export class Listener implements SOQLListener {
     if (this.config.logging) {
       console.log('enterOrder_by_nulls_clause', ctx);
     }
-    this.context.tempData.nulls = ctx.text.toUpperCase() === 'FIRST' ? 'FIRST' : 'LAST';
+    this.context.tempData.nulls = ctx.getChild(1).text.toUpperCase() === 'FIRST' ? 'FIRST' : 'LAST';
   }
   exitOrder_by_nulls_clause(ctx: Parser.Order_by_nulls_clauseContext) {
     if (this.config.logging) {
