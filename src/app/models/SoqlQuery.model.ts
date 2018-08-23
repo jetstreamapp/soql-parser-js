@@ -97,3 +97,41 @@ export interface FunctionExp {
   alias?: string;
   parameter?: string | string[];
 }
+
+
+`(Id = '1' OR Id = '2') AND (Name LIKE '%FOO%' OR Name LIKE '%ARM%')`
+`(Id = '1' OR Id = '2' OR (Name LIKE '%FOO%' OR (Name LIKE '%ARM%' AND FOO = 'bar')))`
+
+{
+  group
+  {
+    field: 'id',
+    operator: '=',
+    value: '1',
+    trailingCondition: 'OR',
+  },
+  {
+    field: 'id',
+    operator: '=',
+    value: '2',
+    trailingCondition: 'OR',
+  }
+  {
+    group: {
+
+    }
+  }
+}
+
+// Idea for new structure
+// not sure if it really tells us about paren grouping if we needed to rebuild the grouping from our syntax
+// functions need a place here as well
+interface WhereClauseNew {
+  operation?: 'AND' | 'OR';
+  operator?: 'NOT'; // this is a prefix, if it exists
+  format: 'binary' | 'unary'; // always binary unless with "NOT"
+  expression?: WhereClauseNew; // I think only used with unary expressions
+  left?: WhereClauseNew;
+  right?: WhereClauseNew;
+}
+

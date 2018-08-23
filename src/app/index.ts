@@ -47,7 +47,7 @@ import { parseQuery } from './SoqlParser';
 
 // const listener = new Listener();
 const queries = [
-  `SELECT Id FROM Account WHERE (Id = '1' OR Id = '2') AND (Name LIKE '%FOO%' OR Name LIKE '%ARM%')`,
+  `SELECT Id FROM Account WHERE (Id = '1' OR Id = '2' OR (Name LIKE '%FOO%' OR (Name LIKE '%ARM%' AND FOO = 'bar')))`,
   `SELECT Id FROM Contact WHERE Name LIKE 'A%' AND MailingCity = 'California'`,
   `SELECT Name FROM Account ORDER BY Name DESC NULLS FIRST`,
   `SELECT Name FROM Account WHERE Industry = 'media' LIMIT 125`,
