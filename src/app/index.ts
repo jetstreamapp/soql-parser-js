@@ -47,9 +47,9 @@ import { parseQuery } from './SoqlParser';
 
 // const listener = new Listener();
 const queries = [
-  `SELECT Id, Name, BillingCity FROM Account`,
+  `SELECT Id FROM Account WHERE (Id IN ('1', '2', '3') OR (NOT Id = '2') OR (Name LIKE '%FOO%' OR (Name LIKE '%ARM%' AND FOO = 'bar')))`,
   `SELECT Id FROM Contact WHERE Name LIKE 'A%' AND MailingCity = 'California'`,
-  `SELECT Name FROM Account ORDER BY Name DESC NULLS LAST`,
+  `SELECT Name FROM Account ORDER BY Name DESC NULLS FIRST`,
   `SELECT Name FROM Account WHERE Industry = 'media' LIMIT 125`,
   `SELECT Name FROM Account WHERE Industry = 'media' ORDER BY BillingPostalCode ASC NULLS LAST LIMIT 125`,
   `SELECT COUNT() FROM Contact`,
@@ -80,13 +80,13 @@ const queries = [
   `SELECT c.Name, c.Account.Name FROM Contact c`,
 ];
 
-// const query = parseQuery(queries[30], { logging: true });
-// console.log(JSON.stringify(query, null, 2));
+const query = parseQuery(queries[14], { logging: true });
+console.log(JSON.stringify(query, null, 2));
 
-const output = [];
-queries.forEach((soql, i) => {
-  const query = parseQuery(soql, {});
-  output.push({ testCase: i + 1, soql, output: query });
-});
+// const output = [];
+// queries.forEach((soql, i) => {
+//   const query = parseQuery(soql, {});
+//   output.push({ testCase: i + 1, soql, output: query });
+// });
 
-console.log(JSON.stringify(output, null, 2));
+// console.log(JSON.stringify(output, null, 2));

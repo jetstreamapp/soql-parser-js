@@ -1,9 +1,12 @@
+export type LogicalOperator = 'AND' | 'OR';
+export type Operator = '=' | '<=' | '>=' | '>' | '<' | 'LIKE' | 'IN' | 'NOT IN' | 'INCLUDES' | 'EXCLUDES';
+
 export class SoqlQuery implements Query {
   fields: Field[];
   subqueries: Query[];
   sObject: string;
   sObjectAlias?: string;
-  whereClauseGroups: WhereClause[][];
+  whereClause?: WhereClause;
   limit?: number;
   offset?: number;
   groupBy?: GroupByClause;
@@ -13,14 +16,6 @@ export class SoqlQuery implements Query {
   constructor() {
     this.fields = [];
     this.subqueries = [];
-    this.whereClauseGroups = [];
-  }
-
-  addWhereCondition(condition: WhereClause, groupIdx: number) {
-    if (!Array.isArray(this.whereClauseGroups[groupIdx])) {
-      this.whereClauseGroups[groupIdx] = [];
-    }
-    this.whereClauseGroups[groupIdx].push(condition);
   }
 }
 
@@ -29,13 +24,12 @@ export interface Query {
   subqueries: Query[];
   sObject: string;
   sObjectAlias?: string;
-  whereClauseGroups: WhereClause[][];
+  whereClause?: WhereClause;
   limit?: number;
   offset?: number;
   groupBy?: GroupByClause;
   having?: any;
   orderBy?: OrderByClause | OrderByClause[];
-  addWhereCondition?: (condition: WhereClause, groupIdx: number) => void;
 }
 
 export interface SelectStatement {
@@ -50,9 +44,18 @@ export interface Field {
   subqueryObjName?: string; // populated if subquery
 }
 
-export interface WhereClause {
+interface WhereClause {
+  left: Condition | WhereClause;
+  right?: Condition | WhereClause;
+  operator?: LogicalOperator;
+}
+
+interface Condition {
+  openParen?: boolean;
+  closeParen?: boolean;
+  logicalPrefix?: 'NOT';
   field: string;
-  operator: string;
+  operator: Operator;
   value: string | string[];
 }
 

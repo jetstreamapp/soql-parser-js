@@ -25,7 +25,6 @@ const testCases: TestCase[] = [
         },
       ],
       subqueries: [],
-      whereClauseGroups: [],
       sObject: 'Account',
     },
   },
@@ -39,21 +38,22 @@ const testCases: TestCase[] = [
         },
       ],
       subqueries: [],
-      whereClauseGroups: [
-        [
-          {
-            field: 'Name',
-            operator: 'LIKE',
-            value: "'A%'",
-          },
-          {
+      sObject: 'Contact',
+      whereClause: {
+        left: {
+          field: 'Name',
+          operator: 'LIKE',
+          value: "'A%'",
+        },
+        operator: 'AND',
+        right: {
+          left: {
             field: 'MailingCity',
             operator: '=',
             value: "'California'",
           },
-        ],
-      ],
-      sObject: 'Contact',
+        },
+      },
     },
   },
   {
@@ -66,7 +66,6 @@ const testCases: TestCase[] = [
         },
       ],
       subqueries: [],
-      whereClauseGroups: [],
       sObject: 'Account',
       orderBy: {
         field: 'Name',
@@ -85,16 +84,14 @@ const testCases: TestCase[] = [
         },
       ],
       subqueries: [],
-      whereClauseGroups: [
-        [
-          {
-            field: 'Industry',
-            operator: '=',
-            value: "'media'",
-          },
-        ],
-      ],
       sObject: 'Account',
+      whereClause: {
+        left: {
+          field: 'Industry',
+          operator: '=',
+          value: "'media'",
+        },
+      },
       limit: 125,
     },
   },
@@ -108,16 +105,14 @@ const testCases: TestCase[] = [
         },
       ],
       subqueries: [],
-      whereClauseGroups: [
-        [
-          {
-            field: 'Industry',
-            operator: '=',
-            value: "'media'",
-          },
-        ],
-      ],
       sObject: 'Account',
+      whereClause: {
+        left: {
+          field: 'Industry',
+          operator: '=',
+          value: "'media'",
+        },
+      },
       orderBy: {
         field: 'BillingPostalCode',
         order: 'ASC',
@@ -139,7 +134,6 @@ const testCases: TestCase[] = [
         },
       ],
       subqueries: [],
-      whereClauseGroups: [],
       sObject: 'Contact',
     },
   },
@@ -160,7 +154,6 @@ const testCases: TestCase[] = [
         },
       ],
       subqueries: [],
-      whereClauseGroups: [],
       sObject: 'Lead',
       groupBy: {
         field: 'LeadSource',
@@ -184,7 +177,6 @@ const testCases: TestCase[] = [
         },
       ],
       subqueries: [],
-      whereClauseGroups: [],
       sObject: 'Account',
       groupBy: {
         field: 'Name',
@@ -213,7 +205,6 @@ const testCases: TestCase[] = [
         },
       ],
       subqueries: [],
-      whereClauseGroups: [],
       sObject: 'Merchandise__c',
       orderBy: {
         field: 'Name',
@@ -234,7 +225,6 @@ const testCases: TestCase[] = [
         },
       ],
       subqueries: [],
-      whereClauseGroups: [],
       sObject: 'Merchandise__c',
       orderBy: {
         field: 'Name',
@@ -258,7 +248,6 @@ const testCases: TestCase[] = [
         },
       ],
       subqueries: [],
-      whereClauseGroups: [],
       sObject: 'Contact',
     },
   },
@@ -279,16 +268,14 @@ const testCases: TestCase[] = [
         },
       ],
       subqueries: [],
-      whereClauseGroups: [
-        [
-          {
-            field: 'Account.Industry',
-            operator: '=',
-            value: "'media'",
-          },
-        ],
-      ],
       sObject: 'Contact',
+      whereClause: {
+        left: {
+          field: 'Account.Industry',
+          operator: '=',
+          value: "'media'",
+        },
+      },
     },
   },
   {
@@ -311,11 +298,9 @@ const testCases: TestCase[] = [
             },
           ],
           subqueries: [],
-          whereClauseGroups: [],
           sObject: 'Contacts',
         },
       ],
-      whereClauseGroups: [],
       sObject: 'Account',
     },
   },
@@ -341,11 +326,9 @@ const testCases: TestCase[] = [
             },
           ],
           subqueries: [],
-          whereClauseGroups: [],
           sObject: 'Account.',
         },
       ],
-      whereClauseGroups: [],
       sObject: 'Account',
     },
   },
@@ -370,28 +353,24 @@ const testCases: TestCase[] = [
             },
           ],
           subqueries: [],
-          whereClauseGroups: [
-            [
-              {
-                field: 'CreatedBy.Alias',
-                operator: '=',
-                value: "'x'",
-              },
-            ],
-          ],
           sObject: 'Contacts',
+          whereClause: {
+            left: {
+              field: 'CreatedBy.Alias',
+              operator: '=',
+              value: "'x'",
+            },
+          },
         },
       ],
-      whereClauseGroups: [
-        [
-          {
-            field: 'Industry',
-            operator: '=',
-            value: "'media'",
-          },
-        ],
-      ],
       sObject: 'Account',
+      whereClause: {
+        left: {
+          field: 'Industry',
+          operator: '=',
+          value: "'media'",
+        },
+      },
     },
   },
   {
@@ -412,16 +391,14 @@ const testCases: TestCase[] = [
         },
       ],
       subqueries: [],
-      whereClauseGroups: [
-        [
-          {
-            field: 'Mother_of_Child__r.LastName__c',
-            operator: 'LIKE',
-            value: "'C%'",
-          },
-        ],
-      ],
       sObject: 'Daughter__c',
+      whereClause: {
+        left: {
+          field: 'Mother_of_Child__r.LastName__c',
+          operator: 'LIKE',
+          value: "'C%'",
+        },
+      },
     },
   },
   {
@@ -444,20 +421,17 @@ const testCases: TestCase[] = [
             },
           ],
           subqueries: [],
-          whereClauseGroups: [],
           sObject: 'Line_Items__r',
         },
       ],
-      whereClauseGroups: [
-        [
-          {
-            field: 'Name',
-            operator: 'LIKE',
-            value: "'Acme%'",
-          },
-        ],
-      ],
       sObject: 'Merchandise__c',
+      whereClause: {
+        left: {
+          field: 'Name',
+          operator: 'LIKE',
+          value: "'Acme%'",
+        },
+      },
     },
   },
   {
@@ -474,16 +448,14 @@ const testCases: TestCase[] = [
         },
       ],
       subqueries: [],
-      whereClauseGroups: [
-        [
-          {
-            field: 'Owner.FirstName',
-            operator: 'LIKE',
-            value: "'B%'",
-          },
-        ],
-      ],
       sObject: 'Task',
+      whereClause: {
+        left: {
+          field: 'Owner.FirstName',
+          operator: 'LIKE',
+          value: "'B%'",
+        },
+      },
     },
   },
   {
@@ -504,16 +476,14 @@ const testCases: TestCase[] = [
         },
       ],
       subqueries: [],
-      whereClauseGroups: [
-        [
-          {
-            field: 'Owner.FirstName',
-            operator: 'LIKE',
-            value: "'B%'",
-          },
-        ],
-      ],
       sObject: 'Task',
+      whereClause: {
+        left: {
+          field: 'Owner.FirstName',
+          operator: 'LIKE',
+          value: "'B%'",
+        },
+      },
     },
   },
   {
@@ -530,7 +500,6 @@ const testCases: TestCase[] = [
         },
       ],
       subqueries: [],
-      whereClauseGroups: [],
       sObject: 'Event',
     },
   },
@@ -541,7 +510,6 @@ const testCases: TestCase[] = [
     output: {
       fields: [],
       subqueries: [],
-      whereClauseGroups: [],
       sObject: 'Event',
     },
   },
@@ -566,11 +534,9 @@ const testCases: TestCase[] = [
             },
           ],
           subqueries: [],
-          whereClauseGroups: [],
           sObject: 'Notes',
         },
       ],
-      whereClauseGroups: [],
       sObject: 'Account',
     },
   },
@@ -612,11 +578,9 @@ const testCases: TestCase[] = [
             },
           ],
           subqueries: [],
-          whereClauseGroups: [],
           sObject: 'OpportunityLineItems',
         },
       ],
-      whereClauseGroups: [],
       sObject: 'Opportunity',
     },
   },
@@ -633,7 +597,6 @@ const testCases: TestCase[] = [
         },
       ],
       subqueries: [],
-      whereClauseGroups: [],
       sObject: 'LoginHistory',
     },
   },
@@ -655,21 +618,22 @@ const testCases: TestCase[] = [
         },
       ],
       subqueries: [],
-      whereClauseGroups: [
-        [
-          {
-            field: 'LoginTime',
-            operator: '>',
-            value: '2010-09-20T22:16:30.000Z',
-          },
-          {
+      sObject: 'LoginHistory',
+      whereClause: {
+        left: {
+          field: 'LoginTime',
+          operator: '>',
+          value: '2010-09-20T22:16:30.000Z',
+        },
+        operator: 'AND',
+        right: {
+          left: {
             field: 'LoginTime',
             operator: '<',
             value: '2010-09-21T22:16:30.000Z',
           },
-        ],
-      ],
-      sObject: 'LoginHistory',
+        },
+      },
       groupBy: {
         field: 'UserId',
       },
@@ -700,7 +664,6 @@ const testCases: TestCase[] = [
         },
       ],
       subqueries: [],
-      whereClauseGroups: [],
       sObject: 'RecordType',
     },
   },
@@ -722,7 +685,6 @@ const testCases: TestCase[] = [
         },
       ],
       subqueries: [],
-      whereClauseGroups: [],
       sObject: 'Opportunity',
       groupBy: {
         field: 'CampaignId',
@@ -756,7 +718,6 @@ const testCases: TestCase[] = [
         },
       ],
       subqueries: [],
-      whereClauseGroups: [],
       sObject: 'Lead',
       groupBy: {
         field: 'LeadSource',
@@ -785,7 +746,6 @@ const testCases: TestCase[] = [
         },
       ],
       subqueries: [],
-      whereClauseGroups: [],
       sObject: 'Lead',
       groupBy: {
         field: ['Status', 'LeadSource'],
@@ -831,7 +791,6 @@ const testCases: TestCase[] = [
         },
       ],
       subqueries: [],
-      whereClauseGroups: [],
       sObject: 'Account',
       groupBy: {
         field: ['Type', 'BillingCountry'],
@@ -855,7 +814,7 @@ const testCases: TestCase[] = [
         {
           field: 'Name',
           order: 'DESC',
-          nulls: 'LAST',
+          nulls: 'FIRST',
         },
         {
           field: 'Id',
@@ -881,9 +840,69 @@ const testCases: TestCase[] = [
         },
       ],
       subqueries: [],
-      whereClauseGroups: [],
       sObject: 'Contact',
       sObjectAlias: 'c',
+    },
+  },
+  {
+    testCase: 32,
+    soql: `SELECT Id FROM Account WHERE (Id IN ('1', '2', '3') OR (NOT Id = '2') OR (Name LIKE '%FOO%' OR (Name LIKE '%ARM%' AND FOO = 'bar')))`,
+    output: {
+      fields: [
+        {
+          text: 'Id',
+        },
+      ],
+      subqueries: [],
+      sObject: 'Account',
+      whereClause: {
+        left: {
+          openParen: true,
+          field: 'Id',
+          operator: 'IN',
+          value: ["'1'", "'2'", "'3'"],
+        },
+        operator: 'OR',
+        right: {
+          left: {
+            openParen: true,
+            logicalPrefix: 'NOT',
+            field: 'Id',
+            operator: '=',
+            value: "'2'",
+            closeParen: true,
+          },
+          operator: 'OR',
+          right: {
+            left: {
+              openParen: true,
+              field: 'Name',
+              operator: 'LIKE',
+              value: "'%FOO%'",
+              closeParen: true,
+            },
+            operator: 'OR',
+            right: {
+              left: {
+                openParen: true,
+                field: 'Name',
+                operator: 'LIKE',
+                value: "'%ARM%'",
+                closeParen: true,
+              },
+              operator: 'AND',
+              right: {
+                left: {
+                  field: 'FOO',
+                  operator: '=',
+                  value: "'bar'",
+                  closeParen: true,
+                },
+              },
+            },
+          },
+        },
+      },
     },
   },
 ];
