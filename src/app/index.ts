@@ -78,9 +78,10 @@ const queries = [
   `SELECT Status, LeadSource, COUNT(Name) cnt FROM Lead GROUP BY ROLLUP(Status, LeadSource)`,
   `SELECT Type, BillingCountry, GROUPING(Type) grpType, GROUPING(BillingCountry) grpCty, COUNT(id) accts FROM Account GROUP BY CUBE(Type, BillingCountry) ORDER BY GROUPING(Type), GROUPING(Id, BillingCountry), Name DESC NULLS FIRST, Id ASC NULLS LAST`,
   `SELECT c.Name, c.Account.Name FROM Contact c`,
+  `SELECT LeadSource, COUNT(Name) FROM Lead GROUP BY LeadSource HAVING COUNT(Name) > 100 and LeadSource > 'Phone'`,
 ];
 
-const query = parseQuery(queries[14], { logging: true });
+const query = parseQuery(queries[31], { logging: true });
 console.log(JSON.stringify(query, null, 2));
 
 // const output = [];

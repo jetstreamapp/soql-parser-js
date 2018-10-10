@@ -905,5 +905,46 @@ const testCases: TestCase[] = [
       },
     },
   },
+  {
+    testCase: 33,
+    soql: `SELECT LeadSource, COUNT(Name) FROM Lead GROUP BY LeadSource HAVING COUNT(Name) > 100 and LeadSource > 'Phone'`,
+    output: {
+      fields: [
+        {
+          text: 'LeadSource',
+        },
+        {
+          fn: {
+            text: 'COUNT(Name)',
+            name: 'Name',
+            parameter: 'Name',
+          },
+        },
+      ],
+      subqueries: [],
+      sObject: 'Lead',
+      groupBy: {
+        field: 'LeadSource',
+      },
+      having: {
+        left: {
+          operator: '>',
+          value: '100',
+          fn: {
+            alias: 'COUNT',
+            parameter: 'Name',
+          },
+        },
+        operator: 'and',
+        right: {
+          left: {
+            operator: '>',
+            value: "'Phone'",
+            field: 'LeadSource',
+          },
+        },
+      },
+    },
+  },
 ];
 export default testCases;

@@ -72,6 +72,13 @@ export interface GroupByClause {
 }
 
 export interface HavingClause {
+  left: Condition | WhereClause;
+  right?: Condition | WhereClause;
+  operator?: LogicalOperator;
+}
+
+export interface HavingCondition {
+  field?: string;
   fn: FunctionExp;
   operator: string;
   value: string | number;
@@ -83,3 +90,14 @@ export interface FunctionExp {
   alias?: string;
   parameter?: string | string[];
 }
+// this.context.currentItem = 'where';
+// const currConditionOperation = {
+//   left: null,
+//   // right: null,
+//   // operator: null,
+// };
+// this.context.tempData = {
+//   stack: [currConditionOperation],
+//   currConditionOperation,
+//   data: currConditionOperation,
+// };

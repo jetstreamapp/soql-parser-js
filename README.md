@@ -8,13 +8,18 @@ SOQL Parser JS will parse a SOQL query string into an object that is easy to wor
 
 ## TODO
 - [ ] Assess all property/function/variable names and make any adjustments
-- [ ] Analyze more SOQL parsing examples to ensure that output is appropriate
-- [ ] Include information on contributions
+- [x] Analyze more SOQL parsing examples to ensure that output is appropriate
+- [ ] Include information on how to contribute
 - [ ] Keep examples up-to-date as the package is finalized
 - [ ] Figure out proper build/packaging for npm
-- [ ] Create typescript typings for the bundled JS
+  - [ ] Consider Webpack for build
 - [ ] Figure out how/if we can create a bundle that is browser compatible and include examples
-    - [ ] Figure out what versions of a module should be supported
+  - [ ] Provide instructions for using with node, in the browser, using TS and JS
+- [ ] Create typescript typings for the bundled JS
+- [ ] Provide a GitHub pages example application
+## Future Idea List - phase 2+
+- [ ] Provide a CLI interface
+
 
 ## Examples
 (This is still a work in progress and will change once the npm bundle structure is figured out)
