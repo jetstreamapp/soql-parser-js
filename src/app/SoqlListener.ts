@@ -820,7 +820,7 @@ export class Listener implements SOQLListener {
     if (this.config.logging) {
       console.log('enterParenthesis:', ctx.text);
     }
-    if (this.context.currentItem === 'where') {
+    if (this.context.currentItem === 'where' || this.context.currentItem === 'having') {
       this.context.tempData.nextHasCloseParen = false;
       this.context.tempData.nextHasOpenParen = true;
     }
@@ -829,7 +829,7 @@ export class Listener implements SOQLListener {
     if (this.config.logging) {
       console.log('exitParenthesis:', ctx.text);
     }
-    if (this.context.currentItem === 'where') {
+    if (this.context.currentItem === 'where' || this.context.currentItem === 'having') {
       if (this.context.tempData.nextHasCloseParen) {
         this.context.tempData.stack.pop();
       }
