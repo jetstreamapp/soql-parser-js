@@ -47,7 +47,7 @@ import { parseQuery } from './SoqlParser';
 
 // const listener = new Listener();
 const queries = [
-  `SELECT Id FROM Account WHERE (Id = '1' OR Id = '2' OR (Name LIKE '%FOO%' OR (Name LIKE '%ARM%' AND FOO = 'bar')))`,
+  `SELECT Id FROM Account WHERE (Id IN ('1', '2', '3') OR (NOT Id = '2') OR (Name LIKE '%FOO%' OR (Name LIKE '%ARM%' AND FOO = 'bar')))`,
   `SELECT Id FROM Contact WHERE Name LIKE 'A%' AND MailingCity = 'California'`,
   `SELECT Name FROM Account ORDER BY Name DESC NULLS FIRST`,
   `SELECT Name FROM Account WHERE Industry = 'media' LIMIT 125`,
@@ -80,7 +80,7 @@ const queries = [
   `SELECT c.Name, c.Account.Name FROM Contact c`,
 ];
 
-const query = parseQuery(queries[0], { logging: true });
+const query = parseQuery(queries[14], { logging: true });
 console.log(JSON.stringify(query, null, 2));
 
 // const output = [];

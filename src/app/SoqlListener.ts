@@ -45,7 +45,21 @@ export class Listener implements SOQLListener {
     if (this.config.logging) {
       console.log('visitTerminal:', ctx.text);
     }
-    if (['AND', 'OR'].includes(ctx.text)) {
+    if (this.context.currentItem === 'where') {
+      if (['NOT'].includes(ctx.text)) {
+        this.context.tempData.nextHasLogicalPrefix = ctx.text;
+      } else if (['AND', 'OR'].includes(ctx.text)) {
+        this.context.tempData.currConditionOperation.operator = ctx.text;
+        // Because there is an operator, we know the right side will have at least one more condition
+        // reset current condition
+        this.context.tempData.currConditionOperation.right = {
+          left: null,
+          // right: null,
+          // operator: null,
+        };
+        this.context.tempData.currConditionOperation = this.context.tempData.currConditionOperation.right;
+        this.context.tempData.stack.push(this.context.tempData.currConditionOperation);
+      }
     }
   }
 
@@ -401,11 +415,24 @@ export class Listener implements SOQLListener {
       console.log('enterWhere_clause:', ctx.text);
     }
     this.context.currentItem = 'where';
+    const currConditionOperation = {
+      left: null,
+      // right: null,
+      // operator: null,
+    };
+    this.context.tempData = {
+      stack: [currConditionOperation],
+      currConditionOperation,
+      data: currConditionOperation,
+    };
   }
   exitWhere_clause(ctx: Parser.Where_clauseContext) {
     if (this.config.logging) {
       console.log('exitWhere_clause:', ctx.text);
     }
+
+    this.getSoqlQuery().whereClause = this.context.tempData.data;
+    this.context.tempData = null;
   }
   enterGroupby_clause(ctx: Parser.Groupby_clauseContext) {
     if (this.config.logging) {
@@ -755,28 +782,32 @@ export class Listener implements SOQLListener {
     if (this.config.logging) {
       console.log('enterCondition1:', ctx.text);
     }
-    // TODO: need to figure out all the places that we have AND / OR / ETC..
-    // need to traverse through all parens (could be multiple) to the base, then see which ones have te
   }
   exitCondition1(ctx: Parser.Condition1Context) {
     if (this.config.logging) {
       console.log('exitCondition1:', ctx.text);
-    }
-    if (this.context.currentItem === 'where' && this.context.tempData) {
-      this.getSoqlQuery().addWhereCondition(this.context.tempData, this.context.currWhereConditionGroupIdx);
-      this.context.tempData = null;
     }
   }
   enterParenthesis(ctx: Parser.ParenthesisContext) {
     if (this.config.logging) {
       console.log('enterParenthesis:', ctx.text);
     }
+    if (this.context.currentItem === 'where') {
+      this.context.tempData.nextHasCloseParen = false;
+      this.context.tempData.nextHasOpenParen = true;
+    }
   }
   exitParenthesis(ctx: Parser.ParenthesisContext) {
     if (this.config.logging) {
       console.log('exitParenthesis:', ctx.text);
     }
-    this.context.currWhereConditionGroupIdx++;
+    if (this.context.currentItem === 'where') {
+      if (this.context.tempData.nextHasCloseParen) {
+        this.context.tempData.stack.pop();
+      }
+      this.context.tempData.stack[this.context.tempData.stack.length - 1].left.closeParen = true;
+      this.context.tempData.nextHasCloseParen = true;
+    }
   }
   enterSimple_condition(ctx: Parser.Simple_conditionContext) {
     if (this.config.logging) {
@@ -796,11 +827,24 @@ export class Listener implements SOQLListener {
       console.log('enterLike_based_condition:', ctx.text);
     }
     if (this.context.currentItem === 'where') {
-      this.context.tempData = {
-        field: ctx.getChild(0).text,
-        operator: ctx.getChild(1).text,
-        value: ctx.getChild(2).text,
-      };
+      const currItem: any = {};
+      if (!this.context.tempData.currConditionOperation.left) {
+        this.context.tempData.currConditionOperation.left = currItem;
+        if (this.context.tempData.nextHasOpenParen) {
+          currItem.openParen = true;
+          this.context.tempData.nextHasOpenParen = false;
+        }
+        if (this.context.tempData.nextHasLogicalPrefix) {
+          currItem.logicalPrefix = this.context.tempData.nextHasLogicalPrefix;
+          this.context.tempData.nextHasLogicalPrefix = null;
+        }
+      } else {
+        this.context.tempData.currConditionOperation.right = currItem;
+      }
+
+      currItem.field = ctx.getChild(0).text;
+      currItem.operator = ctx.getChild(1).text;
+      currItem.value = ctx.getChild(2).text;
     }
     if (this.context.currentItem === 'having') {
       this.context.tempData = {
@@ -819,13 +863,28 @@ export class Listener implements SOQLListener {
     if (this.config.logging) {
       console.log('enterSet_based_condition:', ctx.text);
     }
-    this.context.tempData = {
-      field: ctx.getChild(0).text,
-      operator: (ctx.getChild(1) as Parser.Set_operatorContext).children.map(child => child.text).join(' '),
-      value: (ctx.getChild(2).getChild(1) as Parser.Set_value_listContext).children
+    if (this.context.currentItem === 'where') {
+      const currItem: any = {};
+      if (!this.context.tempData.currConditionOperation.left) {
+        this.context.tempData.currConditionOperation.left = currItem;
+        if (this.context.tempData.nextHasOpenParen) {
+          currItem.openParen = true;
+          this.context.tempData.nextHasOpenParen = false;
+        }
+        if (this.context.tempData.nextHasLogicalPrefix) {
+          currItem.logicalPrefix = this.context.tempData.nextHasLogicalPrefix;
+          this.context.tempData.nextHasLogicalPrefix = null;
+        }
+      } else {
+        this.context.tempData.currConditionOperation.right = currItem;
+      }
+
+      currItem.field = ctx.getChild(0).text;
+      currItem.operator = (ctx.getChild(1) as Parser.Set_operatorContext).children.map(child => child.text).join(' ');
+      currItem.value = (ctx.getChild(2).getChild(1) as Parser.Set_value_listContext).children
         .filter(child => !(child instanceof TerminalNode))
-        .map(child => child.text),
-    };
+        .map(child => child.text);
+    }
   }
   exitSet_based_condition(ctx: Parser.Set_based_conditionContext) {
     if (this.config.logging) {
@@ -837,11 +896,25 @@ export class Listener implements SOQLListener {
       console.log('enterLike_based_condition:', ctx.text);
     }
     if (this.context.currentItem === 'where') {
-      this.context.tempData = {
-        field: ctx.getChild(0).text,
-        operator: 'LIKE',
-        value: ctx.getChild(ctx.children.length - 1).text,
-      };
+      // Set current condition in temp data
+      const currItem: any = {};
+      if (!this.context.tempData.currConditionOperation.left) {
+        this.context.tempData.currConditionOperation.left = currItem;
+        if (this.context.tempData.nextHasOpenParen) {
+          currItem.openParen = true;
+          this.context.tempData.nextHasOpenParen = false;
+        }
+        if (this.context.tempData.nextHasLogicalPrefix) {
+          currItem.logicalPrefix = this.context.tempData.nextHasLogicalPrefix;
+          this.context.tempData.nextHasLogicalPrefix = null;
+        }
+      } else {
+        this.context.tempData.currConditionOperation.right = currItem;
+      }
+
+      currItem.field = ctx.getChild(0).text;
+      currItem.operator = 'LIKE';
+      currItem.value = ctx.getChild(ctx.children.length - 1).text;
     }
   }
   exitLike_based_condition(ctx: Parser.Like_based_conditionContext) {

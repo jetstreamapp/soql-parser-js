@@ -6,7 +6,7 @@ export class SoqlQuery implements Query {
   subqueries: Query[];
   sObject: string;
   sObjectAlias?: string;
-  whereClauseGroups: WhereClauseGroup[];
+  whereClause?: WhereClause;
   limit?: number;
   offset?: number;
   groupBy?: GroupByClause;
@@ -16,22 +16,6 @@ export class SoqlQuery implements Query {
   constructor() {
     this.fields = [];
     this.subqueries = [];
-    this.whereClauseGroups = [];
-  }
-
-  addWhereCondition(condition: WhereClause, groupIdx: number) {
-    if (!this.whereClauseGroups[groupIdx]) {
-      this.whereClauseGroups[groupIdx] = { conditions: [] };
-    }
-    this.whereClauseGroups[groupIdx].conditions.push(condition);
-  }
-  addLogicalOperatorToWhereClause(condition: LogicalOperator, setForGroup: boolean) {
-    const whereClauseGroups: WhereClauseGroup = this.whereClauseGroups[this.whereClauseGroups.length - 1];
-    if (setForGroup) {
-      whereClauseGroups.trailingLogicalCondition = condition;
-    } else {
-      whereClauseGroups.conditions[whereClauseGroups.conditions.length - 1].trailingLogicalCondition = condition;
-    }
   }
 }
 
@@ -40,14 +24,12 @@ export interface Query {
   subqueries: Query[];
   sObject: string;
   sObjectAlias?: string;
-  whereClauseGroups: WhereClauseGroup[];
+  whereClause?: WhereClause;
   limit?: number;
   offset?: number;
   groupBy?: GroupByClause;
   having?: any;
   orderBy?: OrderByClause | OrderByClause[];
-  addWhereCondition?: (condition: WhereClause, groupIdx: number) => void;
-  addLogicalOperatorToWhereClause?: (condition: LogicalOperator, inWhereClauseGroup: boolean) => void;
 }
 
 export interface SelectStatement {
@@ -62,15 +44,19 @@ export interface Field {
   subqueryObjName?: string; // populated if subquery
 }
 
-export interface WhereClauseGroup {
-  conditions: WhereClause[];
-  trailingLogicalCondition?: LogicalOperator;
+interface WhereClause {
+  left: Condition | WhereClause;
+  right?: Condition | WhereClause;
+  operator?: LogicalOperator;
 }
-export interface WhereClause {
+
+interface Condition {
+  openParen?: boolean;
+  closeParen?: boolean;
+  logicalPrefix?: 'NOT';
   field: string;
   operator: Operator;
   value: string | string[];
-  trailingLogicalCondition?: LogicalOperator;
 }
 
 export interface OrderByClause {
@@ -97,41 +83,3 @@ export interface FunctionExp {
   alias?: string;
   parameter?: string | string[];
 }
-
-
-`(Id = '1' OR Id = '2') AND (Name LIKE '%FOO%' OR Name LIKE '%ARM%')`
-`(Id = '1' OR Id = '2' OR (Name LIKE '%FOO%' OR (Name LIKE '%ARM%' AND FOO = 'bar')))`
-
-{
-  group
-  {
-    field: 'id',
-    operator: '=',
-    value: '1',
-    trailingCondition: 'OR',
-  },
-  {
-    field: 'id',
-    operator: '=',
-    value: '2',
-    trailingCondition: 'OR',
-  }
-  {
-    group: {
-
-    }
-  }
-}
-
-// Idea for new structure
-// not sure if it really tells us about paren grouping if we needed to rebuild the grouping from our syntax
-// functions need a place here as well
-interface WhereClauseNew {
-  operation?: 'AND' | 'OR';
-  operator?: 'NOT'; // this is a prefix, if it exists
-  format: 'binary' | 'unary'; // always binary unless with "NOT"
-  expression?: WhereClauseNew; // I think only used with unary expressions
-  left?: WhereClauseNew;
-  right?: WhereClauseNew;
-}
-
