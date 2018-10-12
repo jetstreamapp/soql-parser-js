@@ -29,6 +29,8 @@ This assumes you are working directly in the app folder.
 
 See `./src/tests/TestCases.ts` for example queries and their generated output.
 
+You can also run any example withing the examples folder to observe the output.
+
 ```typescript
 import { parseQuery } from './SoqlParser';
 
@@ -40,39 +42,42 @@ console.log(JSON.stringify(soqlQuery, null, 2));
 
 ```
 
-This yields an object with the following structure
+This yields an object with the following structure:
 
-```javascript
+```json
 {
-  fields: [
+  "fields": [
     {
-      text: 'UserId',
+      "text": "UserId"
     },
     {
-      fn: {
-        fnType: 'aggregate',
-        name: 'COUNT',
-        value: 'Id',
-      },
+      "fn": {
+        "text": "COUNT(Id)",
+        "name": "COUNT",
+        "parameter": "Id"
+      }
+    }
+  ],
+  "subqueries": [],
+  "sObject": "LoginHistory",
+  "whereClause": {
+    "left": {
+      "field": "LoginTime",
+      "operator": ">",
+      "value": "2010-09-20T22:16:30.000Z"
     },
-  ],
-  subqueries: [],
-  whereClauseGroups: [
-    [
-      {
-        field: 'LoginTime',
-        operator: '>',
-        value: '2010-09-20T22:16:30.000Z',
-      },
-      {
-        field: 'LoginTime',
-        operator: '<',
-        value: '2010-09-21T22:16:30.000Z',
-      },
-    ],
-  ],
-  name: 'LoginHistory',
-  groupBy: 'UserId',
+    "operator": "AND",
+    "right": {
+      "left": {
+        "field": "LoginTime",
+        "operator": "<",
+        "value": "2010-09-21T22:16:30.000Z"
+      }
+    }
+  },
+  "groupBy": {
+    "field": "UserId"
+  }
 }
 ```
 
