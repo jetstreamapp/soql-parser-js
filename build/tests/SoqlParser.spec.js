@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const SoqlParser_1 = require("../app/SoqlParser");
+const SoqlParser_1 = require("../lib/SoqlParser");
 const chai_1 = require("chai");
 require("mocha");
 const TestCases_1 = require("./TestCases");

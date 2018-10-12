@@ -11,6 +11,7 @@
         "noImplicitAny": false,
         "inlineSourceMap": true,
         "experimentalDecorators": true,
-        "emitDecoratorMetadata": true
+        "emitDecoratorMetadata": true,
+        "declaration": true
     }
 }

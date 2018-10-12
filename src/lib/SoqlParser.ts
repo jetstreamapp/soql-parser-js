@@ -7,7 +7,7 @@
 import { ANTLRInputStream, CommonTokenStream } from 'antlr4ts';
 import { ParseTreeWalker } from 'antlr4ts/tree';
 import * as _ from 'lodash';
-import { SOQLLexer } from '../generated//SOQLLexer';
+import { SOQLLexer } from '../generated/SOQLLexer';
 import { SOQLParser, Soql_queryContext } from '../generated/SOQLParser';
 import { SyntaxErrorListener } from './ErrorListener';
 import { SoqlQuery } from './models/SoqlQuery.model';

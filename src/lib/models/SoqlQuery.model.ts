@@ -50,13 +50,13 @@ export interface Field {
   subqueryObjName?: string; // populated if subquery
 }
 
-interface WhereClause {
+export interface WhereClause {
   left: Condition | WhereClause;
   right?: Condition | WhereClause;
   operator?: LogicalOperator;
 }
 
-interface Condition {
+export interface Condition {
   openParen?: boolean;
   closeParen?: boolean;
   logicalPrefix?: 'NOT';
@@ -96,14 +96,3 @@ export interface FunctionExp {
   alias?: string;
   parameter?: string | string[];
 }
-// this.context.currentItem = 'where';
-// const currConditionOperation = {
-//   left: null,
-//   // right: null,
-//   // operator: null,
-// };
-// this.context.tempData = {
-//   stack: [currConditionOperation],
-//   currConditionOperation,
-//   data: currConditionOperation,
-// };

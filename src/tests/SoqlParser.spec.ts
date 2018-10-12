@@ -1,4 +1,4 @@
-import { parseQuery } from '../app/SoqlParser';
+import { parseQuery } from '../lib/SoqlParser';
 import { expect } from 'chai';
 import 'mocha';
 import testCases from './TestCases';

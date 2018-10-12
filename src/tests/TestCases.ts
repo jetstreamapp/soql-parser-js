@@ -4,17 +4,17 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-import { Query } from '../app/models/SoqlQuery.model';
+import { Query } from '../lib/models/SoqlQuery.model';
 
 // Queries obtained from SFDC examples
 // https://developer.salesforce.com/docs/atlas.en-us.soql_sosl.meta/soql_sosl/sforce_api_calls_soql_select_examples.htm
-interface TestCase {
+export interface TestCase {
   testCase: number;
   soql: string;
   output: Query;
 }
 
-const testCases: TestCase[] = [
+export const testCases: TestCase[] = [
   {
     testCase: 1,
     soql: 'SELECT Id, Name, BillingCity FROM Account',

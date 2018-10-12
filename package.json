@@ -1,7 +1,7 @@
 {
   "name": "soql-parser-js",
-  "version": "1.0.0",
-  "description": "",
+  "version": "0.0.1",
+  "description": "Salesforce.com SOQL parser.",
   "main": "/build/app/index.js",
   "scripts": {
     "clean": "rm -rf ./build/*",
@@ -16,7 +16,7 @@
     "antlr": "./node_modules/.bin/antlr4ts -visitor src/SOQL.g4 -o src/generated/"
   },
   "author": "Austin Turner <paustint@gmail.com>",
-  "license": "Common Public Attribution License Version 1.0 (CPAL)",
+  "license": "MIT",
   "dependencies": {
     "@types/lodash": "^4.14.116",
     "antlr4ts": "0.4.1-alpha.0",

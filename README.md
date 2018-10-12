@@ -19,6 +19,7 @@ SOQL Parser JS will parse a SOQL query string into an object that is easy to wor
 - [ ] Provide a GitHub pages example application
 ## Future Idea List - phase 2+
 - [ ] Provide a CLI interface
+- [ ] Provide ability to turn parsed SOQL back to SOQL
 
 
 ## Examples

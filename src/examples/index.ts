@@ -7,7 +7,7 @@
 /**
  * This file contains examples for running various queries and observing their outcome
  */
-import { parseQuery } from '../app/SoqlParser';
+import { parseQuery } from '../lib/SoqlParser';
 
 export const LOGGING = true;
 

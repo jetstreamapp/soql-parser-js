@@ -11,9 +11,9 @@ import * as Parser from '../generated/SOQLParser';
 import { FunctionExp, OrderByClause, Query, SoqlQuery } from './models/SoqlQuery.model';
 import { SoqlQueryConfig } from './SoqlParser';
 
-type currItem = 'field' | 'from' | 'where' | 'groupby' | 'orderby' | 'having';
+export type currItem = 'field' | 'from' | 'where' | 'groupby' | 'orderby' | 'having';
 
-interface Context {
+export interface Context {
   isSubQuery: boolean;
   currSubqueryIdx: number;
   currWhereConditionGroupIdx: number;
