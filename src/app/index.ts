@@ -1,24 +1,9 @@
 /*
  * Copyright (c) Austin Turner
- * The software in this package is published under the terms of the CPAL v1.0
+ * The software in this package is published under the terms of MIT
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-import { ANTLRInputStream, CommonTokenStream, Token, ParserRuleContext } from 'antlr4ts';
-import {
-  SOQLParser,
-  From_clauseContext,
-  Select_clauseContext,
-  Soql_queryContext,
-  Where_clauseContext,
-} from '../generated/SOQLParser';
-import { SOQLLexer } from '../generated//SOQLLexer';
-import { ParseTreeWalker } from 'antlr4ts/tree';
-import { ANTLRErrorListener } from 'antlr4ts';
-import { ParseTree } from 'antlr4ts/tree/ParseTree';
-import { TerminalNode } from 'antlr4ts/tree/TerminalNode';
-import { Listener } from './SoqlListener';
-import { SyntaxErrorListener } from './ErrorListener';
 import { parseQuery } from './SoqlParser';
 
 // const soqlString: string = `
@@ -78,9 +63,10 @@ const queries = [
   `SELECT Status, LeadSource, COUNT(Name) cnt FROM Lead GROUP BY ROLLUP(Status, LeadSource)`,
   `SELECT Type, BillingCountry, GROUPING(Type) grpType, GROUPING(BillingCountry) grpCty, COUNT(id) accts FROM Account GROUP BY CUBE(Type, BillingCountry) ORDER BY GROUPING(Type), GROUPING(Id, BillingCountry), Name DESC NULLS FIRST, Id ASC NULLS LAST`,
   `SELECT c.Name, c.Account.Name FROM Contact c`,
+  `SELECT LeadSource, COUNT(Name) FROM Lead GROUP BY LeadSource HAVING COUNT(Name) > 100 and LeadSource > 'Phone'`,
 ];
 
-const query = parseQuery(queries[14], { logging: true });
+const query = parseQuery(queries[31], { logging: true });
 console.log(JSON.stringify(query, null, 2));
 
 // const output = [];

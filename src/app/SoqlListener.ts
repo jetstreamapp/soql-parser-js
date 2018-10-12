@@ -1,16 +1,15 @@
 /*
  * Copyright (c) Austin Turner
- * The software in this package is published under the terms of the CPAL v1.0
+ * The software in this package is published under the terms of MIT
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-import { SOQLListener } from '../generated//SOQLListener';
-import * as Parser from '../generated/SOQLParser';
-import { SoqlQuery, Query, FunctionExp, OrderByClause, LogicalOperator } from './models/SoqlQuery.model';
 import { TerminalNode } from 'antlr4ts/tree';
 import * as _ from 'lodash';
+import { SOQLListener } from '../generated//SOQLListener';
+import * as Parser from '../generated/SOQLParser';
+import { FunctionExp, OrderByClause, Query, SoqlQuery } from './models/SoqlQuery.model';
 import { SoqlQueryConfig } from './SoqlParser';
-import { ContextSensitivityInfo } from 'antlr4ts/atn/ContextSensitivityInfo';
 
 type currItem = 'field' | 'from' | 'where' | 'groupby' | 'orderby' | 'having';
 
@@ -46,16 +45,27 @@ export class Listener implements SOQLListener {
       console.log('visitTerminal:', ctx.text);
     }
     if (this.context.currentItem === 'where') {
-      if (['NOT'].includes(ctx.text)) {
+      if (['NOT'].includes(ctx.text.toUpperCase())) {
         this.context.tempData.nextHasLogicalPrefix = ctx.text;
-      } else if (['AND', 'OR'].includes(ctx.text)) {
-        this.context.tempData.currConditionOperation.operator = ctx.text;
+      } else if (['AND', 'OR'].includes(ctx.text.toUpperCase())) {
+        this.context.tempData.currConditionOperation.operator = ctx.text.toUpperCase();
         // Because there is an operator, we know the right side will have at least one more condition
         // reset current condition
         this.context.tempData.currConditionOperation.right = {
           left: null,
-          // right: null,
-          // operator: null,
+        };
+        this.context.tempData.currConditionOperation = this.context.tempData.currConditionOperation.right;
+        this.context.tempData.stack.push(this.context.tempData.currConditionOperation);
+      }
+    } else if (this.context.currentItem === 'having') {
+      if (['NOT'].includes(ctx.text.toUpperCase())) {
+        this.context.tempData.nextHasLogicalPrefix = ctx.text;
+      } else if (['AND', 'OR'].includes(ctx.text.toUpperCase())) {
+        this.context.tempData.currConditionOperation.operator = ctx.text.toUpperCase();
+        // Because there is an operator, we know the right side will have at least one more condition
+        // reset current condition
+        this.context.tempData.currConditionOperation.right = {
+          left: null,
         };
         this.context.tempData.currConditionOperation = this.context.tempData.currConditionOperation.right;
         this.context.tempData.stack.push(this.context.tempData.currConditionOperation);
@@ -110,6 +120,9 @@ export class Listener implements SOQLListener {
   enterField_name(ctx: Parser.Field_nameContext) {
     if (this.config.logging) {
       console.log('enterField_name:', ctx.text);
+    }
+    if (this.context.currentItem === 'having' && !this.context.tempData.currConditionOperation.left.fn) {
+      this.context.tempData.currConditionOperation.left.field = ctx.text;
     }
   }
   exitField_name(ctx: Parser.Field_nameContext) {
@@ -170,7 +183,7 @@ export class Listener implements SOQLListener {
       this.context.tempData.alias = ctx.text;
     }
     if (this.context.currentItem === 'having') {
-      this.context.tempData.fn.alias = ctx.text;
+      this.context.tempData.currConditionOperation.left.fn.alias = ctx.text;
     }
     if (this.context.currentItem === 'orderby') {
       this.context.tempData.fn.alias = ctx.text;
@@ -318,7 +331,8 @@ export class Listener implements SOQLListener {
       this.context.tempData.name = ctx.text;
     }
     if (this.context.currentItem === 'having') {
-      this.context.tempData.fn.name = ctx.text;
+      this.context.tempData.currConditionOperation.left.fn.name = ctx.text;
+      // this.context.tempData.fn.name = ctx.text;
     }
     if (this.context.currentItem === 'orderby') {
       this.context.tempData.fn.name = ctx.text;
@@ -452,12 +466,20 @@ export class Listener implements SOQLListener {
       console.log('enterHaving_clause:', ctx.text);
     }
     this.context.currentItem = 'having';
+    const currConditionOperation = {
+      left: null,
+    };
+    this.context.tempData = {
+      stack: [currConditionOperation],
+      currConditionOperation,
+      data: currConditionOperation,
+    };
   }
   exitHaving_clause(ctx: Parser.Having_clauseContext) {
     if (this.config.logging) {
       console.log('exitHaving_clause:', ctx.text);
     }
-    this.getSoqlQuery().having = this.context.tempData;
+    this.getSoqlQuery().having = this.context.tempData.data;
   }
   enterOrderby_clause(ctx: Parser.Orderby_clauseContext) {
     if (this.config.logging) {
@@ -583,7 +605,8 @@ export class Listener implements SOQLListener {
       this.context.tempData = {};
     }
     if (this.context.currentItem === 'having') {
-      this.context.tempData = {};
+      this.context.tempData.currConditionOperation.left.fn = {};
+      // this.context.tempData = {};
     }
   }
   exitFunction_call_spec(ctx: Parser.Function_call_specContext) {
@@ -614,7 +637,10 @@ export class Listener implements SOQLListener {
       this.context.tempData.text = ctx.text;
     }
     if (this.context.currentItem === 'having') {
-      this.context.tempData.fn.text = ctx.text;
+      this.context.tempData.currConditionOperation.left.fn = {
+        text: ctx.text,
+      };
+      // this.context.tempData.fn.;
     }
     if (this.context.currentItem === 'orderby') {
       this.context.tempData.fn.text = ctx.text;
@@ -645,9 +671,12 @@ export class Listener implements SOQLListener {
       this.context.currentItem === 'having' ||
       this.context.currentItem === 'orderby'
     ) {
-      const tempdataFnObj: FunctionExp = _.isObject(this.context.tempData.fn)
-        ? this.context.tempData.fn
-        : this.context.tempData;
+      let tempdataFnObj: FunctionExp;
+      if (this.context.tempData.currConditionOperation && this.context.tempData.currConditionOperation.left) {
+        tempdataFnObj = this.context.tempData.currConditionOperation.left.fn;
+      } else {
+        tempdataFnObj = _.isObject(this.context.tempData.fn) ? this.context.tempData.fn : this.context.tempData;
+      }
       if (_.isString(tempdataFnObj.parameter)) {
         tempdataFnObj.parameter = [tempdataFnObj.parameter, ctx.text];
       } else if (_.isArray(tempdataFnObj.parameter)) {
@@ -792,7 +821,7 @@ export class Listener implements SOQLListener {
     if (this.config.logging) {
       console.log('enterParenthesis:', ctx.text);
     }
-    if (this.context.currentItem === 'where') {
+    if (this.context.currentItem === 'where' || this.context.currentItem === 'having') {
       this.context.tempData.nextHasCloseParen = false;
       this.context.tempData.nextHasOpenParen = true;
     }
@@ -801,7 +830,7 @@ export class Listener implements SOQLListener {
     if (this.config.logging) {
       console.log('exitParenthesis:', ctx.text);
     }
-    if (this.context.currentItem === 'where') {
+    if (this.context.currentItem === 'where' || this.context.currentItem === 'having') {
       if (this.context.tempData.nextHasCloseParen) {
         this.context.tempData.stack.pop();
       }
@@ -845,13 +874,30 @@ export class Listener implements SOQLListener {
       currItem.field = ctx.getChild(0).text;
       currItem.operator = ctx.getChild(1).text;
       currItem.value = ctx.getChild(2).text;
-    }
-    if (this.context.currentItem === 'having') {
-      this.context.tempData = {
-        fn: {},
-        operator: ctx.getChild(1).text,
-        value: ctx.getChild(2).text,
-      };
+    } else if (this.context.currentItem === 'having') {
+      const currItem: any = {};
+      if (!this.context.tempData.currConditionOperation.left) {
+        this.context.tempData.currConditionOperation.left = currItem;
+        if (this.context.tempData.nextHasOpenParen) {
+          currItem.openParen = true;
+          this.context.tempData.nextHasOpenParen = false;
+        }
+        if (this.context.tempData.nextHasLogicalPrefix) {
+          currItem.logicalPrefix = this.context.tempData.nextHasLogicalPrefix;
+          this.context.tempData.nextHasLogicalPrefix = null;
+        }
+      } else {
+        this.context.tempData.currConditionOperation.right = currItem;
+      }
+
+      currItem.operator = ctx.getChild(1).text;
+      currItem.value = ctx.getChild(2).text;
+
+      // this.context.tempData = {
+      //   fn: {},
+      //   operator: ctx.getChild(1).text,
+      //   value: ctx.getChild(2).text,
+      // };
     }
   }
   exitField_based_condition(ctx: Parser.Field_based_conditionContext) {

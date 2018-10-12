@@ -1,3 +1,9 @@
+/*
+ * Copyright (c) Austin Turner
+ * The software in this package is published under the terms of MIT
+ * license, a copy of which has been included with this distribution in the
+ * LICENSE.txt file.
+ */
 import { Query } from '../app/models/SoqlQuery.model';
 
 // Queries obtained from SFDC examples
@@ -182,13 +188,15 @@ const testCases: TestCase[] = [
         field: 'Name',
       },
       having: {
-        fn: {
-          text: 'COUNT(Id)',
-          name: 'COUNT',
-          parameter: 'Id',
+        left: {
+          operator: '>',
+          value: '1',
+          fn: {
+            text: 'COUNT(Id)',
+            name: 'COUNT',
+            parameter: 'Id',
+          },
         },
-        operator: '>',
-        value: '1',
       },
     },
   },
@@ -690,13 +698,15 @@ const testCases: TestCase[] = [
         field: 'CampaignId',
       },
       having: {
-        fn: {
-          text: 'COUNT(Id,Name)',
-          name: 'COUNT',
-          parameter: ['Id', 'Name'],
+        left: {
+          operator: '>',
+          value: '1',
+          fn: {
+            text: 'COUNT(Id,Name)',
+            name: 'COUNT',
+            parameter: ['Id', 'Name'],
+          },
         },
-        operator: '>',
-        value: '1',
       },
     },
   },
@@ -900,6 +910,48 @@ const testCases: TestCase[] = [
                 },
               },
             },
+          },
+        },
+      },
+    },
+  },
+  {
+    testCase: 33,
+    soql: `SELECT LeadSource, COUNT(Name) FROM Lead GROUP BY LeadSource HAVING COUNT(Name) > 100 and LeadSource > 'Phone'`,
+    output: {
+      fields: [
+        {
+          text: 'LeadSource',
+        },
+        {
+          fn: {
+            text: 'COUNT(Name)',
+            name: 'COUNT',
+            parameter: 'Name',
+          },
+        },
+      ],
+      subqueries: [],
+      sObject: 'Lead',
+      groupBy: {
+        field: 'LeadSource',
+      },
+      having: {
+        left: {
+          operator: '>',
+          value: '100',
+          fn: {
+            text: 'COUNT(Name)',
+            name: 'COUNT',
+            parameter: 'Name',
+          },
+        },
+        operator: 'AND',
+        right: {
+          left: {
+            operator: '>',
+            value: "'Phone'",
+            field: 'LeadSource',
           },
         },
       },

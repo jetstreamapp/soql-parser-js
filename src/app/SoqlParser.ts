@@ -1,25 +1,17 @@
 /*
  * Copyright (c) Austin Turner
- * The software in this package is published under the terms of the CPAL v1.0
+ * The software in this package is published under the terms of MIT
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-import { ANTLRInputStream, CommonTokenStream, Token, ParserRuleContext } from 'antlr4ts';
-import {
-  SOQLParser,
-  From_clauseContext,
-  Select_clauseContext,
-  Soql_queryContext,
-  Where_clauseContext,
-} from '../generated/SOQLParser';
-import { SOQLLexer } from '../generated//SOQLLexer';
+import { ANTLRInputStream, CommonTokenStream } from 'antlr4ts';
 import { ParseTreeWalker } from 'antlr4ts/tree';
-import { ParseTree } from 'antlr4ts/tree/ParseTree';
-import { TerminalNode } from 'antlr4ts/tree/TerminalNode';
-import { Listener } from './SoqlListener';
-import { SoqlQuery } from './models/SoqlQuery.model';
-import { SyntaxErrorListener } from './ErrorListener';
 import * as _ from 'lodash';
+import { SOQLLexer } from '../generated//SOQLLexer';
+import { SOQLParser, Soql_queryContext } from '../generated/SOQLParser';
+import { SyntaxErrorListener } from './ErrorListener';
+import { SoqlQuery } from './models/SoqlQuery.model';
+import { Listener } from './SoqlListener';
 
 export interface SoqlQueryConfig {
   /**
