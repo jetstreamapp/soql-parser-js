@@ -1,16 +1,15 @@
 /*
  * Copyright (c) Austin Turner
- * The software in this package is published under the terms of the CPAL v1.0
+ * The software in this package is published under the terms of MIT
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-import { SOQLListener } from '../generated//SOQLListener';
-import * as Parser from '../generated/SOQLParser';
-import { SoqlQuery, Query, FunctionExp, OrderByClause, LogicalOperator } from './models/SoqlQuery.model';
 import { TerminalNode } from 'antlr4ts/tree';
 import * as _ from 'lodash';
+import { SOQLListener } from '../generated//SOQLListener';
+import * as Parser from '../generated/SOQLParser';
+import { FunctionExp, OrderByClause, Query, SoqlQuery } from './models/SoqlQuery.model';
 import { SoqlQueryConfig } from './SoqlParser';
-import { ContextSensitivityInfo } from 'antlr4ts/atn/ContextSensitivityInfo';
 
 type currItem = 'field' | 'from' | 'where' | 'groupby' | 'orderby' | 'having';
 
@@ -49,7 +48,7 @@ export class Listener implements SOQLListener {
       if (['NOT'].includes(ctx.text.toUpperCase())) {
         this.context.tempData.nextHasLogicalPrefix = ctx.text;
       } else if (['AND', 'OR'].includes(ctx.text.toUpperCase())) {
-        this.context.tempData.currConditionOperation.operator = ctx.text;
+        this.context.tempData.currConditionOperation.operator = ctx.text.toUpperCase();
         // Because there is an operator, we know the right side will have at least one more condition
         // reset current condition
         this.context.tempData.currConditionOperation.right = {
@@ -62,7 +61,7 @@ export class Listener implements SOQLListener {
       if (['NOT'].includes(ctx.text.toUpperCase())) {
         this.context.tempData.nextHasLogicalPrefix = ctx.text;
       } else if (['AND', 'OR'].includes(ctx.text.toUpperCase())) {
-        this.context.tempData.currConditionOperation.operator = ctx.text;
+        this.context.tempData.currConditionOperation.operator = ctx.text.toUpperCase();
         // Because there is an operator, we know the right side will have at least one more condition
         // reset current condition
         this.context.tempData.currConditionOperation.right = {
@@ -332,7 +331,7 @@ export class Listener implements SOQLListener {
       this.context.tempData.name = ctx.text;
     }
     if (this.context.currentItem === 'having') {
-      this.context.tempData.currConditionOperation.left.fn.alias = ctx.text;
+      this.context.tempData.currConditionOperation.left.fn.name = ctx.text;
       // this.context.tempData.fn.name = ctx.text;
     }
     if (this.context.currentItem === 'orderby') {
@@ -638,8 +637,10 @@ export class Listener implements SOQLListener {
       this.context.tempData.text = ctx.text;
     }
     if (this.context.currentItem === 'having') {
-      this.context.tempData.currConditionOperation.left.fn = {};
-      // this.context.tempData.fn.text = ctx.text;
+      this.context.tempData.currConditionOperation.left.fn = {
+        text: ctx.text,
+      };
+      // this.context.tempData.fn.;
     }
     if (this.context.currentItem === 'orderby') {
       this.context.tempData.fn.text = ctx.text;

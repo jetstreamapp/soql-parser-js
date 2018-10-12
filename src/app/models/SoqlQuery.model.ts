@@ -1,3 +1,9 @@
+/*
+ * Copyright (c) Austin Turner
+ * The software in this package is published under the terms of MIT
+ * license, a copy of which has been included with this distribution in the
+ * LICENSE.txt file.
+ */
 export type LogicalOperator = 'AND' | 'OR';
 export type Operator = '=' | '<=' | '>=' | '>' | '<' | 'LIKE' | 'IN' | 'NOT IN' | 'INCLUDES' | 'EXCLUDES';
 
@@ -10,7 +16,7 @@ export class SoqlQuery implements Query {
   limit?: number;
   offset?: number;
   groupBy?: GroupByClause;
-  having?: any;
+  having?: HavingClause;
   orderBy?: OrderByClause | OrderByClause[];
 
   constructor() {
@@ -28,7 +34,7 @@ export interface Query {
   limit?: number;
   offset?: number;
   groupBy?: GroupByClause;
-  having?: any;
+  having?: HavingClause;
   orderBy?: OrderByClause | OrderByClause[];
 }
 
@@ -72,21 +78,21 @@ export interface GroupByClause {
 }
 
 export interface HavingClause {
-  left: Condition | WhereClause;
-  right?: Condition | WhereClause;
+  left: HavingCondition | HavingClause;
+  right?: HavingCondition | HavingClause;
   operator?: LogicalOperator;
 }
 
 export interface HavingCondition {
   field?: string;
-  fn: FunctionExp;
+  fn?: FunctionExp;
   operator: string;
   value: string | number;
 }
 
 export interface FunctionExp {
-  text: string; // Count(Id)
-  name: string; // Count
+  text?: string; // Count(Id)
+  name?: string; // Count
   alias?: string;
   parameter?: string | string[];
 }
