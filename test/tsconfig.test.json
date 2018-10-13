@@ -1,21 +1,15 @@
 {
     "compilerOptions": {
-        "declaration": true,
-        "declarationDir": "./dist",
         "experimentalDecorators": true,
         "emitDecoratorMetadata": true,        
         "lib": [
             "dom",
             "es2017"
         ],
-        "module": "es6",
+        "module": "commonjs",
         "moduleResolution": "node",
         "noImplicitAny": true,
-        "outDir": "dist",
-        "sourceMap": false,
-        "target": "es2017"
-    },
-    "include": [
-        "lib/**/*"
-    ]
+        "sourceMap": true,
+        "target": "es2015"
+    }
 }

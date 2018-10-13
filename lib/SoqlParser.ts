@@ -1,6 +1,6 @@
 import { ANTLRInputStream, CommonTokenStream } from 'antlr4ts';
 import { ParseTreeWalker } from 'antlr4ts/tree';
-import * as _ from 'lodash';
+import * as utils from './utils';
 import { SyntaxErrorListener } from './ErrorListener';
 import { SOQLLexer } from './generated/SOQLLexer';
 import { SOQLParser, Soql_queryContext } from './generated/SOQLParser';
@@ -18,9 +18,9 @@ export interface SoqlQueryConfig {
 }
 
 function configureDefaults(config: Partial<SoqlQueryConfig> = {}) {
-  config.continueIfErrors = _.isBoolean(config.continueIfErrors) ? config.continueIfErrors : false;
-  config.logging = _.isBoolean(config.logging) ? config.logging : false;
-  config.includeSubqueryAsField = _.isBoolean(config.includeSubqueryAsField) ? config.includeSubqueryAsField : true;
+  config.continueIfErrors = utils.isBoolean(config.continueIfErrors) ? config.continueIfErrors : false;
+  config.logging = utils.isBoolean(config.logging) ? config.logging : false;
+  config.includeSubqueryAsField = utils.isBoolean(config.includeSubqueryAsField) ? config.includeSubqueryAsField : true;
 }
 
 /**
