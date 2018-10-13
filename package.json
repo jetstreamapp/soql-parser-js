@@ -16,11 +16,7 @@
     "tsc": "./node_modules/.bin/tsc",
     "preantlr": "rm -rf src/generated/*",
     "antlr": "./node_modules/.bin/antlr4ts -visitor SOQL.g4 -o src/generated/",
-    "release": "release-it",
-    "prepublish": "npm run build",
-    "publish:latest": "npm publish",
-    "publish:beta": "npm publish --tag beta",
-    "publish:dry": "npm publish --dry-run"
+    "release": "release-it"
   },
   "author": "Austin Turner <paustint@gmail.com>",
   "license": "MIT",
