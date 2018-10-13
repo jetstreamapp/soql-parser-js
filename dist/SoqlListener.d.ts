@@ -1,7 +1,7 @@
 import { TerminalNode } from 'antlr4ts/tree';
 import { SOQLListener } from './generated//SOQLListener';
 import * as Parser from './generated/SOQLParser';
-import { Query, SoqlQuery } from './models/SoqlQuery.model';
+import { Field, GroupByClause, HavingClause, OrderByClause, Query, WhereClause } from './models/SoqlQuery.model';
 import { SoqlQueryConfig } from './SoqlParser';
 export declare type currItem = 'field' | 'from' | 'where' | 'groupby' | 'orderby' | 'having';
 export interface Context {
@@ -11,6 +11,19 @@ export interface Context {
     currentItem: currItem;
     inWhereClauseGroup: boolean;
     tempData: any;
+}
+export declare class SoqlQuery implements Query {
+    fields: Field[];
+    subqueries: Query[];
+    sObject: string;
+    sObjectAlias?: string;
+    whereClause?: WhereClause;
+    limit?: number;
+    offset?: number;
+    groupBy?: GroupByClause;
+    having?: HavingClause;
+    orderBy?: OrderByClause | OrderByClause[];
+    constructor();
 }
 export declare class Listener implements SOQLListener {
     private config;

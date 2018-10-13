@@ -7,6 +7,7 @@ Any feature that is part of the core project and does not deviate from what the 
 # Making Changes
 * For the repository
 * Create a new branch from master (usually) and with a meaningful name for your changes
+* Make you changes
 * Commit and push your change
+  * Please run `prettier` on all modified files prior to opening your pull request
 * open a Pull Request for the master branch
-

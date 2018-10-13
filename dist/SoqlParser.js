@@ -1,17 +1,11 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-/*
- * Copyright (c) Austin Turner
- * The software in this package is published under the terms of MIT
- * license, a copy of which has been included with this distribution in the
- * LICENSE.txt file.
- */
 const antlr4ts_1 = require("antlr4ts");
 const tree_1 = require("antlr4ts/tree");
 const _ = require("lodash");
+const ErrorListener_1 = require("./ErrorListener");
 const SOQLLexer_1 = require("./generated/SOQLLexer");
 const SOQLParser_1 = require("./generated/SOQLParser");
-const ErrorListener_1 = require("./ErrorListener");
 const SoqlListener_1 = require("./SoqlListener");
 function configureDefaults(config = {}) {
     config.continueIfErrors = _.isBoolean(config.continueIfErrors) ? config.continueIfErrors : false;

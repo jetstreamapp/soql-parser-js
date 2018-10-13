@@ -73,9 +73,87 @@ This yields an object with the following structure:
 }
 ```
 
+### Data Model of Parsed Data
+```typescript
+export type LogicalOperator = 'AND' | 'OR';
+export type Operator = '=' | '<=' | '>=' | '>' | '<' | 'LIKE' | 'IN' | 'NOT IN' | 'INCLUDES' | 'EXCLUDES';
+
+export interface Query {
+  fields: Field[];
+  subqueries: Query[];
+  sObject: string;
+  sObjectAlias?: string;
+  whereClause?: WhereClause;
+  limit?: number;
+  offset?: number;
+  groupBy?: GroupByClause;
+  having?: HavingClause;
+  orderBy?: OrderByClause | OrderByClause[];
+}
+
+export interface SelectStatement {
+  fields: Field[];
+}
+
+export interface Field {
+  text?: string;
+  alias?: string;
+  relationshipFields?: string[];
+  fn?: FunctionExp;
+  subqueryObjName?: string;
+}
+
+export interface WhereClause {
+  left: Condition | WhereClause;
+  right?: Condition | WhereClause;
+  operator?: LogicalOperator;
+}
+
+export interface Condition {
+  openParen?: boolean;
+  closeParen?: boolean;
+  logicalPrefix?: 'NOT';
+  field: string;
+  operator: Operator;
+  value: string | string[];
+}
+
+export interface OrderByClause {
+  field?: string;
+  fn?: FunctionExp;
+  order?: 'ASC' | 'DESC';
+  nulls?: 'FIRST' | 'LAST';
+}
+
+export interface GroupByClause {
+  field: string | string[];
+  type?: 'CUBE' | 'ROLLUP';
+}
+
+export interface HavingClause {
+  left: HavingCondition | HavingClause;
+  right?: HavingCondition | HavingClause;
+  operator?: LogicalOperator;
+}
+
+export interface HavingCondition {
+  field?: string;
+  fn?: FunctionExp;
+  operator: string;
+  value: string | number;
+}
+
+export interface FunctionExp {
+  text?: string;
+  name?: string;
+  alias?: string;
+  parameter?: string | string[];
+}
+```
+
 ## Contributing
 All contributions are welcome on the project. Please read the [contribution guidelines](https://github.com/paustint/soql-parser-js/blob/master/CONTRIBUTING.md).
 
 ## Special Thanks
-* This library is based on the ANTLR4 grammar file produced by Mulesoft here https://github.com/mulesoft/salesforce-soql-parser/blob/antlr4/SOQL.g4.
+* This library is based on the ANTLR4 grammar file [produced by Mulesoft](https://github.com/mulesoft/salesforce-soql-parser/blob/antlr4/SOQL.g4).
 * The following repository also was a help to get things started: https://github.com/petermetz/antlr-4-ts-test

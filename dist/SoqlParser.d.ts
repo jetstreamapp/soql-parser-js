@@ -1,4 +1,4 @@
-import { SoqlQuery } from './models/SoqlQuery.model';
+import { Query } from './models/SoqlQuery.model';
 export interface SoqlQueryConfig {
     /**
      * If true, continue to parse even if there appears to be a syntax error.
@@ -14,4 +14,4 @@ export interface SoqlQueryConfig {
  * @param {SoqlQueryConfig} SoqlQueryConfig optional configuration
  * @returns SoqlQuery
  */
-export declare function parseQuery(soql: string, config?: Partial<SoqlQueryConfig>): SoqlQuery;
+export declare function parseQuery(soql: string, config?: Partial<SoqlQueryConfig>): Query;

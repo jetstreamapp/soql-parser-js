@@ -1,10 +1,4 @@
-/*
- * Copyright (c) Austin Turner
- * The software in this package is published under the terms of the CPAL v1.0
- * license, a copy of which has been included with this distribution in the
- * LICENSE.txt file.
- */
-import { ANTLRErrorListener, Recognizer, RecognitionException } from 'antlr4ts';
+import { ANTLRErrorListener, RecognitionException, Recognizer } from 'antlr4ts';
 
 export class SyntaxErrorListener implements ANTLRErrorListener<any> {
   public static readonly INSTANCE: SyntaxErrorListener = new SyntaxErrorListener();

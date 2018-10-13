@@ -1,18 +1,5 @@
 export declare type LogicalOperator = 'AND' | 'OR';
 export declare type Operator = '=' | '<=' | '>=' | '>' | '<' | 'LIKE' | 'IN' | 'NOT IN' | 'INCLUDES' | 'EXCLUDES';
-export declare class SoqlQuery implements Query {
-    fields: Field[];
-    subqueries: Query[];
-    sObject: string;
-    sObjectAlias?: string;
-    whereClause?: WhereClause;
-    limit?: number;
-    offset?: number;
-    groupBy?: GroupByClause;
-    having?: HavingClause;
-    orderBy?: OrderByClause | OrderByClause[];
-    constructor();
-}
 export interface Query {
     fields: Field[];
     subqueries: Query[];

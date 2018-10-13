@@ -1,15 +1,15 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-/*
- * Copyright (c) Austin Turner
- * The software in this package is published under the terms of MIT
- * license, a copy of which has been included with this distribution in the
- * LICENSE.txt file.
- */
 const tree_1 = require("antlr4ts/tree");
 const _ = require("lodash");
 const Parser = require("./generated/SOQLParser");
-const SoqlQuery_model_1 = require("./models/SoqlQuery.model");
+class SoqlQuery {
+    constructor() {
+        this.fields = [];
+        this.subqueries = [];
+    }
+}
+exports.SoqlQuery = SoqlQuery;
 class Listener {
     constructor(config = {}) {
         this.config = config;
@@ -23,7 +23,7 @@ class Listener {
         };
         config.logging = _.isBoolean(config.logging) ? config.logging : false;
         config.includeSubqueryAsField = _.isBoolean(config.includeSubqueryAsField) ? config.includeSubqueryAsField : true;
-        this.soqlQuery = new SoqlQuery_model_1.SoqlQuery();
+        this.soqlQuery = new SoqlQuery();
     }
     visitTerminal(ctx) {
         if (this.config.logging) {
@@ -524,7 +524,7 @@ class Listener {
             console.log('enterSoql_subquery:', ctx.text);
         }
         this.context.isSubQuery = true;
-        this.soqlQuery.subqueries.push(new SoqlQuery_model_1.SoqlQuery());
+        this.soqlQuery.subqueries.push(new SoqlQuery());
         this.context.currSubqueryIdx = this.soqlQuery.subqueries.length - 1;
     }
     exitSoql_subquery(ctx) {

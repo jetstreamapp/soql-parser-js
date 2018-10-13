@@ -1,14 +1,16 @@
-/*
- * Copyright (c) Austin Turner
- * The software in this package is published under the terms of MIT
- * license, a copy of which has been included with this distribution in the
- * LICENSE.txt file.
- */
 import { TerminalNode } from 'antlr4ts/tree';
 import * as _ from 'lodash';
 import { SOQLListener } from './generated//SOQLListener';
 import * as Parser from './generated/SOQLParser';
-import { FunctionExp, OrderByClause, Query, SoqlQuery } from './models/SoqlQuery.model';
+import {
+  Field,
+  FunctionExp,
+  GroupByClause,
+  HavingClause,
+  OrderByClause,
+  Query,
+  WhereClause,
+} from './models/SoqlQuery.model';
 import { SoqlQueryConfig } from './SoqlParser';
 
 export type currItem = 'field' | 'from' | 'where' | 'groupby' | 'orderby' | 'having';
@@ -20,6 +22,24 @@ export interface Context {
   currentItem: currItem;
   inWhereClauseGroup: boolean;
   tempData: any;
+}
+
+export class SoqlQuery implements Query {
+  fields: Field[];
+  subqueries: Query[];
+  sObject: string;
+  sObjectAlias?: string;
+  whereClause?: WhereClause;
+  limit?: number;
+  offset?: number;
+  groupBy?: GroupByClause;
+  having?: HavingClause;
+  orderBy?: OrderByClause | OrderByClause[];
+
+  constructor() {
+    this.fields = [];
+    this.subqueries = [];
+  }
 }
 
 export class Listener implements SOQLListener {

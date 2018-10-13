@@ -1,29 +1,5 @@
-/*
- * Copyright (c) Austin Turner
- * The software in this package is published under the terms of MIT
- * license, a copy of which has been included with this distribution in the
- * LICENSE.txt file.
- */
 export type LogicalOperator = 'AND' | 'OR';
 export type Operator = '=' | '<=' | '>=' | '>' | '<' | 'LIKE' | 'IN' | 'NOT IN' | 'INCLUDES' | 'EXCLUDES';
-
-export class SoqlQuery implements Query {
-  fields: Field[];
-  subqueries: Query[];
-  sObject: string;
-  sObjectAlias?: string;
-  whereClause?: WhereClause;
-  limit?: number;
-  offset?: number;
-  groupBy?: GroupByClause;
-  having?: HavingClause;
-  orderBy?: OrderByClause | OrderByClause[];
-
-  constructor() {
-    this.fields = [];
-    this.subqueries = [];
-  }
-}
 
 export interface Query {
   fields: Field[];
