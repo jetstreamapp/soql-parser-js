@@ -1,5 +1,6 @@
 .antlr
 .sfdx
+.vscode
 build/tests
 
 # Created by https://www.gitignore.io/api/node
