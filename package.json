@@ -1,37 +1,43 @@
 {
   "name": "soql-parser-js",
-  "version": "0.1.5",
+  "version": "0.1.8",
   "description": "Salesforce.com SOQL parser.",
   "main": "dist/index.js",
+  "module": "dist/index.es.js",
+  "umd": "dist/index.umd.js",
   "types": "dist/index.d.ts",
   "scripts": {
     "clean": "rm -rf ./dist/*",
-    "test": "mocha -r ts-node/register test/**/*.spec.ts",
+    "test": "TS_NODE_PROJECT=\"test/tsconfig.test.json\" mocha -r ts-node/register test/**/*.spec.ts -P test/tsconfig.test.json",
     "prebuild2": "npm run antlr; npm run clean",
     "prebuild": "npm run clean",
-    "build": "npm run tsc",
+    "build:old": "npm run tsc",
+    "build": "rollup -c",
     "tsc": "./node_modules/.bin/tsc",
     "preantlr": "rm -rf src/generated/*",
     "antlr": "./node_modules/.bin/antlr4ts -visitor SOQL.g4 -o src/generated/",
-    "publish": "npm run build && npm publish"
+    "release": "release-it"
   },
   "author": "Austin Turner <paustint@gmail.com>",
   "license": "MIT",
   "dependencies": {
-    "antlr4ts": "0.4.1-alpha.0",
-    "lodash": "^4.17.10"
+    "antlr4ts": "0.4.1-alpha.0"
   },
   "devDependencies": {
-    "@types/chai": "^4.1.4",
+    "@types/chai": "^4.1.6",
     "@types/mocha": "^5.2.5",
     "@types/node": "8.0.14",
-    "@types/lodash": "^4.14.116",
     "antlr4ts-cli": "0.4.0-alpha.4",
     "chai": "^4.1.2",
     "mocha": "^5.2.0",
+    "release-it": "^7.6.1",
+    "rollup": "^0.66.6",
+    "rollup-plugin-babel-minify": "^6.1.1",
+    "rollup-plugin-typescript2": "^0.17.1",
     "ts-node": "^7.0.1",
-    "typescript": "2.4.1"
+    "typescript": "^2.4.1"
   },
+  "peerDependencies": {},
   "keywords": [
     "soql",
     "Salesforce"

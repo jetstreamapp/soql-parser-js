@@ -2,6 +2,8 @@
 .sfdx
 .vscode
 build/tests
+.rpt2_cache
+/dist
 
 # Created by https://www.gitignore.io/api/node
 

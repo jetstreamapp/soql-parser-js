@@ -1,6 +1,6 @@
 import { TerminalNode } from 'antlr4ts/tree';
-import * as _ from 'lodash';
-import { SOQLListener } from './generated//SOQLListener';
+import { SOQLListener } from './generated/SOQLListener';
+import * as utils from './utils';
 import * as Parser from './generated/SOQLParser';
 import {
   Field,
@@ -55,8 +55,10 @@ export class Listener implements SOQLListener {
   soqlQuery: SoqlQuery;
 
   constructor(private config: Partial<SoqlQueryConfig> = {}) {
-    config.logging = _.isBoolean(config.logging) ? config.logging : false;
-    config.includeSubqueryAsField = _.isBoolean(config.includeSubqueryAsField) ? config.includeSubqueryAsField : true;
+    config.logging = utils.isBoolean(config.logging) ? config.logging : false;
+    config.includeSubqueryAsField = utils.isBoolean(config.includeSubqueryAsField)
+      ? config.includeSubqueryAsField
+      : true;
     this.soqlQuery = new SoqlQuery();
   }
 
@@ -449,7 +451,7 @@ export class Listener implements SOQLListener {
       console.log('enterWhere_clause:', ctx.text);
     }
     this.context.currentItem = 'where';
-    const currConditionOperation = {
+    const currConditionOperation: HavingClause = {
       left: null,
       // right: null,
       // operator: null,
@@ -486,7 +488,7 @@ export class Listener implements SOQLListener {
       console.log('enterHaving_clause:', ctx.text);
     }
     this.context.currentItem = 'having';
-    const currConditionOperation = {
+    const currConditionOperation: HavingClause = {
       left: null,
     };
     this.context.tempData = {
@@ -695,11 +697,11 @@ export class Listener implements SOQLListener {
       if (this.context.tempData.currConditionOperation && this.context.tempData.currConditionOperation.left) {
         tempdataFnObj = this.context.tempData.currConditionOperation.left.fn;
       } else {
-        tempdataFnObj = _.isObject(this.context.tempData.fn) ? this.context.tempData.fn : this.context.tempData;
+        tempdataFnObj = utils.isObject(this.context.tempData.fn) ? this.context.tempData.fn : this.context.tempData;
       }
-      if (_.isString(tempdataFnObj.parameter)) {
-        tempdataFnObj.parameter = [tempdataFnObj.parameter, ctx.text];
-      } else if (_.isArray(tempdataFnObj.parameter)) {
+      if (utils.isString(tempdataFnObj.parameter)) {
+        tempdataFnObj.parameter = [tempdataFnObj.parameter, ctx.text] as string[];
+      } else if (Array.isArray(tempdataFnObj.parameter)) {
         tempdataFnObj.parameter.push(ctx.text);
       } else {
         tempdataFnObj.parameter = ctx.text;
@@ -1140,9 +1142,9 @@ export class Listener implements SOQLListener {
     if (this.config.logging) {
       console.log('enterGroup_by_spec:', ctx.text);
     }
-    if (_.isArray(this.context.tempData.field)) {
+    if (Array.isArray(this.context.tempData.field)) {
       this.context.tempData.field.push(ctx.text);
-    } else if (_.isString(this.context.tempData.field)) {
+    } else if (utils.isString(this.context.tempData.field)) {
       this.context.tempData.field = [this.context.tempData.field, ctx.text];
     } else {
       this.context.tempData.field = ctx.text;
@@ -1174,9 +1176,9 @@ export class Listener implements SOQLListener {
       console.log('exitOrder_by_spec:', ctx.text);
     }
     const soqlQuery = this.getSoqlQuery();
-    if (_.isNil(soqlQuery.orderBy)) {
+    if (utils.isNil(soqlQuery.orderBy)) {
       soqlQuery.orderBy = this.context.tempData;
-    } else if (_.isArray(soqlQuery.orderBy)) {
+    } else if (Array.isArray(soqlQuery.orderBy)) {
       (soqlQuery.orderBy as Array<OrderByClause>).push(this.context.tempData);
     } else {
       soqlQuery.orderBy = [soqlQuery.orderBy, this.context.tempData];
