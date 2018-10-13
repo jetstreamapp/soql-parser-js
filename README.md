@@ -22,7 +22,7 @@ SOQL Parser JS will parse a SOQL query string into an object that is easy to wor
 ## Examples
 For an example of the parser, check out the [example application](https://paustint.github.io/soql-parser-js/).
 
-
+### Typescript / ES6
 ```typescript
 import { parseQuery } from './SoqlParser';
 
@@ -32,6 +32,17 @@ const soqlQuery = parseQuery(soql);
 
 console.log(JSON.stringify(soqlQuery, null, 2));
 
+```
+
+### Node
+```javascript
+var soqlParserJs = require("soql-parser-js");
+
+const soql = 'SELECT UserId, COUNT(Id) from LoginHistory WHERE LoginTime > 2010-09-20T22:16:30.000Z AND LoginTime < 2010-09-21T22:16:30.000Z GROUP BY UserId';
+
+const soqlQuery = soqlParserJs.parseQuery(soql);
+
+console.log(JSON.stringify(soqlQuery, null, 2));
 ```
 
 This yields an object with the following structure:
