@@ -7,11 +7,14 @@
             "es2017"
         ],
         "moduleResolution": "node",
-        "outDir": "build",
+        "outDir": "dist",
         "noImplicitAny": false,
-        "inlineSourceMap": true,
+        "sourceMap": false,
         "experimentalDecorators": true,
         "emitDecoratorMetadata": true,
         "declaration": true
-    }
+    },
+    "include": [
+        "lib"
+    ]
 }
