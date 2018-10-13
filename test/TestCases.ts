@@ -957,5 +957,53 @@ export const testCases: TestCase[] = [
       },
     },
   },
+  {
+    testCase: 34,
+    soql: `SELECT a.Id, a.Name, (SELECT a2.Id FROM ChildAccounts a2), (SELECT a1.Id FROM ChildAccounts1 a1) FROM Account a`,
+    output: {
+      fields: [
+        {
+          text: 'Id',
+          alias: 'a',
+        },
+        {
+          text: 'Name',
+          alias: 'a',
+        },
+        {
+          subqueryObjName: 'ChildAccounts',
+        },
+        {
+          subqueryObjName: 'ChildAccounts1',
+        },
+      ],
+      subqueries: [
+        {
+          fields: [
+            {
+              text: 'Id',
+              alias: 'a2',
+            },
+          ],
+          subqueries: [],
+          sObject: 'ChildAccounts',
+          sObjectAlias: 'a2',
+        },
+        {
+          fields: [
+            {
+              text: 'Id',
+              alias: 'a1',
+            },
+          ],
+          subqueries: [],
+          sObject: 'ChildAccounts1',
+          sObjectAlias: 'a1',
+        },
+      ],
+      sObject: 'Account',
+      sObjectAlias: 'a',
+    },
+  },
 ];
 export default testCases;

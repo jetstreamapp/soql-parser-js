@@ -185,10 +185,10 @@ export class Listener implements SOQLListener {
       console.log('enterAlias_name:', ctx.text);
     }
     if (this.context.currentItem === 'from') {
-      this.soqlQuery.sObjectAlias = ctx.text;
+      this.getSoqlQuery().sObjectAlias = ctx.text;
       // All fields need to update to remove the alias from relationships
-      this.soqlQuery.fields.forEach(field => {
-        if (field.text.startsWith(`${ctx.text}.`)) {
+      this.getSoqlQuery().fields.forEach(field => {
+        if (field.text && field.text.startsWith(`${ctx.text}.`)) {
           field.alias = ctx.text;
           field.text = field.text.replace(`${ctx.text}.`, '');
           if (field.relationshipFields.length > 2) {
@@ -777,9 +777,15 @@ export class Listener implements SOQLListener {
     }
     this.getSoqlQuery().sObject = ctx.getChild(0).text;
     if (this.config.includeSubqueryAsField && this.context.isSubQuery) {
-      this.soqlQuery.fields.push({
-        subqueryObjName: ctx.text,
-      });
+      if (ctx.getChild(0).text.includes('.')) {
+        this.soqlQuery.fields.push({
+          subqueryObjName: ctx.text,
+        });
+      } else {
+        this.soqlQuery.fields.push({
+          subqueryObjName: ctx.getChild(0).text,
+        });
+      }
     }
   }
   exitObject_spec(ctx: Parser.Object_specContext) {
