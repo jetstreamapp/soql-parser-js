@@ -1,1 +1,6 @@
 lib/
+test/
+docs/
+.vscode/
+.sfdx/
+tsconfig.json
