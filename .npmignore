@@ -4,3 +4,9 @@ docs/
 .vscode/
 .sfdx/
 tsconfig.json
+.prettierrc
+.travis.yml
+SOQL.g4
+ISSUE_TEMPLATE
+CONTRIBUTING.md
+CHANGELOG.md
