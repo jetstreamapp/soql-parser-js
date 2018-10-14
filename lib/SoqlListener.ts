@@ -10,10 +10,15 @@ import {
   OrderByClause,
   Query,
   WhereClause,
+  WithDataCategoryCondition,
+  GroupSelector,
+  ForClause,
+  TypeOfFieldCondition,
+  UpdateClause,
 } from './models/SoqlQuery.model';
 import { SoqlQueryConfig } from './SoqlParser';
 
-export type currItem = 'field' | 'typeof' | 'from' | 'where' | 'groupby' | 'orderby' | 'having';
+export type currItem = 'field' | 'typeof' | 'from' | 'where' | 'groupby' | 'orderby' | 'having' | 'withDataCategory';
 
 export interface Context {
   isSubQuery: boolean;
@@ -29,7 +34,7 @@ export class SoqlQuery implements Query {
   subqueries: Query[];
   sObject: string;
   sObjectAlias?: string;
-  whereClause?: WhereClause;
+  where?: WhereClause;
   limit?: number;
   offset?: number;
   groupBy?: GroupByClause;
@@ -166,6 +171,9 @@ export class Listener implements SOQLListener {
     if (this.config.logging) {
       console.log('enterData_category_group_name:', ctx.text);
     }
+    this.context.tempData.conditions.push({
+      groupName: ctx.text,
+    });
   }
   exitData_category_group_name(ctx: Parser.Data_category_group_nameContext) {
     if (this.config.logging) {
@@ -176,6 +184,8 @@ export class Listener implements SOQLListener {
     if (this.config.logging) {
       console.log('enterData_category_name:', ctx.text);
     }
+    const condition = utils.getLastItem<WithDataCategoryCondition>(this.context.tempData.conditions);
+    condition.parameters.push(ctx.text);
   }
   exitData_category_name(ctx: Parser.Data_category_nameContext) {
     if (this.config.logging) {
@@ -350,7 +360,8 @@ export class Listener implements SOQLListener {
       console.log('enterFunction_name:', ctx.text);
     }
     if (this.context.currentItem === 'field') {
-      this.context.tempData.name = ctx.text;
+      const currFn: FunctionExp = this.context.tempData.fn || this.context.tempData;
+      currFn.name = ctx.text;
     }
     if (this.context.currentItem === 'having') {
       this.context.tempData.currConditionOperation.left.fn.name = ctx.text;
@@ -467,7 +478,7 @@ export class Listener implements SOQLListener {
       console.log('exitWhere_clause:', ctx.text);
     }
 
-    this.getSoqlQuery().whereClause = this.context.tempData.data;
+    this.getSoqlQuery().where = this.context.tempData.data;
     this.context.tempData = null;
   }
   enterGroupby_clause(ctx: Parser.Groupby_clauseContext) {
@@ -623,6 +634,7 @@ export class Listener implements SOQLListener {
       console.log('enterFunction_call_spec:', ctx.text);
     }
     if (this.context.currentItem === 'field') {
+      // If nested function, init nested fn operator
       this.context.tempData = {};
     }
     if (this.context.currentItem === 'having') {
@@ -655,7 +667,11 @@ export class Listener implements SOQLListener {
     }
     // COUNT(ID) or Count()
     if (this.context.currentItem === 'field') {
-      this.context.tempData.text = ctx.text;
+      if (this.context.tempData.text) {
+        this.context.tempData.fn = {};
+      }
+      const currFn: FunctionExp = this.context.tempData.fn || this.context.tempData;
+      currFn.text = ctx.text;
     }
     if (this.context.currentItem === 'having') {
       this.context.tempData.currConditionOperation.left.fn = {
@@ -760,7 +776,7 @@ export class Listener implements SOQLListener {
     if (this.config.logging) {
       console.log('enterTypeof_then_clause:', ctx.text);
     }
-    const whenThenClause = this.context.tempData.typeOf.conditions[this.context.tempData.typeOf.conditions.length - 1];
+    const whenThenClause = utils.getLastItem<TypeOfFieldCondition>(this.context.tempData.typeOf.conditions);
     whenThenClause.fieldList = ctx.getChild(1).text.split(',');
   }
   exitTypeof_then_clause(ctx: Parser.Typeof_then_clauseContext) {
@@ -1072,11 +1088,17 @@ export class Listener implements SOQLListener {
     if (this.config.logging) {
       console.log('enterWith_data_category_clause:', ctx.text);
     }
+    this.context.currentItem = 'withDataCategory';
+    this.context.tempData = {
+      conditions: [],
+    };
   }
   exitWith_data_category_clause(ctx: Parser.With_data_category_clauseContext) {
     if (this.config.logging) {
       console.log('exitWith_data_category_clause:', ctx.text);
     }
+    this.getSoqlQuery().withDataCategory = this.context.tempData;
+    this.context.tempData = null;
   }
   enterData_category_spec_list(ctx: Parser.Data_category_spec_listContext) {
     if (this.config.logging) {
@@ -1102,6 +1124,8 @@ export class Listener implements SOQLListener {
     if (this.config.logging) {
       console.log('enterData_category_parameter_list:', ctx.text);
     }
+    const condition = utils.getLastItem<WithDataCategoryCondition>(this.context.tempData.conditions);
+    condition.parameters = [];
   }
   exitData_category_parameter_list(ctx: Parser.Data_category_parameter_listContext) {
     if (this.config.logging) {
@@ -1112,6 +1136,8 @@ export class Listener implements SOQLListener {
     if (this.config.logging) {
       console.log('enterData_category_selector:', ctx.text);
     }
+    const condition = utils.getLastItem<WithDataCategoryCondition>(this.context.tempData.conditions);
+    condition.selector = ctx.text.toUpperCase() as GroupSelector;
   }
   exitData_category_selector(ctx: Parser.Data_category_selectorContext) {
     if (this.config.logging) {
@@ -1249,6 +1275,7 @@ export class Listener implements SOQLListener {
     if (this.config.logging) {
       console.log('enterFor_value:', ctx.text);
     }
+    this.getSoqlQuery().for = ctx.text.toUpperCase() as ForClause;
   }
   exitFor_value(ctx: Parser.For_valueContext) {
     if (this.config.logging) {
@@ -1264,5 +1291,6 @@ export class Listener implements SOQLListener {
     if (this.config.logging) {
       console.log('exitUpdate_value:', ctx.text);
     }
+    this.getSoqlQuery().update = ctx.text as UpdateClause;
   }
 }

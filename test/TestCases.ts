@@ -45,7 +45,7 @@ export const testCases: TestCase[] = [
       ],
       subqueries: [],
       sObject: 'Contact',
-      whereClause: {
+      where: {
         left: {
           field: 'Name',
           operator: 'LIKE',
@@ -91,7 +91,7 @@ export const testCases: TestCase[] = [
       ],
       subqueries: [],
       sObject: 'Account',
-      whereClause: {
+      where: {
         left: {
           field: 'Industry',
           operator: '=',
@@ -112,7 +112,7 @@ export const testCases: TestCase[] = [
       ],
       subqueries: [],
       sObject: 'Account',
-      whereClause: {
+      where: {
         left: {
           field: 'Industry',
           operator: '=',
@@ -277,7 +277,7 @@ export const testCases: TestCase[] = [
       ],
       subqueries: [],
       sObject: 'Contact',
-      whereClause: {
+      where: {
         left: {
           field: 'Account.Industry',
           operator: '=',
@@ -363,7 +363,7 @@ export const testCases: TestCase[] = [
           ],
           subqueries: [],
           sObject: 'Contacts',
-          whereClause: {
+          where: {
             left: {
               field: 'CreatedBy.Alias',
               operator: '=',
@@ -373,7 +373,7 @@ export const testCases: TestCase[] = [
         },
       ],
       sObject: 'Account',
-      whereClause: {
+      where: {
         left: {
           field: 'Industry',
           operator: '=',
@@ -401,7 +401,7 @@ export const testCases: TestCase[] = [
       ],
       subqueries: [],
       sObject: 'Daughter__c',
-      whereClause: {
+      where: {
         left: {
           field: 'Mother_of_Child__r.LastName__c',
           operator: 'LIKE',
@@ -434,7 +434,7 @@ export const testCases: TestCase[] = [
         },
       ],
       sObject: 'Merchandise__c',
-      whereClause: {
+      where: {
         left: {
           field: 'Name',
           operator: 'LIKE',
@@ -458,7 +458,7 @@ export const testCases: TestCase[] = [
       ],
       subqueries: [],
       sObject: 'Task',
-      whereClause: {
+      where: {
         left: {
           field: 'Owner.FirstName',
           operator: 'LIKE',
@@ -486,7 +486,7 @@ export const testCases: TestCase[] = [
       ],
       subqueries: [],
       sObject: 'Task',
-      whereClause: {
+      where: {
         left: {
           field: 'Owner.FirstName',
           operator: 'LIKE',
@@ -650,7 +650,7 @@ export const testCases: TestCase[] = [
       ],
       subqueries: [],
       sObject: 'LoginHistory',
-      whereClause: {
+      where: {
         left: {
           field: 'LoginTime',
           operator: '>',
@@ -888,7 +888,7 @@ export const testCases: TestCase[] = [
       ],
       subqueries: [],
       sObject: 'Account',
-      whereClause: {
+      where: {
         left: {
           openParen: 1,
           field: 'Id',
@@ -1024,6 +1024,255 @@ export const testCases: TestCase[] = [
       ],
       sObject: 'Account',
       sObjectAlias: 'a',
+    },
+  },
+  {
+    testCase: 35,
+    soql: `SELECT Title FROM KnowledgeArticleVersion WHERE PublishStatus = 'online' WITH DATA CATEGORY Geography__c ABOVE usa__c`,
+    output: {
+      fields: [
+        {
+          text: 'Title',
+        },
+      ],
+      subqueries: [],
+      sObject: 'KnowledgeArticleVersion',
+      where: {
+        left: {
+          field: 'PublishStatus',
+          operator: '=',
+          value: "'online'",
+        },
+      },
+      withDataCategory: {
+        conditions: [
+          {
+            groupName: 'Geography__c',
+            selector: 'ABOVE',
+            parameters: ['usa__c'],
+          },
+        ],
+      },
+    },
+  },
+  {
+    testCase: 36,
+    soql: `SELECT Title FROM Question WHERE LastReplyDate > 2005-10-08T01:02:03Z WITH DATA CATEGORY Geography__c AT (usa__c, uk__c)`,
+    output: {
+      fields: [
+        {
+          text: 'Title',
+        },
+      ],
+      subqueries: [],
+      sObject: 'Question',
+      where: {
+        left: {
+          field: 'LastReplyDate',
+          operator: '>',
+          value: '2005-10-08T01:02:03Z',
+        },
+      },
+      withDataCategory: {
+        conditions: [
+          {
+            groupName: 'Geography__c',
+            selector: 'AT',
+            parameters: ['usa__c', 'uk__c'],
+          },
+        ],
+      },
+    },
+  },
+  {
+    testCase: 37,
+    soql: `SELECT UrlName FROM KnowledgeArticleVersion WHERE PublishStatus = 'draft' WITH DATA CATEGORY Geography__c AT usa__c AND Product__c ABOVE_OR_BELOW mobile_phones__c`,
+    output: {
+      fields: [
+        {
+          text: 'UrlName',
+        },
+      ],
+      subqueries: [],
+      sObject: 'KnowledgeArticleVersion',
+      where: {
+        left: {
+          field: 'PublishStatus',
+          operator: '=',
+          value: "'draft'",
+        },
+      },
+      withDataCategory: {
+        conditions: [
+          {
+            groupName: 'Geography__c',
+            selector: 'AT',
+            parameters: ['usa__c'],
+          },
+          {
+            groupName: 'Product__c',
+            selector: 'ABOVE_OR_BELOW',
+            parameters: ['mobile_phones__c'],
+          },
+        ],
+      },
+    },
+  },
+  {
+    testCase: 38,
+    soql: `SELECT Id FROM Contact FOR VIEW`,
+    output: {
+      fields: [
+        {
+          text: 'Id',
+        },
+      ],
+      subqueries: [],
+      sObject: 'Contact',
+      for: 'VIEW',
+    },
+  },
+  {
+    testCase: 39,
+    soql: `SELECT Id FROM Contact FOR REFERENCE`,
+    output: {
+      fields: [
+        {
+          text: 'Id',
+        },
+      ],
+      subqueries: [],
+      sObject: 'Contact',
+      for: 'REFERENCE',
+    },
+  },
+  {
+    testCase: 40,
+    soql: `SELECT Id FROM Contact FOR UPDATE`,
+    output: {
+      fields: [
+        {
+          text: 'Id',
+        },
+      ],
+      subqueries: [],
+      sObject: 'Contact',
+      for: 'UPDATE',
+    },
+  },
+  {
+    testCase: 41,
+    soql: `SELECT Id FROM FAQ__kav FOR UPDATE`,
+    output: {
+      fields: [
+        {
+          text: 'Id',
+        },
+      ],
+      subqueries: [],
+      sObject: 'FAQ__kav',
+      for: 'UPDATE',
+    },
+  },
+  {
+    testCase: 42,
+    soql: `SELECT Id FROM FAQ__kav FOR VIEW UPDATE TRACKING`,
+    output: {
+      fields: [
+        {
+          text: 'Id',
+        },
+      ],
+      subqueries: [],
+      sObject: 'FAQ__kav',
+      for: 'VIEW',
+      update: 'TRACKING',
+    },
+  },
+  {
+    testCase: 43,
+    soql: `SELECT Id FROM FAQ__kav UPDATE VIEWSTAT`,
+    output: {
+      fields: [
+        {
+          text: 'Id',
+        },
+      ],
+      subqueries: [],
+      sObject: 'FAQ__kav',
+      update: 'VIEWSTAT',
+    },
+  },
+  {
+    testCase: 44,
+    soql: `SELECT amount, FORMAT(amount) Amt, convertCurrency(amount) editDate, FORMAT(convertCurrency(amount)) convertedCurrency FROM Opportunity WHERE id = '12345'`,
+    output: {
+      fields: [
+        {
+          text: 'amount',
+        },
+        {
+          fn: {
+            text: 'FORMAT(amount)',
+            name: 'FORMAT',
+            parameter: 'amount',
+            alias: 'Amt',
+          },
+        },
+        {
+          fn: {
+            text: 'convertCurrency(amount)',
+            name: 'convertCurrency',
+            parameter: 'amount',
+            alias: 'editDate',
+          },
+        },
+        {
+          fn: {
+            text: 'FORMAT(convertCurrency(amount))',
+            name: 'FORMAT',
+            parameter: 'convertCurrency(amount)',
+            fn: {
+              text: 'convertCurrency(amount)',
+              name: 'convertCurrency',
+              parameter: 'amount',
+            },
+            alias: 'convertedCurrency',
+          },
+        },
+      ],
+      subqueries: [],
+      sObject: 'Opportunity',
+      where: {
+        left: {
+          field: 'id',
+          operator: '=',
+          value: "'12345'",
+        },
+      },
+    },
+  },
+  {
+    testCase: 45,
+    soql: `SELECT FORMAT(MIN(closedate)) Amt FROM Opportunity`,
+    output: {
+      fields: [
+        {
+          fn: {
+            text: 'FORMAT(MIN(closedate))',
+            name: 'FORMAT',
+            parameter: 'MIN(closedate)',
+            fn: {
+              text: 'MIN(closedate)',
+              name: 'MIN',
+              parameter: 'closedate',
+            },
+            alias: 'Amt',
+          },
+        },
+      ],
+      subqueries: [],
+      sObject: 'Opportunity',
     },
   },
 ];

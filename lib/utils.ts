@@ -28,6 +28,10 @@ export function getIfTrue(val: boolean | null | undefined, returnStr: string): s
   return isBoolean(val) && val ? returnStr : '';
 }
 
+export function getLastItem<T>(arr: T[]): T {
+  return arr[arr.length - 1];
+}
+
 export function getAsArrayStr(val: string | string[], alwaysParens: boolean = false): string {
   if (isArray(val)) {
     if (val.length > 0) {

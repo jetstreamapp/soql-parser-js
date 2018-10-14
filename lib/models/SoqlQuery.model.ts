@@ -1,5 +1,10 @@
 export type LogicalOperator = 'AND' | 'OR';
 export type Operator = '=' | '<=' | '>=' | '>' | '<' | 'LIKE' | 'IN' | 'NOT IN' | 'INCLUDES' | 'EXCLUDES';
+export type TypeOfFieldConditionType = 'WHEN' | 'ELSE';
+export type GroupSelector = 'ABOVE' | 'AT' | 'BELOW' | 'ABOVE_OR_BELOW';
+export type LogicalPrefix = 'NOT';
+export type ForClause = 'VIEW' | 'UPDATE' | 'REFERENCE';
+export type UpdateClause = 'TRACKING' | 'VIEWSTAT';
 
 export interface Query {
   fields: Field[];
@@ -7,12 +12,15 @@ export interface Query {
   sObject: string;
   sObjectAlias?: string;
   sObjectPrefix?: string;
-  whereClause?: WhereClause;
+  where?: WhereClause;
   limit?: number;
   offset?: number;
   groupBy?: GroupByClause;
   having?: HavingClause;
   orderBy?: OrderByClause | OrderByClause[];
+  withDataCategory?: WithDataCategoryClause;
+  for?: ForClause;
+  update?: UpdateClause;
 }
 
 export interface SelectStatement {
@@ -34,7 +42,7 @@ export interface TypeOfField {
 }
 
 export interface TypeOfFieldCondition {
-  type: 'WHEN' | 'ELSE';
+  type: TypeOfFieldConditionType;
   objectType?: string; // not present when ELSE
   fieldList: string[];
 }
@@ -48,7 +56,7 @@ export interface WhereClause {
 export interface Condition {
   openParen?: number;
   closeParen?: number;
-  logicalPrefix?: 'NOT';
+  logicalPrefix?: LogicalPrefix;
   field: string;
   operator: Operator;
   value: string | string[];
@@ -86,4 +94,15 @@ export interface FunctionExp {
   name?: string; // Count
   alias?: string;
   parameter?: string | string[];
+  fn?: FunctionExp; // used for nested functions FORMAT(MIN(CloseDate))
+}
+
+export interface WithDataCategoryClause {
+  conditions: WithDataCategoryCondition[];
+}
+
+export interface WithDataCategoryCondition {
+  groupName: string;
+  selector: GroupSelector;
+  parameters: string[];
 }
