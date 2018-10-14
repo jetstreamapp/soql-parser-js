@@ -140,6 +140,15 @@ describe('getAsArrayStr', () => {
   });
 });
 
+describe('getLastItem', () => {
+  it(`Should correctly pad suffix`, () => {
+    const str = 'TEST';
+    expect(utils.getLastItem<number>([1, 2, 3, 4, 5])).equal(5);
+    expect(utils.getLastItem<string>(['a', 'b', 'c'])).equal('c');
+    expect(utils.getLastItem<string>([])).equal(undefined);
+  });
+});
+
 describe('pad', () => {
   it(`Should correctly pad suffix`, () => {
     const str = 'TEST';

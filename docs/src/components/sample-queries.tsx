@@ -142,6 +142,30 @@ export default class SampleQueries extends React.Component<ISampleQueriesProps, 
         num: 31,
         soql: `SELECT LeadSource, COUNT(Name) FROM Lead GROUP BY LeadSource HAVING COUNT(Name) > 100 and LeadSource > 'Phone'`,
       },
+      {
+        key: 32,
+        num: 32,
+        soql: `SELECT Title FROM KnowledgeArticleVersion WHERE PublishStatus='online' WITH DATA CATEGORY Geography__c ABOVE usa__c`,
+      },
+      {
+        key: 33,
+        num: 33,
+        soql: `SELECT Title FROM Question WHERE LastReplyDate > 2005-10-08T01:02:03Z WITH DATA CATEGORY Geography__c AT (usa__c, uk__c)`,
+      },
+      {
+        key: 34,
+        num: 34,
+        soql: `SELECT UrlName FROM KnowledgeArticleVersion WHERE PublishStatus='draft' WITH DATA CATEGORY Geography__c AT usa__c AND Product__c ABOVE_OR_BELOW mobile_phones__c`,
+      },
+      { key: 35, num: 35, soql: `SELECT Name, ID FROM Contact LIMIT 1 FOR VIEW` },
+      { key: 36, num: 36, soql: `SELECT Name, ID FROM Contact LIMIT 1 FOR REFERENCE` },
+      { key: 37, num: 37, soql: `SELECT Id FROM Account LIMIT 2 FOR UPDATE UPDATE TRACKING` },
+      {
+        key: 38,
+        num: 38,
+        soql: `SELECT amount, FORMAT(amount) Amt, convertCurrency(amount) editDate, FORMAT(convertCurrency(amount)) convertedCurrency FROM Opportunity where id = '12345'`,
+      },
+      { key: 39, num: 39, soql: `SELECT FORMAT(MIN(closedate)) Amt FROM opportunity` },
     ];
   };
 

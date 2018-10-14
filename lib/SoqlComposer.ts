@@ -7,6 +7,8 @@ import {
   HavingClause,
   OrderByClause,
   TypeOfField,
+  WithDataCategoryClause,
+  ForClause,
 } from './models/SoqlQuery.model';
 import * as utils from './utils';
 
@@ -72,8 +74,8 @@ export class Compose {
     output += ` ${utils.get(query.sObjectPrefix, '.')}${query.sObject}${utils.get(query.sObjectAlias, '', ' ')}`;
     this.log(output);
 
-    if (query.whereClause) {
-      output += ` WHERE ${this.parseWhereClause(query.whereClause)}`;
+    if (query.where) {
+      output += ` WHERE ${this.parseWhereClause(query.where)}`;
       this.log(output);
     }
 
@@ -100,6 +102,21 @@ export class Compose {
 
     if (utils.isNumber(query.offset)) {
       output += ` OFFSET ${query.offset}`;
+      this.log(output);
+    }
+
+    if (query.withDataCategory) {
+      output += ` WITH DATA CATEGORY ${this.parseWithDataCategory(query.withDataCategory)}`;
+      this.log(output);
+    }
+
+    if (query.for) {
+      output += ` FOR ${query.for}`;
+      this.log(output);
+    }
+
+    if (query.update) {
+      output += ` UPDATE ${query.update}`;
       this.log(output);
     }
 
@@ -194,5 +211,17 @@ export class Compose {
       output += `${utils.get(orderBy.order, ' ')}${utils.get(orderBy.nulls, '', 'NULLS ')}`;
       return output.trim();
     }
+  }
+
+  private parseWithDataCategory(withDataCategory: WithDataCategoryClause): string {
+    return withDataCategory.conditions
+      .map(condition => {
+        const params =
+          condition.parameters.length > 1
+            ? `(${condition.parameters.join(', ')})`
+            : `${condition.parameters.join(', ')}`;
+        return `${condition.groupName} ${condition.selector} ${params}`;
+      })
+      .join(' AND ');
   }
 }
