@@ -4,6 +4,7 @@
 build/tests
 .rpt2_cache
 dist/
+.env
 
 # Created by https://www.gitignore.io/api/node
 

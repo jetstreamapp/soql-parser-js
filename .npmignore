@@ -12,3 +12,4 @@ CONTRIBUTING.md
 CHANGELOG.md
 debug/
 .rpt2_cache
+.env

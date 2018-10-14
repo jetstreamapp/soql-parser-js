@@ -29,6 +29,7 @@
     "@types/node": "8.0.14",
     "antlr4ts-cli": "0.4.0-alpha.4",
     "chai": "^4.1.2",
+    "dotenv": "^6.1.0",
     "mocha": "^5.2.0",
     "release-it": "^7.6.1",
     "rollup": "^0.66.6",
