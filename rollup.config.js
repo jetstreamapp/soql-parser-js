@@ -9,15 +9,15 @@ export default [
       {
         file: pkg.main,
         format: 'cjs',
-        sourcemap: false,
+        sourcemap: true,
       },
       {
         file: pkg.module,
         format: 'es',
-        sourcemap: false,
+        sourcemap: true,
       },
     ],
     external: [...Object.keys(pkg.dependencies || {}), ...Object.keys(pkg.peerDependencies || {})],
-    plugins: [typescript({}), minify({ comments: false, sourceMap: false })],
+    plugins: [typescript({})],
   },
 ];

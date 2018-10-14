@@ -6,6 +6,7 @@ export interface Query {
   subqueries: Query[];
   sObject: string;
   sObjectAlias?: string;
+  sObjectPrefix?: string;
   whereClause?: WhereClause;
   limit?: number;
   offset?: number;
@@ -24,17 +25,29 @@ export interface Field {
   relationshipFields?: string[];
   fn?: FunctionExp;
   subqueryObjName?: string; // populated if subquery
+  typeOf?: TypeOfField;
+}
+
+export interface TypeOfField {
+  field: string;
+  conditions: TypeOfFieldCondition[];
+}
+
+export interface TypeOfFieldCondition {
+  type: 'WHEN' | 'ELSE';
+  objectType?: string; // not present when ELSE
+  fieldList: string[];
 }
 
 export interface WhereClause {
-  left: Condition | WhereClause;
-  right?: Condition | WhereClause;
+  left: Condition;
+  right?: WhereClause;
   operator?: LogicalOperator;
 }
 
 export interface Condition {
-  openParen?: boolean;
-  closeParen?: boolean;
+  openParen?: number;
+  closeParen?: number;
   logicalPrefix?: 'NOT';
   field: string;
   operator: Operator;
@@ -54,12 +67,14 @@ export interface GroupByClause {
 }
 
 export interface HavingClause {
-  left: HavingCondition | HavingClause;
-  right?: HavingCondition | HavingClause;
+  left: HavingCondition;
+  right?: HavingClause;
   operator?: LogicalOperator;
 }
 
 export interface HavingCondition {
+  openParen?: number;
+  closeParen?: number;
   field?: string;
   fn?: FunctionExp;
   operator: string;

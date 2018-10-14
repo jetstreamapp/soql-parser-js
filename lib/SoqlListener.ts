@@ -13,7 +13,7 @@ import {
 } from './models/SoqlQuery.model';
 import { SoqlQueryConfig } from './SoqlParser';
 
-export type currItem = 'field' | 'from' | 'where' | 'groupby' | 'orderby' | 'having';
+export type currItem = 'field' | 'typeof' | 'from' | 'where' | 'groupby' | 'orderby' | 'having';
 
 export interface Context {
   isSubQuery: boolean;
@@ -609,7 +609,6 @@ export class Listener implements SOQLListener {
       console.log('enterField_spec:', ctx.text);
     }
     this.context.currentItem = 'field';
-    let relatedFields: string[];
     if (ctx.text.includes('.')) {
       this.getSoqlQuery().fields.push({ text: ctx.text, relationshipFields: ctx.text.split('.') });
     } else {
@@ -717,11 +716,21 @@ export class Listener implements SOQLListener {
     if (this.config.logging) {
       console.log('enterTypeof_spec:', ctx.text);
     }
+    this.context.currentItem = 'typeof';
+    this.context.tempData = {
+      typeOf: {
+        field: ctx.getChild(1).text,
+        conditions: [],
+      },
+    };
   }
   exitTypeof_spec(ctx: Parser.Typeof_specContext) {
     if (this.config.logging) {
       console.log('exitTypeof_spec:', ctx.text);
     }
+    this.getSoqlQuery().fields.push(this.context.tempData);
+    this.context.tempData = null;
+    this.context.currentItem = 'field';
   }
   enterTypeof_when_then_clause_list(ctx: Parser.Typeof_when_then_clause_listContext) {
     if (this.config.logging) {
@@ -737,6 +746,10 @@ export class Listener implements SOQLListener {
     if (this.config.logging) {
       console.log('enterTypeof_when_then_clause:', ctx.text);
     }
+    this.context.tempData.typeOf.conditions.push({
+      type: 'WHEN',
+      objectType: ctx.getChild(1).text,
+    });
   }
   exitTypeof_when_then_clause(ctx: Parser.Typeof_when_then_clauseContext) {
     if (this.config.logging) {
@@ -747,6 +760,8 @@ export class Listener implements SOQLListener {
     if (this.config.logging) {
       console.log('enterTypeof_then_clause:', ctx.text);
     }
+    const whenThenClause = this.context.tempData.typeOf.conditions[this.context.tempData.typeOf.conditions.length - 1];
+    whenThenClause.fieldList = ctx.getChild(1).text.split(',');
   }
   exitTypeof_then_clause(ctx: Parser.Typeof_then_clauseContext) {
     if (this.config.logging) {
@@ -757,6 +772,10 @@ export class Listener implements SOQLListener {
     if (this.config.logging) {
       console.log('enterTypeof_else_clause:', ctx.text);
     }
+    this.context.tempData.typeOf.conditions.push({
+      type: 'ELSE',
+      fieldList: ctx.getChild(1).text.split(','),
+    });
   }
   exitTypeof_else_clause(ctx: Parser.Typeof_else_clauseContext) {
     if (this.config.logging) {
@@ -780,8 +799,10 @@ export class Listener implements SOQLListener {
     this.getSoqlQuery().sObject = ctx.getChild(0).text;
     if (this.config.includeSubqueryAsField && this.context.isSubQuery) {
       if (ctx.getChild(0).text.includes('.')) {
+        this.getSoqlQuery().sObject = ctx.getChild(1).text;
+        this.getSoqlQuery().sObjectPrefix = ctx.getChild(0).text.replace('.', '');
         this.soqlQuery.fields.push({
-          subqueryObjName: ctx.text,
+          subqueryObjName: ctx.getChild(1).text,
         });
       } else {
         this.soqlQuery.fields.push({
@@ -850,7 +871,6 @@ export class Listener implements SOQLListener {
       console.log('enterParenthesis:', ctx.text);
     }
     if (this.context.currentItem === 'where' || this.context.currentItem === 'having') {
-      this.context.tempData.nextHasCloseParen = false;
       this.context.tempData.nextHasOpenParen = true;
     }
   }
@@ -859,11 +879,9 @@ export class Listener implements SOQLListener {
       console.log('exitParenthesis:', ctx.text);
     }
     if (this.context.currentItem === 'where' || this.context.currentItem === 'having') {
-      if (this.context.tempData.nextHasCloseParen) {
-        this.context.tempData.stack.pop();
-      }
-      this.context.tempData.stack[this.context.tempData.stack.length - 1].left.closeParen = true;
-      this.context.tempData.nextHasCloseParen = true;
+      const currConditionOperation = this.context.tempData.currConditionOperation.left;
+      currConditionOperation.closeParen = currConditionOperation.closeParen || 0;
+      currConditionOperation.closeParen += 1;
     }
   }
   enterSimple_condition(ctx: Parser.Simple_conditionContext) {
@@ -888,7 +906,8 @@ export class Listener implements SOQLListener {
       if (!this.context.tempData.currConditionOperation.left) {
         this.context.tempData.currConditionOperation.left = currItem;
         if (this.context.tempData.nextHasOpenParen) {
-          currItem.openParen = true;
+          currItem.openParen = currItem.openParen || 0;
+          currItem.openParen += 1;
           this.context.tempData.nextHasOpenParen = false;
         }
         if (this.context.tempData.nextHasLogicalPrefix) {
@@ -907,7 +926,8 @@ export class Listener implements SOQLListener {
       if (!this.context.tempData.currConditionOperation.left) {
         this.context.tempData.currConditionOperation.left = currItem;
         if (this.context.tempData.nextHasOpenParen) {
-          currItem.openParen = true;
+          currItem.openParen = currItem.openParen || 0;
+          currItem.openParen += 1;
           this.context.tempData.nextHasOpenParen = false;
         }
         if (this.context.tempData.nextHasLogicalPrefix) {
@@ -942,7 +962,8 @@ export class Listener implements SOQLListener {
       if (!this.context.tempData.currConditionOperation.left) {
         this.context.tempData.currConditionOperation.left = currItem;
         if (this.context.tempData.nextHasOpenParen) {
-          currItem.openParen = true;
+          currItem.openParen = currItem.openParen || 0;
+          currItem.openParen += 1;
           this.context.tempData.nextHasOpenParen = false;
         }
         if (this.context.tempData.nextHasLogicalPrefix) {
@@ -975,7 +996,8 @@ export class Listener implements SOQLListener {
       if (!this.context.tempData.currConditionOperation.left) {
         this.context.tempData.currConditionOperation.left = currItem;
         if (this.context.tempData.nextHasOpenParen) {
-          currItem.openParen = true;
+          currItem.openParen = currItem.openParen || 0;
+          currItem.openParen += 1;
           this.context.tempData.nextHasOpenParen = false;
         }
         if (this.context.tempData.nextHasLogicalPrefix) {

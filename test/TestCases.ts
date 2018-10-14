@@ -322,7 +322,7 @@ export const testCases: TestCase[] = [
           relationshipFields: ['Account', 'Name'],
         },
         {
-          subqueryObjName: 'Account.Contacts',
+          subqueryObjName: 'Contacts',
         },
       ],
       subqueries: [
@@ -334,7 +334,8 @@ export const testCases: TestCase[] = [
             },
           ],
           subqueries: [],
-          sObject: 'Account.',
+          sObject: 'Contacts',
+          sObjectPrefix: 'Account',
         },
       ],
       sObject: 'Account',
@@ -444,7 +445,7 @@ export const testCases: TestCase[] = [
   },
   {
     testCase: 18,
-    soql: "SELECT Id, Owner.Name FROM Task WHERE Owner.FirstName like 'B%'",
+    soql: "SELECT Id, Owner.Name FROM Task WHERE Owner.FirstName LIKE 'B%'",
     output: {
       fields: [
         {
@@ -516,7 +517,29 @@ export const testCases: TestCase[] = [
     soql:
       'SELECT TYPEOF What WHEN Account THEN Phone, NumberOfEmployees WHEN Opportunity THEN Amount, CloseDate ELSE Name, Email END FROM Event',
     output: {
-      fields: [],
+      fields: [
+        {
+          typeOf: {
+            field: 'What',
+            conditions: [
+              {
+                type: 'WHEN',
+                objectType: 'Account',
+                fieldList: ['Phone', 'NumberOfEmployees'],
+              },
+              {
+                type: 'WHEN',
+                objectType: 'Opportunity',
+                fieldList: ['Amount', 'CloseDate'],
+              },
+              {
+                type: 'ELSE',
+                fieldList: ['Name', 'Email'],
+              },
+            ],
+          },
+        },
+      ],
       subqueries: [],
       sObject: 'Event',
     },
@@ -594,7 +617,7 @@ export const testCases: TestCase[] = [
   },
   {
     testCase: 24,
-    soql: 'SELECT UserId, LoginTime from LoginHistory',
+    soql: 'SELECT UserId, LoginTime FROM LoginHistory',
     output: {
       fields: [
         {
@@ -611,7 +634,7 @@ export const testCases: TestCase[] = [
   {
     testCase: 25,
     soql:
-      'SELECT UserId, COUNT(Id) from LoginHistory WHERE LoginTime > 2010-09-20T22:16:30.000Z AND LoginTime < 2010-09-21T22:16:30.000Z GROUP BY UserId',
+      'SELECT UserId, COUNT(Id) FROM LoginHistory WHERE LoginTime > 2010-09-20T22:16:30.000Z AND LoginTime < 2010-09-21T22:16:30.000Z GROUP BY UserId',
     output: {
       fields: [
         {
@@ -867,7 +890,7 @@ export const testCases: TestCase[] = [
       sObject: 'Account',
       whereClause: {
         left: {
-          openParen: true,
+          openParen: 1,
           field: 'Id',
           operator: 'IN',
           value: ["'1'", "'2'", "'3'"],
@@ -875,30 +898,28 @@ export const testCases: TestCase[] = [
         operator: 'OR',
         right: {
           left: {
-            openParen: true,
+            openParen: 1,
             logicalPrefix: 'NOT',
             field: 'Id',
             operator: '=',
             value: "'2'",
-            closeParen: true,
+            closeParen: 1,
           },
           operator: 'OR',
           right: {
             left: {
-              openParen: true,
+              openParen: 1,
               field: 'Name',
               operator: 'LIKE',
               value: "'%FOO%'",
-              closeParen: true,
             },
             operator: 'OR',
             right: {
               left: {
-                openParen: true,
+                openParen: 1,
                 field: 'Name',
                 operator: 'LIKE',
                 value: "'%ARM%'",
-                closeParen: true,
               },
               operator: 'AND',
               right: {
@@ -906,7 +927,7 @@ export const testCases: TestCase[] = [
                   field: 'FOO',
                   operator: '=',
                   value: "'bar'",
-                  closeParen: true,
+                  closeParen: 3,
                 },
               },
             },

@@ -21,6 +21,24 @@ describe('isString', () => {
   });
 });
 
+describe('isNumber', () => {
+  it(`correctly determine number`, () => {
+    expect(utils.isNumber(-1)).equal(true);
+    expect(utils.isNumber(0)).equal(true);
+    expect(utils.isNumber(1)).equal(true);
+  });
+  it(`should correctly determine non-number`, () => {
+    expect(utils.isNumber(null)).equal(false);
+    expect(utils.isNumber(undefined)).equal(false);
+    expect(utils.isNumber(true)).equal(false);
+    expect(utils.isNumber(false)).equal(false);
+    expect(utils.isNumber([])).equal(false);
+    expect(utils.isNumber({})).equal(false);
+    expect(utils.isNumber(Infinity)).equal(false);
+    expect(utils.isNumber(NaN)).equal(false);
+  });
+});
+
 describe('isBoolean', () => {
   it(`correctly determine boolean`, () => {
     expect(utils.isBoolean(true)).equal(true);
@@ -78,5 +96,46 @@ describe('isNil', () => {
     expect(utils.isNil(0)).equal(false);
     expect(utils.isNil(Infinity)).equal(false);
     expect(utils.isNil(NaN)).equal(false);
+  });
+});
+
+describe('get', () => {
+  it(`correctly get value`, () => {
+    expect(utils.get('value')).equal('value');
+  });
+  it(`correctly get value with suffix`, () => {
+    expect(utils.get('value', '.')).equal('value.');
+  });
+  it(`correctly get value with suffix and prefix`, () => {
+    expect(utils.get('value', '.', '.')).equal('.value.');
+  });
+  it(`should correctly return empty string if no value`, () => {
+    expect(utils.get(null)).equal('');
+    expect(utils.get(null, '.')).equal('');
+    expect(utils.get(null, '.', '.')).equal('');
+    expect(utils.get(undefined)).equal('');
+    expect(utils.get(undefined, '.')).equal('');
+    expect(utils.get(undefined, '.', '.')).equal('');
+  });
+});
+
+describe('getIfTrue', () => {
+  it(`correctly get value`, () => {
+    expect(utils.getIfTrue(true, 'retVal')).equal('retVal');
+    expect(utils.getIfTrue(false, 'retVal')).equal('');
+  });
+});
+
+describe('getAsArrayStr', () => {
+  it(`correctly get value from array`, () => {
+    expect(utils.getAsArrayStr(['a', 'b'])).equal(`(a, b)`);
+    expect(utils.getAsArrayStr([])).equal(``);
+    expect(utils.getAsArrayStr([], true)).equal(`()`);
+  });
+  it(`correctly get value from string`, () => {
+    expect(utils.getAsArrayStr('a')).equal(`a`);
+    expect(utils.getAsArrayStr(null)).equal(``);
+    expect(utils.getAsArrayStr('')).equal(``);
+    expect(utils.getAsArrayStr(null, true)).equal(`()`);
   });
 });
