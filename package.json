@@ -18,7 +18,8 @@
     "tsc": "./node_modules/.bin/tsc",
     "preantlr": "rm -rf src/generated/*",
     "antlr": "./node_modules/.bin/antlr4ts -visitor SOQL.g4 -o src/generated/",
-    "release": "release-it"
+    "release": "release-it",
+    "update-docs": "cd docs && npm run update"
   },
   "author": "Austin Turner <paustint@gmail.com>",
   "license": "MIT",
