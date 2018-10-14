@@ -3,28 +3,24 @@
 ## Description
 SOQL Parser JS will parse a SOQL query string into an object that is easy to work with and has the query broken down into usable parts.
 
-## TODO
-- [ ] Assess all property/function/variable names and make any adjustments as needed
-- [x] Analyze more SOQL parsing examples to ensure that output is appropriate
-- [ ] Include information on how to contribute
-- [x] Keep examples up-to-date as the package is finalized
-- [x] Figure out proper build/packaging for npm
-  - [x] ~~Consider Webpack for build~~
-- [x] Figure out how/if we can create a bundle that is browser compatible and include examples
-  - [ ] Provide instructions for using with node, in the browser, using TS and JS
-  - [ ] Figure out other builds (UMD - minified)
-- [x] Create typescript typings for the bundled JS
-- [x] Provide a GitHub pages example application
-## Future Idea List
-- [ ] Provide a CLI interface
-- [ ] Provide ability to turn parsed SOQL back to SOQL
+This works in the browser as long as npm is used to install the package with dependencies and the browser supports ES6 or a transpiler is used.
+
+*Warning*: antlr4 is a very large library and is required for the parser to function, so be aware of this prior to including in your browser bundles.
 
 ## Examples
 For an example of the parser, check out the [example application](https://paustint.github.io/soql-parser-js/).
 
-### Typescript / ES6
+## Usage
+
+### Available functions
+1. `parseQuery(soqlQueryString, options)`
+2. `composeQuery(SoqlQuery, options)`
+
+### Parse
+The parser takes a SOQL query and returns structured data.
+#### Typescript / ES6
 ```typescript
-import { parseQuery } from './SoqlParser';
+import { parseQuery } from 'soql-parser-js';
 
 const soql = 'SELECT UserId, COUNT(Id) from LoginHistory WHERE LoginTime > 2010-09-20T22:16:30.000Z AND LoginTime < 2010-09-21T22:16:30.000Z GROUP BY UserId';
 
@@ -34,9 +30,9 @@ console.log(JSON.stringify(soqlQuery, null, 2));
 
 ```
 
-### Node
+#### Node
 ```javascript
-var soqlParserJs = require("soql-parser-js");
+var soqlParserJs = require('soql-parser-js');
 
 const soql = 'SELECT UserId, COUNT(Id) from LoginHistory WHERE LoginTime > 2010-09-20T22:16:30.000Z AND LoginTime < 2010-09-21T22:16:30.000Z GROUP BY UserId';
 
@@ -83,8 +79,75 @@ This yields an object with the following structure:
   }
 }
 ```
+### compose
+Composing a query turns a parsed query back into a SOQL query. For some operators, they may be converted to upper case (e.x. NOT, AND)
 
-### Data Model of Parsed Data
+#### Typescript / ES6
+```typescript
+import { composeQuery } from 'soql-parser-js';
+
+const soqlQuery = {
+  fields: [
+    {
+      text: 'UserId',
+    },
+    {
+      fn: {
+        text: 'COUNT(Id)',
+        name: 'COUNT',
+        parameter: 'Id',
+      },
+    },
+  ],
+  subqueries: [],
+  sObject: 'LoginHistory',
+  whereClause: {
+    left: {
+      field: 'LoginTime',
+      operator: '>',
+      value: '2010-09-20T22:16:30.000Z',
+    },
+    operator: 'AND',
+    right: {
+      left: {
+        field: 'LoginTime',
+        operator: '<',
+        value: '2010-09-21T22:16:30.000Z',
+      },
+    },
+  },
+  groupBy: {
+    field: 'UserId',
+  },
+};
+
+const query = composeQuery(soqlQuery);
+
+console.log(query);
+
+```
+
+This yields an object with the following structure:
+
+```sql
+SELECT UserId, COUNT(Id) from LoginHistory WHERE LoginTime > 2010-09-20T22:16:30.000Z AND LoginTime < 2010-09-21T22:16:30.000Z GROUP BY UserId
+```
+
+### Options
+
+```typescript
+export interface SoqlQueryConfig {
+  continueIfErrors?: boolean; // default=false
+  logging: boolean; // default=false
+  includeSubqueryAsField: boolean; // default=true
+}
+
+export interface SoqlComposeConfig {
+  logging: boolean; // default=false
+}
+```
+
+### Data Models
 ```typescript
 export type LogicalOperator = 'AND' | 'OR';
 export type Operator = '=' | '<=' | '>=' | '>' | '<' | 'LIKE' | 'IN' | 'NOT IN' | 'INCLUDES' | 'EXCLUDES';
