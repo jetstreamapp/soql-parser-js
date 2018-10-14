@@ -225,6 +225,33 @@ export interface FunctionExp {
 }
 ```
 
+## CLI Usage
+The CLI can be used to parse a query or compose a previously parsed query back to SOQL.
+
+**Examples:**
+```shell
+$ npm install -g soql-parser-js
+$ soql --help
+$ soql --query "SELECT Id FROM Account"
+$ soql -query "SELECT Id FROM Account"
+$ soql -query "SELECT Id FROM Account" -output some-output-file.json
+$ soql -query "SELECT Id FROM Account" -json
+$ soql -query some-input-file.txt
+$ soql -compose some-input-file.json
+$ soql -compose some-input-file.json
+$ soql -compose some-input-file.json -output some-output-file.json
+```
+
+**Arguments:**
+```
+    --query,   -q       A SOQL query surrounded in quotes or a file path to a text file containing a SOQL query.
+    --compose, -c       An escaped and quoted parsed SOQL JSON string or a file path to a text file containing a parsed query JSON object.
+    --output,  -o       Filepath.
+    --json,    -j       Provide all output messages as JSON.
+    --debug,   -d       Print additional debug log messages.
+    --help,    -h       Show this help message.
+```
+
 ## Contributing
 All contributions are welcome on the project. Please read the [contribution guidelines](https://github.com/paustint/soql-parser-js/blob/master/CONTRIBUTING.md).
 
