@@ -20,7 +20,8 @@
     "eject": "react-scripts-ts eject",
     "predeploy": "npm run build",
     "deploy": "gh-pages -d build",
-    "gh-pages": "gh-pages --help"
+    "gh-pages": "gh-pages --help",
+    "update": "npm install soql-parser-js@latest && git add package*.json && git commit -m \"Updated docs version\" && git push"
   },
   "devDependencies": {
     "@types/jest": "^23.3.5",
