@@ -2,5 +2,8 @@
   "buildCommand": "npm run build",
   "github": {
     "release": true
+  },
+  "dist": {
+    "afterReleaseCommand": "cd ../docs && npm install soql-parser-js@latest && npm run deploy"
   }
 }
