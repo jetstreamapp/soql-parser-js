@@ -4,8 +4,10 @@
   "description": "Salesforce.com SOQL parser.",
   "main": "dist/index.js",
   "module": "dist/index.es.js",
-  "umd": "dist/index.umd.js",
   "types": "dist/index.d.ts",
+  "bin": {
+    "soql": "dist/cli.js"
+  },
   "scripts": {
     "clean": "rm -rf ./dist/*",
     "test": "TS_NODE_PROJECT=\"test/tsconfig.test.json\" mocha -r ts-node/register test/**/*.spec.ts -P test/tsconfig.test.json",
@@ -21,19 +23,21 @@
   "author": "Austin Turner <paustint@gmail.com>",
   "license": "MIT",
   "dependencies": {
-    "antlr4ts": "0.4.1-alpha.0"
+    "antlr4ts": "0.4.1-alpha.0",
+    "minimist": "^1.2.0"
   },
   "devDependencies": {
     "@types/chai": "^4.1.6",
+    "@types/minimist": "^1.2.0",
     "@types/mocha": "^5.2.5",
-    "@types/node": "8.0.14",
+    "@types/node": "^8.0.14",
     "antlr4ts-cli": "0.4.0-alpha.4",
     "chai": "^4.1.2",
-    "dotenv": "^6.1.0",
+    "magic-string": "^0.25.1",
     "mocha": "^5.2.0",
     "release-it": "^7.6.1",
     "rollup": "^0.66.6",
-    "rollup-plugin-babel-minify": "^6.1.1",
+    "rollup-plugin-cli": "^0.1.5",
     "rollup-plugin-typescript2": "^0.17.1",
     "ts-node": "^7.0.1",
     "typescript": "^2.4.1"

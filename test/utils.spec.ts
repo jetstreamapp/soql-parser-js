@@ -139,3 +139,24 @@ describe('getAsArrayStr', () => {
     expect(utils.getAsArrayStr(null, true)).equal(`()`);
   });
 });
+
+describe('pad', () => {
+  it(`Should correctly pad suffix`, () => {
+    const str = 'TEST';
+    expect(utils.pad(str, 5)).equal(`${str} `);
+    expect(utils.pad(str, 5)).lengthOf(5);
+    expect(utils.pad(str, 100)).lengthOf(100);
+  });
+  it(`Should correctly pad prefix`, () => {
+    const str = 'TEST';
+    expect(utils.pad(str, 0, 2)).equal(`  ${str}`);
+    expect(utils.pad(str, 0, 2)).lengthOf(str.length + 2);
+  });
+  it(`Should correctly pad prefix and suffix`, () => {
+    const str = 'TEST';
+    expect(utils.pad(str, 5, 2)).lengthOf(7);
+    expect(utils.pad(str, 5, 2)).equal(`  ${str} `);
+    expect(utils.pad(str, 5, null)).lengthOf(5);
+    expect(utils.pad(str, 5, null)).equal(`${str} `);
+  });
+});

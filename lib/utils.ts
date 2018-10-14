@@ -39,3 +39,12 @@ export function getAsArrayStr(val: string | string[], alwaysParens: boolean = fa
     return alwaysParens ? `(${val || ''})` : val || '';
   }
 }
+
+export function pad(val: string, len: number, left: number = 0) {
+  let leftPad = left > 0 ? new Array(left).fill(' ').join('') : '';
+  if (val.length > len) {
+    return `${leftPad}${val}`;
+  } else {
+    return `${leftPad}${val}${new Array(len - val.length).fill(' ').join('')}`;
+  }
+}
