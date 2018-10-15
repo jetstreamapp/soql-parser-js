@@ -166,6 +166,22 @@ export default class SampleQueries extends React.Component<ISampleQueriesProps, 
         soql: `SELECT amount, FORMAT(amount) Amt, convertCurrency(amount) editDate, FORMAT(convertCurrency(amount)) convertedCurrency FROM Opportunity where id = '12345'`,
       },
       { key: 39, num: 39, soql: `SELECT FORMAT(MIN(closedate)) Amt FROM opportunity` },
+      { key: 40, num: 40, soql: `SELECT Company, toLabel(Status) FROM Lead WHERE toLabel(Status) = 'le Draft'` },
+      {
+        key: 41,
+        num: 41,
+        soql: `SELECT Id, Name FROM Account WHERE Id IN (SELECT AccountId FROM Opportunity WHERE StageName = 'Closed Lost')`,
+      },
+      {
+        key: 42,
+        num: 42,
+        soql: `SELECT Id FROM Account WHERE Id NOT IN (SELECT AccountId FROM Opportunity WHERE IsClosed = false)`,
+      },
+      {
+        key: 43,
+        num: 43,
+        soql: `SELECT Id, Name FROM Account WHERE Id IN (SELECT AccountId FROM Contact WHERE LastName LIKE 'apple%') AND Id IN (SELECT AccountId FROM Opportunity WHERE isClosed = false)`,
+      },
     ];
   };
 
