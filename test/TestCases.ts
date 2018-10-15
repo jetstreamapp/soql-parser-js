@@ -1275,5 +1275,170 @@ export const testCases: TestCase[] = [
       sObject: 'Opportunity',
     },
   },
+  {
+    testCase: 46,
+    soql: `SELECT Company, toLabel(Status) FROM Lead WHERE toLabel(Status) = 'le Draft'`,
+    output: {
+      fields: [
+        {
+          text: 'Company',
+        },
+        {
+          fn: {
+            text: 'toLabel(Status)',
+            name: 'toLabel',
+            parameter: 'Status',
+          },
+        },
+      ],
+      subqueries: [],
+      sObject: 'Lead',
+      where: {
+        left: {
+          operator: '=',
+          value: "'le Draft'",
+          fn: {
+            text: 'toLabel(Status)',
+            name: 'toLabel',
+            parameter: 'Status',
+          },
+        },
+      },
+    },
+  },
+  {
+    testCase: 47,
+    soql: `SELECT Id, Name FROM Account WHERE Id IN (SELECT AccountId FROM Opportunity WHERE StageName = 'Closed Lost')`,
+    output: {
+      fields: [
+        {
+          text: 'Id',
+        },
+        {
+          text: 'Name',
+        },
+      ],
+      subqueries: [],
+      sObject: 'Account',
+      where: {
+        left: {
+          field: 'Id',
+          operator: 'IN',
+          valueQuery: {
+            fields: [
+              {
+                text: 'AccountId',
+              },
+            ],
+            subqueries: [],
+            sObject: 'Opportunity',
+            where: {
+              left: {
+                field: 'StageName',
+                operator: '=',
+                value: "'Closed Lost'",
+              },
+            },
+          },
+        },
+      },
+    },
+  },
+  {
+    testCase: 48,
+    soql: `SELECT Id FROM Account WHERE Id NOT IN (SELECT AccountId FROM Opportunity WHERE IsClosed = false)`,
+    output: {
+      fields: [
+        {
+          text: 'Id',
+        },
+      ],
+      subqueries: [],
+      sObject: 'Account',
+      where: {
+        left: {
+          field: 'Id',
+          operator: 'NOT IN',
+          valueQuery: {
+            fields: [
+              {
+                text: 'AccountId',
+              },
+            ],
+            subqueries: [],
+            sObject: 'Opportunity',
+            where: {
+              left: {
+                field: 'IsClosed',
+                operator: '=',
+                value: 'false',
+              },
+            },
+          },
+        },
+      },
+    },
+  },
+  {
+    testCase: 49,
+    soql: `SELECT Id, Name FROM Account WHERE Id IN (SELECT AccountId FROM Contact WHERE LastName LIKE 'apple%') AND Id IN (SELECT AccountId FROM Opportunity WHERE isClosed = false)`,
+    output: {
+      fields: [
+        {
+          text: 'Id',
+        },
+        {
+          text: 'Name',
+        },
+      ],
+      subqueries: [],
+      sObject: 'Account',
+      where: {
+        left: {
+          field: 'Id',
+          operator: 'IN',
+          valueQuery: {
+            fields: [
+              {
+                text: 'AccountId',
+              },
+            ],
+            subqueries: [],
+            sObject: 'Contact',
+            where: {
+              left: {
+                field: 'LastName',
+                operator: 'LIKE',
+                value: "'apple%'",
+              },
+            },
+          },
+        },
+        operator: 'AND',
+        right: {
+          left: {
+            field: 'Id',
+            operator: 'IN',
+            valueQuery: {
+              fields: [
+                {
+                  text: 'AccountId',
+                },
+              ],
+              subqueries: [],
+              sObject: 'Opportunity',
+              where: {
+                left: {
+                  field: 'isClosed',
+                  operator: '=',
+                  value: 'false',
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  },
 ];
 export default testCases;

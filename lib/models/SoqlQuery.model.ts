@@ -57,9 +57,11 @@ export interface Condition {
   openParen?: number;
   closeParen?: number;
   logicalPrefix?: LogicalPrefix;
-  field: string;
+  field?: string;
+  fn?: FunctionExp;
   operator: Operator;
-  value: string | string[];
+  value?: string | string[];
+  valueQuery?: Query;
 }
 
 export interface OrderByClause {

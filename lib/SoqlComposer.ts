@@ -166,7 +166,11 @@ export class Compose {
           ? new Array(where.left.openParen).fill('(').join('')
           : '';
       output += `${utils.get(where.left.logicalPrefix, ' ')}`;
-      output += `${where.left.field} ${where.left.operator} ${utils.getAsArrayStr(where.left.value)}`;
+      output += where.left.fn ? this.parseFn(where.left.fn) : where.left.field;
+      output += ` ${where.left.operator} `;
+      output += where.left.valueQuery
+        ? `(${this.parseQuery(where.left.valueQuery)})`
+        : utils.getAsArrayStr(where.left.value);
       output +=
         utils.isNumber(where.left.closeParen) && where.left.closeParen > 0
           ? new Array(where.left.closeParen).fill(')').join('')
