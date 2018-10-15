@@ -3,3 +3,8 @@ body {
   padding: 0;
   font-family: sans-serif;
 }
+
+.queries-col {
+  overflow-y: scroll;
+  max-height: 1000px;
+}

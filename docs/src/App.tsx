@@ -35,7 +35,7 @@ class App extends React.Component<any, IAppstate> {
             <div className="ms-Grid-col ms-sm6">
               <ParseSoql soql={this.state.soql} />
             </div>
-            <div className="ms-Grid-col ms-sm6">
+            <div className="ms-Grid-col ms-sm6 queries-col">
               <SampleQueries onQuerySelected={this.onQuerySelected} />
             </div>
           </div>
