@@ -1,5 +1,9 @@
 # SOQL Parser JS
 
+[![build](https://api.travis-ci.com/paustint/soql-parser-js.png?branch=master)](https://travis-ci.com/paustint/soql-parser-js)
+[![npm version](https://badge.fury.io/js/soql-parser-js.svg)](https://badge.fury.io/js/soql-parser-js)
+[![dependencies](https://david-dm.org/paustint/soql-parser-js.svg)](https://david-dm.org/paustint/soql-parser-js)
+
 ## Description
 SOQL Parser JS will parse a SOQL query string into an object that is easy to work with and has the query broken down into usable parts.
 
