@@ -5,13 +5,15 @@
   "homepage": "http://paustint.github.io/soql-parser-js",
   "dependencies": {
     "@types/react-copy-to-clipboard": "^4.2.6",
+    "@types/react-syntax-highlighter": "0.0.7",
     "gh-pages": "^2.0.1",
     "office-ui-fabric-react": "^6.84.0",
     "react": "^16.5.2",
     "react-copy-to-clipboard": "^5.0.1",
     "react-dom": "^16.5.2",
     "react-scripts-ts": "3.1.0",
-    "soql-parser-js": "^0.3.2"
+    "react-syntax-highlighter": "^9.0.0",
+    "soql-parser-js": "^0.3.3-beta.0"
   },
   "scripts": {
     "start": "react-scripts-ts start",

@@ -2,7 +2,10 @@ import { Button, DefaultButton } from 'office-ui-fabric-react/lib/Button';
 import { TextField } from 'office-ui-fabric-react/lib/TextField';
 import * as React from 'react';
 import * as CopyToClipboard from 'react-copy-to-clipboard';
-import { parseQuery } from 'soql-parser-js';
+import { parseQuery, Query, composeQuery } from 'soql-parser-js';
+import SyntaxHighlighter from 'react-syntax-highlighter/prism';
+import { xonokai } from 'react-syntax-highlighter/styles/prism';
+
 import './parse-soql.css';
 
 interface IParseSoqlProps {
@@ -12,6 +15,7 @@ interface IParseSoqlProps {
 interface IParseSoqlState {
   isValid: boolean;
   parsedSoql: string;
+  composedQuery?: string;
   soql: string;
 }
 
@@ -19,9 +23,13 @@ export class ParseSoql extends React.Component<IParseSoqlProps, IParseSoqlState>
   constructor(props: IParseSoqlProps) {
     super(props);
 
+    const parsedSoql = props.soql ? parseQuery(props.soql) : undefined;
+    const composedQuery = parsedSoql ? composeQuery(parsedSoql) : '';
+
     this.state = {
       isValid: true,
-      parsedSoql: props.soql ? JSON.stringify(parseQuery(props.soql), null, 4) : '',
+      parsedSoql: JSON.stringify(parsedSoql || '', null, 4),
+      composedQuery,
       soql: props.soql || '',
     };
   }
@@ -57,9 +65,11 @@ export class ParseSoql extends React.Component<IParseSoqlProps, IParseSoqlState>
 
   public parseQuery = (query?: string) => {
     try {
-      const parsedSoql = parseQuery(query || this.state.soql);
+      const parsedSoql: Query = parseQuery(query || this.state.soql);
+      const composedQuery: string = composeQuery(parsedSoql);
       this.setState({
         parsedSoql: JSON.stringify(parsedSoql, null, 4),
+        composedQuery,
       });
     } catch (ex) {
       this.setState({
@@ -84,7 +94,7 @@ export class ParseSoql extends React.Component<IParseSoqlProps, IParseSoqlState>
                 <TextField
                   label="SOQL Query"
                   multiline={true}
-                  rows={12}
+                  rows={8}
                   value={this.state.soql}
                   onChange={this.onChange}
                   onGetErrorMessage={this.getValidMessage}
@@ -107,31 +117,48 @@ export class ParseSoql extends React.Component<IParseSoqlProps, IParseSoqlState>
           </div>
           <div className="ms-Grid-row">
             <div className="ms-Grid-col ms-sm12">
-              <TextField
-                label="Parsed Output"
-                multiline={true}
-                rows={25}
-                disabled={true}
-                value={this.state.parsedSoql}
-              />
-              <div className="parse-row">
+              <div className="ms-font-l">Parsed Query</div>
+              <SyntaxHighlighter language="json" style={xonokai} customStyle={{ maxHeight: 400, minHeight: 400, marginTop: 0, marginBottom: 5 }}>
+                {this.state.parsedSoql}
+              </SyntaxHighlighter>
+              <div>
                 {this.state.parsedSoql && (
-                  <div className="">
-                    <CopyToClipboard text={this.state.parsedSoql}>
-                      <Button
-                        primary={true}
-                        disabled={!this.state.parsedSoql}
-                        iconProps={{ iconName: 'copy' }}
-                        title="Copy"
-                        ariaLabel="Copy"
-                        text="Copy to Clipboard"
-                      />
-                    </CopyToClipboard>
-                  </div>
+                  <CopyToClipboard text={this.state.parsedSoql}>
+                    <Button
+                      primary={true}
+                      disabled={!this.state.parsedSoql}
+                      iconProps={{ iconName: 'copy' }}
+                      title="Copy"
+                      ariaLabel="Copy"
+                      text="Copy to Clipboard"
+                    />
+                  </CopyToClipboard>
                 )}
               </div>
             </div>
           </div>
+          {this.state.composedQuery && (
+            <div className="ms-Grid-row">
+              <div className="ms-Grid-col ms-sm12">
+                <div className="ms-font-l">
+                  Composed Query <span className="ms-font-s">(Parsed query converted back to SOQL)</span>
+                </div>
+                <SyntaxHighlighter language="sql" style={xonokai} customStyle={{ marginTop: 0, marginBottom: 5 }}>
+                  {this.state.composedQuery}
+                </SyntaxHighlighter>
+                <CopyToClipboard text={this.state.composedQuery}>
+                  <Button
+                    primary={true}
+                    disabled={!this.state.composedQuery}
+                    iconProps={{ iconName: 'copy' }}
+                    title="Copy"
+                    ariaLabel="Copy"
+                    text="Copy to Clipboard"
+                  />
+                </CopyToClipboard>
+              </div>
+            </div>
+          )}
         </div>
       </div>
     );
