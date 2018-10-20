@@ -62,7 +62,7 @@ export class Compose {
     fields.forEach((field, i) => {
       if (field.match(this.subqueryFieldRegex)) {
         const subquery = query.subqueries.find(
-          subquery => subquery.sObject === field.replace(this.subqueryFieldReplaceRegex, '')
+          subquery => subquery.sObjectRelationshipName === field.replace(this.subqueryFieldReplaceRegex, '')
         );
         if (subquery) {
           fields[i] = `(${this.parseQuery(subquery)})`;
@@ -70,7 +70,13 @@ export class Compose {
       }
     });
     output += ` ${fields.join(', ').trim()} FROM`;
-    output += ` ${utils.get(query.sObjectPrefix, '.')}${query.sObject}${utils.get(query.sObjectAlias, '', ' ')}`;
+    if (query.sObjectRelationshipName) {
+      const sObjectPrefix = query.sObjectPrefix || [];
+      sObjectPrefix.push(query.sObjectRelationshipName);
+      output += ` ${sObjectPrefix.join('.')}${utils.get(query.sObjectAlias, '', ' ')}`;
+    } else {
+      output += ` ${query.sObject}${utils.get(query.sObjectAlias, '', ' ')}`;
+    }
     this.log(output);
 
     if (query.where) {
