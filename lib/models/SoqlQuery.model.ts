@@ -9,9 +9,10 @@ export type UpdateClause = 'TRACKING' | 'VIEWSTAT';
 export interface Query {
   fields: Field[];
   subqueries: Query[];
-  sObject: string;
+  sObject?: string;
   sObjectAlias?: string;
-  sObjectPrefix?: string;
+  sObjectPrefix?: string[];
+  sObjectRelationshipName?: string;
   where?: WhereClause;
   limit?: number;
   offset?: number;

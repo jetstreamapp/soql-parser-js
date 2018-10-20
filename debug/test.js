@@ -1,7 +1,7 @@
 var soqlParserJs = require('../dist');
 
 const query = `
-SELECT Company, toLabel(Status) FROM Lead WHERE toLabel(Status) = 'le Draft'
+SELECT Account.Name, (SELECT Contact.LastName FROM Account.Contact.Foo.Bars) FROM Account
 `;
 
 const parsedQuery = soqlParserJs.parseQuery(query, { logging: true });

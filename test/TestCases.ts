@@ -306,7 +306,7 @@ export const testCases: TestCase[] = [
             },
           ],
           subqueries: [],
-          sObject: 'Contacts',
+          sObjectRelationshipName: 'Contacts',
         },
       ],
       sObject: 'Account',
@@ -334,8 +334,8 @@ export const testCases: TestCase[] = [
             },
           ],
           subqueries: [],
-          sObject: 'Contacts',
-          sObjectPrefix: 'Account',
+          sObjectRelationshipName: 'Contacts',
+          sObjectPrefix: ['Account'],
         },
       ],
       sObject: 'Account',
@@ -362,7 +362,7 @@ export const testCases: TestCase[] = [
             },
           ],
           subqueries: [],
-          sObject: 'Contacts',
+          sObjectRelationshipName: 'Contacts',
           where: {
             left: {
               field: 'CreatedBy.Alias',
@@ -430,7 +430,7 @@ export const testCases: TestCase[] = [
             },
           ],
           subqueries: [],
-          sObject: 'Line_Items__r',
+          sObjectRelationshipName: 'Line_Items__r',
         },
       ],
       sObject: 'Merchandise__c',
@@ -565,7 +565,7 @@ export const testCases: TestCase[] = [
             },
           ],
           subqueries: [],
-          sObject: 'Notes',
+          sObjectRelationshipName: 'Notes',
         },
       ],
       sObject: 'Account',
@@ -609,7 +609,7 @@ export const testCases: TestCase[] = [
             },
           ],
           subqueries: [],
-          sObject: 'OpportunityLineItems',
+          sObjectRelationshipName: 'OpportunityLineItems',
         },
       ],
       sObject: 'Opportunity',
@@ -1007,7 +1007,7 @@ export const testCases: TestCase[] = [
             },
           ],
           subqueries: [],
-          sObject: 'ChildAccounts',
+          sObjectRelationshipName: 'ChildAccounts',
           sObjectAlias: 'a2',
         },
         {
@@ -1018,7 +1018,7 @@ export const testCases: TestCase[] = [
             },
           ],
           subqueries: [],
-          sObject: 'ChildAccounts1',
+          sObjectRelationshipName: 'ChildAccounts1',
           sObjectAlias: 'a1',
         },
       ],
@@ -1438,6 +1438,35 @@ export const testCases: TestCase[] = [
           },
         },
       },
+    },
+  },
+  {
+    testCase: 50,
+    soql: 'SELECT Account.Name, (SELECT Contact.LastName FROM Account.Contact.Foo.Bars) FROM Account',
+    output: {
+      fields: [
+        {
+          text: 'Account.Name',
+          relationshipFields: ['Account', 'Name'],
+        },
+        {
+          subqueryObjName: 'Bars',
+        },
+      ],
+      subqueries: [
+        {
+          fields: [
+            {
+              text: 'Contact.LastName',
+              relationshipFields: ['Contact', 'LastName'],
+            },
+          ],
+          subqueries: [],
+          sObjectRelationshipName: 'Bars',
+          sObjectPrefix: ['Account', 'Contact', 'Foo'],
+        },
+      ],
+      sObject: 'Account',
     },
   },
 ];

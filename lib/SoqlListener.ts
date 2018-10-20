@@ -844,11 +844,20 @@ export class Listener implements SOQLListener {
     if (this.config.logging) {
       console.log('enterObject_spec:', ctx.text);
     }
-    this.getSoqlQuery().sObject = ctx.getChild(0).text;
-    if (this.config.includeSubqueryAsField && this.context.isSubQuery) {
+
+    if (!this.context.isSubQuery) {
+      this.getSoqlQuery().sObject = ctx.getChild(0).text;
+    } else {
+      this.getSoqlQuery().sObjectRelationshipName = ctx.getChild(0).text;
       if (ctx.getChild(0).text.includes('.')) {
-        this.getSoqlQuery().sObject = ctx.getChild(1).text;
-        this.getSoqlQuery().sObjectPrefix = ctx.getChild(0).text.replace('.', '');
+        this.getSoqlQuery().sObjectRelationshipName = ctx.getChild(1).text;
+        const prefixList: string[] = [];
+        for (let i = 0; i < ctx.getChild(0).childCount; i++) {
+          if (ctx.getChild(0).getChild(i) instanceof Parser.Object_nameContext) {
+            prefixList.push(ctx.getChild(0).getChild(i).text);
+          }
+        }
+        this.getSoqlQuery().sObjectPrefix = prefixList;
         this.soqlQuery.fields.push({
           subqueryObjName: ctx.getChild(1).text,
         });
