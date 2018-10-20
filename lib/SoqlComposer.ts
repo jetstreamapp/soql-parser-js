@@ -1,14 +1,13 @@
 import {
-  Query,
   Field,
   FunctionExp,
-  WhereClause,
   GroupByClause,
   HavingClause,
   OrderByClause,
+  Query,
   TypeOfField,
+  WhereClause,
   WithDataCategoryClause,
-  ForClause,
 } from './models/SoqlQuery.model';
 import * as utils from './utils';
 
