@@ -19,7 +19,8 @@
     "preantlr": "rm -rf src/generated/*",
     "antlr": "./node_modules/.bin/antlr4ts -visitor SOQL.g4 -o src/generated/",
     "release": "release-it",
-    "update-docs": "cd docs && npm run update"
+    "update-docs": "cd docs && npm run update",
+    "update-docs:no-git": "cd docs && npm run deploy"
   },
   "author": "Austin Turner <paustint@gmail.com>",
   "license": "MIT",
