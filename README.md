@@ -204,15 +204,15 @@ export interface SoqlComposeConfig {
 
 ### Data Models
 ```typescript
-export type LogicalOperator = 'AND' | 'OR';
-export type Operator = '=' | '<=' | '>=' | '>' | '<' | 'LIKE' | 'IN' | 'NOT IN' | 'INCLUDES' | 'EXCLUDES';
-export type TypeOfFieldConditionType = 'WHEN' | 'ELSE';
-export type GroupSelector = 'ABOVE' | 'AT' | 'BELOW' | 'ABOVE_OR_BELOW';
-export type LogicalPrefix = 'NOT';
-export type ForClause = 'VIEW' | 'UPDATE' | 'REFERENCE';
-export type UpdateClause = 'TRACKING' | 'VIEWSTAT';
+type LogicalOperator = 'AND' | 'OR';
+type Operator = '=' | '<=' | '>=' | '>' | '<' | 'LIKE' | 'IN' | 'NOT IN' | 'INCLUDES' | 'EXCLUDES';
+type TypeOfFieldConditionType = 'WHEN' | 'ELSE';
+type GroupSelector = 'ABOVE' | 'AT' | 'BELOW' | 'ABOVE_OR_BELOW';
+type LogicalPrefix = 'NOT';
+type ForClause = 'VIEW' | 'UPDATE' | 'REFERENCE';
+type UpdateClause = 'TRACKING' | 'VIEWSTAT';
 
-export interface Query {
+interface Query {
   fields: Field[];
   subqueries: Query[];
   sObject?: string;
@@ -230,11 +230,11 @@ export interface Query {
   update?: UpdateClause;
 }
 
-export interface SelectStatement {
+interface SelectStatement {
   fields: Field[];
 }
 
-export interface Field {
+interface Field {
   text?: string;
   alias?: string;
   relationshipFields?: string[];
@@ -243,24 +243,24 @@ export interface Field {
   typeOf?: TypeOfField;
 }
 
-export interface TypeOfField {
+interface TypeOfField {
   field: string;
   conditions: TypeOfFieldCondition[];
 }
 
-export interface TypeOfFieldCondition {
+interface TypeOfFieldCondition {
   type: TypeOfFieldConditionType;
   objectType?: string; // not present when ELSE
   fieldList: string[];
 }
 
-export interface WhereClause {
+interface WhereClause {
   left: Condition;
   right?: WhereClause;
   operator?: LogicalOperator;
 }
 
-export interface Condition {
+interface Condition {
   openParen?: number;
   closeParen?: number;
   logicalPrefix?: LogicalPrefix;
@@ -271,25 +271,25 @@ export interface Condition {
   valueQuery?: Query;
 }
 
-export interface OrderByClause {
+interface OrderByClause {
   field?: string;
   fn?: FunctionExp;
   order?: 'ASC' | 'DESC';
   nulls?: 'FIRST' | 'LAST';
 }
 
-export interface GroupByClause {
+interface GroupByClause {
   field: string | string[];
   type?: 'CUBE' | 'ROLLUP';
 }
 
-export interface HavingClause {
+interface HavingClause {
   left: HavingCondition;
   right?: HavingClause;
   operator?: LogicalOperator;
 }
 
-export interface HavingCondition {
+interface HavingCondition {
   openParen?: number;
   closeParen?: number;
   field?: string;
@@ -298,23 +298,25 @@ export interface HavingCondition {
   value: string | number;
 }
 
-export interface FunctionExp {
+interface FunctionExp {
   text?: string; // Count(Id)
   name?: string; // Count
   alias?: string;
   parameter?: string | string[];
+  isAggregateFn?: boolean;
   fn?: FunctionExp; // used for nested functions FORMAT(MIN(CloseDate))
 }
 
-export interface WithDataCategoryClause {
+interface WithDataCategoryClause {
   conditions: WithDataCategoryCondition[];
 }
 
-export interface WithDataCategoryCondition {
+interface WithDataCategoryCondition {
   groupName: string;
   selector: GroupSelector;
   parameters: string[];
 }
+
 ```
 
 ## CLI Usage
