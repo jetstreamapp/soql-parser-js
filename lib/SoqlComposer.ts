@@ -222,10 +222,9 @@ export class Compose {
           : '';
     }
     if (where.right) {
-      return `${output}${this.formatter.formatAddNewLine()}${utils.get(where.operator)} ${this.parseWhereClause(
-        where.right,
-        isSubquery
-      )}`.trim();
+      return `${output}${this.formatter.formatAddNewLine(' ', isSubquery)}${utils.get(
+        where.operator
+      )} ${this.parseWhereClause(where.right, isSubquery)}`.trim();
     } else {
       return output.trim();
     }
