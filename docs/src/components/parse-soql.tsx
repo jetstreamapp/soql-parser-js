@@ -1,5 +1,6 @@
 import { Button, DefaultButton } from 'office-ui-fabric-react/lib/Button';
 import { TextField } from 'office-ui-fabric-react/lib/TextField';
+import { Checkbox } from 'office-ui-fabric-react/lib/Checkbox';
 import * as React from 'react';
 import * as CopyToClipboard from 'react-copy-to-clipboard';
 import { parseQuery, Query, composeQuery } from 'soql-parser-js';
@@ -17,6 +18,7 @@ interface IParseSoqlState {
   parsedSoql: string;
   composedQuery?: string;
   soql: string;
+  format: boolean;
 }
 
 export class ParseSoql extends React.Component<IParseSoqlProps, IParseSoqlState> {
@@ -31,6 +33,7 @@ export class ParseSoql extends React.Component<IParseSoqlProps, IParseSoqlState>
       parsedSoql: JSON.stringify(parsedSoql || '', null, 4),
       composedQuery,
       soql: props.soql || '',
+      format: true,
     };
   }
 
@@ -63,10 +66,11 @@ export class ParseSoql extends React.Component<IParseSoqlProps, IParseSoqlState>
     }
   };
 
-  public parseQuery = (query?: string) => {
+  public parseQuery = (query?: string, format?: boolean) => {
     try {
+      format = typeof format === 'boolean' ? format : this.state.format;
       const parsedSoql: Query = parseQuery(query || this.state.soql);
-      const composedQuery: string = composeQuery(parsedSoql);
+      const composedQuery: string = composeQuery(parsedSoql, { format });
       this.setState({
         parsedSoql: JSON.stringify(parsedSoql, null, 4),
         composedQuery,
@@ -82,6 +86,11 @@ export class ParseSoql extends React.Component<IParseSoqlProps, IParseSoqlState>
     if (ev.keyCode === 13 && (ev.altKey || ev.metaKey)) {
       this.parseQuery();
     }
+  };
+
+  public toggleFormat = () => {
+    this.setState({ format: !this.state.format });
+    this.parseQuery(this.state.soql, !this.state.format);
   };
 
   public render() {
@@ -118,7 +127,11 @@ export class ParseSoql extends React.Component<IParseSoqlProps, IParseSoqlState>
           <div className="ms-Grid-row">
             <div className="ms-Grid-col ms-sm12">
               <div className="ms-font-l">Parsed Query</div>
-              <SyntaxHighlighter language="json" style={xonokai} customStyle={{ maxHeight: 400, minHeight: 400, marginTop: 0, marginBottom: 5 }}>
+              <SyntaxHighlighter
+                language="json"
+                style={xonokai}
+                customStyle={{ maxHeight: 400, minHeight: 400, marginTop: 0, marginBottom: 5 }}
+              >
                 {this.state.parsedSoql}
               </SyntaxHighlighter>
               <div>
@@ -146,6 +159,9 @@ export class ParseSoql extends React.Component<IParseSoqlProps, IParseSoqlState>
                 <SyntaxHighlighter language="sql" style={xonokai} customStyle={{ marginTop: 0, marginBottom: 5 }}>
                   {this.state.composedQuery}
                 </SyntaxHighlighter>
+                <div style={{ margin: 5 }}>
+                  <Checkbox label="Format Output" checked={this.state.format} onChange={this.toggleFormat} />
+                </div>
                 <CopyToClipboard text={this.state.composedQuery}>
                   <Button
                     primary={true}
