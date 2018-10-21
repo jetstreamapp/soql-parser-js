@@ -3,7 +3,7 @@ import { TextField } from 'office-ui-fabric-react/lib/TextField';
 import { Checkbox } from 'office-ui-fabric-react/lib/Checkbox';
 import * as React from 'react';
 import * as CopyToClipboard from 'react-copy-to-clipboard';
-import { parseQuery, Query, composeQuery } from 'soql-parser-js';
+import { parseQuery, Query, composeQuery, isQueryValid } from 'soql-parser-js';
 import SyntaxHighlighter from 'react-syntax-highlighter/prism';
 import { xonokai } from 'react-syntax-highlighter/styles/prism';
 
@@ -50,12 +50,7 @@ export class ParseSoql extends React.Component<IParseSoqlProps, IParseSoqlState>
   };
 
   public isValid = (query: string) => {
-    try {
-      parseQuery(query);
-      return true;
-    } catch (ex) {
-      return false;
-    }
+    return isQueryValid(query);
   };
 
   public getValidMessage = () => {

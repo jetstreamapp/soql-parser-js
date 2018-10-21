@@ -69,7 +69,7 @@ export class Compose {
 
   private parseQuery(query: Query, isSubquery: boolean = false): string {
     const fieldData: FieldData = {
-      fields: this.parseFields(query.fields).map(field => ({
+      fields: this.parseFields(query.fields, query.sObjectAlias ? true : false).map(field => ({
         text: field,
         isSubquery: false,
         prefix: '',
@@ -170,11 +170,15 @@ export class Compose {
     return output;
   }
 
-  private parseFields(fields: Field[]): string[] {
+  private parseFields(fields: Field[], hasSObjectAlias: boolean): string[] {
     return fields
       .map(field => {
         if (utils.isString(field.text)) {
-          return `${utils.get(field.alias, '.')}${field.text}`;
+          if (hasSObjectAlias) {
+            return `${utils.get(field.alias, '.')}${field.text}`;
+          } else {
+            return `${field.text}${utils.get(field.alias, '', ' ')}`;
+          }
         } else if (utils.isObject(field.fn)) {
           // parse fn
           return this.parseFn(field.fn);

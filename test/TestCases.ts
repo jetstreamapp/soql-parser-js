@@ -1463,5 +1463,19 @@ export const testCases: TestCase[] = [
       sObject: 'Account',
     },
   },
+  {
+    testCase: 50,
+    soql: 'SELECT Id myAlias FROM Account',
+    output: {
+      fields: [
+        {
+          text: 'Id',
+          alias: 'myAlias',
+        },
+      ],
+      subqueries: [],
+      sObject: 'Account',
+    },
+  },
 ];
 export default testCases;

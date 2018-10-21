@@ -226,7 +226,11 @@ export class Listener implements SOQLListener {
       });
     }
     if (this.context.currentItem === 'field') {
-      this.context.tempData.alias = ctx.text;
+      if (this.context.tempData) {
+        this.context.tempData.alias = ctx.text;
+      } else {
+        this.getSoqlQuery().fields[this.getSoqlQuery().fields.length - 1].alias = ctx.text;
+      }
     }
     if (this.context.currentItem === 'where') {
       this.context.tempData.currConditionOperation.left.fn.alias = ctx.text;
@@ -655,6 +659,8 @@ export class Listener implements SOQLListener {
     this.context.currentItem = 'field';
     if (ctx.text.includes('.')) {
       this.getSoqlQuery().fields.push({ text: ctx.text, relationshipFields: ctx.text.split('.') });
+    } else if (ctx.childCount > 1) {
+      this.getSoqlQuery().fields.push({ text: ctx.getChild(0).text });
     } else {
       this.getSoqlQuery().fields.push({ text: ctx.text });
     }

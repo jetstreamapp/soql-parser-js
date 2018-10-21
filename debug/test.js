@@ -1,24 +1,24 @@
 var soqlParserJs = require('../dist');
 
-// const query = `
-// SELECT Id, Name FROM Account WHERE Id IN (SELECT AccountId FROM Contact WHERE LastName LIKE 'apple%') AND Id IN (SELECT AccountId FROM Opportunity WHERE isClosed = false)
-// `;
+const query = `
+SELECT Id myAlias FROM Account
+`;
 
-// const parsedQuery = soqlParserJs.parseQuery(query, { logging: true });
-// console.log(JSON.stringify(parsedQuery, null, 2));
+const parsedQuery = soqlParserJs.parseQuery(query, { logging: true });
+console.log(JSON.stringify(parsedQuery, null, 2));
 
-// const composedQuery = soqlParserJs.composeQuery(parsedQuery, { logging: true, format: true });
-// console.log(composedQuery);
+const composedQuery = soqlParserJs.composeQuery(parsedQuery, { logging: true, format: true });
+console.log(composedQuery);
 
 // SELECT Id, Name FROM Account WHERE Id IN (SELECT AccountId FROM Opportunity WHERE StageName = 'Closed Lost')
 // SELECT Id FROM Account WHERE Id NOT IN (SELECT AccountId FROM Opportunity WHERE IsClosed = false)
 // SELECT Id, Name FROM Account WHERE Id IN (SELECT AccountId FROM Contact WHERE LastName LIKE 'apple%') AND Id IN (SELECT AccountId FROM Opportunity WHERE isClosed = false)
 
-const query = `
-SELECT Id, Name FROM Account WHERE Id IN (SELECT AccountId FROM Contact WHERE LastName LIKE 'apple%') AND Id IN (SELECT AccountId FROM Opportunity WHERE isClosed = false)
-`;
+// const query = `
+// SELECT Id, Name FROM Account WHERE Id IN (SELECT AccountId FROM Contact WHERE LastName LIKE 'apple%') AND Id IN (SELECT AccountId FROM Opportunity WHERE isClosed = false)
+// `;
 
-const isValid = soqlParserJs.isQueryValid(query, true);
-console.log('isValid', isValid);
+// const isValid = soqlParserJs.isQueryValid(query, true);
+// console.log('isValid', isValid);
 
-const parsedQuery = soqlParserJs.parseQuery(query, { logging: true });
+// const parsedQuery = soqlParserJs.parseQuery(query, { logging: true });
