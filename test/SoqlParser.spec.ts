@@ -1,8 +1,9 @@
-import { parseQuery, composeQuery } from '../lib';
+import { parseQuery, composeQuery, isQueryValid } from '../lib';
 import { expect } from 'chai';
 import 'mocha';
 import testCases from './TestCases';
 import testCasesForFormat from './TestCasesForFormat';
+import testCasesForIsValid from './TestCasesForIsValid';
 import { formatQuery } from '../lib/SoqlFormatter';
 
 const replacements = [
@@ -33,11 +34,27 @@ describe('compose queries', () => {
     });
   });
 });
+
 describe('format queries', () => {
   testCasesForFormat.forEach(testCase => {
     it(`should format query - test case ${testCase.testCase} - ${testCase.soql}`, () => {
       const formattedQuery = formatQuery(testCase.soql);
       expect(formattedQuery).equal(testCase.formattedSoql);
+    });
+  });
+});
+
+describe('validate queries', () => {
+  testCasesForIsValid.filter(testCase => testCase.isValid).forEach(testCase => {
+    it(`should identify valid queries - test case ${testCase.testCase} - ${testCase.soql}`, () => {
+      const isValid = isQueryValid(testCase.soql);
+      expect(isValid).equal(testCase.isValid);
+    });
+  });
+  testCasesForIsValid.filter(testCase => !testCase.isValid).forEach(testCase => {
+    it(`should identify invalid queries - test case ${testCase.testCase} - ${testCase.soql}`, () => {
+      const isValid = isQueryValid(testCase.soql);
+      expect(isValid).equal(testCase.isValid);
     });
   });
 });

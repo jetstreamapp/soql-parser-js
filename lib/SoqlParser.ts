@@ -5,22 +5,23 @@ import { SyntaxErrorListener } from './ErrorListener';
 import { SOQLLexer } from './generated/SOQLLexer';
 import { SOQLParser, Soql_queryContext } from './generated/SOQLParser';
 import { Query } from './models/SoqlQuery.model';
-import { Listener } from './SoqlListener';
+import { Listener, ListenerQuick } from './SoqlListener';
 
-export interface SoqlQueryConfig {
-  /**
-   * If true, continue to parse even if there appears to be a syntax error.
-   * Other exceptions may be thrown when building the SoqlQuery object
-   */
+export interface ConfigBase {
+  logging?: boolean; // default=false
+}
+
+export interface SoqlQueryConfig extends ConfigBase {
   continueIfErrors?: boolean; // default=false
-  logging: boolean; // default=false
-  includeSubqueryAsField: boolean; // default=true
+}
+
+function configureBaseDefaults(config: Partial<ConfigBase> = {}) {
+  config.logging = utils.isBoolean(config.logging) ? config.logging : false;
 }
 
 function configureDefaults(config: Partial<SoqlQueryConfig> = {}) {
   config.continueIfErrors = utils.isBoolean(config.continueIfErrors) ? config.continueIfErrors : false;
   config.logging = utils.isBoolean(config.logging) ? config.logging : false;
-  config.includeSubqueryAsField = utils.isBoolean(config.includeSubqueryAsField) ? config.includeSubqueryAsField : true;
 }
 
 /**
@@ -65,4 +66,32 @@ export function parseQuery(soql: string, config: Partial<SoqlQueryConfig> = {}):
     console.timeEnd('parser');
   }
   return listener.soqlQuery;
+}
+
+/**
+ * @description Parse query to determine if the query is valid.
+ * @param {soql} String SOQL query
+ * @param {logging} boolean optional Prints out logging information
+ * @returns boolean
+ */
+export function isQueryValid(soql: string, config: ConfigBase = {}): boolean {
+  configureBaseDefaults(config);
+  let isValid = true;
+  if (config.logging) {
+    console.time('isQueryValid');
+    console.log('Parsing Query:', soql);
+  }
+
+  try {
+    getSoqlQueryContext(soql).soql_query();
+  } catch (ex) {
+    isValid = false;
+  } finally {
+    if (config.logging) {
+      console.log('isValidQuery', isValid);
+      console.timeEnd('isQueryValid');
+    }
+  }
+
+  return isValid;
 }
