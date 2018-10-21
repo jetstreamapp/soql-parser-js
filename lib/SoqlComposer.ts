@@ -10,21 +10,25 @@ import {
   WithDataCategoryClause,
 } from './models/SoqlQuery.model';
 import * as utils from './utils';
+import { FieldData, Formatter } from './SoqlFormatter';
 
 export interface SoqlComposeConfig {
   logging: boolean; // default=false
+  format: boolean;
 }
 
 export function composeQuery(soql: Query, config: Partial<SoqlComposeConfig> = {}): string {
+  config.format = config.format ? true : false;
   if (config.logging) {
-    console.time('parser');
-    console.log('Parsing Query:', soql);
+    console.time('composer');
+    console.log('Composing Query:', soql);
+    console.log('Format output:', config.format);
   }
 
   const query = new Compose(soql, config).query;
 
   if (config.logging) {
-    console.timeEnd('parser');
+    console.timeEnd('composer');
   }
 
   return query;
@@ -35,12 +39,21 @@ export class Compose {
   private subqueryFieldReplaceRegex = /^{|}$/g;
 
   public logging: boolean = false;
+  public format: boolean = false;
   public query: string;
+  public formatter: Formatter;
 
   constructor(private soql: Query, config: Partial<SoqlComposeConfig> = {}) {
     const { logging } = config;
     this.logging = logging;
+    this.format = config.format;
     this.query = '';
+
+    this.formatter = new Formatter({
+      active: this.format,
+      logging: this.logging,
+    });
+
     this.start();
   }
 
@@ -54,22 +67,42 @@ export class Compose {
     }
   }
 
-  private parseQuery(query: Query): string {
-    let output = `SELECT`;
-    // Parse Fields
-    const fields = this.parseFields(query.fields);
+  private parseQuery(query: Query, isSubquery: boolean = false): string {
+    const fieldData: FieldData = {
+      fields: this.parseFields(query.fields).map(field => ({
+        text: field,
+        isSubquery: false,
+        prefix: '',
+        suffix: '',
+      })),
+      isSubquery,
+      lineBreaks: [],
+    };
+
+    let output = `SELECT `;
+
     // Replace subquery fields with parsed subqueries
-    fields.forEach((field, i) => {
-      if (field.match(this.subqueryFieldRegex)) {
+    fieldData.fields.forEach((field, i) => {
+      if (field.text.match(this.subqueryFieldRegex)) {
         const subquery = query.subqueries.find(
-          subquery => subquery.sObjectRelationshipName === field.replace(this.subqueryFieldReplaceRegex, '')
+          subquery => subquery.sObjectRelationshipName === field.text.replace(this.subqueryFieldReplaceRegex, '')
         );
         if (subquery) {
-          fields[i] = `(${this.parseQuery(subquery)})`;
+          fieldData.fields[i].text = `(${this.parseQuery(subquery, true)})`;
+          fieldData.fields[i].isSubquery = true;
         }
       }
     });
-    output += ` ${fields.join(', ').trim()} FROM`;
+
+    // Format fields based on configuration
+    this.formatter.formatFields(fieldData);
+
+    fieldData.fields.forEach(field => {
+      output += `${field.prefix}${field.text}${field.suffix}`;
+    });
+
+    output += this.formatter.formatClause('FROM', isSubquery);
+
     if (query.sObjectRelationshipName) {
       const sObjectPrefix = query.sObjectPrefix || [];
       sObjectPrefix.push(query.sObjectRelationshipName);
@@ -80,52 +113,59 @@ export class Compose {
     this.log(output);
 
     if (query.where) {
-      output += ` WHERE ${this.parseWhereClause(query.where)}`;
+      output += this.formatter.formatClause('WHERE', isSubquery);
+      output += ` ${this.parseWhereClause(query.where, isSubquery)}`;
       this.log(output);
     }
 
     // TODO: add WITH support https://github.com/paustint/soql-parser-js/issues/18
 
     if (query.groupBy) {
-      output += ` GROUP BY ${this.parseGroupByClause(query.groupBy)}`;
+      output += this.formatter.formatClause('GROUP BY', isSubquery);
+      output += ` ${this.parseGroupByClause(query.groupBy)}`;
       this.log(output);
       if (query.having) {
-        output += ` HAVING ${this.parseHavingClause(query.having)}`;
+        output += this.formatter.formatClause('HAVING', isSubquery);
+        output += ` ${this.parseHavingClause(query.having)}`;
         this.log(output);
       }
     }
 
     if (query.orderBy) {
-      output += ` ORDER BY ${this.parseOrderBy(query.orderBy)}`;
+      output += this.formatter.formatClause('ORDER BY', isSubquery);
+      output += ` ${this.parseOrderBy(query.orderBy)}`;
       this.log(output);
     }
 
     if (utils.isNumber(query.limit)) {
-      output += ` LIMIT ${query.limit}`;
+      output += this.formatter.formatClause('LIMIT', isSubquery);
+      output += ` ${query.limit}`;
       this.log(output);
     }
 
     if (utils.isNumber(query.offset)) {
-      output += ` OFFSET ${query.offset}`;
+      output += this.formatter.formatClause('OFFSET', isSubquery);
+      output += ` ${query.offset}`;
       this.log(output);
     }
 
     if (query.withDataCategory) {
-      output += ` WITH DATA CATEGORY ${this.parseWithDataCategory(query.withDataCategory)}`;
+      output += this.formatter.formatClause('WITH DATA CATEGORY', isSubquery);
+      output += ` ${this.parseWithDataCategory(query.withDataCategory)}`;
       this.log(output);
     }
 
     if (query.for) {
-      output += ` FOR ${query.for}`;
+      output += this.formatter.formatClause('FOR', isSubquery);
+      output += ` ${query.for}`;
       this.log(output);
     }
 
     if (query.update) {
-      output += ` UPDATE ${query.update}`;
+      output += this.formatter.formatClause('UPDATE', isSubquery);
+      output += ` ${query.update}`;
       this.log(output);
     }
-
-    // TODO: add FOR support https://github.com/paustint/soql-parser-js/issues/19
 
     return output;
   }
@@ -163,7 +203,7 @@ export class Compose {
     return `${(fn.text || '').replace(/,/g, ', ')} ${fn.alias || ''}`.trim();
   }
 
-  private parseWhereClause(where: WhereClause): string {
+  private parseWhereClause(where: WhereClause, isSubquery: boolean): string {
     let output = '';
     if (where.left) {
       output +=
@@ -174,7 +214,7 @@ export class Compose {
       output += where.left.fn ? this.parseFn(where.left.fn) : where.left.field;
       output += ` ${where.left.operator} `;
       output += where.left.valueQuery
-        ? `(${this.parseQuery(where.left.valueQuery)})`
+        ? `(${this.parseQuery(where.left.valueQuery, true)})`
         : utils.getAsArrayStr(where.left.value);
       output +=
         utils.isNumber(where.left.closeParen) && where.left.closeParen > 0
@@ -182,7 +222,10 @@ export class Compose {
           : '';
     }
     if (where.right) {
-      return `${output} ${utils.get(where.operator)} ${this.parseWhereClause(where.right)}`.trim();
+      return `${output}${this.formatter.formatAddNewLine()}${utils.get(where.operator)} ${this.parseWhereClause(
+        where.right,
+        isSubquery
+      )}`.trim();
     } else {
       return output.trim();
     }
