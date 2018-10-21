@@ -413,6 +413,10 @@ export class Listener implements SOQLListener {
     if (this.config.logging) {
       console.log('enterFunction_aggregate:', ctx.text);
     }
+    if (this.context.currentItem === 'field') {
+      const currFn: FunctionExp = this.context.tempData.fn || this.context.tempData;
+      currFn.isAggregateFn = true;
+    }
   }
   exitFunction_aggregate(ctx: Parser.Function_aggregateContext) {
     if (this.config.logging) {

@@ -97,6 +97,7 @@ export interface FunctionExp {
   name?: string; // Count
   alias?: string;
   parameter?: string | string[];
+  isAggregateFn?: boolean;
   fn?: FunctionExp; // used for nested functions FORMAT(MIN(CloseDate))
 }
 

@@ -1,7 +1,7 @@
 var soqlParserJs = require('../dist');
 
 const query = `
-SELECT Id myAlias FROM Account
+SELECT COUNT_DISTINCT(Company) FROM Lead
 `;
 
 const parsedQuery = soqlParserJs.parseQuery(query, { logging: true });

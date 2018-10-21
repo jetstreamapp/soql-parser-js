@@ -28,7 +28,7 @@ describe('compose queries', () => {
   testCases.forEach(testCase => {
     it(`should compose correctly - test case ${testCase.testCase} - ${testCase.soql}`, () => {
       const soqlQuery = composeQuery(parseQuery(testCase.soql));
-      let soql = testCase.soql;
+      let soql = testCase.soqlComposed || testCase.soql;
       replacements.forEach(replacement => (soql = soql.replace(replacement.matching, replacement.replace)));
       expect(soqlQuery).equal(soql);
     });

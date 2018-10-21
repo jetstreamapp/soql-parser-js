@@ -5,6 +5,7 @@ import { Query } from '../lib/models/SoqlQuery.model';
 export interface TestCase {
   testCase: number;
   soql: string;
+  soqlComposed?: string; // used if the composed is known to be different from input
   output: Query;
 }
 
@@ -130,6 +131,7 @@ export const testCases: TestCase[] = [
           fn: {
             text: 'COUNT()',
             name: 'COUNT',
+            isAggregateFn: true,
           },
         },
       ],
@@ -149,6 +151,7 @@ export const testCases: TestCase[] = [
           fn: {
             text: 'COUNT(Name)',
             name: 'COUNT',
+            isAggregateFn: true,
             parameter: 'Name',
           },
         },
@@ -172,6 +175,7 @@ export const testCases: TestCase[] = [
           fn: {
             text: 'COUNT(Id)',
             name: 'COUNT',
+            isAggregateFn: true,
             parameter: 'Id',
           },
         },
@@ -337,8 +341,8 @@ export const testCases: TestCase[] = [
   },
   {
     testCase: 15,
-    soql:
-      "SELECT Name, (SELECT LastName FROM Contacts WHERE CreatedBy.Alias = 'x') FROM Account WHERE Industry = 'media'",
+    soql: `SELECT Name, (SELECT LastName FROM Contacts WHERE CreatedBy.Alias='x') FROM Account WHERE Industry='media'`,
+    soqlComposed: `SELECT Name, (SELECT LastName FROM Contacts WHERE CreatedBy.Alias = 'x') FROM Account WHERE Industry = 'media'`,
     output: {
       fields: [
         {
@@ -638,6 +642,7 @@ export const testCases: TestCase[] = [
           fn: {
             text: 'COUNT(Id)',
             name: 'COUNT',
+            isAggregateFn: true,
             parameter: 'Id',
           },
         },
@@ -704,6 +709,7 @@ export const testCases: TestCase[] = [
           fn: {
             text: 'AVG(Amount)',
             name: 'avg',
+            isAggregateFn: true,
             parameter: 'Amount',
             alias: 'avg',
           },
@@ -739,6 +745,7 @@ export const testCases: TestCase[] = [
           fn: {
             text: 'COUNT(Name)',
             name: 'COUNT',
+            isAggregateFn: true,
             parameter: 'Name',
             alias: 'cnt',
           },
@@ -767,6 +774,7 @@ export const testCases: TestCase[] = [
           fn: {
             text: 'COUNT(Name)',
             name: 'COUNT',
+            isAggregateFn: true,
             parameter: 'Name',
             alias: 'cnt',
           },
@@ -782,8 +790,8 @@ export const testCases: TestCase[] = [
   },
   {
     testCase: 30,
-    soql:
-      'SELECT Type, BillingCountry, GROUPING(Type) grpType, GROUPING(BillingCountry) grpCty, COUNT(id) accts FROM Account GROUP BY CUBE(Type, BillingCountry) ORDER BY GROUPING(Type), GROUPING(Id, BillingCountry), Name DESC NULLS FIRST, Id ASC NULLS LAST',
+    soql: `SELECT Type, BillingCountry, GROUPING(Type)grpType, GROUPING(BillingCountry) grpCty, COUNT(id) accts FROM Account GROUP BY CUBE(Type,BillingCountry) ORDER BY GROUPING(Type), GROUPING(Id,BillingCountry), Name DESC NULLS FIRST, Id ASC NULLS LAST`,
+    soqlComposed: `SELECT Type, BillingCountry, GROUPING(Type) grpType, GROUPING(BillingCountry) grpCty, COUNT(id) accts FROM Account GROUP BY CUBE(Type, BillingCountry) ORDER BY GROUPING(Type), GROUPING(Id, BillingCountry), Name DESC NULLS FIRST, Id ASC NULLS LAST`,
     output: {
       fields: [
         {
@@ -812,6 +820,7 @@ export const testCases: TestCase[] = [
           fn: {
             text: 'COUNT(id)',
             name: 'COUNT',
+            isAggregateFn: true,
             parameter: 'id',
             alias: 'accts',
           },
@@ -942,6 +951,7 @@ export const testCases: TestCase[] = [
           fn: {
             text: 'COUNT(Name)',
             name: 'COUNT',
+            isAggregateFn: true,
             parameter: 'Name',
           },
         },
@@ -1259,6 +1269,7 @@ export const testCases: TestCase[] = [
             fn: {
               text: 'MIN(closedate)',
               name: 'MIN',
+              isAggregateFn: true,
               parameter: 'closedate',
             },
             alias: 'Amt',
@@ -1475,6 +1486,29 @@ export const testCases: TestCase[] = [
       ],
       subqueries: [],
       sObject: 'Account',
+    },
+  },
+  {
+    testCase: 33,
+    soql: `SELECT LeadSource, COUNT(Name)cnt FROM Lead`,
+    soqlComposed: `SELECT LeadSource, COUNT(Name) cnt FROM Lead`,
+    output: {
+      fields: [
+        {
+          text: 'LeadSource',
+        },
+        {
+          fn: {
+            text: 'COUNT(Name)',
+            name: 'COUNT',
+            isAggregateFn: true,
+            parameter: 'Name',
+            alias: 'cnt',
+          },
+        },
+      ],
+      subqueries: [],
+      sObject: 'Lead',
     },
   },
 ];
