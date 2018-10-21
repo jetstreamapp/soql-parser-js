@@ -18,10 +18,20 @@ For an example of the parser, check out the [example application](https://pausti
 
 ### Available functions
 1. `parseQuery(soqlQueryString, options)`
-2. `composeQuery(SoqlQuery, options)`
+2. `isQueryValid(SoqlQuery, options)`
+3. `composeQuery(SoqlQuery, options)`
 
-### Parse
+### Parse Query
 The parser takes a SOQL query and returns structured data.
+
+Options:
+```typescript
+export interface SoqlQueryConfig {
+  continueIfErrors?: boolean; // default=false
+  logging: boolean; // default=false
+}
+```
+
 #### Typescript / ES6
 ```typescript
 import { parseQuery } from 'soql-parser-js';
@@ -83,8 +93,49 @@ This yields an object with the following structure:
   }
 }
 ```
-### compose
+### Check if Query is Valid
+This will parse the AST tree to confirm the syntax is valid, but will not parse the tree into a data structure.
+This method is faster than parsing the full query.
+
+Options:
+```typescript
+export interface ConfigBase {
+  logging: boolean; // default=false
+}
+```
+
+```typescript
+import { isQueryValid } from 'soql-parser-js';
+
+const soql = 'SELECT UserId, COUNT(Id) from LoginHistory WHERE LoginTime > 2010-09-20T22:16:30.000Z AND LoginTime < 2010-09-21T22:16:30.000Z GROUP BY UserId';
+
+const isValid = isQueryValid(soql);
+
+console.log('isValid', isValid);
+
+```
+
+#### Node
+```javascript
+var soqlParserJs = require('soql-parser-js');
+
+const soql = 'SELECT UserId, COUNT(Id) from LoginHistory WHERE LoginTime > 2010-09-20T22:16:30.000Z AND LoginTime < 2010-09-21T22:16:30.000Z GROUP BY UserId';
+
+const isValid = isQueryValid(soql);
+
+console.log('isValid', isValid);
+```
+
+### Compose Query
 Composing a query turns a parsed query back into a SOQL query. For some operators, they may be converted to upper case (e.x. NOT, AND)
+
+Options:
+```typescript
+export interface SoqlComposeConfig {
+  logging: boolean; // default=false
+  format: boolean; // default=false
+}
+```
 
 #### Typescript / ES6
 ```typescript
@@ -155,18 +206,28 @@ export interface SoqlComposeConfig {
 ```typescript
 export type LogicalOperator = 'AND' | 'OR';
 export type Operator = '=' | '<=' | '>=' | '>' | '<' | 'LIKE' | 'IN' | 'NOT IN' | 'INCLUDES' | 'EXCLUDES';
+export type TypeOfFieldConditionType = 'WHEN' | 'ELSE';
+export type GroupSelector = 'ABOVE' | 'AT' | 'BELOW' | 'ABOVE_OR_BELOW';
+export type LogicalPrefix = 'NOT';
+export type ForClause = 'VIEW' | 'UPDATE' | 'REFERENCE';
+export type UpdateClause = 'TRACKING' | 'VIEWSTAT';
 
 export interface Query {
   fields: Field[];
   subqueries: Query[];
-  sObject: string;
+  sObject?: string;
   sObjectAlias?: string;
-  whereClause?: WhereClause;
+  sObjectPrefix?: string[];
+  sObjectRelationshipName?: string;
+  where?: WhereClause;
   limit?: number;
   offset?: number;
   groupBy?: GroupByClause;
   having?: HavingClause;
   orderBy?: OrderByClause | OrderByClause[];
+  withDataCategory?: WithDataCategoryClause;
+  for?: ForClause;
+  update?: UpdateClause;
 }
 
 export interface SelectStatement {
@@ -178,22 +239,36 @@ export interface Field {
   alias?: string;
   relationshipFields?: string[];
   fn?: FunctionExp;
-  subqueryObjName?: string;
+  subqueryObjName?: string; // populated if subquery
+  typeOf?: TypeOfField;
+}
+
+export interface TypeOfField {
+  field: string;
+  conditions: TypeOfFieldCondition[];
+}
+
+export interface TypeOfFieldCondition {
+  type: TypeOfFieldConditionType;
+  objectType?: string; // not present when ELSE
+  fieldList: string[];
 }
 
 export interface WhereClause {
-  left: Condition | WhereClause;
-  right?: Condition | WhereClause;
+  left: Condition;
+  right?: WhereClause;
   operator?: LogicalOperator;
 }
 
 export interface Condition {
-  openParen?: boolean;
-  closeParen?: boolean;
-  logicalPrefix?: 'NOT';
-  field: string;
+  openParen?: number;
+  closeParen?: number;
+  logicalPrefix?: LogicalPrefix;
+  field?: string;
+  fn?: FunctionExp;
   operator: Operator;
-  value: string | string[];
+  value?: string | string[];
+  valueQuery?: Query;
 }
 
 export interface OrderByClause {
@@ -209,12 +284,14 @@ export interface GroupByClause {
 }
 
 export interface HavingClause {
-  left: HavingCondition | HavingClause;
-  right?: HavingCondition | HavingClause;
+  left: HavingCondition;
+  right?: HavingClause;
   operator?: LogicalOperator;
 }
 
 export interface HavingCondition {
+  openParen?: number;
+  closeParen?: number;
   field?: string;
   fn?: FunctionExp;
   operator: string;
@@ -222,10 +299,21 @@ export interface HavingCondition {
 }
 
 export interface FunctionExp {
-  text?: string;
-  name?: string;
+  text?: string; // Count(Id)
+  name?: string; // Count
   alias?: string;
   parameter?: string | string[];
+  fn?: FunctionExp; // used for nested functions FORMAT(MIN(CloseDate))
+}
+
+export interface WithDataCategoryClause {
+  conditions: WithDataCategoryCondition[];
+}
+
+export interface WithDataCategoryCondition {
+  groupName: string;
+  selector: GroupSelector;
+  parameters: string[];
 }
 ```
 

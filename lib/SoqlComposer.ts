@@ -14,7 +14,7 @@ import { FieldData, Formatter } from './SoqlFormatter';
 
 export interface SoqlComposeConfig {
   logging: boolean; // default=false
-  format: boolean;
+  format: boolean; // default=false
 }
 
 export function composeQuery(soql: Query, config: Partial<SoqlComposeConfig> = {}): string {

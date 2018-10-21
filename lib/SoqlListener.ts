@@ -50,6 +50,11 @@ export class SoqlQuery implements Query {
   }
 }
 
+/**
+ * Class used to parse query for validity, but ignore results
+ */
+export class ListenerQuick implements SOQLListener {}
+
 export class Listener implements SOQLListener {
   context: Context = {
     isSubQuery: false,
@@ -67,9 +72,6 @@ export class Listener implements SOQLListener {
 
   constructor(private config: Partial<SoqlQueryConfig> = {}) {
     config.logging = utils.isBoolean(config.logging) ? config.logging : false;
-    config.includeSubqueryAsField = utils.isBoolean(config.includeSubqueryAsField)
-      ? config.includeSubqueryAsField
-      : true;
     this.soqlQuery = new SoqlQuery();
   }
 
