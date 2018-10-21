@@ -2,6 +2,8 @@ import { parseQuery, composeQuery } from '../lib';
 import { expect } from 'chai';
 import 'mocha';
 import testCases from './TestCases';
+import testCasesForFormat from './TestCasesForFormat';
+import { formatQuery } from '../lib/SoqlFormatter';
 
 const replacements = [
   { matching: / and /i, replace: ' AND ' },
@@ -28,6 +30,14 @@ describe('compose queries', () => {
       let soql = testCase.soql;
       replacements.forEach(replacement => (soql = soql.replace(replacement.matching, replacement.replace)));
       expect(soqlQuery).equal(soql);
+    });
+  });
+});
+describe('format queries', () => {
+  testCasesForFormat.forEach(testCase => {
+    it(`should format query - test case ${testCase.testCase} - ${testCase.soql}`, () => {
+      const formattedQuery = formatQuery(testCase.soql);
+      expect(formattedQuery).equal(testCase.formattedSoql);
     });
   });
 });
