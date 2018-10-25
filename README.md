@@ -237,6 +237,7 @@ interface SelectStatement {
 interface Field {
   text?: string;
   alias?: string;
+  objectPrefix?: string;
   relationshipFields?: string[];
   fn?: FunctionExp;
   subqueryObjName?: string; // populated if subquery
