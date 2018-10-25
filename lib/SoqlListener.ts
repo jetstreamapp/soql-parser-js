@@ -215,7 +215,7 @@ export class Listener implements SOQLListener {
       // All fields need to update to remove the alias from relationships
       this.getSoqlQuery().fields.forEach(field => {
         if (field.text && field.text.startsWith(`${ctx.text}.`)) {
-          field.alias = ctx.text;
+          field.objectPrefix = ctx.text;
           field.text = field.text.replace(`${ctx.text}.`, '');
           if (field.relationshipFields.length > 2) {
             field.relationshipFields = field.relationshipFields.splice(1);

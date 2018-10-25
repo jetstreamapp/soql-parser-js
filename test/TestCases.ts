@@ -867,12 +867,12 @@ export const testCases: TestCase[] = [
       fields: [
         {
           text: 'Name',
-          alias: 'c',
+          objectPrefix: 'c',
         },
         {
           text: 'Account.Name',
           relationshipFields: ['Account', 'Name'],
-          alias: 'c',
+          objectPrefix: 'c',
         },
       ],
       subqueries: [],
@@ -989,11 +989,11 @@ export const testCases: TestCase[] = [
       fields: [
         {
           text: 'Id',
-          alias: 'a',
+          objectPrefix: 'a',
         },
         {
           text: 'Name',
-          alias: 'a',
+          objectPrefix: 'a',
         },
         {
           subqueryObjName: 'ChildAccounts',
@@ -1007,7 +1007,7 @@ export const testCases: TestCase[] = [
           fields: [
             {
               text: 'Id',
-              alias: 'a2',
+              objectPrefix: 'a2',
             },
           ],
           subqueries: [],
@@ -1018,7 +1018,7 @@ export const testCases: TestCase[] = [
           fields: [
             {
               text: 'Id',
-              alias: 'a1',
+              objectPrefix: 'a1',
             },
           ],
           subqueries: [],
