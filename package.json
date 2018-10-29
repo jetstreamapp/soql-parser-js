@@ -11,6 +11,7 @@
   "scripts": {
     "clean": "rm -rf ./dist/*",
     "test": "TS_NODE_PROJECT=\"test/tsconfig.test.json\" mocha -r ts-node/register test/**/*.spec.ts -P test/tsconfig.test.json",
+    "debug": "TS_NODE_PROJECT=\"tsconfig.json\" ts-node ./debug/test.ts -P tsconfig.json",
     "prebuild2": "npm run antlr; npm run clean",
     "prebuild": "npm run clean",
     "build:old": "npm run tsc",

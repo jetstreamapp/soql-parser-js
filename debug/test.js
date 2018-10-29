@@ -1,9 +1,7 @@
-var soqlParserJs = require('../dist');
+var soqlParserJs = require('./lib');
 
 const query = `
-SELECT Id, c.FirstName, c.LastName
-FROM Contact c
-LIMIT 1
+SELECT Id, Name, Foo, Bar, Baz, Bax, aaa, bbb, ccc, ddd, Id, Name, Foo, Bar, Baz, Bax, aaa, bbb, ccc, ddd, Id, Name, Foo, Bar, Baz, Bax, aaa, bbb, ccc, ddd, Account.Name, (SELECT Id, Name, Foo, Bar, Baz, Bax, aaa, bbb, ccc, ddd, Id, Name, Foo, Bar, Baz, Bax, aaa, bbb, ccc, ddd, Contact.LastName FROM Account.Contacts) FROM Account
 `;
 
 const parsedQuery = soqlParserJs.parseQuery(query, { logging: true });
