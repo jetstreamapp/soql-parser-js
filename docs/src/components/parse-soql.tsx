@@ -71,7 +71,10 @@ export class ParseSoql extends React.Component<IParseSoqlProps, IParseSoqlState>
     try {
       format = typeof format === 'boolean' ? format : this.state.format;
       const parsedSoql: Query = parseQuery(query || this.state.soql);
-      const composedQuery: string = composeQuery(parsedSoql, { format, formatOptions });
+      const composedQuery: string = composeQuery(parsedSoql, {
+        format: format || this.state.format,
+        formatOptions: formatOptions || this.state.formatOptions,
+      });
       this.setState({
         parsedSoql: JSON.stringify(parsedSoql, null, 4),
         composedQuery,
