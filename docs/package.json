@@ -13,7 +13,7 @@
     "react-dom": "^16.5.2",
     "react-scripts-ts": "3.1.0",
     "react-syntax-highlighter": "^9.0.0",
-    "soql-parser-js": "^0.8.0"
+    "soql-parser-js": "^0.8.1"
   },
   "scripts": {
     "start": "react-scripts-ts start",
