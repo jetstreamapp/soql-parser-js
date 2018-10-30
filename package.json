@@ -1,6 +1,6 @@
 {
   "name": "soql-parser-js",
-  "version": "0.7.0",
+  "version": "0.8.0",
   "description": "Salesforce.com SOQL parser.",
   "main": "dist/index.js",
   "module": "dist/index.es.js",
