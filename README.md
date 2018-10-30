@@ -9,7 +9,7 @@ SOQL Parser JS will parse a SOQL query string into an object that is easy to wor
 
 This works in the browser as long as npm is used to install the package with dependencies and the browser supports ES6 or a transpiler is used.
 
-*Warning*: antlr4 is a very large library and is required for the parser to function, so be aware of this prior to including in your browser bundles.
+*Warning*: antlr4 is a large library and is required for the parser to function, use in the browser with care.
 
 ## Examples
 For an example of the parser, check out the [example application](https://paustint.github.io/soql-parser-js/).
@@ -134,6 +134,12 @@ Options:
 export interface SoqlComposeConfig {
   logging: boolean; // default=false
   format: boolean; // default=false
+  formatOptions?: {
+    numIndent?: number; // default=1
+    fieldMaxLineLen?: number; // default=60
+    fieldSubqueryParensOnOwnLine?: boolean; // default=true
+    whereClauseOperatorsIndented?: boolean; // default=false
+  }
 }
 ```
 
@@ -188,6 +194,86 @@ This yields an object with the following structure:
 SELECT UserId, COUNT(Id) from LoginHistory WHERE LoginTime > 2010-09-20T22:16:30.000Z AND LoginTime < 2010-09-21T22:16:30.000Z GROUP BY UserId
 ```
 
+### Format Query
+This function is provided as a convenience and will parse a query and compose the query with formatting options provided.
+```typescript
+import { formatQuery } from 'soql-parser-js';
+
+const query = `SELECT Id, Name, AccountNumber, AccountSource, AnnualRevenue, BillingAddress, BillingCity, BillingCountry, BillingGeocodeAccuracy, ShippingStreet, Sic, SicDesc, Site, SystemModstamp, TickerSymbol, Type, Website, (SELECT Id, Name, AccountId, Amount, CampaignId, CloseDate, CreatedById, Type FROM Opportunities), (SELECT Id, Name, AccountNumber, AccountSource, AnnualRevenue, BillingAddress, Website FROM ChildAccounts) FROM Account WHERE Name LIKE 'a%' OR Name LIKE 'b%' OR Name LIKE 'c%'`;
+
+const formattedQuery1 = formatQuery(query);
+const formattedQuery2 = formatQuery(query, { fieldMaxLineLen: 20, fieldSubqueryParensOnOwnLine: false, whereClauseOperatorsIndented: true });
+const formattedQuery3 = formatQuery(query, { fieldSubqueryParensOnOwnLine: true, whereClauseOperatorsIndented: true });
+
+
+```
+
+```sql
+-- formattedQuery1
+SELECT Id, Name, AccountNumber, AccountSource, AnnualRevenue,
+	BillingAddress, BillingCity, BillingCountry, BillingGeocodeAccuracy,
+	ShippingStreet, Sic, SicDesc, Site, SystemModstamp, TickerSymbol, Type,
+	Website,
+	(
+		SELECT Id, Name, AccountId, Amount, CampaignId, CloseDate,
+			CreatedById, Type
+		FROM Opportunities
+	),
+	(
+		SELECT Id, Name, AccountNumber, AccountSource, AnnualRevenue,
+			BillingAddress, Website
+		FROM ChildAccounts
+	)
+FROM Account
+WHERE Name LIKE 'a%'
+OR Name LIKE 'b%'
+OR Name LIKE 'c%'
+
+-- formattedQuery2
+SELECT Id, Name,
+	AccountNumber, AccountSource,
+	AnnualRevenue, BillingAddress,
+	BillingCity, BillingCountry,
+	BillingGeocodeAccuracy, ShippingStreet,
+	Sic, SicDesc, Site,
+	SystemModstamp, TickerSymbol, Type,
+	Website,
+	(SELECT Id, Name,
+		AccountId, Amount, CampaignId,
+		CloseDate, CreatedById, Type
+	FROM Opportunities),
+	(SELECT Id, Name,
+		AccountNumber, AccountSource,
+		AnnualRevenue, BillingAddress,
+		Website
+	FROM ChildAccounts)
+FROM Account
+WHERE Name LIKE 'a%'
+	OR Name LIKE 'b%'
+	OR Name LIKE 'c%'
+
+
+-- formattedQuery3
+SELECT Id, Name, AccountNumber, AccountSource, AnnualRevenue,
+	BillingAddress, BillingCity, BillingCountry, BillingGeocodeAccuracy,
+	ShippingStreet, Sic, SicDesc, Site, SystemModstamp, TickerSymbol, Type,
+	Website,
+	(
+		SELECT Id, Name, AccountId, Amount, CampaignId, CloseDate,
+			CreatedById, Type
+		FROM Opportunities
+	),
+	(
+		SELECT Id, Name, AccountNumber, AccountSource, AnnualRevenue,
+			BillingAddress, Website
+		FROM ChildAccounts
+	)
+FROM Account
+WHERE Name LIKE 'a%'
+	OR Name LIKE 'b%'
+	OR Name LIKE 'c%'
+```
+
 ### Options
 
 ```typescript
@@ -199,6 +285,16 @@ export interface SoqlQueryConfig {
 
 export interface SoqlComposeConfig {
   logging: boolean; // default=false
+  format: boolean; // default=false
+  formatOptions?: FormatOptions;
+}
+
+export interface FormatOptions {
+  numIndent?: number; // default=1
+  fieldMaxLineLen?: number; // default=60
+  fieldSubqueryParensOnOwnLine?: boolean; // default=true
+  whereClauseOperatorsIndented?: boolean; // default=false
+  logging?: boolean; // default=false
 }
 ```
 

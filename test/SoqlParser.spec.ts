@@ -38,7 +38,7 @@ describe('compose queries', () => {
 describe('format queries', () => {
   testCasesForFormat.forEach(testCase => {
     it(`should format query - test case ${testCase.testCase} - ${testCase.soql}`, () => {
-      const formattedQuery = formatQuery(testCase.soql);
+      const formattedQuery = formatQuery(testCase.soql, testCase.formatOptions);
       expect(formattedQuery).equal(testCase.formattedSoql);
     });
   });
