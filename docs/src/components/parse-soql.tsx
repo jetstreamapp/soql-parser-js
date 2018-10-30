@@ -69,10 +69,9 @@ export class ParseSoql extends React.Component<IParseSoqlProps, IParseSoqlState>
 
   public parseQuery = (query?: string, format?: boolean, formatOptions?: FormatOptions) => {
     try {
-      format = typeof format === 'boolean' ? format : this.state.format;
       const parsedSoql: Query = parseQuery(query || this.state.soql);
       const composedQuery: string = composeQuery(parsedSoql, {
-        format: format || this.state.format,
+        format: typeof format === 'boolean' ? format : this.state.format,
         formatOptions: formatOptions || this.state.formatOptions,
       });
       this.setState({
