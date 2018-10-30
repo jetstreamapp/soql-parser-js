@@ -13,24 +13,29 @@ export interface FieldData {
 }
 
 export interface FormatOptions {
-  active?: boolean;
   numIndent?: number;
   fieldMaxLineLen?: number;
+  fieldSubqueryParensOnOwnLine?: boolean;
+  whereClauseOperatorsIndented?: boolean;
   logging?: boolean;
 }
 
-export function formatQuery(soql: string) {
-  return composeQuery(parseQuery(soql), { format: true });
+export function formatQuery(soql: string, formatOptions?: FormatOptions) {
+  return composeQuery(parseQuery(soql), { format: true, formatOptions });
 }
 
 export class Formatter {
-  options: FormatOptions;
+  enabled: boolean;
+  private options: FormatOptions;
+  private currIndent = 1;
 
-  constructor(options: FormatOptions) {
+  constructor(enabled: boolean, options: FormatOptions) {
+    this.enabled = enabled;
     this.options = {
-      active: false,
       numIndent: 1,
       fieldMaxLineLen: 60,
+      fieldSubqueryParensOnOwnLine: true,
+      whereClauseOperatorsIndented: false,
       logging: false,
       ...options,
     };
@@ -43,10 +48,22 @@ export class Formatter {
   }
 
   private getIndent() {
-    return new Array(this.options.numIndent).fill('\t').join('');
+    return this.repeatChar(this.currIndent * this.options.numIndent, '\t');
   }
 
-  formatFields(fieldData: FieldData) {
+  private repeatChar(numTimes: number, char: string) {
+    return new Array(numTimes).fill(char).join('');
+  }
+
+  setSubquery(isSubquery: boolean) {
+    this.currIndent = isSubquery ? (this.currIndent += 1) : (this.currIndent -= 1);
+  }
+
+  stepCurrIndex(num: number) {
+    this.currIndent += num;
+  }
+
+  formatFields(fieldData: FieldData): void {
     function trimPrevSuffix(currIdx: number) {
       if (fieldData.fields[currIdx - 1]) {
         fieldData.fields[currIdx - 1].suffix = fieldData.fields[currIdx - 1].suffix.trim();
@@ -57,7 +74,7 @@ export class Formatter {
       field.suffix = fieldData.fields.length - 1 === i ? '' : ', ';
     });
 
-    if (this.options.active) {
+    if (this.enabled) {
       let lineLen = 0;
       let newLineAndIndentNext = false;
       fieldData.fields.forEach((field, i) => {
@@ -70,10 +87,11 @@ export class Formatter {
           newLineAndIndentNext = true;
         } else if (this.options.fieldMaxLineLen) {
           // If max line length is specified, create a new line when needed
-          lineLen += field.text.length;
+          // Add two to account for ", "
+          lineLen += field.text.length + field.suffix.length;
           if (lineLen > this.options.fieldMaxLineLen || newLineAndIndentNext) {
             trimPrevSuffix(i);
-            field.prefix += '\n\t';
+            field.prefix += `\n${this.getIndent()}`;
             lineLen = 0;
             newLineAndIndentNext = false;
           }
@@ -84,18 +102,60 @@ export class Formatter {
     }
   }
 
-  formatClause(clause: string, isSubquery: boolean = false) {
-    if (isSubquery) {
-      return this.options.active ? `\n${this.getIndent()}${clause}` : ` ${clause}`;
+  /**
+   * Formats subquery with additional indents
+   */
+  formatSubquery(queryStr: string, numTabs = 2, incrementTabsWhereClauseOpIndent: boolean = false): string {
+    if (incrementTabsWhereClauseOpIndent && this.options.whereClauseOperatorsIndented) {
+      numTabs++;
+    }
+    let leftParen = '(';
+    let rightParen = ')';
+    if (this.enabled) {
+      if (this.options.fieldSubqueryParensOnOwnLine) {
+        queryStr = queryStr.replace(/\n/g, `\n${this.repeatChar(numTabs, '\t')}`);
+        leftParen = `(\n${this.repeatChar(numTabs, '\t')}`;
+        rightParen = `\n${this.repeatChar(numTabs - 1, '\t')})`;
+      } else {
+        queryStr = queryStr.replace(/\n/g, '\n\t');
+      }
+    }
+    return `${leftParen}${queryStr}${rightParen}`;
+  }
+
+  formatClause(clause: string): string {
+    return this.enabled ? `\n${clause}` : ` ${clause}`;
+  }
+
+  formatOrderByArray(groupBy: string[]): string {
+    if (this.enabled) {
+      let currLen = 0;
+      let output = '';
+      groupBy.forEach((token, i) => {
+        const nextToken = groupBy[i + 1];
+        currLen += token.length;
+        if (nextToken && currLen + nextToken.length > this.options.fieldMaxLineLen) {
+          output += `${token},\n\t`;
+          currLen = 0;
+        } else {
+          output += `${token}${nextToken ? ', ' : ''}`;
+        }
+      });
+      return output;
     } else {
-      return this.options.active ? `\n${clause}` : ` ${clause}`;
+      return groupBy.join(', ');
     }
   }
-  formatAddNewLine(alt: string = ' ', isSubquery: boolean = false) {
-    if (isSubquery) {
-      return this.options.active ? `\n${this.getIndent()}` : alt;
+
+  formatWhereClauseOperators(operator: string, whereClause: string): string {
+    if (this.enabled && this.options.whereClauseOperatorsIndented) {
+      return `\n\t${operator} ${whereClause}`;
     } else {
-      return this.options.active ? `\n` : alt;
+      return `${this.formatAddNewLine(' ')}${operator} ${whereClause}`;
     }
+  }
+
+  formatAddNewLine(alt: string = ' '): string {
+    return this.enabled ? `\n` : alt;
   }
 }

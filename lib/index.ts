@@ -5,4 +5,5 @@
  */
 export * from './SoqlParser';
 export * from './SoqlComposer';
+export { formatQuery, FormatOptions } from './SoqlFormatter';
 export * from './models/SoqlQuery.model';
