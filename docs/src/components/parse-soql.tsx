@@ -3,7 +3,7 @@ import { TextField } from 'office-ui-fabric-react/lib/TextField';
 import { Checkbox } from 'office-ui-fabric-react/lib/Checkbox';
 import * as React from 'react';
 import * as CopyToClipboard from 'react-copy-to-clipboard';
-import { parseQuery, Query, composeQuery, isQueryValid } from 'soql-parser-js';
+import { parseQuery, Query, composeQuery, isQueryValid, FormatOptions } from 'soql-parser-js';
 import SyntaxHighlighter from 'react-syntax-highlighter/prism';
 import { xonokai } from 'react-syntax-highlighter/styles/prism';
 
@@ -19,6 +19,7 @@ interface IParseSoqlState {
   composedQuery?: string;
   soql: string;
   format: boolean;
+  formatOptions: FormatOptions;
 }
 
 export class ParseSoql extends React.Component<IParseSoqlProps, IParseSoqlState> {
@@ -34,6 +35,11 @@ export class ParseSoql extends React.Component<IParseSoqlProps, IParseSoqlState>
       composedQuery,
       soql: props.soql || '',
       format: true,
+      formatOptions: {
+        fieldMaxLineLen: 60,
+        fieldSubqueryParensOnOwnLine: true,
+        whereClauseOperatorsIndented: false,
+      },
     };
   }
 
@@ -61,11 +67,11 @@ export class ParseSoql extends React.Component<IParseSoqlProps, IParseSoqlState>
     }
   };
 
-  public parseQuery = (query?: string, format?: boolean) => {
+  public parseQuery = (query?: string, format?: boolean, formatOptions?: FormatOptions) => {
     try {
       format = typeof format === 'boolean' ? format : this.state.format;
       const parsedSoql: Query = parseQuery(query || this.state.soql);
-      const composedQuery: string = composeQuery(parsedSoql, { format });
+      const composedQuery: string = composeQuery(parsedSoql, { format, formatOptions });
       this.setState({
         parsedSoql: JSON.stringify(parsedSoql, null, 4),
         composedQuery,
@@ -85,7 +91,34 @@ export class ParseSoql extends React.Component<IParseSoqlProps, IParseSoqlState>
 
   public toggleFormat = () => {
     this.setState({ format: !this.state.format });
-    this.parseQuery(this.state.soql, !this.state.format);
+    this.parseQuery(this.state.soql, !this.state.format, this.state.formatOptions);
+  };
+
+  public toggleSubqueryParens = () => {
+    const formatOptions = {
+      ...this.state.formatOptions,
+      fieldSubqueryParensOnOwnLine: !this.state.formatOptions.fieldSubqueryParensOnOwnLine,
+    };
+    this.setState({ formatOptions });
+    this.parseQuery(this.state.soql, this.state.format, formatOptions);
+  };
+
+  public toggleWhereClauseIndent = () => {
+    const formatOptions = {
+      ...this.state.formatOptions,
+      whereClauseOperatorsIndented: !this.state.formatOptions.whereClauseOperatorsIndented,
+    };
+    this.setState({ formatOptions });
+    this.parseQuery(this.state.soql, this.state.format, formatOptions);
+  };
+
+  public setMaxFieldLen = (ev: React.SyntheticEvent<HTMLInputElement>) => {
+    const formatOptions = {
+      ...this.state.formatOptions,
+      fieldMaxLineLen: Math.max(0, Number((ev.target as HTMLInputElement).value)),
+    };
+    this.setState({ formatOptions });
+    this.parseQuery(this.state.soql, this.state.format, formatOptions);
   };
 
   public render() {
@@ -156,6 +189,33 @@ export class ParseSoql extends React.Component<IParseSoqlProps, IParseSoqlState>
                 </SyntaxHighlighter>
                 <div style={{ margin: 5 }}>
                   <Checkbox label="Format Output" checked={this.state.format} onChange={this.toggleFormat} />
+                  <div style={{ margin: 5, paddingLeft: 10 }}>
+                    <div style={{ maxWidth: 250 }}>
+                      <TextField
+                        label="Number of characters before fields wrap"
+                        type="number"
+                        value={String(this.state.formatOptions.fieldMaxLineLen)}
+                        onChange={this.setMaxFieldLen}
+                        disabled={!this.state.format}
+                      />
+                    </div>
+                    <div style={{ marginTop: 5 }}>
+                      <Checkbox
+                        label="Subquery Parenthesis on own line"
+                        checked={this.state.formatOptions.fieldSubqueryParensOnOwnLine}
+                        onChange={this.toggleSubqueryParens}
+                        disabled={!this.state.format}
+                      />
+                    </div>
+                    <div style={{ marginTop: 5 }}>
+                      <Checkbox
+                        label="Indent items in WHERE clause"
+                        checked={this.state.formatOptions.whereClauseOperatorsIndented}
+                        onChange={this.toggleWhereClauseIndent}
+                        disabled={!this.state.format}
+                      />
+                    </div>
+                  </div>
                 </div>
                 <CopyToClipboard text={this.state.composedQuery}>
                   <Button

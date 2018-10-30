@@ -250,5 +250,56 @@ AND Id IN (SELECT AccountId
 ORDER BY GROUPING(Type), GROUPING(Id, BillingCountry), Name DESC NULLS FIRST, Id ASC NULLS LAST    
 `.trim(),
   },
+  {
+    testCase: 11,
+    soql: `SELECT Id, Name, AccountNumber, AccountSource, AnnualRevenue, BillingAddress, BillingCity, BillingCountry, BillingGeocodeAccuracy, ShippingStreet, Sic, SicDesc, Site, SystemModstamp, TickerSymbol, Type, Website, (SELECT Id, Name, AccountId, Amount, CampaignId, CloseDate, CreatedById, Type FROM Opportunities), (SELECT Id, Name, AccountNumber, AccountSource, AnnualRevenue, BillingAddress, Website FROM ChildAccounts) FROM Account WHERE Name LIKE 'a%' OR Name LIKE 'b%' OR Name LIKE 'c%'`,
+    formatOptions: { fieldMaxLineLen: 0, fieldSubqueryParensOnOwnLine: true, whereClauseOperatorsIndented: false },
+    formattedSoql: `SELECT 
+\tId,
+\tName,
+\tAccountNumber,
+\tAccountSource,
+\tAnnualRevenue,
+\tBillingAddress,
+\tBillingCity,
+\tBillingCountry,
+\tBillingGeocodeAccuracy,
+\tShippingStreet,
+\tSic,
+\tSicDesc,
+\tSite,
+\tSystemModstamp,
+\tTickerSymbol,
+\tType,
+\tWebsite,
+\t(
+\t\tSELECT 
+\t\t\tId,
+\t\t\tName,
+\t\t\tAccountId,
+\t\t\tAmount,
+\t\t\tCampaignId,
+\t\t\tCloseDate,
+\t\t\tCreatedById,
+\t\t\tType
+\t\tFROM Opportunities
+\t),
+\t(
+\t\tSELECT 
+\t\t\tId,
+\t\t\tName,
+\t\t\tAccountNumber,
+\t\t\tAccountSource,
+\t\t\tAnnualRevenue,
+\t\t\tBillingAddress,
+\t\t\tWebsite
+\t\tFROM ChildAccounts
+\t)
+FROM Account
+WHERE Name LIKE 'a%'
+OR Name LIKE 'b%'
+OR Name LIKE 'c%'
+`.trim(),
+  },
 ];
 export default testCases;

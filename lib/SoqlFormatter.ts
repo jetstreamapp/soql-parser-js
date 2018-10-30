@@ -1,5 +1,6 @@
 import { composeQuery } from './SoqlComposer';
 import { parseQuery } from './SoqlParser';
+import { isNumber } from './utils';
 
 export interface FieldData {
   fields: {
@@ -85,7 +86,7 @@ export class Formatter {
           field.suffix = fieldData.fields.length - 1 === i ? '' : ', ';
           lineLen = 0;
           newLineAndIndentNext = true;
-        } else if (this.options.fieldMaxLineLen) {
+        } else if (isNumber(this.options.fieldMaxLineLen)) {
           // If max line length is specified, create a new line when needed
           // Add two to account for ", "
           lineLen += field.text.length + field.suffix.length;
