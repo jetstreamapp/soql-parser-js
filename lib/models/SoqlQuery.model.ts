@@ -1,5 +1,5 @@
 export type LogicalOperator = 'AND' | 'OR';
-export type Operator = '=' | '<=' | '>=' | '>' | '<' | 'LIKE' | 'IN' | 'NOT IN' | 'INCLUDES' | 'EXCLUDES';
+export type Operator = '=' | '!=' | '<=' | '>=' | '>' | '<' | 'LIKE' | 'IN' | 'NOT IN' | 'INCLUDES' | 'EXCLUDES';
 export type TypeOfFieldConditionType = 'WHEN' | 'ELSE';
 export type GroupSelector = 'ABOVE' | 'AT' | 'BELOW' | 'ABOVE_OR_BELOW';
 export type LogicalPrefix = 'NOT';
