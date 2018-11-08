@@ -1511,5 +1511,29 @@ export const testCases: TestCase[] = [
       sObject: 'Lead',
     },
   },
+  {
+    testCase: 33,
+    soql: `SELECT Id, Name FROM Account WHERE Name != 'foo'`,
+    soqlComposed: `SELECT Id, Name FROM Account WHERE Name != 'foo'`,
+    output: {
+      fields: [
+        {
+          text: 'Id',
+        },
+        {
+          text: 'Name',
+        },
+      ],
+      subqueries: [],
+      sObject: 'Account',
+      where: {
+        left: {
+          field: 'Name',
+          operator: '!=',
+          value: "'foo'",
+        },
+      },
+    },
+  },
 ];
 export default testCases;
