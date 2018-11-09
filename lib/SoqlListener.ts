@@ -15,6 +15,7 @@ import {
   ForClause,
   TypeOfFieldCondition,
   UpdateClause,
+  LiteralType,
 } from './models/SoqlQuery.model';
 import { SoqlQueryConfig } from './SoqlParser';
 
@@ -271,6 +272,9 @@ export class Listener implements SOQLListener {
     if (this.config.logging) {
       console.log('enterDate_formula_literal:', ctx.text);
     }
+    if (this.context.currentItem === 'where') {
+      this.context.tempData.currConditionOperation.left.literalType = 'DATE_LITERAL' as LiteralType;
+    }
   }
   exitDate_formula_literal(ctx: Parser.Date_formula_literalContext) {
     if (this.config.logging) {
@@ -290,6 +294,10 @@ export class Listener implements SOQLListener {
   enterDate_formula_n_literal(ctx: Parser.Date_formula_n_literalContext) {
     if (this.config.logging) {
       console.log('enterDate_formula_n_literal:', ctx.text);
+    }
+    if (this.context.currentItem === 'where') {
+      this.context.tempData.currConditionOperation.left.literalType = 'DATE_N_LITERAL' as LiteralType;
+      this.context.tempData.currConditionOperation.left.dateLiteralVariable = Number(ctx.getChild(2).text);
     }
   }
   exitDate_formula_n_literal(ctx: Parser.Date_formula_n_literalContext) {
@@ -330,6 +338,9 @@ export class Listener implements SOQLListener {
     if (this.context.currentItem === 'field') {
       this.context.tempData.type = 'integer';
     }
+    if (this.context.currentItem === 'where') {
+      this.context.tempData.currConditionOperation.left.literalType = 'INTEGER' as LiteralType;
+    }
   }
   exitInteger_literal(ctx: Parser.Integer_literalContext) {
     if (this.config.logging) {
@@ -339,6 +350,9 @@ export class Listener implements SOQLListener {
   enterReal_literal(ctx: Parser.Real_literalContext) {
     if (this.config.logging) {
       console.log('enterReal_literal:', ctx.text);
+    }
+    if (this.context.currentItem === 'where') {
+      this.context.tempData.currConditionOperation.left.literalType = 'DECIMAL' as LiteralType;
     }
   }
   exitReal_literal(ctx: Parser.Real_literalContext) {
@@ -350,6 +364,10 @@ export class Listener implements SOQLListener {
     if (this.config.logging) {
       console.log('enterString_literal:', ctx.text);
     }
+    if (this.context.currentItem === 'where') {
+      // FIXME: handle this from `enterSet_values`
+      this.context.tempData.currConditionOperation.left.literalType = 'STRING' as LiteralType;
+    }
   }
   exitString_literal(ctx: Parser.String_literalContext) {
     if (this.config.logging) {
@@ -360,6 +378,9 @@ export class Listener implements SOQLListener {
     if (this.config.logging) {
       console.log('enterBoolean_literal:', ctx.text);
     }
+    if (this.context.currentItem === 'where') {
+      this.context.tempData.currConditionOperation.left.literalType = 'BOOLEAN' as LiteralType;
+    }
   }
   exitBoolean_literal(ctx: Parser.Boolean_literalContext) {
     if (this.config.logging) {
@@ -369,6 +390,9 @@ export class Listener implements SOQLListener {
   enterNull_literal(ctx: Parser.Null_literalContext) {
     if (this.config.logging) {
       console.log('enterNull_literal:', ctx.text);
+    }
+    if (this.context.currentItem === 'where') {
+      this.context.tempData.currConditionOperation.left.literalType = 'NULL' as LiteralType;
     }
   }
   exitNull_literal(ctx: Parser.Null_literalContext) {
@@ -987,6 +1011,7 @@ export class Listener implements SOQLListener {
       currItem.field = ctx.getChild(0).text;
       currItem.operator = ctx.getChild(1).text;
       currItem.value = ctx.getChild(2).text;
+      currItem.literalType = 'STRING'; // may be updated if type is different
     } else if (this.context.currentItem === 'having') {
       const currItem: any = {};
       if (!this.context.tempData.currConditionOperation.left) {
@@ -1077,6 +1102,7 @@ export class Listener implements SOQLListener {
       currItem.field = ctx.getChild(0).text;
       currItem.operator = 'LIKE';
       currItem.value = ctx.getChild(ctx.children.length - 1).text;
+      currItem.literalType = 'STRING';
     }
   }
   exitLike_based_condition(ctx: Parser.Like_based_conditionContext) {

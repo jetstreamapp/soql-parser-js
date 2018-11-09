@@ -5,6 +5,7 @@ export type GroupSelector = 'ABOVE' | 'AT' | 'BELOW' | 'ABOVE_OR_BELOW';
 export type LogicalPrefix = 'NOT';
 export type ForClause = 'VIEW' | 'UPDATE' | 'REFERENCE';
 export type UpdateClause = 'TRACKING' | 'VIEWSTAT';
+export type LiteralType = 'STRING' | 'INTEGER' | 'DECIMAL' | 'BOOLEAN' | 'NULL' | 'DATE_LITERAL' | 'DATE_N_LITERAL';
 
 export interface Query {
   fields: Field[];
@@ -64,6 +65,8 @@ export interface Condition {
   operator: Operator;
   value?: string | string[];
   valueQuery?: Query;
+  literalType?: LiteralType;
+  dateLiteralVariable?: number;
 }
 
 export interface OrderByClause {

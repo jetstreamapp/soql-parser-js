@@ -45,6 +45,7 @@ export const testCases: TestCase[] = [
           field: 'Name',
           operator: 'LIKE',
           value: "'A%'",
+          literalType: 'STRING',
         },
         operator: 'AND',
         right: {
@@ -52,6 +53,7 @@ export const testCases: TestCase[] = [
             field: 'MailingCity',
             operator: '=',
             value: "'California'",
+            literalType: 'STRING',
           },
         },
       },
@@ -91,6 +93,7 @@ export const testCases: TestCase[] = [
           field: 'Industry',
           operator: '=',
           value: "'media'",
+          literalType: 'STRING',
         },
       },
       limit: 125,
@@ -112,6 +115,7 @@ export const testCases: TestCase[] = [
           field: 'Industry',
           operator: '=',
           value: "'media'",
+          literalType: 'STRING',
         },
       },
       orderBy: {
@@ -280,6 +284,7 @@ export const testCases: TestCase[] = [
           field: 'Account.Industry',
           operator: '=',
           value: "'media'",
+          literalType: 'STRING',
         },
       },
     },
@@ -366,6 +371,7 @@ export const testCases: TestCase[] = [
               field: 'CreatedBy.Alias',
               operator: '=',
               value: "'x'",
+              literalType: 'STRING',
             },
           },
         },
@@ -376,6 +382,7 @@ export const testCases: TestCase[] = [
           field: 'Industry',
           operator: '=',
           value: "'media'",
+          literalType: 'STRING',
         },
       },
     },
@@ -404,6 +411,7 @@ export const testCases: TestCase[] = [
           field: 'Mother_of_Child__r.LastName__c',
           operator: 'LIKE',
           value: "'C%'",
+          literalType: 'STRING',
         },
       },
     },
@@ -437,6 +445,7 @@ export const testCases: TestCase[] = [
           field: 'Name',
           operator: 'LIKE',
           value: "'Acme%'",
+          literalType: 'STRING',
         },
       },
     },
@@ -461,6 +470,7 @@ export const testCases: TestCase[] = [
           field: 'Owner.FirstName',
           operator: 'LIKE',
           value: "'B%'",
+          literalType: 'STRING',
         },
       },
     },
@@ -489,6 +499,7 @@ export const testCases: TestCase[] = [
           field: 'Owner.FirstName',
           operator: 'LIKE',
           value: "'B%'",
+          literalType: 'STRING',
         },
       },
     },
@@ -654,6 +665,7 @@ export const testCases: TestCase[] = [
           field: 'LoginTime',
           operator: '>',
           value: '2010-09-20T22:16:30.000Z',
+          literalType: 'STRING',
         },
         operator: 'AND',
         right: {
@@ -661,6 +673,7 @@ export const testCases: TestCase[] = [
             field: 'LoginTime',
             operator: '<',
             value: '2010-09-21T22:16:30.000Z',
+            literalType: 'STRING',
           },
         },
       },
@@ -897,6 +910,7 @@ export const testCases: TestCase[] = [
           field: 'Id',
           operator: 'IN',
           value: ["'1'", "'2'", "'3'"],
+          literalType: 'STRING',
         },
         operator: 'OR',
         right: {
@@ -906,6 +920,7 @@ export const testCases: TestCase[] = [
             field: 'Id',
             operator: '=',
             value: "'2'",
+            literalType: 'STRING',
             closeParen: 1,
           },
           operator: 'OR',
@@ -915,6 +930,7 @@ export const testCases: TestCase[] = [
               field: 'Name',
               operator: 'LIKE',
               value: "'%FOO%'",
+              literalType: 'STRING',
             },
             operator: 'OR',
             right: {
@@ -923,6 +939,7 @@ export const testCases: TestCase[] = [
                 field: 'Name',
                 operator: 'LIKE',
                 value: "'%ARM%'",
+                literalType: 'STRING',
               },
               operator: 'AND',
               right: {
@@ -930,6 +947,7 @@ export const testCases: TestCase[] = [
                   field: 'FOO',
                   operator: '=',
                   value: "'bar'",
+                  literalType: 'STRING',
                   closeParen: 3,
                 },
               },
@@ -1046,6 +1064,7 @@ export const testCases: TestCase[] = [
           field: 'PublishStatus',
           operator: '=',
           value: "'online'",
+          literalType: 'STRING',
         },
       },
       withDataCategory: {
@@ -1075,6 +1094,7 @@ export const testCases: TestCase[] = [
           field: 'LastReplyDate',
           operator: '>',
           value: '2005-10-08T01:02:03Z',
+          literalType: 'STRING',
         },
       },
       withDataCategory: {
@@ -1104,6 +1124,7 @@ export const testCases: TestCase[] = [
           field: 'PublishStatus',
           operator: '=',
           value: "'draft'",
+          literalType: 'STRING',
         },
       },
       withDataCategory: {
@@ -1252,6 +1273,7 @@ export const testCases: TestCase[] = [
           field: 'id',
           operator: '=',
           value: "'12345'",
+          literalType: 'STRING',
         },
       },
     },
@@ -1302,6 +1324,7 @@ export const testCases: TestCase[] = [
         left: {
           operator: '=',
           value: "'le Draft'",
+          literalType: 'STRING',
           fn: {
             text: 'toLabel(Status)',
             name: 'toLabel',
@@ -1342,6 +1365,7 @@ export const testCases: TestCase[] = [
                 field: 'StageName',
                 operator: '=',
                 value: "'Closed Lost'",
+                literalType: 'STRING',
               },
             },
           },
@@ -1377,6 +1401,7 @@ export const testCases: TestCase[] = [
                 field: 'IsClosed',
                 operator: '=',
                 value: 'false',
+                literalType: 'BOOLEAN',
               },
             },
           },
@@ -1415,6 +1440,7 @@ export const testCases: TestCase[] = [
                 field: 'LastName',
                 operator: 'LIKE',
                 value: "'apple%'",
+                literalType: 'STRING',
               },
             },
           },
@@ -1437,6 +1463,7 @@ export const testCases: TestCase[] = [
                   field: 'isClosed',
                   operator: '=',
                   value: 'false',
+                  literalType: 'BOOLEAN',
                 },
               },
             },
@@ -1489,7 +1516,7 @@ export const testCases: TestCase[] = [
     },
   },
   {
-    testCase: 33,
+    testCase: 51,
     soql: `SELECT LeadSource, COUNT(Name)cnt FROM Lead`,
     soqlComposed: `SELECT LeadSource, COUNT(Name) cnt FROM Lead`,
     output: {
@@ -1512,7 +1539,7 @@ export const testCases: TestCase[] = [
     },
   },
   {
-    testCase: 33,
+    testCase: 52,
     soql: `SELECT Id, Name FROM Account WHERE Name != 'foo'`,
     soqlComposed: `SELECT Id, Name FROM Account WHERE Name != 'foo'`,
     output: {
@@ -1531,6 +1558,89 @@ export const testCases: TestCase[] = [
           field: 'Name',
           operator: '!=',
           value: "'foo'",
+          literalType: 'STRING',
+        },
+      },
+    },
+  },
+  {
+    testCase: 53,
+    soql: `SELECT Id FROM Account WHERE Foo IN ('1', '2', '3') OR Bar IN (1, 2, 3) OR Baz IN (101.00, 102.50) OR Bam IN ('FOO', null)`,
+    output: {
+      fields: [
+        {
+          text: 'Id',
+        },
+      ],
+      subqueries: [],
+      sObject: 'Account',
+      where: {
+        left: {
+          field: 'Foo',
+          operator: 'IN',
+          value: ["'1'", "'2'", "'3'"],
+          literalType: 'STRING',
+        },
+        operator: 'OR',
+        right: {
+          left: {
+            field: 'Bar',
+            operator: 'IN',
+            value: ['1', '2', '3'],
+            literalType: 'INTEGER',
+          },
+          operator: 'OR',
+          right: {
+            left: {
+              field: 'Baz',
+              operator: 'IN',
+              value: ['101.00', '102.50'],
+              literalType: 'DECIMAL',
+            },
+            operator: 'OR',
+            right: {
+              left: {
+                field: 'Bam',
+                operator: 'IN',
+                value: ["'FOO'", 'null'],
+                literalType: 'NULL',
+              },
+            },
+          },
+        },
+      },
+    },
+  },
+  {
+    testCase: 54,
+    soql: `SELECT Id, Name FROM Account WHERE CreatedDate > LAST_N_YEARS:1 AND LastModifiedDate > LAST_MONTH`,
+    output: {
+      fields: [
+        {
+          text: 'Id',
+        },
+        {
+          text: 'Name',
+        },
+      ],
+      subqueries: [],
+      sObject: 'Account',
+      where: {
+        left: {
+          field: 'CreatedDate',
+          operator: '>',
+          value: 'LAST_N_YEARS:1',
+          literalType: 'DATE_N_LITERAL',
+          dateLiteralVariable: 1,
+        },
+        operator: 'AND',
+        right: {
+          left: {
+            field: 'LastModifiedDate',
+            operator: '>',
+            value: 'LAST_MONTH',
+            literalType: 'DATE_LITERAL',
+          },
         },
       },
     },
