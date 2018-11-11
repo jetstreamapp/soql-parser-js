@@ -3,7 +3,7 @@ import { SOQLListener } from './generated/SOQLListener';
 import * as utils from './utils';
 import * as Parser from './generated/SOQLParser';
 import {
-  Field,
+  FieldType,
   FunctionExp,
   GroupByClause,
   HavingClause,
@@ -13,9 +13,13 @@ import {
   WithDataCategoryCondition,
   GroupSelector,
   ForClause,
-  TypeOfFieldCondition,
   UpdateClause,
   LiteralType,
+  WithDataCategoryClause,
+  FieldRelationship,
+  FieldFunctionExpression,
+  FieldTypeOfCondition,
+  Subquery,
 } from './models/SoqlQuery.model';
 import { SoqlQueryConfig } from './SoqlParser';
 
@@ -23,9 +27,12 @@ export type currItem = 'field' | 'typeof' | 'from' | 'where' | 'groupby' | 'orde
 
 export interface Context {
   isSubQuery: boolean;
+  currentSubquery: Query;
+  rootFieldFn?: FieldFunctionExpression;
+  currentFieldFn?: FieldFunctionExpression;
+  previousFieldFn?: FieldFunctionExpression;
   isWhereSubQuery: boolean;
   whereSubquery: Query;
-  currSubqueryIdx: number;
   currWhereConditionGroupIdx: number;
   currentItem: currItem;
   inWhereClauseGroup: boolean;
@@ -34,20 +41,23 @@ export interface Context {
 }
 
 export class SoqlQuery implements Query {
-  fields: Field[];
-  subqueries: Query[];
+  fields: FieldType[];
   sObject: string;
   sObjectAlias?: string;
+  sObjectPrefix?: string[];
+  sObjectRelationshipName?: string;
   where?: WhereClause;
   limit?: number;
   offset?: number;
   groupBy?: GroupByClause;
   having?: HavingClause;
   orderBy?: OrderByClause | OrderByClause[];
+  withDataCategory?: WithDataCategoryClause;
+  for?: ForClause;
+  update?: UpdateClause;
 
   constructor() {
     this.fields = [];
-    this.subqueries = [];
   }
 }
 
@@ -61,12 +71,12 @@ export class Listener implements SOQLListener {
     isSubQuery: false,
     isWhereSubQuery: false,
     whereSubquery: null,
-    currSubqueryIdx: -1,
     currWhereConditionGroupIdx: 0,
     currentItem: null,
     inWhereClauseGroup: false,
     tempData: null,
     tempDataBackup: null,
+    currentSubquery: null,
   };
 
   soqlQuery: SoqlQuery;
@@ -109,9 +119,9 @@ export class Listener implements SOQLListener {
     }
   }
 
-  getSoqlQuery(): Query {
-    if (this.context.isSubQuery) {
-      return this.soqlQuery.subqueries[this.context.currSubqueryIdx];
+  getSoqlQuery(): Query | Subquery {
+    if (this.context.isSubQuery && this.context.currentSubquery) {
+      return this.context.currentSubquery;
     }
     if (this.context.isWhereSubQuery) {
       return this.context.whereSubquery;
@@ -211,27 +221,33 @@ export class Listener implements SOQLListener {
     if (this.config.logging) {
       console.log('enterAlias_name:', ctx.text);
     }
+    const query = this.getSoqlQuery();
     if (this.context.currentItem === 'from') {
-      this.getSoqlQuery().sObjectAlias = ctx.text;
-      // All fields need to update to remove the alias from relationships
-      this.getSoqlQuery().fields.forEach(field => {
-        if (field.text && field.text.startsWith(`${ctx.text}.`)) {
-          field.objectPrefix = ctx.text;
-          field.text = field.text.replace(`${ctx.text}.`, '');
-          if (field.relationshipFields.length > 2) {
-            field.relationshipFields = field.relationshipFields.splice(1);
+      query.sObjectAlias = ctx.text;
+      /** For objects that are aliased, the relationship fields need to have the alias removed and possibly even a type change */
+      query.fields
+        .filter(field => field.type === 'FieldRelationship')
+        .forEach((field: FieldRelationship, i: number) => {
+          field.relationships = field.relationships.filter(rel => rel !== ctx.text);
+          if (field.relationships.length === 0) {
+            // field is not a relationship, it just had an object alias specified
+            query.fields[i] = {
+              type: 'Field',
+              field: field.field,
+              objectPrefix: ctx.text,
+            };
           } else {
-            field.relationshipFields = undefined;
+            (query.fields[i] as FieldRelationship).objectPrefix = ctx.text;
           }
-        }
-      });
+        });
     }
     if (this.context.currentItem === 'field') {
-      if (this.context.tempData) {
-        this.context.tempData.alias = ctx.text;
-      } else {
-        this.getSoqlQuery().fields[this.getSoqlQuery().fields.length - 1].alias = ctx.text;
+      if (this.context.currentFieldFn) {
+        this.context.currentFieldFn.alias = ctx.text;
       }
+      //  else {
+      //   this.context.tempData.alias = ctx.text;
+      // }
     }
     if (this.context.currentItem === 'where') {
       this.context.tempData.currConditionOperation.left.fn.alias = ctx.text;
@@ -309,8 +325,8 @@ export class Listener implements SOQLListener {
     if (this.config.logging) {
       console.log('enterDatetime_literal:', ctx.text);
     }
-    if (this.context.currentItem === 'field') {
-      this.context.tempData.type = 'datetime';
+    if (this.context.currentItem === 'where') {
+      this.context.tempData.currConditionOperation.left.literalType = 'DATETIME' as LiteralType;
     }
   }
   exitDatetime_literal(ctx: Parser.Datetime_literalContext) {
@@ -322,8 +338,8 @@ export class Listener implements SOQLListener {
     if (this.config.logging) {
       console.log('enterDate_literal:', ctx.text);
     }
-    if (this.context.currentItem === 'field') {
-      this.context.tempData.type = 'date';
+    if (this.context.currentItem === 'where') {
+      this.context.tempData.currConditionOperation.left.literalType = 'DATE' as LiteralType;
     }
   }
   exitDate_literal(ctx: Parser.Date_literalContext) {
@@ -334,9 +350,6 @@ export class Listener implements SOQLListener {
   enterInteger_literal(ctx: Parser.Integer_literalContext) {
     if (this.config.logging) {
       console.log('enterInteger_literal:', ctx.text);
-    }
-    if (this.context.currentItem === 'field') {
-      this.context.tempData.type = 'integer';
     }
     if (this.context.currentItem === 'where') {
       this.context.tempData.currConditionOperation.left.literalType = 'INTEGER' as LiteralType;
@@ -405,8 +418,11 @@ export class Listener implements SOQLListener {
       console.log('enterFunction_name:', ctx.text);
     }
     if (this.context.currentItem === 'field') {
-      const currFn: FunctionExp = this.context.tempData.fn || this.context.tempData;
-      currFn.name = ctx.text;
+      // const currFn: FunctionExp = this.context.tempData.fn || this.context.tempData;
+      // this.context.tempData.fn = ctx.text;
+      if (!this.context.currentFieldFn.fn) {
+        this.context.currentFieldFn.fn = ctx.text;
+      }
     }
     if (this.context.currentItem === 'where' || this.context.currentItem === 'having') {
       this.context.tempData.currConditionOperation.left.fn.name = ctx.text;
@@ -438,8 +454,11 @@ export class Listener implements SOQLListener {
       console.log('enterFunction_aggregate:', ctx.text);
     }
     if (this.context.currentItem === 'field') {
-      const currFn: FunctionExp = this.context.tempData.fn || this.context.tempData;
-      currFn.isAggregateFn = true;
+      if (this.context.currentFieldFn) {
+        this.context.currentFieldFn.isAggregateFn = true;
+      } else {
+        this.context.tempData.isAggregateFn = true;
+      }
     }
   }
   exitFunction_aggregate(ctx: Parser.Function_aggregateContext) {
@@ -631,8 +650,7 @@ export class Listener implements SOQLListener {
       this.context.tempData = null;
     } else {
       this.context.isSubQuery = true;
-      this.soqlQuery.subqueries.push(new SoqlQuery());
-      this.context.currSubqueryIdx = this.soqlQuery.subqueries.length - 1;
+      this.context.currentSubquery = new SoqlQuery();
     }
   }
   exitSoql_subquery(ctx: Parser.Soql_subqueryContext) {
@@ -645,6 +663,7 @@ export class Listener implements SOQLListener {
       this.context.tempData.currConditionOperation.left.valueQuery = this.context.whereSubquery;
     } else {
       this.context.isSubQuery = false;
+      this.context.currentSubquery = null;
       this.context.currWhereConditionGroupIdx = 0; // ensure reset for base query or next subquery
     }
   }
@@ -685,12 +704,27 @@ export class Listener implements SOQLListener {
       console.log('enterField_spec:', ctx.text);
     }
     this.context.currentItem = 'field';
+    const query = this.getSoqlQuery();
     if (ctx.text.includes('.')) {
-      this.getSoqlQuery().fields.push({ text: ctx.text, relationshipFields: ctx.text.split('.') });
+      const fields = ctx.text.split('.');
+      query.fields.push({
+        type: 'FieldRelationship',
+        field: fields.slice(-1)[0],
+        relationships: fields.slice(0, -1),
+        rawValue: ctx.text,
+      });
     } else if (ctx.childCount > 1) {
-      this.getSoqlQuery().fields.push({ text: ctx.getChild(0).text });
+      query.fields.push({
+        type: 'Field',
+        field: ctx.getChild(0).text,
+      });
+      // query.fields.push({ text: ctx.getChild(0).text });
     } else {
-      this.getSoqlQuery().fields.push({ text: ctx.text });
+      query.fields.push({
+        type: 'Field',
+        field: ctx.text,
+      });
+      // query.fields.push({ text: ctx.text });
     }
   }
   // exitField_spec(ctx: Parser.Field_specContext) {
@@ -702,7 +736,16 @@ export class Listener implements SOQLListener {
     }
     if (this.context.currentItem === 'field') {
       // If nested function, init nested fn operator
-      this.context.tempData = {};
+      this.context.tempData = {
+        type: 'FieldFunctionExpression',
+      };
+      this.context.currentFieldFn = this.context.tempData;
+      if (!this.context.rootFieldFn) {
+        this.context.rootFieldFn = this.context.tempData;
+      }
+      if (this.context.previousFieldFn) {
+        this.context.previousFieldFn.parameters = [this.context.tempData];
+      }
     }
     if (this.context.currentItem === 'having') {
       this.context.tempData.currConditionOperation.left.fn = {};
@@ -714,8 +757,15 @@ export class Listener implements SOQLListener {
       console.log('exitFunction_call_spec:', ctx.text);
     }
     if (this.context.currentItem === 'field') {
-      this.getSoqlQuery().fields.push({ fn: this.context.tempData });
+      if (this.context.rootFieldFn) {
+        this.getSoqlQuery().fields.push(this.context.rootFieldFn);
+      } else {
+        this.getSoqlQuery().fields.push(this.context.tempData);
+      }
       this.context.tempData = null;
+      this.context.rootFieldFn = null;
+      this.context.currentFieldFn = null;
+      this.context.previousFieldFn = null;
     }
   }
   enterField(ctx: Parser.FieldContext) {
@@ -734,11 +784,9 @@ export class Listener implements SOQLListener {
     }
     // COUNT(ID) or Count()
     if (this.context.currentItem === 'field') {
-      if (this.context.tempData.text) {
-        this.context.tempData.fn = {};
-      }
-      const currFn: FunctionExp = this.context.tempData.fn || this.context.tempData;
-      currFn.text = ctx.text;
+      // const currFn: FieldFunctionExpression = this.context.tempData.fn || this.context.tempData;
+      this.context.currentFieldFn.rawValue = ctx.text;
+      // this.context.tempData.rawValue = ctx.text;
     }
     if (this.context.currentItem === 'where' || this.context.currentItem === 'having') {
       this.context.tempData.currConditionOperation.left.fn = {
@@ -753,6 +801,15 @@ export class Listener implements SOQLListener {
   exitFunction_call(ctx: Parser.Function_callContext) {
     if (this.config.logging) {
       console.log('exitFunction_call:', ctx.text);
+    }
+    if (this.context.currentItem === 'field') {
+      if (
+        this.context.previousFieldFn &&
+        this.context.currentFieldFn &&
+        this.context.previousFieldFn !== this.context.currentFieldFn
+      ) {
+        this.context.currentFieldFn = this.context.previousFieldFn;
+      }
     }
   }
   enterFunction_parameter_list(ctx: Parser.Function_parameter_listContext) {
@@ -770,8 +827,22 @@ export class Listener implements SOQLListener {
       console.log('enterFunction_parameter:', ctx.text);
     }
     // Get correct fn object based on what is set in tempData (set differently for field vs having)
-    if (
-      this.context.currentItem === 'field' ||
+    if (this.context.currentItem === 'field') {
+      // this.context.tempData.parameter = ctx.text;
+
+      if (ctx.getChild(0) instanceof Parser.Function_callContext) {
+        this.context.previousFieldFn = this.context.currentFieldFn;
+        this.context.currentFieldFn = {
+          type: 'FieldFunctionExpression',
+          fn: null, // set later
+        };
+        this.context.previousFieldFn.parameters = this.context.previousFieldFn.parameters || [];
+        (this.context.previousFieldFn.parameters as FieldFunctionExpression[]).push(this.context.currentFieldFn);
+      } else {
+        this.context.currentFieldFn.parameters = this.context.currentFieldFn.parameters || [];
+        (this.context.currentFieldFn.parameters as string[]).push(ctx.text);
+      }
+    } else if (
       this.context.currentItem === 'where' ||
       this.context.currentItem === 'having' ||
       this.context.currentItem === 'orderby'
@@ -802,10 +873,9 @@ export class Listener implements SOQLListener {
     }
     this.context.currentItem = 'typeof';
     this.context.tempData = {
-      typeOf: {
-        field: ctx.getChild(1).text,
-        conditions: [],
-      },
+      type: 'FieldTypeof',
+      field: ctx.getChild(1).text,
+      conditions: [],
     };
   }
   exitTypeof_spec(ctx: Parser.Typeof_specContext) {
@@ -830,7 +900,7 @@ export class Listener implements SOQLListener {
     if (this.config.logging) {
       console.log('enterTypeof_when_then_clause:', ctx.text);
     }
-    this.context.tempData.typeOf.conditions.push({
+    this.context.tempData.conditions.push({
       type: 'WHEN',
       objectType: ctx.getChild(1).text,
     });
@@ -844,7 +914,7 @@ export class Listener implements SOQLListener {
     if (this.config.logging) {
       console.log('enterTypeof_then_clause:', ctx.text);
     }
-    const whenThenClause = utils.getLastItem<TypeOfFieldCondition>(this.context.tempData.typeOf.conditions);
+    const whenThenClause = utils.getLastItem<FieldTypeOfCondition>(this.context.tempData.conditions);
     whenThenClause.fieldList = ctx.getChild(1).text.split(',');
   }
   exitTypeof_then_clause(ctx: Parser.Typeof_then_clauseContext) {
@@ -856,7 +926,7 @@ export class Listener implements SOQLListener {
     if (this.config.logging) {
       console.log('enterTypeof_else_clause:', ctx.text);
     }
-    this.context.tempData.typeOf.conditions.push({
+    this.context.tempData.conditions.push({
       type: 'ELSE',
       fieldList: ctx.getChild(1).text.split(','),
     });
@@ -880,28 +950,29 @@ export class Listener implements SOQLListener {
     if (this.config.logging) {
       console.log('enterObject_spec:', ctx.text);
     }
-
+    let objName = ctx.getChild(0).text;
     if (!this.context.isSubQuery) {
-      this.getSoqlQuery().sObject = ctx.getChild(0).text;
+      const query = this.getSoqlQuery() as Query;
+      query.sObject = objName;
     } else {
-      this.getSoqlQuery().sObjectRelationshipName = ctx.getChild(0).text;
-      if (ctx.getChild(0).text.includes('.')) {
-        this.getSoqlQuery().sObjectRelationshipName = ctx.getChild(1).text;
-        const prefixList: string[] = [];
+      const query = this.getSoqlQuery() as Subquery;
+      query.relationshipName = objName;
+      if (objName.includes('.')) {
+        query.relationshipName = ctx.getChild(1).text;
+        objName = ctx.getChild(1).text;
+        let prefixList: string[] = [];
         for (let i = 0; i < ctx.getChild(0).childCount; i++) {
           if (ctx.getChild(0).getChild(i) instanceof Parser.Object_nameContext) {
             prefixList.push(ctx.getChild(0).getChild(i).text);
           }
         }
-        this.getSoqlQuery().sObjectPrefix = prefixList;
-        this.soqlQuery.fields.push({
-          subqueryObjName: ctx.getChild(1).text,
-        });
-      } else {
-        this.soqlQuery.fields.push({
-          subqueryObjName: ctx.getChild(0).text,
-        });
+        query.sObjectPrefix = prefixList;
       }
+      this.soqlQuery.fields.push({
+        type: 'FieldSubquery',
+        from: objName,
+        subquery: query,
+      });
     }
   }
   exitObject_spec(ctx: Parser.Object_specContext) {

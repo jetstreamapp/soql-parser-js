@@ -1,19 +1,66 @@
 export type LogicalOperator = 'AND' | 'OR';
 export type Operator = '=' | '!=' | '<=' | '>=' | '>' | '<' | 'LIKE' | 'IN' | 'NOT IN' | 'INCLUDES' | 'EXCLUDES';
-export type TypeOfFieldConditionType = 'WHEN' | 'ELSE';
+export type FieldTypeOfConditionType = 'WHEN' | 'ELSE';
 export type GroupSelector = 'ABOVE' | 'AT' | 'BELOW' | 'ABOVE_OR_BELOW';
 export type LogicalPrefix = 'NOT';
 export type ForClause = 'VIEW' | 'UPDATE' | 'REFERENCE';
 export type UpdateClause = 'TRACKING' | 'VIEWSTAT';
-export type LiteralType = 'STRING' | 'INTEGER' | 'DECIMAL' | 'BOOLEAN' | 'NULL' | 'DATE_LITERAL' | 'DATE_N_LITERAL';
+export type LiteralType =
+  | 'STRING'
+  | 'INTEGER'
+  | 'DECIMAL'
+  | 'BOOLEAN'
+  | 'NULL'
+  | 'DATETIME'
+  | 'DATE'
+  | 'DATE_LITERAL'
+  | 'DATE_N_LITERAL';
+export type FieldType = Field | FieldFunctionExpression | FieldRelationship | FieldSubquery | FieldTypeOf;
 
-export interface Query {
-  fields: Field[];
-  subqueries: Query[];
-  sObject?: string;
+export interface Field {
+  type: 'Field';
+  field: string;
+  objectPrefix?: string; // required if object is aliased
+}
+
+export interface FieldFunctionExpression {
+  type: 'FieldFunctionExpression';
+  fn: string;
+  parameters?: string[] | FieldFunctionExpression[];
+  alias?: string;
+  isAggregateFn?: boolean; // not required for compose, will be populated if SOQL is parsed
+  rawValue?: string; // not required for compose, will be populated if SOQL is parsed with the raw value of the entire field
+}
+
+export interface FieldRelationship {
+  type: 'FieldRelationship';
+  field: string;
+  relationships: string[];
+  objectPrefix?: string; // required if object is aliased
+  rawValue?: string; // not required for compose, will be populated if SOQL is parsed with the raw value of the entire field
+}
+
+export interface FieldSubquery {
+  type: 'FieldSubquery';
+  subquery: Subquery;
+  from?: string; // not required for compose, will be populated if SOQL is parsed
+}
+
+export interface FieldTypeOf {
+  type: 'FieldTypeof';
+  field: string;
+  conditions: FieldTypeOfCondition[];
+}
+
+export interface FieldTypeOfCondition {
+  type: FieldTypeOfConditionType;
+  objectType?: string; // not present when ELSE
+  fieldList: string[];
+}
+
+export interface QueryBase {
+  fields: FieldType[];
   sObjectAlias?: string;
-  sObjectPrefix?: string[];
-  sObjectRelationshipName?: string;
   where?: WhereClause;
   limit?: number;
   offset?: number;
@@ -25,29 +72,13 @@ export interface Query {
   update?: UpdateClause;
 }
 
-export interface SelectStatement {
-  fields: Field[];
+export interface Query extends QueryBase {
+  sObject: string;
 }
 
-export interface Field {
-  text?: string;
-  alias?: string;
-  objectPrefix?: string;
-  relationshipFields?: string[];
-  fn?: FunctionExp;
-  subqueryObjName?: string; // populated if subquery
-  typeOf?: TypeOfField;
-}
-
-export interface TypeOfField {
-  field: string;
-  conditions: TypeOfFieldCondition[];
-}
-
-export interface TypeOfFieldCondition {
-  type: TypeOfFieldConditionType;
-  objectType?: string; // not present when ELSE
-  fieldList: string[];
+export interface Subquery extends QueryBase {
+  relationshipName: string;
+  sObjectPrefix?: string[];
 }
 
 export interface WhereClause {
@@ -65,8 +96,8 @@ export interface Condition {
   operator: Operator;
   value?: string | string[];
   valueQuery?: Query;
-  literalType?: LiteralType;
-  dateLiteralVariable?: number;
+  literalType?: LiteralType; // If populated with STRING on compose, the value(s) will be wrapped in "'" if they are not already. - All other values ignored
+  dateLiteralVariable?: number; // not required for compose, will be populated if SOQL is parsed
 }
 
 export interface OrderByClause {
@@ -97,11 +128,11 @@ export interface HavingCondition {
 }
 
 export interface FunctionExp {
-  text?: string; // Count(Id)
-  name?: string; // Count
+  text?: string; // Should be formatted like this: Count(Id)
+  name?: string; // not used for compose, will be populated if SOQL is parsed
   alias?: string;
-  parameter?: string | string[];
-  isAggregateFn?: boolean;
+  parameter?: string | string[]; // not used for compose, will be populated if SOQL is parsed
+  isAggregateFn?: boolean; // not used for compose, will be populated if SOQL is parsed
   fn?: FunctionExp; // used for nested functions FORMAT(MIN(CloseDate))
 }
 

@@ -1,6 +1,7 @@
 import * as utils from '../lib/utils';
 import { expect } from 'chai';
 import 'mocha';
+import { Query, Subquery } from '../lib';
 
 describe('isString', () => {
   it(`correctly determine string`, () => {
@@ -18,6 +19,27 @@ describe('isString', () => {
     expect(utils.isString(100)).equal(false);
     expect(utils.isString(Infinity)).equal(false);
     expect(utils.isString(NaN)).equal(false);
+  });
+});
+
+describe('isStringArray', () => {
+  it(`correctly determine string array`, () => {
+    expect(utils.isStringArray(['test', 'test2'])).equal(true);
+    expect(utils.isStringArray([''])).equal(true);
+  });
+  it(`correctly only consider first parameter`, () => {
+    expect(utils.isStringArray(['test', { foo: 'test' }])).equal(true);
+  });
+  it(`should correctly determine non-string array`, () => {
+    expect(utils.isStringArray(null)).equal(false);
+    expect(utils.isStringArray(undefined)).equal(false);
+    expect(utils.isStringArray([true])).equal(false);
+    expect(utils.isStringArray([false])).equal(false);
+    expect(utils.isStringArray([])).equal(false);
+    expect(utils.isStringArray([{}])).equal(false);
+    expect(utils.isStringArray([100])).equal(false);
+    expect(utils.isStringArray([Infinity])).equal(false);
+    expect(utils.isStringArray([NaN])).equal(false);
   });
 });
 
@@ -167,5 +189,85 @@ describe('pad', () => {
     expect(utils.pad(str, 5, 2)).equal(`  ${str} `);
     expect(utils.pad(str, 5, null)).lengthOf(5);
     expect(utils.pad(str, 5, null)).equal(`${str} `);
+  });
+});
+
+describe('isSubquery', () => {
+  const query: Query = {
+    fields: [
+      {
+        type: 'FieldRelationship',
+        field: 'FirstName',
+        relationships: ['Contact'],
+        rawValue: 'Contact.FirstName',
+      },
+    ],
+    sObject: 'Contact',
+  };
+
+  const subquery: Subquery = {
+    fields: [
+      {
+        type: 'Field',
+        field: 'LastName',
+      },
+    ],
+    relationshipName: 'Contacts',
+  };
+
+  it(`Should correctly detect subquery`, () => {
+    expect(utils.isSubquery(subquery)).equal(true);
+  });
+  it(`Should correctly detect non-subquery`, () => {
+    expect(utils.isSubquery(query)).equal(false);
+  });
+});
+
+describe('getParams', () => {
+  it(`Should correctly get params`, () => {
+    expect(
+      utils.getParams({
+        type: 'FieldFunctionExpression',
+        fn: 'FORMAT',
+        rawValue: 'FORMAT(amount)',
+        parameters: ['amount'],
+        alias: 'Amt',
+      })
+    ).deep.equal(['amount']);
+    expect(
+      utils.getParams({
+        type: 'FieldFunctionExpression',
+        fn: 'FORMAT',
+        parameters: ['amount', 'foo'],
+        alias: 'Amt',
+      })
+    ).deep.equal(['amount', 'foo']);
+  });
+  it(`Should correctly get nested params`, () => {
+    expect(
+      utils.getParams({
+        type: 'FieldFunctionExpression',
+        fn: 'FORMAT',
+        rawValue: 'FORMAT(convertCurrency(amount))',
+        parameters: [
+          {
+            type: 'FieldFunctionExpression',
+            fn: 'convertCurrency',
+            rawValue: 'convertCurrency(amount)',
+            parameters: ['amount'],
+          },
+        ],
+        alias: 'convertedCurrency',
+      })
+    ).deep.equal(['amount']);
+  });
+  it(`return empty string if no params`, () => {
+    expect(
+      utils.getParams({
+        type: 'FieldFunctionExpression',
+        fn: 'COUNT',
+        rawValue: 'COUNT()',
+      })
+    ).deep.equal([]);
   });
 });

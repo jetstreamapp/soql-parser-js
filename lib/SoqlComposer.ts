@@ -1,21 +1,28 @@
 import {
-  Field,
+  FieldType,
   FunctionExp,
   GroupByClause,
   HavingClause,
   OrderByClause,
   Query,
-  TypeOfField,
   WhereClause,
   WithDataCategoryClause,
+  FieldTypeOf,
+  Subquery,
+  FieldFunctionExpression,
 } from './models/SoqlQuery.model';
 import * as utils from './utils';
 import { FieldData, Formatter, FormatOptions } from './SoqlFormatter';
+import { parseQuery } from './SoqlParser';
 
 export interface SoqlComposeConfig {
   logging: boolean; // default=false
   format: boolean; // default=false
   formatOptions?: FormatOptions;
+}
+
+export function formatQuery(soql: string, formatOptions?: FormatOptions) {
+  return composeQuery(parseQuery(soql), { format: true, formatOptions });
 }
 
 export function composeQuery(soql: Query, config: Partial<SoqlComposeConfig> = {}): string {
@@ -68,32 +75,19 @@ export class Compose {
     }
   }
 
-  private parseQuery(query: Query, isSubquery: boolean = false): string {
+  private parseQuery(query: Query | Subquery): string {
     const fieldData: FieldData = {
       fields: this.parseFields(query.fields).map(field => ({
         text: field,
-        isSubquery: false,
+        isSubquery: field.startsWith('('),
         prefix: '',
         suffix: '',
       })),
-      isSubquery,
+      isSubquery: utils.isSubquery(query),
       lineBreaks: [],
     };
 
     let output = `SELECT `;
-
-    // Replace subquery fields with parsed subqueries
-    fieldData.fields.forEach((field, i) => {
-      if (field.text.match(this.subqueryFieldRegex)) {
-        const subquery = query.subqueries.find(
-          subquery => subquery.sObjectRelationshipName === field.text.replace(this.subqueryFieldReplaceRegex, '')
-        );
-        if (subquery) {
-          fieldData.fields[i].text = this.formatter.formatSubquery(this.parseQuery(subquery, true));
-          fieldData.fields[i].isSubquery = true;
-        }
-      }
-    });
 
     // Format fields based on configuration
     this.formatter.formatFields(fieldData);
@@ -104,9 +98,9 @@ export class Compose {
 
     output += this.formatter.formatClause('FROM');
 
-    if (query.sObjectRelationshipName) {
+    if (utils.isSubquery(query)) {
       const sObjectPrefix = query.sObjectPrefix || [];
-      sObjectPrefix.push(query.sObjectRelationshipName);
+      sObjectPrefix.push(query.relationshipName);
       output += ` ${sObjectPrefix.join('.')}${utils.get(query.sObjectAlias, '', ' ')}`;
     } else {
       output += ` ${query.sObject}${utils.get(query.sObjectAlias, '', ' ')}`;
@@ -171,29 +165,40 @@ export class Compose {
     return output;
   }
 
-  private parseFields(fields: Field[]): string[] {
-    return fields
-      .map(field => {
-        if (utils.isString(field.text)) {
-          if (field.objectPrefix) {
-            return `${utils.get(field.objectPrefix, '.')}${field.text}`;
-          } else {
-            return `${field.text}${utils.get(field.alias, '', ' ')}`;
-          }
-        } else if (utils.isObject(field.fn)) {
-          // parse fn
-          return this.parseFn(field.fn);
-        } else if (utils.isString(field.subqueryObjName)) {
-          // needs to be replaced with subquery
-          return `{${field.subqueryObjName}}`;
-        } else if (utils.isObject(field.typeOf)) {
-          return this.parseTypeOfField(field.typeOf);
+  private parseFields(fields: FieldType[]): string[] {
+    return fields.map(field => {
+      const objPrefix = (field as any).objectPrefix ? `${(field as any).objectPrefix}.` : '';
+      switch (field.type) {
+        case 'Field': {
+          return `${objPrefix}${field.field}`;
         }
-      })
-      .filter(field => !utils.isNil(field));
+        case 'FieldFunctionExpression': {
+          let params = '';
+          if (field.parameters) {
+            if (utils.isString(field.parameters[0])) {
+              params = field.parameters.join(',');
+            } else {
+              params = this.parseFields(field.parameters as FieldFunctionExpression[]).join(',');
+            }
+          }
+          return `${field.fn}(${params})${field.alias ? ` ${field.alias}` : ''}`;
+        }
+        case 'FieldRelationship': {
+          return `${objPrefix}${field.relationships.join('.')}.${field.field}`;
+        }
+        case 'FieldSubquery': {
+          return this.formatter.formatSubquery(this.parseQuery(field.subquery));
+        }
+        case 'FieldTypeof': {
+          return this.parseTypeOfField(field);
+        }
+        default:
+          break;
+      }
+    });
   }
 
-  private parseTypeOfField(typeOfField: TypeOfField): string {
+  private parseTypeOfField(typeOfField: FieldTypeOf): string {
     let output = `TYPEOF ${typeOfField.field} `;
     output += typeOfField.conditions
       .map(cond => {
@@ -220,7 +225,7 @@ export class Compose {
       output += ` ${where.left.operator} `;
       output += where.left.valueQuery
         ? this.formatter.formatSubquery(this.parseQuery(where.left.valueQuery), 1, true)
-        : utils.getAsArrayStr(where.left.value);
+        : utils.getAsArrayStr(utils.getWhereValue(where.left.value, where.left.literalType));
       output +=
         utils.isNumber(where.left.closeParen) && where.left.closeParen > 0
           ? new Array(where.left.closeParen).fill(')').join('')

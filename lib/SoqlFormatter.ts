@@ -1,5 +1,3 @@
-import { composeQuery } from './SoqlComposer';
-import { parseQuery } from './SoqlParser';
 import { isNumber } from './utils';
 
 export interface FieldData {
@@ -19,10 +17,6 @@ export interface FormatOptions {
   fieldSubqueryParensOnOwnLine?: boolean;
   whereClauseOperatorsIndented?: boolean;
   logging?: boolean;
-}
-
-export function formatQuery(soql: string, formatOptions?: FormatOptions) {
-  return composeQuery(parseQuery(soql), { format: true, formatOptions });
 }
 
 export class Formatter {

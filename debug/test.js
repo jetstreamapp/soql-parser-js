@@ -1,7 +1,12 @@
 var soqlParserJs = require('./lib');
 
 const query = `
-SELECT Id, Name FROM Account WHERE CreatedDate > LAST_N_YEARS:1 AND LastModifiedDate > LAST_MONTH
+SELECT Id, Name, FORMAT(Amount),
+  (SELECT Quantity, ListPrice, PricebookEntry.UnitPrice, PricebookEntry.Name FROM OpportunityLineItems)
+FROM Opportunity
+WHERE CreatedDate > LAST_N_YEARS:1
+AND StageName = 'Closed Won'
+LIMIT 150
 `;
 // SELECT Id FROM Account WHERE (Id IN ('1', '2', '3') OR (NOT Id = '2') OR (Name LIKE '%FOO%' OR (Name LIKE '%ARM%' AND FOO = 'bar')))
 // SELECT Id FROM Account WHERE dateField != '2018-10-03' AND dateField < LAST_N_DAYS:5 AND dateField < LAST_WEEK AND isDeleted = false AND someOTherField = 'someVal'
@@ -17,19 +22,19 @@ console.log(JSON.stringify(parsedQuery, null, 2));
 // });
 // console.log(composedQuery);
 // soqlParserJs.formatQuery(parsedQuery);
-const formattedQuery1 = soqlParserJs.formatQuery(query);
-const formattedQuery3 = soqlParserJs.formatQuery(query, {
-  fieldMaxLineLen: 20,
-  fieldSubqueryParensOnOwnLine: false,
-  whereClauseOperatorsIndented: true,
-});
-const formattedQuery2 = soqlParserJs.formatQuery(query, {
-  fieldSubqueryParensOnOwnLine: true,
-  whereClauseOperatorsIndented: true,
-});
-console.log(formattedQuery1);
-console.log(formattedQuery3);
-console.log(formattedQuery2);
+// const formattedQuery1 = soqlParserJs.formatQuery(query);
+// const formattedQuery3 = soqlParserJs.formatQuery(query, {
+//   fieldMaxLineLen: 20,
+//   fieldSubqueryParensOnOwnLine: false,
+//   whereClauseOperatorsIndented: true,
+// });
+// const formattedQuery2 = soqlParserJs.formatQuery(query, {
+//   fieldSubqueryParensOnOwnLine: true,
+//   whereClauseOperatorsIndented: true,
+// });
+// // console.log(formattedQuery1);
+// // console.log(formattedQuery3);
+// console.log(formattedQuery2);
 
 // SELECT Id, Name FROM Account WHERE Id IN (SELECT AccountId FROM Opportunity WHERE StageName = 'Closed Lost')
 // SELECT Id FROM Account WHERE Id NOT IN (SELECT AccountId FROM Opportunity WHERE IsClosed = false)
@@ -43,3 +48,77 @@ console.log(formattedQuery2);
 // console.log('isValid', isValid);
 
 // const parsedQuery = soqlParserJs.parseQuery(query, { logging: true });
+// const queryObj = {
+//   fields: [
+//     {
+//       type: 'Field',
+//       field: 'Id',
+//     },
+//     {
+//       type: 'FieldRelationship',
+//       field: 'Id',
+//       relationships: ['Account', 'LastModifiedBy'],
+//     },
+//     {
+//       type: 'FieldRelationship',
+//       field: 'Name',
+//       relationships: ['Account', 'LastModifiedBy'],
+//     },
+//   ],
+//   sObject: 'Contact',
+// };
+// const fields = soqlParserJs.queryUtils.getFlattenedFields(queryObj);
+// console.log('fields', fields);
+
+const oppLineItemsSubquery = {
+  fields: [
+    soqlParserJs.queryUtils.getComposedField('Quantity'),
+    soqlParserJs.queryUtils.getComposedField('ListPrice'),
+    soqlParserJs.queryUtils.getComposedField({
+      field: 'UnitPrice',
+      relationships: ['PricebookEntry'],
+    }),
+    soqlParserJs.queryUtils.getComposedField({
+      field: 'Name',
+      relationships: ['PricebookEntry'],
+    }),
+  ],
+  relationshipName: 'OpportunityLineItems',
+};
+
+const soqlQuery = {
+  fields: [
+    soqlParserJs.queryUtils.getComposedField('Id'),
+    soqlParserJs.queryUtils.getComposedField('Name'),
+    soqlParserJs.queryUtils.getComposedField({
+      fn: 'FORMAT',
+      parameters: 'Amount',
+      alias: 'MyFormattedAmount',
+    }),
+    soqlParserJs.queryUtils.getComposedField({ subquery: oppLineItemsSubquery }),
+  ],
+  sObject: 'Opportunity',
+  where: {
+    left: {
+      field: 'CreatedDate',
+      operator: '>',
+      value: 'LAST_N_YEARS:1',
+    },
+    operator: 'AND',
+    right: {
+      left: {
+        field: 'StageName',
+        operator: '=',
+        value: 'Closed Won',
+        // literalType is optional, but if set to STRING and our value is not already wrapped in "'", they will be added
+        // All other literalType values are ignored in composing a query
+        literalType: 'STRING',
+      },
+    },
+  },
+  limit: 150,
+};
+
+const composedQuery = soqlParserJs.composeQuery(soqlQuery, { format: true });
+
+console.log(composedQuery);
