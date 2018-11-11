@@ -1,4 +1,10 @@
-import { Query } from '../lib/models/SoqlQuery.model';
+/**
+ * @deprecated
+ * OLD UNIT TEST FORMAT
+ * HERE FOR REFERENCE - WILL DELETE IN THE FUTURE
+ */
+
+import { Query } from '../../lib/models/SoqlQuery.model';
 
 // Queries obtained from SFDC examples
 // https://developer.salesforce.com/docs/atlas.en-us.soql_sosl.meta/soql_sosl/sforce_api_calls_soql_select_examples.htm
@@ -9,25 +15,23 @@ export interface TestCase {
   output: Query;
 }
 
-export const testCases: TestCase[] = [
+export const testCases: any[] = [
   {
     testCase: 1,
     soql: 'SELECT Id, Name, BillingCity FROM Account',
     output: {
       fields: [
         {
-          type: 'Field',
-          field: 'Id',
+          text: 'Id',
         },
         {
-          type: 'Field',
-          field: 'Name',
+          text: 'Name',
         },
         {
-          type: 'Field',
-          field: 'BillingCity',
+          text: 'BillingCity',
         },
       ],
+      subqueries: [],
       sObject: 'Account',
     },
   },
@@ -37,10 +41,10 @@ export const testCases: TestCase[] = [
     output: {
       fields: [
         {
-          type: 'Field',
-          field: 'Id',
+          text: 'Id',
         },
       ],
+      subqueries: [],
       sObject: 'Contact',
       where: {
         left: {
@@ -67,10 +71,10 @@ export const testCases: TestCase[] = [
     output: {
       fields: [
         {
-          type: 'Field',
-          field: 'Name',
+          text: 'Name',
         },
       ],
+      subqueries: [],
       sObject: 'Account',
       orderBy: {
         field: 'Name',
@@ -85,10 +89,10 @@ export const testCases: TestCase[] = [
     output: {
       fields: [
         {
-          type: 'Field',
-          field: 'Name',
+          text: 'Name',
         },
       ],
+      subqueries: [],
       sObject: 'Account',
       where: {
         left: {
@@ -107,10 +111,10 @@ export const testCases: TestCase[] = [
     output: {
       fields: [
         {
-          type: 'Field',
-          field: 'Name',
+          text: 'Name',
         },
       ],
+      subqueries: [],
       sObject: 'Account',
       where: {
         left: {
@@ -134,12 +138,14 @@ export const testCases: TestCase[] = [
     output: {
       fields: [
         {
-          type: 'FieldFunctionExpression',
-          fn: 'COUNT',
-          rawValue: 'COUNT()',
-          isAggregateFn: true,
+          fn: {
+            text: 'COUNT()',
+            name: 'COUNT',
+            isAggregateFn: true,
+          },
         },
       ],
+      subqueries: [],
       sObject: 'Contact',
     },
   },
@@ -149,17 +155,18 @@ export const testCases: TestCase[] = [
     output: {
       fields: [
         {
-          type: 'Field',
-          field: 'LeadSource',
+          text: 'LeadSource',
         },
         {
-          type: 'FieldFunctionExpression',
-          fn: 'COUNT',
-          rawValue: 'COUNT(Name)',
-          isAggregateFn: true,
-          parameters: ['Name'],
+          fn: {
+            text: 'COUNT(Name)',
+            name: 'COUNT',
+            isAggregateFn: true,
+            parameter: 'Name',
+          },
         },
       ],
+      subqueries: [],
       sObject: 'Lead',
       groupBy: {
         field: 'LeadSource',
@@ -172,17 +179,18 @@ export const testCases: TestCase[] = [
     output: {
       fields: [
         {
-          type: 'Field',
-          field: 'Name',
+          text: 'Name',
         },
         {
-          type: 'FieldFunctionExpression',
-          fn: 'COUNT',
-          rawValue: 'COUNT(Id)',
-          isAggregateFn: true,
-          parameters: ['Id'],
+          fn: {
+            text: 'COUNT(Id)',
+            name: 'COUNT',
+            isAggregateFn: true,
+            parameter: 'Id',
+          },
         },
       ],
+      subqueries: [],
       sObject: 'Account',
       groupBy: {
         field: 'Name',
@@ -206,14 +214,13 @@ export const testCases: TestCase[] = [
     output: {
       fields: [
         {
-          type: 'Field',
-          field: 'Name',
+          text: 'Name',
         },
         {
-          type: 'Field',
-          field: 'Id',
+          text: 'Id',
         },
       ],
+      subqueries: [],
       sObject: 'Merchandise__c',
       orderBy: {
         field: 'Name',
@@ -227,14 +234,13 @@ export const testCases: TestCase[] = [
     output: {
       fields: [
         {
-          type: 'Field',
-          field: 'Name',
+          text: 'Name',
         },
         {
-          type: 'Field',
-          field: 'Id',
+          text: 'Id',
         },
       ],
+      subqueries: [],
       sObject: 'Merchandise__c',
       orderBy: {
         field: 'Name',
@@ -249,18 +255,15 @@ export const testCases: TestCase[] = [
     output: {
       fields: [
         {
-          type: 'FieldRelationship',
-          field: 'FirstName',
-          relationships: ['Contact'],
-          rawValue: 'Contact.FirstName',
+          text: 'Contact.FirstName',
+          relationshipFields: ['Contact', 'FirstName'],
         },
         {
-          type: 'FieldRelationship',
-          field: 'Name',
-          relationships: ['Contact', 'Account'],
-          rawValue: 'Contact.Account.Name',
+          text: 'Contact.Account.Name',
+          relationshipFields: ['Contact', 'Account', 'Name'],
         },
       ],
+      subqueries: [],
       sObject: 'Contact',
     },
   },
@@ -270,20 +273,17 @@ export const testCases: TestCase[] = [
     output: {
       fields: [
         {
-          type: 'Field',
-          field: 'Id',
+          text: 'Id',
         },
         {
-          type: 'Field',
-          field: 'Name',
+          text: 'Name',
         },
         {
-          type: 'FieldRelationship',
-          field: 'Name',
-          relationships: ['Account'],
-          rawValue: 'Account.Name',
+          text: 'Account.Name',
+          relationshipFields: ['Account', 'Name'],
         },
       ],
+      subqueries: [],
       sObject: 'Contact',
       where: {
         left: {
@@ -301,21 +301,21 @@ export const testCases: TestCase[] = [
     output: {
       fields: [
         {
-          type: 'Field',
-          field: 'Name',
+          text: 'Name',
         },
         {
-          type: 'FieldSubquery',
-          from: 'Contacts',
-          subquery: {
-            fields: [
-              {
-                type: 'Field',
-                field: 'LastName',
-              },
-            ],
-            relationshipName: 'Contacts',
-          },
+          subqueryObjName: 'Contacts',
+        },
+      ],
+      subqueries: [
+        {
+          fields: [
+            {
+              text: 'LastName',
+            },
+          ],
+          subqueries: [],
+          sObjectRelationshipName: 'Contacts',
         },
       ],
       sObject: 'Account',
@@ -327,26 +327,24 @@ export const testCases: TestCase[] = [
     output: {
       fields: [
         {
-          type: 'FieldRelationship',
-          field: 'Name',
-          relationships: ['Account'],
-          rawValue: 'Account.Name',
+          text: 'Account.Name',
+          relationshipFields: ['Account', 'Name'],
         },
         {
-          type: 'FieldSubquery',
-          from: 'Contacts',
-          subquery: {
-            fields: [
-              {
-                type: 'FieldRelationship',
-                field: 'LastName',
-                relationships: ['Contact'],
-                rawValue: 'Contact.LastName',
-              },
-            ],
-            relationshipName: 'Contacts',
-            sObjectPrefix: ['Account'],
-          },
+          subqueryObjName: 'Contacts',
+        },
+      ],
+      subqueries: [
+        {
+          fields: [
+            {
+              text: 'Contact.LastName',
+              relationshipFields: ['Contact', 'LastName'],
+            },
+          ],
+          subqueries: [],
+          sObjectRelationshipName: 'Contacts',
+          sObjectPrefix: ['Account'],
         },
       ],
       sObject: 'Account',
@@ -354,33 +352,32 @@ export const testCases: TestCase[] = [
   },
   {
     testCase: 15,
-    soql: "SELECT Name, (SELECT LastName FROM Contacts WHERE CreatedBy.Alias='x') FROM Account WHERE Industry='media'",
-    soqlComposed:
-      "SELECT Name, (SELECT LastName FROM Contacts WHERE CreatedBy.Alias = 'x') FROM Account WHERE Industry = 'media'",
+    soql: `SELECT Name, (SELECT LastName FROM Contacts WHERE CreatedBy.Alias='x') FROM Account WHERE Industry='media'`,
+    soqlComposed: `SELECT Name, (SELECT LastName FROM Contacts WHERE CreatedBy.Alias = 'x') FROM Account WHERE Industry = 'media'`,
     output: {
       fields: [
         {
-          type: 'Field',
-          field: 'Name',
+          text: 'Name',
         },
         {
-          type: 'FieldSubquery',
-          from: 'Contacts',
-          subquery: {
-            fields: [
-              {
-                type: 'Field',
-                field: 'LastName',
-              },
-            ],
-            relationshipName: 'Contacts',
-            where: {
-              left: {
-                field: 'CreatedBy.Alias',
-                operator: '=',
-                value: "'x'",
-                literalType: 'STRING',
-              },
+          subqueryObjName: 'Contacts',
+        },
+      ],
+      subqueries: [
+        {
+          fields: [
+            {
+              text: 'LastName',
+            },
+          ],
+          subqueries: [],
+          sObjectRelationshipName: 'Contacts',
+          where: {
+            left: {
+              field: 'CreatedBy.Alias',
+              operator: '=',
+              value: "'x'",
+              literalType: 'STRING',
             },
           },
         },
@@ -403,20 +400,17 @@ export const testCases: TestCase[] = [
     output: {
       fields: [
         {
-          type: 'Field',
-          field: 'Id',
+          text: 'Id',
         },
         {
-          type: 'Field',
-          field: 'FirstName__c',
+          text: 'FirstName__c',
         },
         {
-          type: 'FieldRelationship',
-          field: 'FirstName__c',
-          relationships: ['Mother_of_Child__r'],
-          rawValue: 'Mother_of_Child__r.FirstName__c',
+          text: 'Mother_of_Child__r.FirstName__c',
+          relationshipFields: ['Mother_of_Child__r', 'FirstName__c'],
         },
       ],
+      subqueries: [],
       sObject: 'Daughter__c',
       where: {
         left: {
@@ -434,21 +428,21 @@ export const testCases: TestCase[] = [
     output: {
       fields: [
         {
-          type: 'Field',
-          field: 'Name',
+          text: 'Name',
         },
         {
-          type: 'FieldSubquery',
-          from: 'Line_Items__r',
-          subquery: {
-            fields: [
-              {
-                type: 'Field',
-                field: 'Name',
-              },
-            ],
-            relationshipName: 'Line_Items__r',
-          },
+          subqueryObjName: 'Line_Items__r',
+        },
+      ],
+      subqueries: [
+        {
+          fields: [
+            {
+              text: 'Name',
+            },
+          ],
+          subqueries: [],
+          sObjectRelationshipName: 'Line_Items__r',
         },
       ],
       sObject: 'Merchandise__c',
@@ -468,16 +462,14 @@ export const testCases: TestCase[] = [
     output: {
       fields: [
         {
-          type: 'Field',
-          field: 'Id',
+          text: 'Id',
         },
         {
-          type: 'FieldRelationship',
-          field: 'Name',
-          relationships: ['Owner'],
-          rawValue: 'Owner.Name',
+          text: 'Owner.Name',
+          relationshipFields: ['Owner', 'Name'],
         },
       ],
+      subqueries: [],
       sObject: 'Task',
       where: {
         left: {
@@ -495,22 +487,18 @@ export const testCases: TestCase[] = [
     output: {
       fields: [
         {
-          type: 'Field',
-          field: 'Id',
+          text: 'Id',
         },
         {
-          type: 'FieldRelationship',
-          field: 'FirstName',
-          relationships: ['Who'],
-          rawValue: 'Who.FirstName',
+          text: 'Who.FirstName',
+          relationshipFields: ['Who', 'FirstName'],
         },
         {
-          type: 'FieldRelationship',
-          field: 'LastName',
-          relationships: ['Who'],
-          rawValue: 'Who.LastName',
+          text: 'Who.LastName',
+          relationshipFields: ['Who', 'LastName'],
         },
       ],
+      subqueries: [],
       sObject: 'Task',
       where: {
         left: {
@@ -528,16 +516,14 @@ export const testCases: TestCase[] = [
     output: {
       fields: [
         {
-          type: 'Field',
-          field: 'Id',
+          text: 'Id',
         },
         {
-          type: 'FieldRelationship',
-          field: 'Name',
-          relationships: ['What'],
-          rawValue: 'What.Name',
+          text: 'What.Name',
+          relationshipFields: ['What', 'Name'],
         },
       ],
+      subqueries: [],
       sObject: 'Event',
     },
   },
@@ -548,26 +534,28 @@ export const testCases: TestCase[] = [
     output: {
       fields: [
         {
-          type: 'FieldTypeof',
-          field: 'What',
-          conditions: [
-            {
-              type: 'WHEN',
-              objectType: 'Account',
-              fieldList: ['Phone', 'NumberOfEmployees'],
-            },
-            {
-              type: 'WHEN',
-              objectType: 'Opportunity',
-              fieldList: ['Amount', 'CloseDate'],
-            },
-            {
-              type: 'ELSE',
-              fieldList: ['Name', 'Email'],
-            },
-          ],
+          typeOf: {
+            field: 'What',
+            conditions: [
+              {
+                type: 'WHEN',
+                objectType: 'Account',
+                fieldList: ['Phone', 'NumberOfEmployees'],
+              },
+              {
+                type: 'WHEN',
+                objectType: 'Opportunity',
+                fieldList: ['Amount', 'CloseDate'],
+              },
+              {
+                type: 'ELSE',
+                fieldList: ['Name', 'Email'],
+              },
+            ],
+          },
         },
       ],
+      subqueries: [],
       sObject: 'Event',
     },
   },
@@ -577,23 +565,22 @@ export const testCases: TestCase[] = [
     output: {
       fields: [
         {
-          type: 'Field',
-          field: 'Name',
+          text: 'Name',
         },
         {
-          type: 'FieldSubquery',
-          from: 'Notes',
-          subquery: {
-            fields: [
-              {
-                type: 'FieldRelationship',
-                field: 'Name',
-                relationships: ['CreatedBy'],
-                rawValue: 'CreatedBy.Name',
-              },
-            ],
-            relationshipName: 'Notes',
-          },
+          subqueryObjName: 'Notes',
+        },
+      ],
+      subqueries: [
+        {
+          fields: [
+            {
+              text: 'CreatedBy.Name',
+              relationshipFields: ['CreatedBy', 'Name'],
+            },
+          ],
+          subqueries: [],
+          sObjectRelationshipName: 'Notes',
         },
       ],
       sObject: 'Account',
@@ -606,45 +593,38 @@ export const testCases: TestCase[] = [
     output: {
       fields: [
         {
-          type: 'Field',
-          field: 'Amount',
+          text: 'Amount',
         },
         {
-          type: 'Field',
-          field: 'Id',
+          text: 'Id',
         },
         {
-          type: 'Field',
-          field: 'Name',
+          text: 'Name',
         },
         {
-          type: 'FieldSubquery',
-          from: 'OpportunityLineItems',
-          subquery: {
-            fields: [
-              {
-                type: 'Field',
-                field: 'Quantity',
-              },
-              {
-                type: 'Field',
-                field: 'ListPrice',
-              },
-              {
-                type: 'FieldRelationship',
-                field: 'UnitPrice',
-                relationships: ['PricebookEntry'],
-                rawValue: 'PricebookEntry.UnitPrice',
-              },
-              {
-                type: 'FieldRelationship',
-                field: 'Name',
-                relationships: ['PricebookEntry'],
-                rawValue: 'PricebookEntry.Name',
-              },
-            ],
-            relationshipName: 'OpportunityLineItems',
-          },
+          subqueryObjName: 'OpportunityLineItems',
+        },
+      ],
+      subqueries: [
+        {
+          fields: [
+            {
+              text: 'Quantity',
+            },
+            {
+              text: 'ListPrice',
+            },
+            {
+              text: 'PricebookEntry.UnitPrice',
+              relationshipFields: ['PricebookEntry', 'UnitPrice'],
+            },
+            {
+              text: 'PricebookEntry.Name',
+              relationshipFields: ['PricebookEntry', 'Name'],
+            },
+          ],
+          subqueries: [],
+          sObjectRelationshipName: 'OpportunityLineItems',
         },
       ],
       sObject: 'Opportunity',
@@ -656,49 +636,50 @@ export const testCases: TestCase[] = [
     output: {
       fields: [
         {
-          type: 'Field',
-          field: 'UserId',
+          text: 'UserId',
         },
         {
-          type: 'Field',
-          field: 'LoginTime',
+          text: 'LoginTime',
         },
       ],
+      subqueries: [],
       sObject: 'LoginHistory',
     },
   },
   {
     testCase: 25,
-    soql: `SELECT UserId, COUNT(Id) FROM LoginHistory WHERE LoginTime > 2010-09-20T22:16:30.000Z AND LoginTime < 2010-09-21 GROUP BY UserId`,
+    soql:
+      'SELECT UserId, COUNT(Id) FROM LoginHistory WHERE LoginTime > 2010-09-20T22:16:30.000Z AND LoginTime < 2010-09-21 GROUP BY UserId',
     output: {
       fields: [
         {
-          type: 'Field',
-          field: 'UserId',
+          text: 'UserId',
         },
         {
-          type: 'FieldFunctionExpression',
-          fn: 'COUNT',
-          rawValue: 'COUNT(Id)',
-          isAggregateFn: true,
-          parameters: ['Id'],
+          fn: {
+            text: 'COUNT(Id)',
+            name: 'COUNT',
+            isAggregateFn: true,
+            parameter: 'Id',
+          },
         },
       ],
+      subqueries: [],
       sObject: 'LoginHistory',
       where: {
         left: {
           field: 'LoginTime',
           operator: '>',
           value: '2010-09-20T22:16:30.000Z',
-          literalType: 'DATETIME',
+          literalType: 'DATE',
         },
         operator: 'AND',
         right: {
           left: {
             field: 'LoginTime',
             operator: '<',
-            value: '2010-09-21',
-            literalType: 'DATE',
+            value: '2010-09-21T22:16:30.000Z',
+            literalType: 'DATETIME',
           },
         },
       },
@@ -713,30 +694,25 @@ export const testCases: TestCase[] = [
     output: {
       fields: [
         {
-          type: 'Field',
-          field: 'Id',
+          text: 'Id',
         },
         {
-          type: 'Field',
-          field: 'Name',
+          text: 'Name',
         },
         {
-          type: 'Field',
-          field: 'IsActive',
+          text: 'IsActive',
         },
         {
-          type: 'Field',
-          field: 'SobjectType',
+          text: 'SobjectType',
         },
         {
-          type: 'Field',
-          field: 'DeveloperName',
+          text: 'DeveloperName',
         },
         {
-          type: 'Field',
-          field: 'Description',
+          text: 'Description',
         },
       ],
+      subqueries: [],
       sObject: 'RecordType',
     },
   },
@@ -746,18 +722,19 @@ export const testCases: TestCase[] = [
     output: {
       fields: [
         {
-          type: 'Field',
-          field: 'CampaignId',
+          text: 'CampaignId',
         },
         {
-          type: 'FieldFunctionExpression',
-          fn: 'AVG',
-          rawValue: 'AVG(Amount)',
-          isAggregateFn: true,
-          parameters: ['Amount'],
-          alias: 'avg',
+          fn: {
+            text: 'AVG(Amount)',
+            name: 'AVG',
+            isAggregateFn: true,
+            parameter: 'Amount',
+            alias: 'avg',
+          },
         },
       ],
+      subqueries: [],
       sObject: 'Opportunity',
       groupBy: {
         field: 'CampaignId',
@@ -781,18 +758,19 @@ export const testCases: TestCase[] = [
     output: {
       fields: [
         {
-          type: 'Field',
-          field: 'LeadSource',
+          text: 'LeadSource',
         },
         {
-          type: 'FieldFunctionExpression',
-          fn: 'COUNT',
-          rawValue: 'COUNT(Name)',
-          isAggregateFn: true,
-          parameters: ['Name'],
-          alias: 'cnt',
+          fn: {
+            text: 'COUNT(Name)',
+            name: 'COUNT',
+            isAggregateFn: true,
+            parameter: 'Name',
+            alias: 'cnt',
+          },
         },
       ],
+      subqueries: [],
       sObject: 'Lead',
       groupBy: {
         field: 'LeadSource',
@@ -806,22 +784,22 @@ export const testCases: TestCase[] = [
     output: {
       fields: [
         {
-          type: 'Field',
-          field: 'Status',
+          text: 'Status',
         },
         {
-          type: 'Field',
-          field: 'LeadSource',
+          text: 'LeadSource',
         },
         {
-          type: 'FieldFunctionExpression',
-          fn: 'COUNT',
-          rawValue: 'COUNT(Name)',
-          isAggregateFn: true,
-          parameters: ['Name'],
-          alias: 'cnt',
+          fn: {
+            text: 'COUNT(Name)',
+            name: 'COUNT',
+            isAggregateFn: true,
+            parameter: 'Name',
+            alias: 'cnt',
+          },
         },
       ],
+      subqueries: [],
       sObject: 'Lead',
       groupBy: {
         field: ['Status', 'LeadSource'],
@@ -831,43 +809,43 @@ export const testCases: TestCase[] = [
   },
   {
     testCase: 30,
-    soql:
-      'SELECT Type, BillingCountry, GROUPING(Type)grpType, GROUPING(BillingCountry) grpCty, COUNT(id) accts FROM Account GROUP BY CUBE(Type,BillingCountry) ORDER BY GROUPING(Type), GROUPING(Id,BillingCountry), Name DESC NULLS FIRST, Id ASC NULLS LAST',
-    soqlComposed:
-      'SELECT Type, BillingCountry, GROUPING(Type) grpType, GROUPING(BillingCountry) grpCty, COUNT(id) accts FROM Account GROUP BY CUBE(Type, BillingCountry) ORDER BY GROUPING(Type), GROUPING(Id, BillingCountry), Name DESC NULLS FIRST, Id ASC NULLS LAST',
+    soql: `SELECT Type, BillingCountry, GROUPING(Type)grpType, GROUPING(BillingCountry) grpCty, COUNT(id) accts FROM Account GROUP BY CUBE(Type,BillingCountry) ORDER BY GROUPING(Type), GROUPING(Id,BillingCountry), Name DESC NULLS FIRST, Id ASC NULLS LAST`,
+    soqlComposed: `SELECT Type, BillingCountry, GROUPING(Type) grpType, GROUPING(BillingCountry) grpCty, COUNT(id) accts FROM Account GROUP BY CUBE(Type, BillingCountry) ORDER BY GROUPING(Type), GROUPING(Id, BillingCountry), Name DESC NULLS FIRST, Id ASC NULLS LAST`,
     output: {
       fields: [
         {
-          type: 'Field',
-          field: 'Type',
+          text: 'Type',
         },
         {
-          type: 'Field',
-          field: 'BillingCountry',
+          text: 'BillingCountry',
         },
         {
-          type: 'FieldFunctionExpression',
-          fn: 'GROUPING',
-          rawValue: 'GROUPING(Type)',
-          parameters: ['Type'],
-          alias: 'grpType',
+          fn: {
+            text: 'GROUPING(Type)',
+            name: 'GROUPING',
+            parameter: 'Type',
+            alias: 'grpType',
+          },
         },
         {
-          type: 'FieldFunctionExpression',
-          fn: 'GROUPING',
-          rawValue: 'GROUPING(BillingCountry)',
-          parameters: ['BillingCountry'],
-          alias: 'grpCty',
+          fn: {
+            text: 'GROUPING(BillingCountry)',
+            name: 'GROUPING',
+            parameter: 'BillingCountry',
+            alias: 'grpCty',
+          },
         },
         {
-          type: 'FieldFunctionExpression',
-          fn: 'COUNT',
-          rawValue: 'COUNT(id)',
-          isAggregateFn: true,
-          parameters: ['id'],
-          alias: 'accts',
+          fn: {
+            text: 'COUNT(id)',
+            name: 'COUNT',
+            isAggregateFn: true,
+            parameter: 'id',
+            alias: 'accts',
+          },
         },
       ],
+      subqueries: [],
       sObject: 'Account',
       groupBy: {
         field: ['Type', 'BillingCountry'],
@@ -907,33 +885,30 @@ export const testCases: TestCase[] = [
     output: {
       fields: [
         {
-          type: 'Field',
-          field: 'Name',
+          text: 'Name',
           objectPrefix: 'c',
         },
         {
-          type: 'FieldRelationship',
-          field: 'Name',
-          relationships: ['Account'],
-          rawValue: 'c.Account.Name',
+          text: 'Account.Name',
+          relationshipFields: ['Account', 'Name'],
           objectPrefix: 'c',
         },
       ],
+      subqueries: [],
       sObject: 'Contact',
       sObjectAlias: 'c',
     },
   },
   {
     testCase: 32,
-    soql:
-      "SELECT Id FROM Account WHERE (Id IN ('1', '2', '3') OR (NOT Id = '2') OR (Name LIKE '%FOO%' OR (Name LIKE '%ARM%' AND FOO = 'bar')))",
+    soql: `SELECT Id FROM Account WHERE (Id IN ('1', '2', '3') OR (NOT Id = '2') OR (Name LIKE '%FOO%' OR (Name LIKE '%ARM%' AND FOO = 'bar')))`,
     output: {
       fields: [
         {
-          type: 'Field',
-          field: 'Id',
+          text: 'Id',
         },
       ],
+      subqueries: [],
       sObject: 'Account',
       where: {
         left: {
@@ -990,22 +965,22 @@ export const testCases: TestCase[] = [
   },
   {
     testCase: 33,
-    soql:
-      "SELECT LeadSource, COUNT(Name) FROM Lead GROUP BY LeadSource HAVING COUNT(Name) > 100 and LeadSource > 'Phone'",
+    soql: `SELECT LeadSource, COUNT(Name) FROM Lead GROUP BY LeadSource HAVING COUNT(Name) > 100 and LeadSource > 'Phone'`,
     output: {
       fields: [
         {
-          type: 'Field',
-          field: 'LeadSource',
+          text: 'LeadSource',
         },
         {
-          type: 'FieldFunctionExpression',
-          fn: 'COUNT',
-          rawValue: 'COUNT(Name)',
-          isAggregateFn: true,
-          parameters: ['Name'],
+          fn: {
+            text: 'COUNT(Name)',
+            name: 'COUNT',
+            isAggregateFn: true,
+            parameter: 'Name',
+          },
         },
       ],
+      subqueries: [],
       sObject: 'Lead',
       groupBy: {
         field: 'LeadSource',
@@ -1033,49 +1008,46 @@ export const testCases: TestCase[] = [
   },
   {
     testCase: 34,
-    soql:
-      'SELECT a.Id, a.Name, (SELECT a2.Id FROM ChildAccounts a2), (SELECT a1.Id FROM ChildAccounts1 a1) FROM Account a',
+    soql: `SELECT a.Id, a.Name, (SELECT a2.Id FROM ChildAccounts a2), (SELECT a1.Id FROM ChildAccounts1 a1) FROM Account a`,
     output: {
       fields: [
         {
-          type: 'Field',
-          field: 'Id',
+          text: 'Id',
           objectPrefix: 'a',
         },
         {
-          type: 'Field',
-          field: 'Name',
+          text: 'Name',
           objectPrefix: 'a',
         },
         {
-          type: 'FieldSubquery',
-          from: 'ChildAccounts',
-          subquery: {
-            fields: [
-              {
-                type: 'Field',
-                field: 'Id',
-                objectPrefix: 'a2',
-              },
-            ],
-            relationshipName: 'ChildAccounts',
-            sObjectAlias: 'a2',
-          },
+          subqueryObjName: 'ChildAccounts',
         },
         {
-          type: 'FieldSubquery',
-          from: 'ChildAccounts1',
-          subquery: {
-            fields: [
-              {
-                type: 'Field',
-                field: 'Id',
-                objectPrefix: 'a1',
-              },
-            ],
-            relationshipName: 'ChildAccounts1',
-            sObjectAlias: 'a1',
-          },
+          subqueryObjName: 'ChildAccounts1',
+        },
+      ],
+      subqueries: [
+        {
+          fields: [
+            {
+              text: 'Id',
+              objectPrefix: 'a2',
+            },
+          ],
+          subqueries: [],
+          sObjectRelationshipName: 'ChildAccounts',
+          sObjectAlias: 'a2',
+        },
+        {
+          fields: [
+            {
+              text: 'Id',
+              objectPrefix: 'a1',
+            },
+          ],
+          subqueries: [],
+          sObjectRelationshipName: 'ChildAccounts1',
+          sObjectAlias: 'a1',
         },
       ],
       sObject: 'Account',
@@ -1084,15 +1056,14 @@ export const testCases: TestCase[] = [
   },
   {
     testCase: 35,
-    soql:
-      "SELECT Title FROM KnowledgeArticleVersion WHERE PublishStatus = 'online' WITH DATA CATEGORY Geography__c ABOVE usa__c",
+    soql: `SELECT Title FROM KnowledgeArticleVersion WHERE PublishStatus = 'online' WITH DATA CATEGORY Geography__c ABOVE usa__c`,
     output: {
       fields: [
         {
-          type: 'Field',
-          field: 'Title',
+          text: 'Title',
         },
       ],
+      subqueries: [],
       sObject: 'KnowledgeArticleVersion',
       where: {
         left: {
@@ -1115,15 +1086,14 @@ export const testCases: TestCase[] = [
   },
   {
     testCase: 36,
-    soql:
-      'SELECT Title FROM Question WHERE LastReplyDate > 2005-10-08T01:02:03Z WITH DATA CATEGORY Geography__c AT (usa__c, uk__c)',
+    soql: `SELECT Title FROM Question WHERE LastReplyDate > 2005-10-08T01:02:03Z WITH DATA CATEGORY Geography__c AT (usa__c, uk__c)`,
     output: {
       fields: [
         {
-          type: 'Field',
-          field: 'Title',
+          text: 'Title',
         },
       ],
+      subqueries: [],
       sObject: 'Question',
       where: {
         left: {
@@ -1146,15 +1116,14 @@ export const testCases: TestCase[] = [
   },
   {
     testCase: 37,
-    soql:
-      "SELECT UrlName FROM KnowledgeArticleVersion WHERE PublishStatus = 'draft' WITH DATA CATEGORY Geography__c AT usa__c AND Product__c ABOVE_OR_BELOW mobile_phones__c",
+    soql: `SELECT UrlName FROM KnowledgeArticleVersion WHERE PublishStatus = 'draft' WITH DATA CATEGORY Geography__c AT usa__c AND Product__c ABOVE_OR_BELOW mobile_phones__c`,
     output: {
       fields: [
         {
-          type: 'Field',
-          field: 'UrlName',
+          text: 'UrlName',
         },
       ],
+      subqueries: [],
       sObject: 'KnowledgeArticleVersion',
       where: {
         left: {
@@ -1182,70 +1151,70 @@ export const testCases: TestCase[] = [
   },
   {
     testCase: 38,
-    soql: 'SELECT Id FROM Contact FOR VIEW',
+    soql: `SELECT Id FROM Contact FOR VIEW`,
     output: {
       fields: [
         {
-          type: 'Field',
-          field: 'Id',
+          text: 'Id',
         },
       ],
+      subqueries: [],
       sObject: 'Contact',
       for: 'VIEW',
     },
   },
   {
     testCase: 39,
-    soql: 'SELECT Id FROM Contact FOR REFERENCE',
+    soql: `SELECT Id FROM Contact FOR REFERENCE`,
     output: {
       fields: [
         {
-          type: 'Field',
-          field: 'Id',
+          text: 'Id',
         },
       ],
+      subqueries: [],
       sObject: 'Contact',
       for: 'REFERENCE',
     },
   },
   {
     testCase: 40,
-    soql: 'SELECT Id FROM Contact FOR UPDATE',
+    soql: `SELECT Id FROM Contact FOR UPDATE`,
     output: {
       fields: [
         {
-          type: 'Field',
-          field: 'Id',
+          text: 'Id',
         },
       ],
+      subqueries: [],
       sObject: 'Contact',
       for: 'UPDATE',
     },
   },
   {
     testCase: 41,
-    soql: 'SELECT Id FROM FAQ__kav FOR UPDATE',
+    soql: `SELECT Id FROM FAQ__kav FOR UPDATE`,
     output: {
       fields: [
         {
-          type: 'Field',
-          field: 'Id',
+          text: 'Id',
         },
       ],
+      subqueries: [],
       sObject: 'FAQ__kav',
       for: 'UPDATE',
     },
   },
   {
     testCase: 42,
-    soql: 'SELECT Id FROM FAQ__kav FOR VIEW UPDATE TRACKING',
+    soql: `SELECT Id FROM FAQ__kav FOR VIEW UPDATE TRACKING`,
     output: {
       fields: [
         {
-          type: 'Field',
-          field: 'Id',
+          text: 'Id',
         },
       ],
+      subqueries: [],
       sObject: 'FAQ__kav',
       for: 'VIEW',
       update: 'TRACKING',
@@ -1253,57 +1222,57 @@ export const testCases: TestCase[] = [
   },
   {
     testCase: 43,
-    soql: 'SELECT Id FROM FAQ__kav UPDATE VIEWSTAT',
+    soql: `SELECT Id FROM FAQ__kav UPDATE VIEWSTAT`,
     output: {
       fields: [
         {
-          type: 'Field',
-          field: 'Id',
+          text: 'Id',
         },
       ],
+      subqueries: [],
       sObject: 'FAQ__kav',
       update: 'VIEWSTAT',
     },
   },
   {
     testCase: 44,
-    soql:
-      "SELECT amount, FORMAT(amount) Amt, convertCurrency(amount) editDate, FORMAT(convertCurrency(amount)) convertedCurrency FROM Opportunity WHERE id = '12345'",
+    soql: `SELECT amount, FORMAT(amount) Amt, convertCurrency(amount) editDate, FORMAT(convertCurrency(amount)) convertedCurrency FROM Opportunity WHERE id = '12345'`,
     output: {
       fields: [
         {
-          type: 'Field',
-          field: 'amount',
+          text: 'amount',
         },
         {
-          type: 'FieldFunctionExpression',
-          fn: 'FORMAT',
-          rawValue: 'FORMAT(amount)',
-          parameters: ['amount'],
-          alias: 'Amt',
+          fn: {
+            text: 'FORMAT(amount)',
+            name: 'FORMAT',
+            parameter: 'amount',
+            alias: 'Amt',
+          },
         },
         {
-          type: 'FieldFunctionExpression',
-          fn: 'convertCurrency',
-          rawValue: 'convertCurrency(amount)',
-          parameters: ['amount'],
-          alias: 'editDate',
+          fn: {
+            text: 'convertCurrency(amount)',
+            name: 'convertCurrency',
+            parameter: 'amount',
+            alias: 'editDate',
+          },
         },
         {
-          type: 'FieldFunctionExpression',
-          fn: 'FORMAT',
-          rawValue: 'FORMAT(convertCurrency(amount))',
-          parameters: [
-            {
-              type: 'FieldFunctionExpression',
-              fn: 'convertCurrency',
-              rawValue: 'convertCurrency(amount)',
-              parameters: ['amount'],
+          fn: {
+            text: 'FORMAT(convertCurrency(amount))',
+            name: 'FORMAT',
+            parameter: 'convertCurrency(amount)',
+            fn: {
+              text: 'convertCurrency(amount)',
+              name: 'convertCurrency',
+              parameter: 'amount',
             },
-          ],
-          alias: 'convertedCurrency',
+            alias: 'convertedCurrency',
+          },
         },
       ],
+      subqueries: [],
       sObject: 'Opportunity',
       where: {
         left: {
@@ -1317,44 +1286,45 @@ export const testCases: TestCase[] = [
   },
   {
     testCase: 45,
-    soql: 'SELECT FORMAT(MIN(closedate)) Amt FROM Opportunity',
+    soql: `SELECT FORMAT(MIN(closedate)) Amt FROM Opportunity`,
     output: {
       fields: [
         {
-          type: 'FieldFunctionExpression',
-          fn: 'FORMAT',
-          rawValue: 'FORMAT(MIN(closedate))',
-          parameters: [
-            {
-              type: 'FieldFunctionExpression',
-              fn: 'MIN',
-              rawValue: 'MIN(closedate)',
+          fn: {
+            text: 'FORMAT(MIN(closedate))',
+            name: 'FORMAT',
+            parameter: 'MIN(closedate)',
+            fn: {
+              text: 'MIN(closedate)',
+              name: 'MIN',
               isAggregateFn: true,
-              parameters: ['closedate'],
+              parameter: 'closedate',
             },
-          ],
-          alias: 'Amt',
+            alias: 'Amt',
+          },
         },
       ],
+      subqueries: [],
       sObject: 'Opportunity',
     },
   },
   {
     testCase: 46,
-    soql: "SELECT Company, toLabel(Status) FROM Lead WHERE toLabel(Status) = 'le Draft'",
+    soql: `SELECT Company, toLabel(Status) FROM Lead WHERE toLabel(Status) = 'le Draft'`,
     output: {
       fields: [
         {
-          type: 'Field',
-          field: 'Company',
+          text: 'Company',
         },
         {
-          type: 'FieldFunctionExpression',
-          fn: 'toLabel',
-          rawValue: 'toLabel(Status)',
-          parameters: ['Status'],
+          fn: {
+            text: 'toLabel(Status)',
+            name: 'toLabel',
+            parameter: 'Status',
+          },
         },
       ],
+      subqueries: [],
       sObject: 'Lead',
       where: {
         left: {
@@ -1372,19 +1342,17 @@ export const testCases: TestCase[] = [
   },
   {
     testCase: 47,
-    soql:
-      "SELECT Id, Name FROM Account WHERE Id IN (SELECT AccountId FROM Opportunity WHERE StageName = 'Closed Lost')",
+    soql: `SELECT Id, Name FROM Account WHERE Id IN (SELECT AccountId FROM Opportunity WHERE StageName = 'Closed Lost')`,
     output: {
       fields: [
         {
-          type: 'Field',
-          field: 'Id',
+          text: 'Id',
         },
         {
-          type: 'Field',
-          field: 'Name',
+          text: 'Name',
         },
       ],
+      subqueries: [],
       sObject: 'Account',
       where: {
         left: {
@@ -1393,10 +1361,10 @@ export const testCases: TestCase[] = [
           valueQuery: {
             fields: [
               {
-                type: 'Field',
-                field: 'AccountId',
+                text: 'AccountId',
               },
             ],
+            subqueries: [],
             sObject: 'Opportunity',
             where: {
               left: {
@@ -1413,14 +1381,14 @@ export const testCases: TestCase[] = [
   },
   {
     testCase: 48,
-    soql: 'SELECT Id FROM Account WHERE Id NOT IN (SELECT AccountId FROM Opportunity WHERE IsClosed = false)',
+    soql: `SELECT Id FROM Account WHERE Id NOT IN (SELECT AccountId FROM Opportunity WHERE IsClosed = false)`,
     output: {
       fields: [
         {
-          type: 'Field',
-          field: 'Id',
+          text: 'Id',
         },
       ],
+      subqueries: [],
       sObject: 'Account',
       where: {
         left: {
@@ -1429,10 +1397,10 @@ export const testCases: TestCase[] = [
           valueQuery: {
             fields: [
               {
-                type: 'Field',
-                field: 'AccountId',
+                text: 'AccountId',
               },
             ],
+            subqueries: [],
             sObject: 'Opportunity',
             where: {
               left: {
@@ -1449,19 +1417,17 @@ export const testCases: TestCase[] = [
   },
   {
     testCase: 49,
-    soql:
-      "SELECT Id, Name FROM Account WHERE Id IN (SELECT AccountId FROM Contact WHERE LastName LIKE 'apple%') AND Id IN (SELECT AccountId FROM Opportunity WHERE isClosed = false)",
+    soql: `SELECT Id, Name FROM Account WHERE Id IN (SELECT AccountId FROM Contact WHERE LastName LIKE 'apple%') AND Id IN (SELECT AccountId FROM Opportunity WHERE isClosed = false)`,
     output: {
       fields: [
         {
-          type: 'Field',
-          field: 'Id',
+          text: 'Id',
         },
         {
-          type: 'Field',
-          field: 'Name',
+          text: 'Name',
         },
       ],
+      subqueries: [],
       sObject: 'Account',
       where: {
         left: {
@@ -1470,10 +1436,10 @@ export const testCases: TestCase[] = [
           valueQuery: {
             fields: [
               {
-                type: 'Field',
-                field: 'AccountId',
+                text: 'AccountId',
               },
             ],
+            subqueries: [],
             sObject: 'Contact',
             where: {
               left: {
@@ -1493,10 +1459,10 @@ export const testCases: TestCase[] = [
             valueQuery: {
               fields: [
                 {
-                  type: 'Field',
-                  field: 'AccountId',
+                  text: 'AccountId',
                 },
               ],
+              subqueries: [],
               sObject: 'Opportunity',
               where: {
                 left: {
@@ -1518,26 +1484,24 @@ export const testCases: TestCase[] = [
     output: {
       fields: [
         {
-          type: 'FieldRelationship',
-          field: 'Name',
-          relationships: ['Account'],
-          rawValue: 'Account.Name',
+          text: 'Account.Name',
+          relationshipFields: ['Account', 'Name'],
         },
         {
-          type: 'FieldSubquery',
-          from: 'Bars',
-          subquery: {
-            fields: [
-              {
-                type: 'FieldRelationship',
-                field: 'LastName',
-                relationships: ['Contact'],
-                rawValue: 'Contact.LastName',
-              },
-            ],
-            relationshipName: 'Bars',
-            sObjectPrefix: ['Account', 'Contact', 'Foo'],
-          },
+          subqueryObjName: 'Bars',
+        },
+      ],
+      subqueries: [
+        {
+          fields: [
+            {
+              text: 'Contact.LastName',
+              relationshipFields: ['Contact', 'LastName'],
+            },
+          ],
+          subqueries: [],
+          sObjectRelationshipName: 'Bars',
+          sObjectPrefix: ['Account', 'Contact', 'Foo'],
         },
       ],
       sObject: 'Account',
@@ -1545,41 +1509,41 @@ export const testCases: TestCase[] = [
   },
   {
     testCase: 51,
-    soql: 'SELECT LeadSource, COUNT(Name)cnt FROM Lead',
-    soqlComposed: 'SELECT LeadSource, COUNT(Name) cnt FROM Lead',
+    soql: `SELECT LeadSource, COUNT(Name)cnt FROM Lead`,
+    soqlComposed: `SELECT LeadSource, COUNT(Name) cnt FROM Lead`,
     output: {
       fields: [
         {
-          type: 'Field',
-          field: 'LeadSource',
+          text: 'LeadSource',
         },
         {
-          type: 'FieldFunctionExpression',
-          fn: 'COUNT',
-          rawValue: 'COUNT(Name)',
-          isAggregateFn: true,
-          parameters: ['Name'],
-          alias: 'cnt',
+          fn: {
+            text: 'COUNT(Name)',
+            name: 'COUNT',
+            isAggregateFn: true,
+            parameter: 'Name',
+            alias: 'cnt',
+          },
         },
       ],
+      subqueries: [],
       sObject: 'Lead',
     },
   },
   {
     testCase: 52,
-    soql: "SELECT Id, Name FROM Account WHERE Name != 'foo'",
-    soqlComposed: "SELECT Id, Name FROM Account WHERE Name != 'foo'",
+    soql: `SELECT Id, Name FROM Account WHERE Name != 'foo'`,
+    soqlComposed: `SELECT Id, Name FROM Account WHERE Name != 'foo'`,
     output: {
       fields: [
         {
-          type: 'Field',
-          field: 'Id',
+          text: 'Id',
         },
         {
-          type: 'Field',
-          field: 'Name',
+          text: 'Name',
         },
       ],
+      subqueries: [],
       sObject: 'Account',
       where: {
         left: {
@@ -1593,15 +1557,14 @@ export const testCases: TestCase[] = [
   },
   {
     testCase: 53,
-    soql:
-      "SELECT Id FROM Account WHERE Foo IN ('1', '2', '3') OR Bar IN (1, 2, 3) OR Baz IN (101.00, 102.50) OR Bam IN ('FOO', null)",
+    soql: `SELECT Id FROM Account WHERE Foo IN ('1', '2', '3') OR Bar IN (1, 2, 3) OR Baz IN (101.00, 102.50) OR Bam IN ('FOO', null)`,
     output: {
       fields: [
         {
-          type: 'Field',
-          field: 'Id',
+          text: 'Id',
         },
       ],
+      subqueries: [],
       sObject: 'Account',
       where: {
         left: {
@@ -1642,18 +1605,17 @@ export const testCases: TestCase[] = [
   },
   {
     testCase: 54,
-    soql: 'SELECT Id, Name FROM Account WHERE CreatedDate > LAST_N_YEARS:1 AND LastModifiedDate > LAST_MONTH',
+    soql: `SELECT Id, Name FROM Account WHERE CreatedDate > LAST_N_YEARS:1 AND LastModifiedDate > LAST_MONTH`,
     output: {
       fields: [
         {
-          type: 'Field',
-          field: 'Id',
+          text: 'Id',
         },
         {
-          type: 'Field',
-          field: 'Name',
+          text: 'Name',
         },
       ],
+      subqueries: [],
       sObject: 'Account',
       where: {
         left: {
