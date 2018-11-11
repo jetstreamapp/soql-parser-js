@@ -5,6 +5,9 @@ export type GroupSelector = 'ABOVE' | 'AT' | 'BELOW' | 'ABOVE_OR_BELOW';
 export type LogicalPrefix = 'NOT';
 export type ForClause = 'VIEW' | 'UPDATE' | 'REFERENCE';
 export type UpdateClause = 'TRACKING' | 'VIEWSTAT';
+export type OrderByCriterion = 'ASC' | 'DESC';
+export type NullsOrder = 'FIRST' | 'LAST';
+export type GroupByType = 'CUBE' | 'ROLLUP';
 
 export interface Query {
   fields: Field[];
@@ -69,13 +72,13 @@ export interface Condition {
 export interface OrderByClause {
   field?: string;
   fn?: FunctionExp;
-  order?: 'ASC' | 'DESC';
-  nulls?: 'FIRST' | 'LAST';
+  order?: OrderByCriterion;
+  nulls?: NullsOrder;
 }
 
 export interface GroupByClause {
   field: string | string[];
-  type?: 'CUBE' | 'ROLLUP';
+  type?: GroupByType;
 }
 
 export interface HavingClause {

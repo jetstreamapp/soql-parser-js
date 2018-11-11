@@ -301,12 +301,15 @@ export interface FormatOptions {
 ### Data Models
 ```typescript
 type LogicalOperator = 'AND' | 'OR';
-type Operator = '=' | '<=' | '>=' | '>' | '<' | 'LIKE' | 'IN' | 'NOT IN' | 'INCLUDES' | 'EXCLUDES';
+type Operator = '=' | '!=' | '<=' | '>=' | '>' | '<' | 'LIKE' | 'IN' | 'NOT IN' | 'INCLUDES' | 'EXCLUDES';
 type TypeOfFieldConditionType = 'WHEN' | 'ELSE';
 type GroupSelector = 'ABOVE' | 'AT' | 'BELOW' | 'ABOVE_OR_BELOW';
 type LogicalPrefix = 'NOT';
 type ForClause = 'VIEW' | 'UPDATE' | 'REFERENCE';
 type UpdateClause = 'TRACKING' | 'VIEWSTAT';
+type OrderByCriterion = 'ASC' | 'DESC';
+type NullsOrder = 'FIRST' | 'LAST';
+type GroupByType = 'CUBE' | 'ROLLUP';
 
 interface Query {
   fields: Field[];
@@ -371,13 +374,13 @@ interface Condition {
 interface OrderByClause {
   field?: string;
   fn?: FunctionExp;
-  order?: 'ASC' | 'DESC';
-  nulls?: 'FIRST' | 'LAST';
+  order?: OrderByCriterion;
+  nulls?: NullsOrder;
 }
 
 interface GroupByClause {
   field: string | string[];
-  type?: 'CUBE' | 'ROLLUP';
+  type?: GroupByType;
 }
 
 interface HavingClause {
