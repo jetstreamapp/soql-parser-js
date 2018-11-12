@@ -1,11 +1,9 @@
-import { parseQuery, composeQuery, isQueryValid, Query, FieldType, WhereClause } from '../lib';
+import { parseQuery, composeQuery, isQueryValid, Query, FieldType, WhereClause, formatQuery } from '../lib';
 import { expect } from 'chai';
 import 'mocha';
 import testCases from './TestCases';
 import testCasesForFormat from './TestCasesForFormat';
 import testCasesForIsValid from './TestCasesForIsValid';
-import { formatQuery } from '../lib/SoqlFormatter';
-import { isSubquery } from '../lib/utils';
 
 const replacements = [
   { matching: / and /i, replace: ' AND ' },
