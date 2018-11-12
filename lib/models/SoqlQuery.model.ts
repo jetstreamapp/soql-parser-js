@@ -16,6 +16,9 @@ export type LiteralType =
   | 'DATE_LITERAL'
   | 'DATE_N_LITERAL';
 export type FieldType = Field | FieldFunctionExpression | FieldRelationship | FieldSubquery | FieldTypeOf;
+export type OrderByCriterion = 'ASC' | 'DESC';
+export type NullsOrder = 'FIRST' | 'LAST';
+export type GroupByType = 'CUBE' | 'ROLLUP';
 
 export interface Field {
   type: 'Field';
@@ -103,13 +106,13 @@ export interface Condition {
 export interface OrderByClause {
   field?: string;
   fn?: FunctionExp;
-  order?: 'ASC' | 'DESC';
-  nulls?: 'FIRST' | 'LAST';
+  order?: OrderByCriterion;
+  nulls?: NullsOrder;
 }
 
 export interface GroupByClause {
   field: string | string[];
-  type?: 'CUBE' | 'ROLLUP';
+  type?: GroupByType;
 }
 
 export interface HavingClause {
