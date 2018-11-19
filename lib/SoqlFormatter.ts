@@ -19,6 +19,11 @@ export interface FormatOptions {
   logging?: boolean;
 }
 
+/**
+ * Formatter
+ * This class aids in building a SOQL query from a parse query
+ * and optionally formats parts of the query based on the configuration options passed in
+ */
 export class Formatter {
   enabled: boolean;
   private options: FormatOptions;
@@ -58,6 +63,10 @@ export class Formatter {
     this.currIndent += num;
   }
 
+  /**
+   * Format fields
+   * @param fieldData
+   */
   formatFields(fieldData: FieldData): void {
     function trimPrevSuffix(currIdx: number) {
       if (fieldData.fields[currIdx - 1]) {
@@ -118,6 +127,12 @@ export class Formatter {
     return `${leftParen}${queryStr}${rightParen}`;
   }
 
+  /**
+   * Formats all clauses that do not have a more specialized format function
+   * If formatting is enabled, then this will put a new line before the clause
+   * @param clause
+   * @returns clause
+   */
   formatClause(clause: string): string {
     return this.enabled ? `\n${clause}` : ` ${clause}`;
   }

@@ -13,7 +13,7 @@ LIMIT 150
 // SELECT Id, Name, Foo, Bar, Baz, Bax, aaa, bbb, ccc, ddd, Id, Name, Foo, Bar, Baz, Bax, aaa, bbb, ccc, ddd, Id, Name, Foo, Bar, Baz, Bax, aaa, bbb, ccc, ddd, Account.Name, (SELECT Id, Name, Foo, Bar, Baz, Bax, aaa, bbb, ccc, ddd, Id, Name, Foo, Bar, Baz, Bax, aaa, bbb, ccc, ddd, Contact.LastName FROM Account.Contacts), baz, (SELECT Id FROM account WHERE Boo.baz = 'bar'), bax, bar FROM Account
 // SELECT Id, Name, AccountNumber, AccountSource, AnnualRevenue, BillingAddress, BillingCity, BillingCountry, BillingGeocodeAccuracy, ShippingStreet, Sic, SicDesc, Site, SystemModstamp, TickerSymbol, Type, Website, (SELECT Id, Name, AccountId, Amount, CampaignId, CloseDate, CreatedById, Type FROM Opportunities), (SELECT Id, Name, AccountNumber, AccountSource, AnnualRevenue, BillingAddress, Website FROM ChildAccounts) FROM Account WHERE Name LIKE 'a%' OR Name LIKE 'b%' OR Name LIKE 'c%'
 const parsedQuery = soqlParserJs.parseQuery(query, { logging: true });
-console.log(JSON.stringify(parsedQuery, null, 2));
+// console.log(JSON.stringify(parsedQuery, null, 2));
 
 // const composedQuery = soqlParserJs.composeQuery(parsedQuery, {
 //   logging: true, t
@@ -67,58 +67,58 @@ console.log(JSON.stringify(parsedQuery, null, 2));
 //   ],
 //   sObject: 'Contact',
 // };
-// const fields = soqlParserJs.queryUtils.getFlattenedFields(queryObj);
+// const fields = soqlParserJs.getFlattenedFields(queryObj);
 // console.log('fields', fields);
 
-const oppLineItemsSubquery = {
-  fields: [
-    soqlParserJs.queryUtils.getComposedField('Quantity'),
-    soqlParserJs.queryUtils.getComposedField('ListPrice'),
-    soqlParserJs.queryUtils.getComposedField({
-      field: 'UnitPrice',
-      relationships: ['PricebookEntry'],
-    }),
-    soqlParserJs.queryUtils.getComposedField({
-      field: 'Name',
-      relationships: ['PricebookEntry'],
-    }),
-  ],
-  relationshipName: 'OpportunityLineItems',
-};
+// const oppLineItemsSubquery = {
+//   fields: [
+//     soqlParserJs.getComposedField('Quantity'),
+//     soqlParserJs.getComposedField('ListPrice'),
+//     soqlParserJs.getComposedField({
+//       field: 'UnitPrice',
+//       relationships: ['PricebookEntry'],
+//     }),
+//     soqlParserJs.getComposedField({
+//       field: 'Name',
+//       relationships: ['PricebookEntry'],
+//     }),
+//   ],
+//   relationshipName: 'OpportunityLineItems',
+// };
 
-const soqlQuery = {
-  fields: [
-    soqlParserJs.queryUtils.getComposedField('Id'),
-    soqlParserJs.queryUtils.getComposedField('Name'),
-    soqlParserJs.queryUtils.getComposedField({
-      fn: 'FORMAT',
-      parameters: 'Amount',
-      alias: 'MyFormattedAmount',
-    }),
-    soqlParserJs.queryUtils.getComposedField({ subquery: oppLineItemsSubquery }),
-  ],
-  sObject: 'Opportunity',
-  where: {
-    left: {
-      field: 'CreatedDate',
-      operator: '>',
-      value: 'LAST_N_YEARS:1',
-    },
-    operator: 'AND',
-    right: {
-      left: {
-        field: 'StageName',
-        operator: '=',
-        value: 'Closed Won',
-        // literalType is optional, but if set to STRING and our value is not already wrapped in "'", they will be added
-        // All other literalType values are ignored in composing a query
-        literalType: 'STRING',
-      },
-    },
-  },
-  limit: 150,
-};
+// const soqlQuery = {
+//   fields: [
+//     soqlParserJs.getComposedField('Id'),
+//     soqlParserJs.getComposedField('Name'),
+//     soqlParserJs.getComposedField({
+//       fn: 'FORMAT',
+//       parameters: 'Amount',
+//       alias: 'MyFormattedAmount',
+//     }),
+//     soqlParserJs.getComposedField({ subquery: oppLineItemsSubquery }),
+//   ],
+//   sObject: 'Opportunity',
+//   where: {
+//     left: {
+//       field: 'CreatedDate',
+//       operator: '>',
+//       value: 'LAST_N_YEARS:1',
+//     },
+//     operator: 'AND',
+//     right: {
+//       left: {
+//         field: 'StageName',
+//         operator: '=',
+//         value: 'Closed Won',
+//         // literalType is optional, but if set to STRING and our value is not already wrapped in "'", they will be added
+//         // All other literalType values are ignored in composing a query
+//         literalType: 'STRING',
+//       },
+//     },
+//   },
+//   limit: 150,
+// };
 
-const composedQuery = soqlParserJs.composeQuery(soqlQuery, { format: true });
+// const composedQuery = soqlParserJs.composeQuery(soqlQuery, { format: true });
 
-console.log(composedQuery);
+// console.log(composedQuery);

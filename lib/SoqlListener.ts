@@ -23,23 +23,65 @@ import {
 } from './models/SoqlQuery.model';
 import { SoqlQueryConfig } from './SoqlParser';
 
-export type currItem = 'field' | 'typeof' | 'from' | 'where' | 'groupby' | 'orderby' | 'having' | 'withDataCategory';
+export type CurrItem = 'field' | 'typeof' | 'from' | 'where' | 'groupby' | 'orderby' | 'having' | 'withDataCategory';
 
 export interface Context {
+  /**
+   * True if currently in a subquery
+   */
   isSubQuery: boolean;
+  /**
+   * Current subquery being processed
+   */
   currentSubquery: Query;
+  /**
+   * If a FunctionExpression is being parsed, this is the root query
+   * that will be added the parse SOQL
+   */
   rootFieldFn?: FieldFunctionExpression;
+  /**
+   * Current FieldFunctionExpression being processed
+   * This will be the same as rootFieldFn unless there are nested functions within field parameters
+   */
   currentFieldFn?: FieldFunctionExpression;
+  /**
+   * Previous FieldFunctionExpression
+   * Only used if there are nested functions within field parameters
+   */
   previousFieldFn?: FieldFunctionExpression;
+  /**
+   * True if the current context is in a WHERE clause query (semi-join / anti-join)
+   */
   isWhereSubQuery: boolean;
+  /**
+   * Query for current WHERE clause
+   */
   whereSubquery: Query;
-  currWhereConditionGroupIdx: number;
-  currentItem: currItem;
+  /**
+   * Current item being processed
+   * This is used so that when a listener is called, the correct action can be taken
+   * since there are many elements shared between parts of the query
+   */
+  currentItem: CurrItem;
+  /**
+   * True if a processing a group within a WHERE clause
+   */
   inWhereClauseGroup: boolean;
+  /**
+   * This is used to store the current data that will eventually be added to the query
+   * The shape of this data varies based on the current item being processed
+   */
   tempData: any;
-  tempDataBackup: any; // used to store tempDate while in WHILE subquery
+  /**
+   * This is used to store the previous context when in a WHILE subquery
+   * Once the subquery is done being processed, then this is set back to tempData
+   */
+  tempDataBackup: any;
 }
-
+/**
+ * Soql query
+ * This is the base query that will be built as the query is parsed
+ */
 export class SoqlQuery implements Query {
   fields: FieldType[];
   sObject: string;
@@ -62,16 +104,21 @@ export class SoqlQuery implements Query {
 }
 
 /**
- * Class used to parse query for validity, but ignore results
+ * Used to check the validity of a query without building a SoqlQuery
  */
 export class ListenerQuick implements SOQLListener {}
 
+/**
+ * Listener
+ * All the listener methods called here are overrides from SOQLListener - generated from ANTLR
+ * As each listener function is called, the context is used to build the parsed data structure.
+ *
+ */
 export class Listener implements SOQLListener {
   context: Context = {
     isSubQuery: false,
     isWhereSubQuery: false,
     whereSubquery: null,
-    currWhereConditionGroupIdx: 0,
     currentItem: null,
     inWhereClauseGroup: false,
     tempData: null,
@@ -85,6 +132,10 @@ export class Listener implements SOQLListener {
     config.logging = utils.isBoolean(config.logging) ? config.logging : false;
     this.soqlQuery = new SoqlQuery();
   }
+
+  /**
+   * LISTENER METHODS
+   */
 
   visitTerminal(ctx: TerminalNode) {
     if (this.config.logging) {
@@ -245,9 +296,6 @@ export class Listener implements SOQLListener {
       if (this.context.currentFieldFn) {
         this.context.currentFieldFn.alias = ctx.text;
       }
-      //  else {
-      //   this.context.tempData.alias = ctx.text;
-      // }
     }
     if (this.context.currentItem === 'where') {
       this.context.tempData.currConditionOperation.left.fn.alias = ctx.text;
@@ -378,7 +426,6 @@ export class Listener implements SOQLListener {
       console.log('enterString_literal:', ctx.text);
     }
     if (this.context.currentItem === 'where') {
-      // FIXME: handle this from `enterSet_values`
       this.context.tempData.currConditionOperation.left.literalType = 'STRING' as LiteralType;
     }
   }
@@ -418,8 +465,6 @@ export class Listener implements SOQLListener {
       console.log('enterFunction_name:', ctx.text);
     }
     if (this.context.currentItem === 'field') {
-      // const currFn: FunctionExp = this.context.tempData.fn || this.context.tempData;
-      // this.context.tempData.fn = ctx.text;
       if (!this.context.currentFieldFn.fn) {
         this.context.currentFieldFn.fn = ctx.text;
       }
@@ -664,7 +709,6 @@ export class Listener implements SOQLListener {
     } else {
       this.context.isSubQuery = false;
       this.context.currentSubquery = null;
-      this.context.currWhereConditionGroupIdx = 0; // ensure reset for base query or next subquery
     }
   }
   enterSubquery_select_clause(ctx: Parser.Subquery_select_clauseContext) {
@@ -718,18 +762,13 @@ export class Listener implements SOQLListener {
         type: 'Field',
         field: ctx.getChild(0).text,
       });
-      // query.fields.push({ text: ctx.getChild(0).text });
     } else {
       query.fields.push({
         type: 'Field',
         field: ctx.text,
       });
-      // query.fields.push({ text: ctx.text });
     }
   }
-  // exitField_spec(ctx: Parser.Field_specContext) {
-  //   if(this.config.logging) { console.log('exitField_spec:', ctx.text); }
-  // };
   enterFunction_call_spec(ctx: Parser.Function_call_specContext) {
     if (this.config.logging) {
       console.log('enterFunction_call_spec:', ctx.text);
@@ -749,7 +788,6 @@ export class Listener implements SOQLListener {
     }
     if (this.context.currentItem === 'having') {
       this.context.tempData.currConditionOperation.left.fn = {};
-      // this.context.tempData = {};
     }
   }
   exitFunction_call_spec(ctx: Parser.Function_call_specContext) {
@@ -784,15 +822,12 @@ export class Listener implements SOQLListener {
     }
     // COUNT(ID) or Count()
     if (this.context.currentItem === 'field') {
-      // const currFn: FieldFunctionExpression = this.context.tempData.fn || this.context.tempData;
       this.context.currentFieldFn.rawValue = ctx.text;
-      // this.context.tempData.rawValue = ctx.text;
     }
     if (this.context.currentItem === 'where' || this.context.currentItem === 'having') {
       this.context.tempData.currConditionOperation.left.fn = {
         text: ctx.text,
       };
-      // this.context.tempData.fn.;
     }
     if (this.context.currentItem === 'orderby') {
       this.context.tempData.fn.text = ctx.text;
@@ -828,8 +863,6 @@ export class Listener implements SOQLListener {
     }
     // Get correct fn object based on what is set in tempData (set differently for field vs having)
     if (this.context.currentItem === 'field') {
-      // this.context.tempData.parameter = ctx.text;
-
       if (ctx.getChild(0) instanceof Parser.Function_callContext) {
         this.context.previousFieldFn = this.context.currentFieldFn;
         this.context.currentFieldFn = {
@@ -1102,12 +1135,6 @@ export class Listener implements SOQLListener {
 
       currItem.operator = ctx.getChild(1).text;
       currItem.value = ctx.getChild(2).text;
-
-      // this.context.tempData = {
-      //   fn: {},
-      //   operator: ctx.getChild(1).text,
-      //   value: ctx.getChild(2).text,
-      // };
     }
   }
   exitField_based_condition(ctx: Parser.Field_based_conditionContext) {

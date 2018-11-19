@@ -20,11 +20,23 @@ export interface SoqlComposeConfig {
   format: boolean; // default=false
   formatOptions?: FormatOptions;
 }
-
+/**
+ * Formats query - This will compose and then parse a query with the provided format options
+ * or the defaults if omitted
+ * @param soql
+ * @param [formatOptions]
+ * @returns
+ */
 export function formatQuery(soql: string, formatOptions?: FormatOptions) {
   return composeQuery(parseQuery(soql), { format: true, formatOptions });
 }
 
+/**
+ * Composes a parsed query back to a SOQL query
+ * @param soql
+ * @param [config]
+ * @returns query
+ */
 export function composeQuery(soql: Query, config: Partial<SoqlComposeConfig> = {}): string {
   config.format = config.format ? true : false;
   if (config.logging) {
@@ -42,10 +54,12 @@ export function composeQuery(soql: Query, config: Partial<SoqlComposeConfig> = {
   return query;
 }
 
+/**
+ * Compose
+ * This class handles all the logic for turning a Query into a SOQL query
+ * This depends on the Format class for parts of the processing
+ */
 export class Compose {
-  private subqueryFieldRegex = /^{.+}$/;
-  private subqueryFieldReplaceRegex = /^{|}$/g;
-
   public logging: boolean = false;
   public format: boolean = false;
   public query: string;
@@ -65,6 +79,9 @@ export class Compose {
     this.start();
   }
 
+  /**
+   * Starts compose
+   */
   public start(): void {
     this.query = this.parseQuery(this.soql);
   }
@@ -75,6 +92,13 @@ export class Compose {
     }
   }
 
+  /**
+   * Parses query
+   * Base entry point for the query
+   * this may be called multiple times recursively for subqueries and WHERE queries
+   * @param query
+   * @returns query
+   */
   private parseQuery(query: Query | Subquery): string {
     const fieldData: FieldData = {
       fields: this.parseFields(query.fields).map(field => ({
@@ -114,7 +138,6 @@ export class Compose {
     }
 
     // TODO: add WITH support https://github.com/paustint/soql-parser-js/issues/18
-
     if (query.groupBy) {
       output += this.formatter.formatClause('GROUP BY');
       output += ` ${this.parseGroupByClause(query.groupBy)}`;
@@ -165,6 +188,12 @@ export class Compose {
     return output;
   }
 
+  /**
+   * Parses fields
+   * e.x.: SELECT amount, FORMAT(amount) Amt, (SELECT Id, Name FROM Contacts)
+   * @param fields
+   * @returns fields
+   */
   private parseFields(fields: FieldType[]): string[] {
     return fields.map(field => {
       const objPrefix = (field as any).objectPrefix ? `${(field as any).objectPrefix}.` : '';
@@ -198,6 +227,12 @@ export class Compose {
     });
   }
 
+  /**
+   * Parses type of Field
+   * e.x.: TYPEOF What WHEN Account THEN Phone, NumberOfEmployees WHEN Opportunity THEN Amount, CloseDate ELSE Name
+   * @param typeOfField
+   * @returns type of field
+   */
   private parseTypeOfField(typeOfField: FieldTypeOf): string {
     let output = `TYPEOF ${typeOfField.field} `;
     output += typeOfField.conditions
@@ -209,10 +244,22 @@ export class Compose {
     return output;
   }
 
+  /**
+   * Parses fn from a WHERE clause
+   * @param fn
+   * @returns fn
+   */
   private parseFn(fn: FunctionExp): string {
     return `${(fn.text || '').replace(/,/g, ', ')} ${fn.alias || ''}`.trim();
   }
 
+  /**
+   * Parses where clause
+   * e.x.: WHERE LoginTime > 2010-09-20T22:16:30.000Z AND LoginTime < 2010-09-21T22:16:30.000Z
+   * WHERE Id IN (SELECT AccountId FROM Contact WHERE LastName LIKE 'apple%') AND Id IN (SELECT AccountId FROM Opportunity WHERE isClosed = false)
+   * @param where
+   * @returns where clause
+   */
   private parseWhereClause(where: WhereClause): string {
     let output = '';
     if (where.left) {
@@ -245,6 +292,12 @@ export class Compose {
     }
   }
 
+  /**
+   * Parses group by clause
+   * e.x.: GROUP BY CampaignId
+   * @param groupBy
+   * @returns group by clause
+   */
   private parseGroupByClause(groupBy: GroupByClause): string {
     if (groupBy.type) {
       return `${groupBy.type}${utils.getAsArrayStr(groupBy.field, true)}`;
@@ -253,6 +306,12 @@ export class Compose {
     }
   }
 
+  /**
+   * Parses having clause
+   * e.x.: HAVING COUNT(Name) > 100 and LeadSource > 'Phone'
+   * @param having
+   * @returns having clause
+   */
   private parseHavingClause(having: HavingClause): string {
     let output = '';
     if (having.left) {
@@ -268,6 +327,12 @@ export class Compose {
     }
   }
 
+  /**
+   * Parses order by
+   * e.x.: ORDER BY BillingPostalCode ASC NULLS LAST
+   * @param orderBy
+   * @returns order by
+   */
   private parseOrderBy(orderBy: OrderByClause | OrderByClause[]): string {
     if (Array.isArray(orderBy)) {
       return this.formatter.formatOrderByArray(orderBy.map(ob => this.parseOrderBy(ob)));
@@ -279,6 +344,12 @@ export class Compose {
     }
   }
 
+  /**
+   * Parses with data category
+   * e.x.: WITH DATA CATEGORY Geography__c AT (usa__c, uk__c)
+   * @param withDataCategory
+   * @returns with data category
+   */
   private parseWithDataCategory(withDataCategory: WithDataCategoryClause): string {
     return withDataCategory.conditions
       .map(condition => {
