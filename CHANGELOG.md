@@ -1,7 +1,7 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
-## [Unreleased]
+## 1.0
 ### Changed
 **!BREAKING CHANGES!**
 - Added literal type information to fields to provide additional information about the field type. (#51)
