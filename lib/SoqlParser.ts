@@ -1,4 +1,4 @@
-import { ANTLRInputStream, CommonTokenStream } from 'antlr4ts';
+import { ANTLRInputStream, CommonTokenStream, TokenStream } from 'antlr4ts';
 import { ParseTreeWalker } from 'antlr4ts/tree';
 import * as utils from './utils';
 import { SyntaxErrorListener } from './ErrorListener';
@@ -6,6 +6,7 @@ import { SOQLLexer } from './generated/SOQLLexer';
 import { SOQLParser, Soql_queryContext } from './generated/SOQLParser';
 import { Query } from './models/SoqlQuery.model';
 import { Listener, ListenerQuick } from './SoqlListener';
+import { Override } from 'antlr4ts/Decorators';
 
 export interface ConfigBase {
   logging?: boolean; // default=false
@@ -32,7 +33,12 @@ function configureDefaults(config: Partial<SoqlQueryConfig> = {}) {
  */
 function getSoqlQueryContext(soql: string, config: Partial<SoqlQueryConfig> = {}): SOQLParser {
   let inputStream = new ANTLRInputStream(soql);
+
   let lexer = new SOQLLexer(inputStream);
+  // bug-56 - The lever must have error listeners added to ensure no logging directly to the console
+  lexer.removeErrorListeners();
+  lexer.addErrorListener(new SyntaxErrorListener());
+
   let tokenStream = new CommonTokenStream(lexer);
   const parser = new SOQLParser(tokenStream);
 
