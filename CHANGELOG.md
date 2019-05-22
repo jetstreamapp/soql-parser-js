@@ -1,5 +1,8 @@
 # Changelog
-All notable changes to this project will be documented in this file.
+
+## 1.0.2
+- If a field in a query happened to have a function reserved word, such as `Format`, then parsing the query failed. (#59) 
+
 ## 1.0.1
 - Ensured that nothing is logged directly to the console unless logging is enabled
 
