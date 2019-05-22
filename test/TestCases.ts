@@ -1675,5 +1675,63 @@ export const testCases: TestCase[] = [
       },
     },
   },
+  {
+    testCase: 55,
+    soql:
+      'SELECT Id, CreatedById, CreatedDate, DefType, IsDeleted, Format, LastModifiedById, LastModifiedDate, AuraDefinitionBundleId, ManageableState, Source, SystemModstamp FROM AuraDefinition',
+    output: {
+      fields: [
+        {
+          type: 'Field',
+          field: 'Id',
+        },
+        {
+          type: 'Field',
+          field: 'CreatedById',
+        },
+        {
+          type: 'Field',
+          field: 'CreatedDate',
+        },
+        {
+          type: 'Field',
+          field: 'DefType',
+        },
+        {
+          type: 'Field',
+          field: 'IsDeleted',
+        },
+        {
+          type: 'Field',
+          field: 'Format',
+        },
+        {
+          type: 'Field',
+          field: 'LastModifiedById',
+        },
+        {
+          type: 'Field',
+          field: 'LastModifiedDate',
+        },
+        {
+          type: 'Field',
+          field: 'AuraDefinitionBundleId',
+        },
+        {
+          type: 'Field',
+          field: 'ManageableState',
+        },
+        {
+          type: 'Field',
+          field: 'Source',
+        },
+        {
+          type: 'Field',
+          field: 'SystemModstamp',
+        },
+      ],
+      sObject: 'AuraDefinition',
+    },
+  },
 ];
 export default testCases;
