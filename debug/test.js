@@ -1,6 +1,6 @@
 var soqlParserJs = require('./lib');
 
-const query = `@`;
+const query = `SELECT Id, Format, Foo FROM Account`;
 // const query = `
 // SELECT Id, Name, FORMAT(Amount),
 //   (SELECT Quantity, ListPrice, PricebookEntry.UnitPrice, PricebookEntry.Name FROM OpportunityLineItems)

@@ -150,5 +150,10 @@ export const testCases: TestCaseForFormat[] = [
     soql: 'select some fake text',
     isValid: false,
   },
+  {
+    testCase: 30,
+    soql: 'SELECT Id, Format FROM Account',
+    isValid: true,
+  },
 ];
 export default testCases;

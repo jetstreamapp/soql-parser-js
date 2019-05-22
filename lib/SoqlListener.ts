@@ -464,7 +464,7 @@ export class Listener implements SOQLListener {
     if (this.config.logging) {
       console.log('enterFunction_name:', ctx.text);
     }
-    if (this.context.currentItem === 'field') {
+    if (this.context.currentItem === 'field' && this.context.currentFieldFn) {
       if (!this.context.currentFieldFn.fn) {
         this.context.currentFieldFn.fn = ctx.text;
       }
