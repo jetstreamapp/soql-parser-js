@@ -39,64 +39,64 @@ fragment Z_ :	'z' | 'Z';
 /*------------------------------------------------------------------------------------------------------------------------*/
 
 
-WHITE_SPACE	       : ( ' '|'\r'|'\t'|'\n' ) -> channel(HIDDEN) ;
+WHITE_SPACE	 : ( ' '|'\r'|'\t'|'\n' ) -> channel(HIDDEN) ;
 
 /********** STRINGS **********/
 
-STRING_VALUE       : ( '\'' (
-					    ('\\' '\\')
-					  | ('\\' N_)
-					  | ('\\' R_)
-					  | ('\\' T_)
-					  | ('\\' B_)
-					  | ('\\' F_)
-					  | ('\\' '"')
-					  | ('\\' '\'')
-					  | ~('\''|'\\')
-			         )* '\'' ) ;
+STRING_VALUE : ( '\'' (
+					     ('\\' '\\')
+					   | ('\\' N_)
+					   | ('\\' R_)
+					   | ('\\' T_)
+					   | ('\\' B_)
+					   | ('\\' F_)
+					   | ('\\' '"')
+					   | ('\\' '\'')
+					   | ~('\''|'\\')
+			          )* '\'' ) ;
 LIKE_STRING_VALUE  : ( '\'' (
-					    ('\\' '\\')
-					  | ('\\' '%')
-					  | ('\\' '_')
-					  | ('\\' N_)
-					  | ('\\' R_)
-					  | ('\\' T_)
-					  | ('\\' B_)
-					  | ('\\' F_)
-					  | ('\\' '"')
-					  | ('\\' '\'')
-					  | ~('\''|'\\')
-			         )* '\'' ) ;			   
+					           ('\\' '\\')
+					         | ('\\' '%')
+					         | ('\\' '_')
+					         | ('\\' N_)
+					         | ('\\' R_)
+					         | ('\\' T_)
+					         | ('\\' B_)
+					         | ('\\' F_)
+					         | ('\\' '"')
+					         | ('\\' '\'')
+					         | ~('\''|'\\')
+			                )* '\'' ) ;			   
 
 /********** RESERVED KEYWORDS **********/
 
 AND                 : A_ N_ D_ ;
-AS   				: A_ S_ ;
+AS   			        	: A_ S_ ;
 ASC                 : A_ S_ C_ ;
-BY  				: B_ Y_ ;
+BY  				        : B_ Y_ ;
 CUBE                : C_ U_ B_ E_ ;
 DESC                : D_ E_ S_ C_ ;
 ELSE                : E_ L_ S_ E_ ;
 EXCLUDES            : E_ X_ C_ L_ U_ D_ E_ S_ ;
 FALSE               : F_ A_ L_ S_ E_ ;
 FIRST               : F_ I_ R_ S_ T_ ;
-FROM				: F_ R_ O_ M_ ;
-GROUP        		: G_ R_ O_ U_ P_ ;
+FROM				        : F_ R_ O_ M_ ;
+GROUP        		    : G_ R_ O_ U_ P_ ;
 HAVING              : H_ A_ V_ I_ N_ G_ ;
 IN                  : I_ N_ ;
 INCLUDES            : I_ N_ C_ L_ U_ D_ E_ S_ ;
 LAST                : L_ A_ S_ T_ ;
 LIKE                : L_ I_ K_ E_ ;
-LIMIT				: L_ I_ M_ I_ T_ ;
+LIMIT				        : L_ I_ M_ I_ T_ ;
 NOT                 : N_ O_ T_ ;
-NULL     			: N_ U_ L_ L_ ;
+NULL     			      : N_ U_ L_ L_ ;
 NULLS               : N_ U_ L_ L_ S_ ;
 OR                  : O_ R_ ;
 ROLLUP              : R_ O_ L_ L_ U_ P_ ;
-SELECT				: S_ E_ L_ E_ C_ T_ ;
+SELECT				      : S_ E_ L_ E_ C_ T_ ;
 TRUE                : T_ R_ U_ E_ ;
-USING   			: U_ S_ I_ N_ G_ ;
-WHERE				: W_ H_ E_ R_ E_ ;
+USING   			      : U_ S_ I_ N_ G_ ;
+WHERE				        : W_ H_ E_ R_ E_ ;
 WITH                : W_ I_ T_ H_ ;
 FOR                 : F_ O_ R_ ;
 UPDATE              : U_ P_ D_ A_ T_ E_ ;
@@ -111,7 +111,7 @@ CATEGORY            : C_ A_ T_ E_ G_ O_ R_ Y_ ;
 DATA                : D_ A_ T_ A_ ;
 END                 : E_ N_ D_ ;
 OFFSET              : O_ F_ F_ S_ E_ T_ ;
-ORDER   			: O_ R_ D_ E_ R_ ;
+ORDER   			      : O_ R_ D_ E_ R_ ;
 REFERENCE           : R_ E_ F_ E_ R_ E_ N_ C_ E_ ;
 SCOPE               : S_ C_ O_ P_ E_ ;
 TRACKING            : T_ R_ A_ C_ K_ I_ N_ G_ ;
@@ -120,6 +120,7 @@ TYPEOF              : T_ Y_ P_ E_ O_ F_ ;
 VIEW                : V_ I_ E_ W_ ;
 VIEWSTAT            : V_ I_ E_ W_ S_ T_ A_ T_ ;
 WHEN                : W_ H_ E_ N_ ;
+SECURITY_ENFORCED   : S_ E_ C_ U_ R_ I_ T_ Y_ '_' E_ N_ F_ O_ R_ C_ E_ D_ ;
 
 /********** DATE FUNCTIONS **********/
 
@@ -154,7 +155,7 @@ GEOLOCATION         : G_ E_ O_ L_ O_ C_ A_ T_ I_ O_ N_ ;
 /********** OTHER FUNCTIONS **********/
 
 FORMAT              : F_ O_ R_ M_ A_ T_ ;
-TOLABEL		        : T_ O_ L_ A_ B_ E_ L_ ;
+TOLABEL		          : T_ O_ L_ A_ B_ E_ L_ ;
 CONVERT_TIME_ZONE   : C_ O_ N_ V_ E_ R_ T_ T_ I_ M_ E_ Z_ O_ N_ E_ ;
 CONVERT_CURRENCY    : C_ O_ N_ V_ E_ R_ T_ C_ U_ R_ R_ E_ N_ C_ Y_ ;
 GROUPING            : G_ R_ O_ U_ P_ I_ N_ G_ ;
@@ -211,7 +212,7 @@ N_FISCAL_YEARS_AGO      : N_ '_' F_ I_ S_ C_ A_ L_ '_' Y_ E_ A_ R_ S_ '_' A_ G_ 
 
 /********** OPERATIONS **********/
 
-EQ  	    : '=' ;
+EQ  	      : '=' ;
 NOT_EQ	    : '<>' | '!=' ;
 LET	        : '<=' ;
 GET	        : '>=' ;
@@ -221,14 +222,14 @@ LTH	        : '<' ;
 /********** SYMBOLS **********/
 
 DOT	        : '.' ;
-COLON	    : ':' ;
-SEMICOLON	: ';' ;
-COMMA	    : ',' ;
+COLON	      : ':' ;
+SEMICOLON	  : ';' ;
+COMMA	      : ',' ;
 ASTERISK    : '*' ;
 RPAREN	    : ')' ;
 LPAREN	    : '(' ;
-PLUS	    : '+' ;
-MINUS	    : '-' ;
+PLUS	      : '+' ;
+MINUS	      : '-' ;
 
 /********** IDENTIFIERS **********/
 
@@ -268,7 +269,8 @@ keywords_alias_allowed :
 	| TYPEOF
 	| VIEW
 	| VIEWSTAT
-    | WHEN
+	| WHEN
+	| SECURITY_ENFORCED
 ;
 
 keywords_name_allowed :
@@ -280,13 +282,13 @@ keywords_name_allowed :
 
 name                      : ID | keywords_name_allowed | date_formula_literal | date_formula_n_literal_name | function_name ;
 object_name	              : name ;
-field_name		          : name ;
+field_name		          	: name ;
 filter_scope_name         : name ;
 data_category_group_name  : name ;
 data_category_name        : name ;
 
 alias_name                : ID | keywords_alias_allowed | date_formula_literal | date_formula_n_literal_name | function_name ;
-alias			          : ( AS )? alias_name ;
+alias			          			: ( AS )? alias_name ;
 
 /********** LITERALS **********/
 
@@ -398,7 +400,7 @@ function_other:
 /************************************* SELECT QUERY *************************************/
 
 soql_query:
-	select_clause from_clause ( using_clause )? ( where_clause )? ( with_clause )? ( groupby_clause ( having_clause )? )? ( orderby_clause )? ( limit_clause )? ( offset_clause )? ( for_clause )? ( update_clause )? EOF ;
+	select_clause from_clause ( using_clause )? ( where_clause )? ( with_clause )? ( with_security_enforced_clause )? ( groupby_clause ( having_clause )? )? ( orderby_clause )? ( limit_clause )? ( offset_clause )? ( for_clause )? ( update_clause )? EOF ;
 
 select_clause:
     SELECT<SelectClauseNode> select_spec ( COMMA select_spec )* ;
@@ -504,13 +506,13 @@ object_spec:
 	( object_prefix )? object_name ( alias )? ;
 
 object_prefix:
-    ( object_name DOT )+ ;
+	( object_name DOT )+ ;
 
 /*************************************** CONDITION **************************************/
 
 comparison_operator : EQ | NOT_EQ | LET | GET | GTH | LTH | GTH EQ | LTH EQ ;
 
-set_operator   : IN | NOT IN | INCLUDES | EXCLUDES;
+set_operator        : IN | NOT IN | INCLUDES | EXCLUDES;
 
 condition:
 	condition1 ( ( OR<LogicalBinaryOperatorNode> | AND<LogicalBinaryOperatorNode> ) condition1 )* ;
@@ -552,7 +554,7 @@ with_plain_clause:
 	
 with_data_category_clause:
 	DATA CATEGORY data_category_spec_list ;
-	
+
 data_category_spec_list:
 	data_category_spec ( AND data_category_spec )* ;
 
@@ -560,10 +562,15 @@ data_category_spec:
 	data_category_group_name data_category_selector data_category_parameter_list ;
 
 data_category_parameter_list:
-    data_category_name | LPAREN data_category_name ( COMMA data_category_name )* RPAREN ;
+	data_category_name | LPAREN data_category_name ( COMMA data_category_name )* RPAREN ;
 
 data_category_selector:
 	AT | ABOVE | ABOVE_OR_BELOW | BELOW ;
+
+/************************************** WITH SECURITY_ENFORCED CLAUSE *************************************/
+
+with_security_enforced_clause:
+	WITH SECURITY_ENFORCED ;
 
 /************************************ GROUP BY CLAUSE ***********************************/
 
@@ -591,10 +598,10 @@ order_by_spec:
 	order_by_field ( order_by_direction_clause )? ( order_by_nulls_clause )? ;
 
 order_by_direction_clause:
-    ASC | DESC ;
+	ASC | DESC ;
 
 order_by_nulls_clause:
-    NULLS ( FIRST | LAST ) ;
+	NULLS ( FIRST | LAST ) ;
 
 order_by_field:
 	field | function_call ;

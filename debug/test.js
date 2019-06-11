@@ -1,6 +1,6 @@
 var soqlParserJs = require('./lib');
 
-const query = `SELECT Id, Format, Foo FROM Account`;
+const query = `SELECT Title FROM KnowledgeArticleVersion WHERE PublishStatus = 'online' WITH DATA CATEGORY Geography__c ABOVE usa__c WITH SECURITY_ENFORCED`;
 // const query = `
 // SELECT Id, Name, FORMAT(Amount),
 //   (SELECT Quantity, ListPrice, PricebookEntry.UnitPrice, PricebookEntry.Name FROM OpportunityLineItems)
@@ -14,14 +14,14 @@ const query = `SELECT Id, Format, Foo FROM Account`;
 // SELECT Id, Name, Foo, Bar, Baz, Bax, aaa, bbb, ccc, ddd, Id, Name, Foo, Bar, Baz, Bax, aaa, bbb, ccc, ddd, Id, Name, Foo, Bar, Baz, Bax, aaa, bbb, ccc, ddd, Account.Name, (SELECT Id, Name, Foo, Bar, Baz, Bax, aaa, bbb, ccc, ddd, Id, Name, Foo, Bar, Baz, Bax, aaa, bbb, ccc, ddd, Contact.LastName FROM Account.Contacts), baz, (SELECT Id FROM account WHERE Boo.baz = 'bar'), bax, bar FROM Account
 // SELECT Id, Name, AccountNumber, AccountSource, AnnualRevenue, BillingAddress, BillingCity, BillingCountry, BillingGeocodeAccuracy, ShippingStreet, Sic, SicDesc, Site, SystemModstamp, TickerSymbol, Type, Website, (SELECT Id, Name, AccountId, Amount, CampaignId, CloseDate, CreatedById, Type FROM Opportunities), (SELECT Id, Name, AccountNumber, AccountSource, AnnualRevenue, BillingAddress, Website FROM ChildAccounts) FROM Account WHERE Name LIKE 'a%' OR Name LIKE 'b%' OR Name LIKE 'c%'
 const parsedQuery = soqlParserJs.parseQuery(query, { logging: true });
-// console.log(JSON.stringify(parsedQuery, null, 2));
+console.log(JSON.stringify(parsedQuery, null, 2));
 
-// const composedQuery = soqlParserJs.composeQuery(parsedQuery, {
-//   logging: true, t
-//   format: true,
-//   formatOptions: { fieldMaxLineLen: 20, fieldSubqueryParensOnOwnLine: true, whereClauseOperatorsIndented: true },
-// });
-// console.log(composedQuery);
+const composedQuery = soqlParserJs.composeQuery(parsedQuery, {
+  logging: true,
+  format: true,
+  formatOptions: { fieldMaxLineLen: 20, fieldSubqueryParensOnOwnLine: true, whereClauseOperatorsIndented: true },
+});
+console.log(composedQuery);
 // soqlParserJs.formatQuery(parsedQuery);
 // const formattedQuery1 = soqlParserJs.formatQuery(query);
 // const formattedQuery3 = soqlParserJs.formatQuery(query, {

@@ -173,6 +173,11 @@ export class Compose {
       this.log(output);
     }
 
+    if (query.withSecurityEnforced) {
+      output += this.formatter.formatClause('WITH SECURITY_ENFORCED');
+      this.log(output);
+    }
+
     if (query.for) {
       output += this.formatter.formatClause('FOR');
       output += ` ${query.for}`;

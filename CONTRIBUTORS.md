@@ -1,2 +1,2 @@
-* Austin Turner @paustint
-* Alfredo Benassi @ABenassi87
+- Austin Turner @paustint
+- Alfredo Benassi @ABenassi87
