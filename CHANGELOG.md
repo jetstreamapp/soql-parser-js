@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.1.1
+
+- Removed files that accidentally got included with release with update of `release-it`
+
 ## 1.1.0
 
 - Updated `Contributing.md` with more detailed instructions on grammar updates
