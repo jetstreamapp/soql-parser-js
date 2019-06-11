@@ -1,4 +1,4 @@
-// Generated from src/main/g4/SOQL.g4 by ANTLR 4.6-SNAPSHOT
+// Generated from SOQL.g4 by ANTLR 4.6-SNAPSHOT
 
 
 import { ATN } from 'antlr4ts/atn/ATN';
@@ -27,7 +27,6 @@ import { SOQLListener } from './SOQLListener';
 import { SOQLVisitor } from './SOQLVisitor';
 
 
-
 export class Keywords_alias_allowedContext extends ParserRuleContext {
 	public ABOVE(): TerminalNode | undefined { return this.tryGetToken(SOQLParser.ABOVE, 0); }
 	public ABOVE_OR_BELOW(): TerminalNode | undefined { return this.tryGetToken(SOQLParser.ABOVE_OR_BELOW, 0); }
@@ -46,6 +45,7 @@ export class Keywords_alias_allowedContext extends ParserRuleContext {
 	public VIEW(): TerminalNode | undefined { return this.tryGetToken(SOQLParser.VIEW, 0); }
 	public VIEWSTAT(): TerminalNode | undefined { return this.tryGetToken(SOQLParser.VIEWSTAT, 0); }
 	public WHEN(): TerminalNode | undefined { return this.tryGetToken(SOQLParser.WHEN, 0); }
+	public SECURITY_ENFORCED(): TerminalNode | undefined { return this.tryGetToken(SOQLParser.SECURITY_ENFORCED, 0); }
 	constructor(parent: ParserRuleContext, invokingState: number);
 	constructor(parent: ParserRuleContext, invokingState: number) {
 		super(parent, invokingState);
@@ -831,6 +831,9 @@ export class Soql_queryContext extends ParserRuleContext {
 	}
 	public with_clause(): With_clauseContext | undefined {
 		return this.tryGetRuleContext(0, With_clauseContext);
+	}
+	public with_security_enforced_clause(): With_security_enforced_clauseContext | undefined {
+		return this.tryGetRuleContext(0, With_security_enforced_clauseContext);
 	}
 	public groupby_clause(): Groupby_clauseContext | undefined {
 		return this.tryGetRuleContext(0, Groupby_clauseContext);
@@ -2462,6 +2465,31 @@ export class Data_category_selectorContext extends ParserRuleContext {
 }
 
 
+export class With_security_enforced_clauseContext extends ParserRuleContext {
+	public WITH(): TerminalNode { return this.getToken(SOQLParser.WITH, 0); }
+	public SECURITY_ENFORCED(): TerminalNode { return this.getToken(SOQLParser.SECURITY_ENFORCED, 0); }
+	constructor(parent: ParserRuleContext, invokingState: number);
+	constructor(parent: ParserRuleContext, invokingState: number) {
+		super(parent, invokingState);
+
+	}
+	@Override public get ruleIndex(): number { return SOQLParser.RULE_with_security_enforced_clause; }
+	@Override
+	public enterRule(listener: SOQLListener): void {
+		if (listener.enterWith_security_enforced_clause) listener.enterWith_security_enforced_clause(this);
+	}
+	@Override
+	public exitRule(listener: SOQLListener): void {
+		if (listener.exitWith_security_enforced_clause) listener.exitWith_security_enforced_clause(this);
+	}
+	@Override
+	public accept<Result>(visitor: SOQLVisitor<Result>): Result {
+		if (visitor.visitWith_security_enforced_clause) return visitor.visitWith_security_enforced_clause(this);
+		else return visitor.visitChildren(this);
+	}
+}
+
+
 export class Group_by_plain_clauseContext extends ParserRuleContext {
 	public group_by_list(): Group_by_listContext {
 		return this.getRuleContext(0, Group_by_listContext);
@@ -2819,7 +2847,6 @@ export class Update_valueContext extends ParserRuleContext {
 	}
 }
 
-
 export class SOQLParser extends Parser {
 	public static readonly WHITE_SPACE=1;
 	public static readonly STRING_VALUE=2;
@@ -2871,97 +2898,98 @@ export class SOQLParser extends Parser {
 	public static readonly VIEW=48;
 	public static readonly VIEWSTAT=49;
 	public static readonly WHEN=50;
-	public static readonly CALENDAR_MONTH=51;
-	public static readonly CALENDAR_QUARTER=52;
-	public static readonly CALENDAR_YEAR=53;
-	public static readonly DAY_IN_MONTH=54;
-	public static readonly DAY_IN_WEEK=55;
-	public static readonly DAY_IN_YEAR=56;
-	public static readonly DAY_ONLY=57;
-	public static readonly FISCAL_MONTH=58;
-	public static readonly FISCAL_QUARTER=59;
-	public static readonly FISCAL_YEAR=60;
-	public static readonly HOUR_IN_DAY=61;
-	public static readonly WEEK_IN_MONTH=62;
-	public static readonly WEEK_IN_YEAR=63;
-	public static readonly AVG=64;
-	public static readonly COUNT=65;
-	public static readonly COUNT_DISTINCT=66;
-	public static readonly MIN=67;
-	public static readonly MAX=68;
-	public static readonly SUM=69;
-	public static readonly DISTANCE=70;
-	public static readonly GEOLOCATION=71;
-	public static readonly FORMAT=72;
-	public static readonly TOLABEL=73;
-	public static readonly CONVERT_TIME_ZONE=74;
-	public static readonly CONVERT_CURRENCY=75;
-	public static readonly GROUPING=76;
-	public static readonly YESTERDAY=77;
-	public static readonly TODAY=78;
-	public static readonly TOMORROW=79;
-	public static readonly LAST_WEEK=80;
-	public static readonly THIS_WEEK=81;
-	public static readonly NEXT_WEEK=82;
-	public static readonly LAST_MONTH=83;
-	public static readonly THIS_MONTH=84;
-	public static readonly NEXT_MONTH=85;
-	public static readonly LAST_90_DAYS=86;
-	public static readonly NEXT_90_DAYS=87;
-	public static readonly THIS_QUARTER=88;
-	public static readonly LAST_QUARTER=89;
-	public static readonly NEXT_QUARTER=90;
-	public static readonly THIS_YEAR=91;
-	public static readonly LAST_YEAR=92;
-	public static readonly NEXT_YEAR=93;
-	public static readonly THIS_FISCAL_QUARTER=94;
-	public static readonly LAST_FISCAL_QUARTER=95;
-	public static readonly NEXT_FISCAL_QUARTER=96;
-	public static readonly THIS_FISCAL_YEAR=97;
-	public static readonly LAST_FISCAL_YEAR=98;
-	public static readonly NEXT_FISCAL_YEAR=99;
-	public static readonly NEXT_N_DAYS=100;
-	public static readonly LAST_N_DAYS=101;
-	public static readonly N_DAYS_AGO=102;
-	public static readonly NEXT_N_WEEKS=103;
-	public static readonly LAST_N_WEEKS=104;
-	public static readonly N_WEEKS_AGO=105;
-	public static readonly NEXT_N_MONTHS=106;
-	public static readonly LAST_N_MONTHS=107;
-	public static readonly N_MONTHS_AGO=108;
-	public static readonly NEXT_N_QUARTERS=109;
-	public static readonly LAST_N_QUARTERS=110;
-	public static readonly N_QUARTERS_AGO=111;
-	public static readonly NEXT_N_YEARS=112;
-	public static readonly LAST_N_YEARS=113;
-	public static readonly N_YEARS_AGO=114;
-	public static readonly NEXT_N_FISCAL_QUARTERS=115;
-	public static readonly LAST_N_FISCAL_QUARTERS=116;
-	public static readonly N_FISCAL_QUARTERS_AGO=117;
-	public static readonly NEXT_N_FISCAL_YEARS=118;
-	public static readonly LAST_N_FISCAL_YEARS=119;
-	public static readonly N_FISCAL_YEARS_AGO=120;
-	public static readonly EQ=121;
-	public static readonly NOT_EQ=122;
-	public static readonly LET=123;
-	public static readonly GET=124;
-	public static readonly GTH=125;
-	public static readonly LTH=126;
-	public static readonly DOT=127;
-	public static readonly COLON=128;
-	public static readonly SEMICOLON=129;
-	public static readonly COMMA=130;
-	public static readonly ASTERISK=131;
-	public static readonly RPAREN=132;
-	public static readonly LPAREN=133;
-	public static readonly PLUS=134;
-	public static readonly MINUS=135;
-	public static readonly ID=136;
-	public static readonly DATE=137;
-	public static readonly DATETIME=138;
-	public static readonly UNSIGNED_INTEGER=139;
-	public static readonly REAL_NUMBER=140;
-	public static readonly SIGNED_INTEGER=141;
+	public static readonly SECURITY_ENFORCED=51;
+	public static readonly CALENDAR_MONTH=52;
+	public static readonly CALENDAR_QUARTER=53;
+	public static readonly CALENDAR_YEAR=54;
+	public static readonly DAY_IN_MONTH=55;
+	public static readonly DAY_IN_WEEK=56;
+	public static readonly DAY_IN_YEAR=57;
+	public static readonly DAY_ONLY=58;
+	public static readonly FISCAL_MONTH=59;
+	public static readonly FISCAL_QUARTER=60;
+	public static readonly FISCAL_YEAR=61;
+	public static readonly HOUR_IN_DAY=62;
+	public static readonly WEEK_IN_MONTH=63;
+	public static readonly WEEK_IN_YEAR=64;
+	public static readonly AVG=65;
+	public static readonly COUNT=66;
+	public static readonly COUNT_DISTINCT=67;
+	public static readonly MIN=68;
+	public static readonly MAX=69;
+	public static readonly SUM=70;
+	public static readonly DISTANCE=71;
+	public static readonly GEOLOCATION=72;
+	public static readonly FORMAT=73;
+	public static readonly TOLABEL=74;
+	public static readonly CONVERT_TIME_ZONE=75;
+	public static readonly CONVERT_CURRENCY=76;
+	public static readonly GROUPING=77;
+	public static readonly YESTERDAY=78;
+	public static readonly TODAY=79;
+	public static readonly TOMORROW=80;
+	public static readonly LAST_WEEK=81;
+	public static readonly THIS_WEEK=82;
+	public static readonly NEXT_WEEK=83;
+	public static readonly LAST_MONTH=84;
+	public static readonly THIS_MONTH=85;
+	public static readonly NEXT_MONTH=86;
+	public static readonly LAST_90_DAYS=87;
+	public static readonly NEXT_90_DAYS=88;
+	public static readonly THIS_QUARTER=89;
+	public static readonly LAST_QUARTER=90;
+	public static readonly NEXT_QUARTER=91;
+	public static readonly THIS_YEAR=92;
+	public static readonly LAST_YEAR=93;
+	public static readonly NEXT_YEAR=94;
+	public static readonly THIS_FISCAL_QUARTER=95;
+	public static readonly LAST_FISCAL_QUARTER=96;
+	public static readonly NEXT_FISCAL_QUARTER=97;
+	public static readonly THIS_FISCAL_YEAR=98;
+	public static readonly LAST_FISCAL_YEAR=99;
+	public static readonly NEXT_FISCAL_YEAR=100;
+	public static readonly NEXT_N_DAYS=101;
+	public static readonly LAST_N_DAYS=102;
+	public static readonly N_DAYS_AGO=103;
+	public static readonly NEXT_N_WEEKS=104;
+	public static readonly LAST_N_WEEKS=105;
+	public static readonly N_WEEKS_AGO=106;
+	public static readonly NEXT_N_MONTHS=107;
+	public static readonly LAST_N_MONTHS=108;
+	public static readonly N_MONTHS_AGO=109;
+	public static readonly NEXT_N_QUARTERS=110;
+	public static readonly LAST_N_QUARTERS=111;
+	public static readonly N_QUARTERS_AGO=112;
+	public static readonly NEXT_N_YEARS=113;
+	public static readonly LAST_N_YEARS=114;
+	public static readonly N_YEARS_AGO=115;
+	public static readonly NEXT_N_FISCAL_QUARTERS=116;
+	public static readonly LAST_N_FISCAL_QUARTERS=117;
+	public static readonly N_FISCAL_QUARTERS_AGO=118;
+	public static readonly NEXT_N_FISCAL_YEARS=119;
+	public static readonly LAST_N_FISCAL_YEARS=120;
+	public static readonly N_FISCAL_YEARS_AGO=121;
+	public static readonly EQ=122;
+	public static readonly NOT_EQ=123;
+	public static readonly LET=124;
+	public static readonly GET=125;
+	public static readonly GTH=126;
+	public static readonly LTH=127;
+	public static readonly DOT=128;
+	public static readonly COLON=129;
+	public static readonly SEMICOLON=130;
+	public static readonly COMMA=131;
+	public static readonly ASTERISK=132;
+	public static readonly RPAREN=133;
+	public static readonly LPAREN=134;
+	public static readonly PLUS=135;
+	public static readonly MINUS=136;
+	public static readonly ID=137;
+	public static readonly DATE=138;
+	public static readonly DATETIME=139;
+	public static readonly UNSIGNED_INTEGER=140;
+	public static readonly REAL_NUMBER=141;
+	public static readonly SIGNED_INTEGER=142;
 	public static readonly RULE_keywords_alias_allowed = 0;
 	public static readonly RULE_keywords_name_allowed = 1;
 	public static readonly RULE_name = 2;
@@ -3037,18 +3065,19 @@ export class SOQLParser extends Parser {
 	public static readonly RULE_data_category_spec = 72;
 	public static readonly RULE_data_category_parameter_list = 73;
 	public static readonly RULE_data_category_selector = 74;
-	public static readonly RULE_group_by_plain_clause = 75;
-	public static readonly RULE_group_by_rollup_clause = 76;
-	public static readonly RULE_group_by_cube_clause = 77;
-	public static readonly RULE_group_by_list = 78;
-	public static readonly RULE_group_by_spec = 79;
-	public static readonly RULE_order_by_list = 80;
-	public static readonly RULE_order_by_spec = 81;
-	public static readonly RULE_order_by_direction_clause = 82;
-	public static readonly RULE_order_by_nulls_clause = 83;
-	public static readonly RULE_order_by_field = 84;
-	public static readonly RULE_for_value = 85;
-	public static readonly RULE_update_value = 86;
+	public static readonly RULE_with_security_enforced_clause = 75;
+	public static readonly RULE_group_by_plain_clause = 76;
+	public static readonly RULE_group_by_rollup_clause = 77;
+	public static readonly RULE_group_by_cube_clause = 78;
+	public static readonly RULE_group_by_list = 79;
+	public static readonly RULE_group_by_spec = 80;
+	public static readonly RULE_order_by_list = 81;
+	public static readonly RULE_order_by_spec = 82;
+	public static readonly RULE_order_by_direction_clause = 83;
+	public static readonly RULE_order_by_nulls_clause = 84;
+	public static readonly RULE_order_by_field = 85;
+	public static readonly RULE_for_value = 86;
+	public static readonly RULE_update_value = 87;
 	public static readonly ruleNames: string[] = [
 		"keywords_alias_allowed", "keywords_name_allowed", "name", "object_name", 
 		"field_name", "filter_scope_name", "data_category_group_name", "data_category_name", 
@@ -3068,9 +3097,10 @@ export class SOQLParser extends Parser {
 		"like_based_condition", "condition_field", "set_values", "set_value_list", 
 		"with_clause", "with_plain_clause", "with_data_category_clause", "data_category_spec_list", 
 		"data_category_spec", "data_category_parameter_list", "data_category_selector", 
-		"group_by_plain_clause", "group_by_rollup_clause", "group_by_cube_clause", 
-		"group_by_list", "group_by_spec", "order_by_list", "order_by_spec", "order_by_direction_clause", 
-		"order_by_nulls_clause", "order_by_field", "for_value", "update_value"
+		"with_security_enforced_clause", "group_by_plain_clause", "group_by_rollup_clause", 
+		"group_by_cube_clause", "group_by_list", "group_by_spec", "order_by_list", 
+		"order_by_spec", "order_by_direction_clause", "order_by_nulls_clause", 
+		"order_by_field", "for_value", "update_value"
 	];
 
 	private static readonly _LITERAL_NAMES: (string | undefined)[] = [
@@ -3091,8 +3121,8 @@ export class SOQLParser extends Parser {
 		undefined, undefined, undefined, undefined, undefined, undefined, undefined, 
 		undefined, undefined, undefined, undefined, undefined, undefined, undefined, 
 		undefined, undefined, undefined, undefined, undefined, undefined, undefined, 
-		undefined, undefined, "'='", undefined, "'<='", "'>='", "'>'", "'<'", 
-		"'.'", "':'", "';'", "','", "'*'", "')'", "'('", "'+'", "'-'"
+		undefined, undefined, undefined, "'='", undefined, "'<='", "'>='", "'>'", 
+		"'<'", "'.'", "':'", "';'", "','", "'*'", "')'", "'('", "'+'", "'-'"
 	];
 	private static readonly _SYMBOLIC_NAMES: (string | undefined)[] = [
 		undefined, "WHITE_SPACE", "STRING_VALUE", "LIKE_STRING_VALUE", "AND", 
@@ -3101,13 +3131,13 @@ export class SOQLParser extends Parser {
 		"NOT", "NULL", "NULLS", "OR", "ROLLUP", "SELECT", "TRUE", "USING", "WHERE", 
 		"WITH", "FOR", "UPDATE", "ABOVE", "ABOVE_OR_BELOW", "AT", "BELOW", "CATEGORY", 
 		"DATA", "END", "OFFSET", "ORDER", "REFERENCE", "SCOPE", "TRACKING", "THEN", 
-		"TYPEOF", "VIEW", "VIEWSTAT", "WHEN", "CALENDAR_MONTH", "CALENDAR_QUARTER", 
-		"CALENDAR_YEAR", "DAY_IN_MONTH", "DAY_IN_WEEK", "DAY_IN_YEAR", "DAY_ONLY", 
-		"FISCAL_MONTH", "FISCAL_QUARTER", "FISCAL_YEAR", "HOUR_IN_DAY", "WEEK_IN_MONTH", 
-		"WEEK_IN_YEAR", "AVG", "COUNT", "COUNT_DISTINCT", "MIN", "MAX", "SUM", 
-		"DISTANCE", "GEOLOCATION", "FORMAT", "TOLABEL", "CONVERT_TIME_ZONE", "CONVERT_CURRENCY", 
-		"GROUPING", "YESTERDAY", "TODAY", "TOMORROW", "LAST_WEEK", "THIS_WEEK", 
-		"NEXT_WEEK", "LAST_MONTH", "THIS_MONTH", "NEXT_MONTH", "LAST_90_DAYS", 
+		"TYPEOF", "VIEW", "VIEWSTAT", "WHEN", "SECURITY_ENFORCED", "CALENDAR_MONTH", 
+		"CALENDAR_QUARTER", "CALENDAR_YEAR", "DAY_IN_MONTH", "DAY_IN_WEEK", "DAY_IN_YEAR", 
+		"DAY_ONLY", "FISCAL_MONTH", "FISCAL_QUARTER", "FISCAL_YEAR", "HOUR_IN_DAY", 
+		"WEEK_IN_MONTH", "WEEK_IN_YEAR", "AVG", "COUNT", "COUNT_DISTINCT", "MIN", 
+		"MAX", "SUM", "DISTANCE", "GEOLOCATION", "FORMAT", "TOLABEL", "CONVERT_TIME_ZONE", 
+		"CONVERT_CURRENCY", "GROUPING", "YESTERDAY", "TODAY", "TOMORROW", "LAST_WEEK", 
+		"THIS_WEEK", "NEXT_WEEK", "LAST_MONTH", "THIS_MONTH", "NEXT_MONTH", "LAST_90_DAYS", 
 		"NEXT_90_DAYS", "THIS_QUARTER", "LAST_QUARTER", "NEXT_QUARTER", "THIS_YEAR", 
 		"LAST_YEAR", "NEXT_YEAR", "THIS_FISCAL_QUARTER", "LAST_FISCAL_QUARTER", 
 		"NEXT_FISCAL_QUARTER", "THIS_FISCAL_YEAR", "LAST_FISCAL_YEAR", "NEXT_FISCAL_YEAR", 
@@ -3149,9 +3179,9 @@ export class SOQLParser extends Parser {
 		try {
 			this.enterOuterAlt(_localctx, 1);
 			{
-			this.state = 174;
+			this.state = 176;
 			_la = this._input.LA(1);
-			if ( !(((((_la - 34)) & ~0x1F) === 0 && ((1 << (_la - 34)) & ((1 << (SOQLParser.ABOVE - 34)) | (1 << (SOQLParser.ABOVE_OR_BELOW - 34)) | (1 << (SOQLParser.AT - 34)) | (1 << (SOQLParser.BELOW - 34)) | (1 << (SOQLParser.CATEGORY - 34)) | (1 << (SOQLParser.DATA - 34)) | (1 << (SOQLParser.END - 34)) | (1 << (SOQLParser.OFFSET - 34)) | (1 << (SOQLParser.ORDER - 34)) | (1 << (SOQLParser.REFERENCE - 34)) | (1 << (SOQLParser.SCOPE - 34)) | (1 << (SOQLParser.TRACKING - 34)) | (1 << (SOQLParser.THEN - 34)) | (1 << (SOQLParser.TYPEOF - 34)) | (1 << (SOQLParser.VIEW - 34)) | (1 << (SOQLParser.VIEWSTAT - 34)) | (1 << (SOQLParser.WHEN - 34)))) !== 0)) ) {
+			if ( !(((((_la - 34)) & ~0x1F) === 0 && ((1 << (_la - 34)) & ((1 << (SOQLParser.ABOVE - 34)) | (1 << (SOQLParser.ABOVE_OR_BELOW - 34)) | (1 << (SOQLParser.AT - 34)) | (1 << (SOQLParser.BELOW - 34)) | (1 << (SOQLParser.CATEGORY - 34)) | (1 << (SOQLParser.DATA - 34)) | (1 << (SOQLParser.END - 34)) | (1 << (SOQLParser.OFFSET - 34)) | (1 << (SOQLParser.ORDER - 34)) | (1 << (SOQLParser.REFERENCE - 34)) | (1 << (SOQLParser.SCOPE - 34)) | (1 << (SOQLParser.TRACKING - 34)) | (1 << (SOQLParser.THEN - 34)) | (1 << (SOQLParser.TYPEOF - 34)) | (1 << (SOQLParser.VIEW - 34)) | (1 << (SOQLParser.VIEWSTAT - 34)) | (1 << (SOQLParser.WHEN - 34)) | (1 << (SOQLParser.SECURITY_ENFORCED - 34)))) !== 0)) ) {
 			this._errHandler.recoverInline(this);
 			} else {
 				if (this._input.LA(1) === Token.EOF) {
@@ -3182,7 +3212,7 @@ export class SOQLParser extends Parser {
 		let _localctx: Keywords_name_allowedContext = new Keywords_name_allowedContext(this._ctx, this.state);
 		this.enterRule(_localctx, 2, SOQLParser.RULE_keywords_name_allowed);
 		try {
-			this.state = 178;
+			this.state = 180;
 			this._errHandler.sync(this);
 			switch (this._input.LA(1)) {
 			case SOQLParser.ABOVE:
@@ -3202,16 +3232,17 @@ export class SOQLParser extends Parser {
 			case SOQLParser.VIEW:
 			case SOQLParser.VIEWSTAT:
 			case SOQLParser.WHEN:
+			case SOQLParser.SECURITY_ENFORCED:
 				this.enterOuterAlt(_localctx, 1);
 				{
-				this.state = 176;
+				this.state = 178;
 				this.keywords_alias_allowed();
 				}
 				break;
 			case SOQLParser.GROUP:
 				this.enterOuterAlt(_localctx, 2);
 				{
-				this.state = 177;
+				this.state = 179;
 				this.match(SOQLParser.GROUP);
 				}
 				break;
@@ -3238,13 +3269,13 @@ export class SOQLParser extends Parser {
 		let _localctx: NameContext = new NameContext(this._ctx, this.state);
 		this.enterRule(_localctx, 4, SOQLParser.RULE_name);
 		try {
-			this.state = 185;
+			this.state = 187;
 			this._errHandler.sync(this);
 			switch (this._input.LA(1)) {
 			case SOQLParser.ID:
 				this.enterOuterAlt(_localctx, 1);
 				{
-				this.state = 180;
+				this.state = 182;
 				this.match(SOQLParser.ID);
 				}
 				break;
@@ -3266,9 +3297,10 @@ export class SOQLParser extends Parser {
 			case SOQLParser.VIEW:
 			case SOQLParser.VIEWSTAT:
 			case SOQLParser.WHEN:
+			case SOQLParser.SECURITY_ENFORCED:
 				this.enterOuterAlt(_localctx, 2);
 				{
-				this.state = 181;
+				this.state = 183;
 				this.keywords_name_allowed();
 				}
 				break;
@@ -3297,7 +3329,7 @@ export class SOQLParser extends Parser {
 			case SOQLParser.NEXT_FISCAL_YEAR:
 				this.enterOuterAlt(_localctx, 3);
 				{
-				this.state = 182;
+				this.state = 184;
 				this.date_formula_literal();
 				}
 				break;
@@ -3324,7 +3356,7 @@ export class SOQLParser extends Parser {
 			case SOQLParser.N_FISCAL_YEARS_AGO:
 				this.enterOuterAlt(_localctx, 4);
 				{
-				this.state = 183;
+				this.state = 185;
 				this.date_formula_n_literal_name();
 				}
 				break;
@@ -3356,7 +3388,7 @@ export class SOQLParser extends Parser {
 			case SOQLParser.GROUPING:
 				this.enterOuterAlt(_localctx, 5);
 				{
-				this.state = 184;
+				this.state = 186;
 				this.function_name();
 				}
 				break;
@@ -3385,7 +3417,7 @@ export class SOQLParser extends Parser {
 		try {
 			this.enterOuterAlt(_localctx, 1);
 			{
-			this.state = 187;
+			this.state = 189;
 			this.name();
 			}
 		}
@@ -3410,7 +3442,7 @@ export class SOQLParser extends Parser {
 		try {
 			this.enterOuterAlt(_localctx, 1);
 			{
-			this.state = 189;
+			this.state = 191;
 			this.name();
 			}
 		}
@@ -3435,7 +3467,7 @@ export class SOQLParser extends Parser {
 		try {
 			this.enterOuterAlt(_localctx, 1);
 			{
-			this.state = 191;
+			this.state = 193;
 			this.name();
 			}
 		}
@@ -3460,7 +3492,7 @@ export class SOQLParser extends Parser {
 		try {
 			this.enterOuterAlt(_localctx, 1);
 			{
-			this.state = 193;
+			this.state = 195;
 			this.name();
 			}
 		}
@@ -3485,7 +3517,7 @@ export class SOQLParser extends Parser {
 		try {
 			this.enterOuterAlt(_localctx, 1);
 			{
-			this.state = 195;
+			this.state = 197;
 			this.name();
 			}
 		}
@@ -3508,13 +3540,13 @@ export class SOQLParser extends Parser {
 		let _localctx: Alias_nameContext = new Alias_nameContext(this._ctx, this.state);
 		this.enterRule(_localctx, 16, SOQLParser.RULE_alias_name);
 		try {
-			this.state = 202;
+			this.state = 204;
 			this._errHandler.sync(this);
 			switch (this._input.LA(1)) {
 			case SOQLParser.ID:
 				this.enterOuterAlt(_localctx, 1);
 				{
-				this.state = 197;
+				this.state = 199;
 				this.match(SOQLParser.ID);
 				}
 				break;
@@ -3535,9 +3567,10 @@ export class SOQLParser extends Parser {
 			case SOQLParser.VIEW:
 			case SOQLParser.VIEWSTAT:
 			case SOQLParser.WHEN:
+			case SOQLParser.SECURITY_ENFORCED:
 				this.enterOuterAlt(_localctx, 2);
 				{
-				this.state = 198;
+				this.state = 200;
 				this.keywords_alias_allowed();
 				}
 				break;
@@ -3566,7 +3599,7 @@ export class SOQLParser extends Parser {
 			case SOQLParser.NEXT_FISCAL_YEAR:
 				this.enterOuterAlt(_localctx, 3);
 				{
-				this.state = 199;
+				this.state = 201;
 				this.date_formula_literal();
 				}
 				break;
@@ -3593,7 +3626,7 @@ export class SOQLParser extends Parser {
 			case SOQLParser.N_FISCAL_YEARS_AGO:
 				this.enterOuterAlt(_localctx, 4);
 				{
-				this.state = 200;
+				this.state = 202;
 				this.date_formula_n_literal_name();
 				}
 				break;
@@ -3625,7 +3658,7 @@ export class SOQLParser extends Parser {
 			case SOQLParser.GROUPING:
 				this.enterOuterAlt(_localctx, 5);
 				{
-				this.state = 201;
+				this.state = 203;
 				this.function_name();
 				}
 				break;
@@ -3655,17 +3688,17 @@ export class SOQLParser extends Parser {
 		try {
 			this.enterOuterAlt(_localctx, 1);
 			{
-			this.state = 205;
+			this.state = 207;
 			this._errHandler.sync(this);
 			_la = this._input.LA(1);
 			if (_la===SOQLParser.AS) {
 				{
-				this.state = 204;
+				this.state = 206;
 				this.match(SOQLParser.AS);
 				}
 			}
 
-			this.state = 207;
+			this.state = 209;
 			this.alias_name();
 			}
 		}
@@ -3688,7 +3721,7 @@ export class SOQLParser extends Parser {
 		let _localctx: LiteralContext = new LiteralContext(this._ctx, this.state);
 		this.enterRule(_localctx, 20, SOQLParser.RULE_literal);
 		try {
-			this.state = 218;
+			this.state = 220;
 			this._errHandler.sync(this);
 			switch (this._input.LA(1)) {
 			case SOQLParser.YESTERDAY:
@@ -3716,7 +3749,7 @@ export class SOQLParser extends Parser {
 			case SOQLParser.NEXT_FISCAL_YEAR:
 				this.enterOuterAlt(_localctx, 1);
 				{
-				this.state = 209;
+				this.state = 211;
 				this.date_formula_literal();
 				}
 				break;
@@ -3743,21 +3776,21 @@ export class SOQLParser extends Parser {
 			case SOQLParser.N_FISCAL_YEARS_AGO:
 				this.enterOuterAlt(_localctx, 2);
 				{
-				this.state = 210;
+				this.state = 212;
 				this.date_formula_n_literal();
 				}
 				break;
 			case SOQLParser.DATETIME:
 				this.enterOuterAlt(_localctx, 3);
 				{
-				this.state = 211;
+				this.state = 213;
 				this.datetime_literal();
 				}
 				break;
 			case SOQLParser.DATE:
 				this.enterOuterAlt(_localctx, 4);
 				{
-				this.state = 212;
+				this.state = 214;
 				this.date_literal();
 				}
 				break;
@@ -3765,21 +3798,21 @@ export class SOQLParser extends Parser {
 			case SOQLParser.SIGNED_INTEGER:
 				this.enterOuterAlt(_localctx, 5);
 				{
-				this.state = 213;
+				this.state = 215;
 				this.integer_literal();
 				}
 				break;
 			case SOQLParser.REAL_NUMBER:
 				this.enterOuterAlt(_localctx, 6);
 				{
-				this.state = 214;
+				this.state = 216;
 				this.real_literal();
 				}
 				break;
 			case SOQLParser.STRING_VALUE:
 				this.enterOuterAlt(_localctx, 7);
 				{
-				this.state = 215;
+				this.state = 217;
 				this.string_literal();
 				}
 				break;
@@ -3787,14 +3820,14 @@ export class SOQLParser extends Parser {
 			case SOQLParser.TRUE:
 				this.enterOuterAlt(_localctx, 8);
 				{
-				this.state = 216;
+				this.state = 218;
 				this.boolean_literal();
 				}
 				break;
 			case SOQLParser.NULL:
 				this.enterOuterAlt(_localctx, 9);
 				{
-				this.state = 217;
+				this.state = 219;
 				this.null_literal();
 				}
 				break;
@@ -3824,9 +3857,9 @@ export class SOQLParser extends Parser {
 		try {
 			this.enterOuterAlt(_localctx, 1);
 			{
-			this.state = 220;
+			this.state = 222;
 			_la = this._input.LA(1);
-			if ( !(((((_la - 77)) & ~0x1F) === 0 && ((1 << (_la - 77)) & ((1 << (SOQLParser.YESTERDAY - 77)) | (1 << (SOQLParser.TODAY - 77)) | (1 << (SOQLParser.TOMORROW - 77)) | (1 << (SOQLParser.LAST_WEEK - 77)) | (1 << (SOQLParser.THIS_WEEK - 77)) | (1 << (SOQLParser.NEXT_WEEK - 77)) | (1 << (SOQLParser.LAST_MONTH - 77)) | (1 << (SOQLParser.THIS_MONTH - 77)) | (1 << (SOQLParser.NEXT_MONTH - 77)) | (1 << (SOQLParser.LAST_90_DAYS - 77)) | (1 << (SOQLParser.NEXT_90_DAYS - 77)) | (1 << (SOQLParser.THIS_QUARTER - 77)) | (1 << (SOQLParser.LAST_QUARTER - 77)) | (1 << (SOQLParser.NEXT_QUARTER - 77)) | (1 << (SOQLParser.THIS_YEAR - 77)) | (1 << (SOQLParser.LAST_YEAR - 77)) | (1 << (SOQLParser.NEXT_YEAR - 77)) | (1 << (SOQLParser.THIS_FISCAL_QUARTER - 77)) | (1 << (SOQLParser.LAST_FISCAL_QUARTER - 77)) | (1 << (SOQLParser.NEXT_FISCAL_QUARTER - 77)) | (1 << (SOQLParser.THIS_FISCAL_YEAR - 77)) | (1 << (SOQLParser.LAST_FISCAL_YEAR - 77)) | (1 << (SOQLParser.NEXT_FISCAL_YEAR - 77)))) !== 0)) ) {
+			if ( !(((((_la - 78)) & ~0x1F) === 0 && ((1 << (_la - 78)) & ((1 << (SOQLParser.YESTERDAY - 78)) | (1 << (SOQLParser.TODAY - 78)) | (1 << (SOQLParser.TOMORROW - 78)) | (1 << (SOQLParser.LAST_WEEK - 78)) | (1 << (SOQLParser.THIS_WEEK - 78)) | (1 << (SOQLParser.NEXT_WEEK - 78)) | (1 << (SOQLParser.LAST_MONTH - 78)) | (1 << (SOQLParser.THIS_MONTH - 78)) | (1 << (SOQLParser.NEXT_MONTH - 78)) | (1 << (SOQLParser.LAST_90_DAYS - 78)) | (1 << (SOQLParser.NEXT_90_DAYS - 78)) | (1 << (SOQLParser.THIS_QUARTER - 78)) | (1 << (SOQLParser.LAST_QUARTER - 78)) | (1 << (SOQLParser.NEXT_QUARTER - 78)) | (1 << (SOQLParser.THIS_YEAR - 78)) | (1 << (SOQLParser.LAST_YEAR - 78)) | (1 << (SOQLParser.NEXT_YEAR - 78)) | (1 << (SOQLParser.THIS_FISCAL_QUARTER - 78)) | (1 << (SOQLParser.LAST_FISCAL_QUARTER - 78)) | (1 << (SOQLParser.NEXT_FISCAL_QUARTER - 78)) | (1 << (SOQLParser.THIS_FISCAL_YEAR - 78)) | (1 << (SOQLParser.LAST_FISCAL_YEAR - 78)) | (1 << (SOQLParser.NEXT_FISCAL_YEAR - 78)))) !== 0)) ) {
 			this._errHandler.recoverInline(this);
 			} else {
 				if (this._input.LA(1) === Token.EOF) {
@@ -3860,9 +3893,9 @@ export class SOQLParser extends Parser {
 		try {
 			this.enterOuterAlt(_localctx, 1);
 			{
-			this.state = 222;
+			this.state = 224;
 			_la = this._input.LA(1);
-			if ( !(((((_la - 100)) & ~0x1F) === 0 && ((1 << (_la - 100)) & ((1 << (SOQLParser.NEXT_N_DAYS - 100)) | (1 << (SOQLParser.LAST_N_DAYS - 100)) | (1 << (SOQLParser.N_DAYS_AGO - 100)) | (1 << (SOQLParser.NEXT_N_WEEKS - 100)) | (1 << (SOQLParser.LAST_N_WEEKS - 100)) | (1 << (SOQLParser.N_WEEKS_AGO - 100)) | (1 << (SOQLParser.NEXT_N_MONTHS - 100)) | (1 << (SOQLParser.LAST_N_MONTHS - 100)) | (1 << (SOQLParser.N_MONTHS_AGO - 100)) | (1 << (SOQLParser.NEXT_N_QUARTERS - 100)) | (1 << (SOQLParser.LAST_N_QUARTERS - 100)) | (1 << (SOQLParser.N_QUARTERS_AGO - 100)) | (1 << (SOQLParser.NEXT_N_YEARS - 100)) | (1 << (SOQLParser.LAST_N_YEARS - 100)) | (1 << (SOQLParser.N_YEARS_AGO - 100)) | (1 << (SOQLParser.NEXT_N_FISCAL_QUARTERS - 100)) | (1 << (SOQLParser.LAST_N_FISCAL_QUARTERS - 100)) | (1 << (SOQLParser.N_FISCAL_QUARTERS_AGO - 100)) | (1 << (SOQLParser.NEXT_N_FISCAL_YEARS - 100)) | (1 << (SOQLParser.LAST_N_FISCAL_YEARS - 100)) | (1 << (SOQLParser.N_FISCAL_YEARS_AGO - 100)))) !== 0)) ) {
+			if ( !(((((_la - 101)) & ~0x1F) === 0 && ((1 << (_la - 101)) & ((1 << (SOQLParser.NEXT_N_DAYS - 101)) | (1 << (SOQLParser.LAST_N_DAYS - 101)) | (1 << (SOQLParser.N_DAYS_AGO - 101)) | (1 << (SOQLParser.NEXT_N_WEEKS - 101)) | (1 << (SOQLParser.LAST_N_WEEKS - 101)) | (1 << (SOQLParser.N_WEEKS_AGO - 101)) | (1 << (SOQLParser.NEXT_N_MONTHS - 101)) | (1 << (SOQLParser.LAST_N_MONTHS - 101)) | (1 << (SOQLParser.N_MONTHS_AGO - 101)) | (1 << (SOQLParser.NEXT_N_QUARTERS - 101)) | (1 << (SOQLParser.LAST_N_QUARTERS - 101)) | (1 << (SOQLParser.N_QUARTERS_AGO - 101)) | (1 << (SOQLParser.NEXT_N_YEARS - 101)) | (1 << (SOQLParser.LAST_N_YEARS - 101)) | (1 << (SOQLParser.N_YEARS_AGO - 101)) | (1 << (SOQLParser.NEXT_N_FISCAL_QUARTERS - 101)) | (1 << (SOQLParser.LAST_N_FISCAL_QUARTERS - 101)) | (1 << (SOQLParser.N_FISCAL_QUARTERS_AGO - 101)) | (1 << (SOQLParser.NEXT_N_FISCAL_YEARS - 101)) | (1 << (SOQLParser.LAST_N_FISCAL_YEARS - 101)) | (1 << (SOQLParser.N_FISCAL_YEARS_AGO - 101)))) !== 0)) ) {
 			this._errHandler.recoverInline(this);
 			} else {
 				if (this._input.LA(1) === Token.EOF) {
@@ -3895,11 +3928,11 @@ export class SOQLParser extends Parser {
 		try {
 			this.enterOuterAlt(_localctx, 1);
 			{
-			this.state = 224;
-			this.date_formula_n_literal_name();
-			this.state = 225;
-			this.match(SOQLParser.COLON);
 			this.state = 226;
+			this.date_formula_n_literal_name();
+			this.state = 227;
+			this.match(SOQLParser.COLON);
+			this.state = 228;
 			this.match(SOQLParser.UNSIGNED_INTEGER);
 			}
 		}
@@ -3924,7 +3957,7 @@ export class SOQLParser extends Parser {
 		try {
 			this.enterOuterAlt(_localctx, 1);
 			{
-			this.state = 228;
+			this.state = 230;
 			this.match(SOQLParser.DATETIME);
 			}
 		}
@@ -3949,7 +3982,7 @@ export class SOQLParser extends Parser {
 		try {
 			this.enterOuterAlt(_localctx, 1);
 			{
-			this.state = 230;
+			this.state = 232;
 			this.match(SOQLParser.DATE);
 			}
 		}
@@ -3975,7 +4008,7 @@ export class SOQLParser extends Parser {
 		try {
 			this.enterOuterAlt(_localctx, 1);
 			{
-			this.state = 232;
+			this.state = 234;
 			_la = this._input.LA(1);
 			if ( !(_la===SOQLParser.UNSIGNED_INTEGER || _la===SOQLParser.SIGNED_INTEGER) ) {
 			this._errHandler.recoverInline(this);
@@ -4010,7 +4043,7 @@ export class SOQLParser extends Parser {
 		try {
 			this.enterOuterAlt(_localctx, 1);
 			{
-			this.state = 234;
+			this.state = 236;
 			this.match(SOQLParser.REAL_NUMBER);
 			}
 		}
@@ -4035,7 +4068,7 @@ export class SOQLParser extends Parser {
 		try {
 			this.enterOuterAlt(_localctx, 1);
 			{
-			this.state = 236;
+			this.state = 238;
 			this.match(SOQLParser.STRING_VALUE);
 			}
 		}
@@ -4061,7 +4094,7 @@ export class SOQLParser extends Parser {
 		try {
 			this.enterOuterAlt(_localctx, 1);
 			{
-			this.state = 238;
+			this.state = 240;
 			_la = this._input.LA(1);
 			if ( !(_la===SOQLParser.FALSE || _la===SOQLParser.TRUE) ) {
 			this._errHandler.recoverInline(this);
@@ -4096,7 +4129,7 @@ export class SOQLParser extends Parser {
 		try {
 			this.enterOuterAlt(_localctx, 1);
 			{
-			this.state = 240;
+			this.state = 242;
 			this.match(SOQLParser.NULL);
 			}
 		}
@@ -4119,7 +4152,7 @@ export class SOQLParser extends Parser {
 		let _localctx: Function_nameContext = new Function_nameContext(this._ctx, this.state);
 		this.enterRule(_localctx, 42, SOQLParser.RULE_function_name);
 		try {
-			this.state = 246;
+			this.state = 248;
 			this._errHandler.sync(this);
 			switch (this._input.LA(1)) {
 			case SOQLParser.CALENDAR_MONTH:
@@ -4137,7 +4170,7 @@ export class SOQLParser extends Parser {
 			case SOQLParser.WEEK_IN_YEAR:
 				this.enterOuterAlt(_localctx, 1);
 				{
-				this.state = 242;
+				this.state = 244;
 				this.function_date();
 				}
 				break;
@@ -4149,7 +4182,7 @@ export class SOQLParser extends Parser {
 			case SOQLParser.SUM:
 				this.enterOuterAlt(_localctx, 2);
 				{
-				this.state = 243;
+				this.state = 245;
 				this.function_aggregate();
 				}
 				break;
@@ -4157,7 +4190,7 @@ export class SOQLParser extends Parser {
 			case SOQLParser.GEOLOCATION:
 				this.enterOuterAlt(_localctx, 3);
 				{
-				this.state = 244;
+				this.state = 246;
 				this.function_location();
 				}
 				break;
@@ -4168,7 +4201,7 @@ export class SOQLParser extends Parser {
 			case SOQLParser.GROUPING:
 				this.enterOuterAlt(_localctx, 4);
 				{
-				this.state = 245;
+				this.state = 247;
 				this.function_other();
 				}
 				break;
@@ -4198,9 +4231,9 @@ export class SOQLParser extends Parser {
 		try {
 			this.enterOuterAlt(_localctx, 1);
 			{
-			this.state = 248;
+			this.state = 250;
 			_la = this._input.LA(1);
-			if ( !(((((_la - 51)) & ~0x1F) === 0 && ((1 << (_la - 51)) & ((1 << (SOQLParser.CALENDAR_MONTH - 51)) | (1 << (SOQLParser.CALENDAR_QUARTER - 51)) | (1 << (SOQLParser.CALENDAR_YEAR - 51)) | (1 << (SOQLParser.DAY_IN_MONTH - 51)) | (1 << (SOQLParser.DAY_IN_WEEK - 51)) | (1 << (SOQLParser.DAY_IN_YEAR - 51)) | (1 << (SOQLParser.DAY_ONLY - 51)) | (1 << (SOQLParser.FISCAL_MONTH - 51)) | (1 << (SOQLParser.FISCAL_QUARTER - 51)) | (1 << (SOQLParser.FISCAL_YEAR - 51)) | (1 << (SOQLParser.HOUR_IN_DAY - 51)) | (1 << (SOQLParser.WEEK_IN_MONTH - 51)) | (1 << (SOQLParser.WEEK_IN_YEAR - 51)))) !== 0)) ) {
+			if ( !(((((_la - 52)) & ~0x1F) === 0 && ((1 << (_la - 52)) & ((1 << (SOQLParser.CALENDAR_MONTH - 52)) | (1 << (SOQLParser.CALENDAR_QUARTER - 52)) | (1 << (SOQLParser.CALENDAR_YEAR - 52)) | (1 << (SOQLParser.DAY_IN_MONTH - 52)) | (1 << (SOQLParser.DAY_IN_WEEK - 52)) | (1 << (SOQLParser.DAY_IN_YEAR - 52)) | (1 << (SOQLParser.DAY_ONLY - 52)) | (1 << (SOQLParser.FISCAL_MONTH - 52)) | (1 << (SOQLParser.FISCAL_QUARTER - 52)) | (1 << (SOQLParser.FISCAL_YEAR - 52)) | (1 << (SOQLParser.HOUR_IN_DAY - 52)) | (1 << (SOQLParser.WEEK_IN_MONTH - 52)) | (1 << (SOQLParser.WEEK_IN_YEAR - 52)))) !== 0)) ) {
 			this._errHandler.recoverInline(this);
 			} else {
 				if (this._input.LA(1) === Token.EOF) {
@@ -4234,9 +4267,9 @@ export class SOQLParser extends Parser {
 		try {
 			this.enterOuterAlt(_localctx, 1);
 			{
-			this.state = 250;
+			this.state = 252;
 			_la = this._input.LA(1);
-			if ( !(((((_la - 64)) & ~0x1F) === 0 && ((1 << (_la - 64)) & ((1 << (SOQLParser.AVG - 64)) | (1 << (SOQLParser.COUNT - 64)) | (1 << (SOQLParser.COUNT_DISTINCT - 64)) | (1 << (SOQLParser.MIN - 64)) | (1 << (SOQLParser.MAX - 64)) | (1 << (SOQLParser.SUM - 64)))) !== 0)) ) {
+			if ( !(((((_la - 65)) & ~0x1F) === 0 && ((1 << (_la - 65)) & ((1 << (SOQLParser.AVG - 65)) | (1 << (SOQLParser.COUNT - 65)) | (1 << (SOQLParser.COUNT_DISTINCT - 65)) | (1 << (SOQLParser.MIN - 65)) | (1 << (SOQLParser.MAX - 65)) | (1 << (SOQLParser.SUM - 65)))) !== 0)) ) {
 			this._errHandler.recoverInline(this);
 			} else {
 				if (this._input.LA(1) === Token.EOF) {
@@ -4270,7 +4303,7 @@ export class SOQLParser extends Parser {
 		try {
 			this.enterOuterAlt(_localctx, 1);
 			{
-			this.state = 252;
+			this.state = 254;
 			_la = this._input.LA(1);
 			if ( !(_la===SOQLParser.DISTANCE || _la===SOQLParser.GEOLOCATION) ) {
 			this._errHandler.recoverInline(this);
@@ -4306,9 +4339,9 @@ export class SOQLParser extends Parser {
 		try {
 			this.enterOuterAlt(_localctx, 1);
 			{
-			this.state = 254;
+			this.state = 256;
 			_la = this._input.LA(1);
-			if ( !(((((_la - 72)) & ~0x1F) === 0 && ((1 << (_la - 72)) & ((1 << (SOQLParser.FORMAT - 72)) | (1 << (SOQLParser.TOLABEL - 72)) | (1 << (SOQLParser.CONVERT_TIME_ZONE - 72)) | (1 << (SOQLParser.CONVERT_CURRENCY - 72)) | (1 << (SOQLParser.GROUPING - 72)))) !== 0)) ) {
+			if ( !(((((_la - 73)) & ~0x1F) === 0 && ((1 << (_la - 73)) & ((1 << (SOQLParser.FORMAT - 73)) | (1 << (SOQLParser.TOLABEL - 73)) | (1 << (SOQLParser.CONVERT_TIME_ZONE - 73)) | (1 << (SOQLParser.CONVERT_CURRENCY - 73)) | (1 << (SOQLParser.GROUPING - 73)))) !== 0)) ) {
 			this._errHandler.recoverInline(this);
 			} else {
 				if (this._input.LA(1) === Token.EOF) {
@@ -4342,53 +4375,63 @@ export class SOQLParser extends Parser {
 		try {
 			this.enterOuterAlt(_localctx, 1);
 			{
-			this.state = 256;
+			this.state = 258;
 			this.select_clause();
-			this.state = 257;
-			this.from_clause();
 			this.state = 259;
+			this.from_clause();
+			this.state = 261;
 			this._errHandler.sync(this);
 			_la = this._input.LA(1);
 			if (_la===SOQLParser.USING) {
 				{
-				this.state = 258;
+				this.state = 260;
 				this.using_clause();
 				}
 			}
 
-			this.state = 262;
+			this.state = 264;
 			this._errHandler.sync(this);
 			_la = this._input.LA(1);
 			if (_la===SOQLParser.WHERE) {
 				{
-				this.state = 261;
+				this.state = 263;
 				this.where_clause();
 				}
 			}
 
-			this.state = 265;
+			this.state = 267;
+			this._errHandler.sync(this);
+			switch ( this.interpreter.adaptivePredict(this._input,8,this._ctx) ) {
+			case 1:
+				{
+				this.state = 266;
+				this.with_clause();
+				}
+				break;
+			}
+			this.state = 270;
 			this._errHandler.sync(this);
 			_la = this._input.LA(1);
 			if (_la===SOQLParser.WITH) {
 				{
-				this.state = 264;
-				this.with_clause();
+				this.state = 269;
+				this.with_security_enforced_clause();
 				}
 			}
 
-			this.state = 271;
+			this.state = 276;
 			this._errHandler.sync(this);
 			_la = this._input.LA(1);
 			if (_la===SOQLParser.GROUP) {
 				{
-				this.state = 267;
+				this.state = 272;
 				this.groupby_clause();
-				this.state = 269;
+				this.state = 274;
 				this._errHandler.sync(this);
 				_la = this._input.LA(1);
 				if (_la===SOQLParser.HAVING) {
 					{
-					this.state = 268;
+					this.state = 273;
 					this.having_clause();
 					}
 				}
@@ -4396,57 +4439,57 @@ export class SOQLParser extends Parser {
 				}
 			}
 
-			this.state = 274;
+			this.state = 279;
 			this._errHandler.sync(this);
 			_la = this._input.LA(1);
 			if (_la===SOQLParser.ORDER) {
 				{
-				this.state = 273;
+				this.state = 278;
 				this.orderby_clause();
 				}
 			}
 
-			this.state = 277;
+			this.state = 282;
 			this._errHandler.sync(this);
 			_la = this._input.LA(1);
 			if (_la===SOQLParser.LIMIT) {
 				{
-				this.state = 276;
+				this.state = 281;
 				this.limit_clause();
 				}
 			}
 
-			this.state = 280;
+			this.state = 285;
 			this._errHandler.sync(this);
 			_la = this._input.LA(1);
 			if (_la===SOQLParser.OFFSET) {
 				{
-				this.state = 279;
+				this.state = 284;
 				this.offset_clause();
 				}
 			}
 
-			this.state = 283;
+			this.state = 288;
 			this._errHandler.sync(this);
 			_la = this._input.LA(1);
 			if (_la===SOQLParser.FOR) {
 				{
-				this.state = 282;
+				this.state = 287;
 				this.for_clause();
 				}
 			}
 
-			this.state = 286;
+			this.state = 291;
 			this._errHandler.sync(this);
 			_la = this._input.LA(1);
 			if (_la===SOQLParser.UPDATE) {
 				{
-				this.state = 285;
+				this.state = 290;
 				this.update_clause();
 				}
 			}
 
-			this.state = 288;
+			this.state = 293;
 			this.match(SOQLParser.EOF);
 			}
 		}
@@ -4472,23 +4515,23 @@ export class SOQLParser extends Parser {
 		try {
 			this.enterOuterAlt(_localctx, 1);
 			{
-			this.state = 290;
+			this.state = 295;
 			this.match(SOQLParser.SELECT);
-			this.state = 291;
-			this.select_spec();
 			this.state = 296;
+			this.select_spec();
+			this.state = 301;
 			this._errHandler.sync(this);
 			_la = this._input.LA(1);
 			while (_la===SOQLParser.COMMA) {
 				{
 				{
-				this.state = 292;
+				this.state = 297;
 				this.match(SOQLParser.COMMA);
-				this.state = 293;
+				this.state = 298;
 				this.select_spec();
 				}
 				}
-				this.state = 298;
+				this.state = 303;
 				this._errHandler.sync(this);
 				_la = this._input.LA(1);
 			}
@@ -4516,23 +4559,23 @@ export class SOQLParser extends Parser {
 		try {
 			this.enterOuterAlt(_localctx, 1);
 			{
-			this.state = 299;
+			this.state = 304;
 			this.match(SOQLParser.FROM);
-			this.state = 300;
-			this.object_spec();
 			this.state = 305;
+			this.object_spec();
+			this.state = 310;
 			this._errHandler.sync(this);
 			_la = this._input.LA(1);
 			while (_la===SOQLParser.COMMA) {
 				{
 				{
-				this.state = 301;
+				this.state = 306;
 				this.match(SOQLParser.COMMA);
-				this.state = 302;
+				this.state = 307;
 				this.object_spec();
 				}
 				}
-				this.state = 307;
+				this.state = 312;
 				this._errHandler.sync(this);
 				_la = this._input.LA(1);
 			}
@@ -4559,11 +4602,11 @@ export class SOQLParser extends Parser {
 		try {
 			this.enterOuterAlt(_localctx, 1);
 			{
-			this.state = 308;
+			this.state = 313;
 			this.match(SOQLParser.USING);
-			this.state = 309;
+			this.state = 314;
 			this.match(SOQLParser.SCOPE);
-			this.state = 310;
+			this.state = 315;
 			this.filter_scope_name();
 			}
 		}
@@ -4588,9 +4631,9 @@ export class SOQLParser extends Parser {
 		try {
 			this.enterOuterAlt(_localctx, 1);
 			{
-			this.state = 312;
+			this.state = 317;
 			this.match(SOQLParser.WHERE);
-			this.state = 313;
+			this.state = 318;
 			this.condition();
 			}
 		}
@@ -4615,22 +4658,22 @@ export class SOQLParser extends Parser {
 		try {
 			this.enterOuterAlt(_localctx, 1);
 			{
-			this.state = 315;
-			this.match(SOQLParser.GROUP);
-			this.state = 316;
-			this.match(SOQLParser.BY);
 			this.state = 320;
+			this.match(SOQLParser.GROUP);
+			this.state = 321;
+			this.match(SOQLParser.BY);
+			this.state = 325;
 			this._errHandler.sync(this);
 			switch (this._input.LA(1)) {
 			case SOQLParser.ROLLUP:
 				{
-				this.state = 317;
+				this.state = 322;
 				this.group_by_rollup_clause();
 				}
 				break;
 			case SOQLParser.CUBE:
 				{
-				this.state = 318;
+				this.state = 323;
 				this.group_by_cube_clause();
 				}
 				break;
@@ -4652,6 +4695,7 @@ export class SOQLParser extends Parser {
 			case SOQLParser.VIEW:
 			case SOQLParser.VIEWSTAT:
 			case SOQLParser.WHEN:
+			case SOQLParser.SECURITY_ENFORCED:
 			case SOQLParser.CALENDAR_MONTH:
 			case SOQLParser.CALENDAR_QUARTER:
 			case SOQLParser.CALENDAR_YEAR:
@@ -4724,7 +4768,7 @@ export class SOQLParser extends Parser {
 			case SOQLParser.N_FISCAL_YEARS_AGO:
 			case SOQLParser.ID:
 				{
-				this.state = 319;
+				this.state = 324;
 				this.group_by_plain_clause();
 				}
 				break;
@@ -4754,9 +4798,9 @@ export class SOQLParser extends Parser {
 		try {
 			this.enterOuterAlt(_localctx, 1);
 			{
-			this.state = 322;
+			this.state = 327;
 			this.match(SOQLParser.HAVING);
-			this.state = 323;
+			this.state = 328;
 			this.condition();
 			}
 		}
@@ -4781,11 +4825,11 @@ export class SOQLParser extends Parser {
 		try {
 			this.enterOuterAlt(_localctx, 1);
 			{
-			this.state = 325;
+			this.state = 330;
 			this.match(SOQLParser.ORDER);
-			this.state = 326;
+			this.state = 331;
 			this.match(SOQLParser.BY);
-			this.state = 327;
+			this.state = 332;
 			this.order_by_list();
 			}
 		}
@@ -4810,9 +4854,9 @@ export class SOQLParser extends Parser {
 		try {
 			this.enterOuterAlt(_localctx, 1);
 			{
-			this.state = 329;
+			this.state = 334;
 			this.match(SOQLParser.LIMIT);
-			this.state = 330;
+			this.state = 335;
 			this.match(SOQLParser.UNSIGNED_INTEGER);
 			}
 		}
@@ -4837,9 +4881,9 @@ export class SOQLParser extends Parser {
 		try {
 			this.enterOuterAlt(_localctx, 1);
 			{
-			this.state = 332;
+			this.state = 337;
 			this.match(SOQLParser.OFFSET);
-			this.state = 333;
+			this.state = 338;
 			this.match(SOQLParser.UNSIGNED_INTEGER);
 			}
 		}
@@ -4865,30 +4909,30 @@ export class SOQLParser extends Parser {
 		try {
 			this.enterOuterAlt(_localctx, 1);
 			{
-			this.state = 335;
+			this.state = 340;
 			this.match(SOQLParser.FOR);
-			this.state = 336;
+			this.state = 341;
 			this.for_value();
-			this.state = 339;
+			this.state = 344;
 			this._errHandler.sync(this);
-			switch ( this.interpreter.adaptivePredict(this._input,19,this._ctx) ) {
+			switch ( this.interpreter.adaptivePredict(this._input,20,this._ctx) ) {
 			case 1:
 				{
-				this.state = 337;
+				this.state = 342;
 				this.match(SOQLParser.COMMA);
-				this.state = 338;
+				this.state = 343;
 				this.for_value();
 				}
 				break;
 			}
-			this.state = 343;
+			this.state = 348;
 			this._errHandler.sync(this);
 			_la = this._input.LA(1);
 			if (_la===SOQLParser.COMMA) {
 				{
-				this.state = 341;
+				this.state = 346;
 				this.match(SOQLParser.COMMA);
-				this.state = 342;
+				this.state = 347;
 				this.for_value();
 				}
 			}
@@ -4917,18 +4961,18 @@ export class SOQLParser extends Parser {
 		try {
 			this.enterOuterAlt(_localctx, 1);
 			{
-			this.state = 345;
+			this.state = 350;
 			this.match(SOQLParser.UPDATE);
-			this.state = 346;
+			this.state = 351;
 			this.update_value();
-			this.state = 349;
+			this.state = 354;
 			this._errHandler.sync(this);
 			_la = this._input.LA(1);
 			if (_la===SOQLParser.COMMA) {
 				{
-				this.state = 347;
+				this.state = 352;
 				this.match(SOQLParser.COMMA);
-				this.state = 348;
+				this.state = 353;
 				this.update_value();
 				}
 			}
@@ -4957,93 +5001,93 @@ export class SOQLParser extends Parser {
 		try {
 			this.enterOuterAlt(_localctx, 1);
 			{
-			this.state = 351;
+			this.state = 356;
 			this.match(SOQLParser.LPAREN);
-			this.state = 352;
+			this.state = 357;
 			this.subquery_select_clause();
-			this.state = 353;
+			this.state = 358;
 			this.from_clause();
-			this.state = 355;
+			this.state = 360;
 			this._errHandler.sync(this);
 			_la = this._input.LA(1);
 			if (_la===SOQLParser.USING) {
 				{
-				this.state = 354;
+				this.state = 359;
 				this.using_clause();
 				}
 			}
 
-			this.state = 358;
+			this.state = 363;
 			this._errHandler.sync(this);
 			_la = this._input.LA(1);
 			if (_la===SOQLParser.WHERE) {
 				{
-				this.state = 357;
+				this.state = 362;
 				this.where_clause();
 				}
 			}
 
-			this.state = 361;
+			this.state = 366;
 			this._errHandler.sync(this);
 			_la = this._input.LA(1);
 			if (_la===SOQLParser.WITH) {
 				{
-				this.state = 360;
+				this.state = 365;
 				this.with_clause();
 				}
 			}
 
-			this.state = 364;
+			this.state = 369;
 			this._errHandler.sync(this);
 			_la = this._input.LA(1);
 			if (_la===SOQLParser.ORDER) {
 				{
-				this.state = 363;
+				this.state = 368;
 				this.orderby_clause();
 				}
 			}
 
-			this.state = 367;
+			this.state = 372;
 			this._errHandler.sync(this);
 			_la = this._input.LA(1);
 			if (_la===SOQLParser.LIMIT) {
 				{
-				this.state = 366;
+				this.state = 371;
 				this.limit_clause();
 				}
 			}
 
-			this.state = 370;
+			this.state = 375;
 			this._errHandler.sync(this);
 			_la = this._input.LA(1);
 			if (_la===SOQLParser.OFFSET) {
 				{
-				this.state = 369;
+				this.state = 374;
 				this.offset_clause();
 				}
 			}
 
-			this.state = 373;
+			this.state = 378;
 			this._errHandler.sync(this);
 			_la = this._input.LA(1);
 			if (_la===SOQLParser.FOR) {
 				{
-				this.state = 372;
+				this.state = 377;
 				this.for_clause();
 				}
 			}
 
-			this.state = 376;
+			this.state = 381;
 			this._errHandler.sync(this);
 			_la = this._input.LA(1);
 			if (_la===SOQLParser.UPDATE) {
 				{
-				this.state = 375;
+				this.state = 380;
 				this.update_clause();
 				}
 			}
 
-			this.state = 378;
+			this.state = 383;
 			this.match(SOQLParser.RPAREN);
 			}
 		}
@@ -5069,23 +5113,23 @@ export class SOQLParser extends Parser {
 		try {
 			this.enterOuterAlt(_localctx, 1);
 			{
-			this.state = 380;
+			this.state = 385;
 			this.match(SOQLParser.SELECT);
-			this.state = 381;
-			this.subquery_select_spec();
 			this.state = 386;
+			this.subquery_select_spec();
+			this.state = 391;
 			this._errHandler.sync(this);
 			_la = this._input.LA(1);
 			while (_la===SOQLParser.COMMA) {
 				{
 				{
-				this.state = 382;
+				this.state = 387;
 				this.match(SOQLParser.COMMA);
-				this.state = 383;
+				this.state = 388;
 				this.subquery_select_spec();
 				}
 				}
-				this.state = 388;
+				this.state = 393;
 				this._errHandler.sync(this);
 				_la = this._input.LA(1);
 			}
@@ -5110,13 +5154,13 @@ export class SOQLParser extends Parser {
 		let _localctx: Select_specContext = new Select_specContext(this._ctx, this.state);
 		this.enterRule(_localctx, 80, SOQLParser.RULE_select_spec);
 		try {
-			this.state = 393;
+			this.state = 398;
 			this._errHandler.sync(this);
-			switch ( this.interpreter.adaptivePredict(this._input,31,this._ctx) ) {
+			switch ( this.interpreter.adaptivePredict(this._input,32,this._ctx) ) {
 			case 1:
 				this.enterOuterAlt(_localctx, 1);
 				{
-				this.state = 389;
+				this.state = 394;
 				this.field_spec();
 				}
 				break;
@@ -5124,7 +5168,7 @@ export class SOQLParser extends Parser {
 			case 2:
 				this.enterOuterAlt(_localctx, 2);
 				{
-				this.state = 390;
+				this.state = 395;
 				this.function_call_spec();
 				}
 				break;
@@ -5132,7 +5176,7 @@ export class SOQLParser extends Parser {
 			case 3:
 				this.enterOuterAlt(_localctx, 3);
 				{
-				this.state = 391;
+				this.state = 396;
 				this.soql_subquery();
 				}
 				break;
@@ -5140,7 +5184,7 @@ export class SOQLParser extends Parser {
 			case 4:
 				this.enterOuterAlt(_localctx, 4);
 				{
-				this.state = 392;
+				this.state = 397;
 				this.typeof_spec();
 				}
 				break;
@@ -5165,13 +5209,13 @@ export class SOQLParser extends Parser {
 		let _localctx: Subquery_select_specContext = new Subquery_select_specContext(this._ctx, this.state);
 		this.enterRule(_localctx, 82, SOQLParser.RULE_subquery_select_spec);
 		try {
-			this.state = 397;
+			this.state = 402;
 			this._errHandler.sync(this);
-			switch ( this.interpreter.adaptivePredict(this._input,32,this._ctx) ) {
+			switch ( this.interpreter.adaptivePredict(this._input,33,this._ctx) ) {
 			case 1:
 				this.enterOuterAlt(_localctx, 1);
 				{
-				this.state = 395;
+				this.state = 400;
 				this.field_spec();
 				}
 				break;
@@ -5179,7 +5223,7 @@ export class SOQLParser extends Parser {
 			case 2:
 				this.enterOuterAlt(_localctx, 2);
 				{
-				this.state = 396;
+				this.state = 401;
 				this.function_call_spec();
 				}
 				break;
@@ -5207,14 +5251,14 @@ export class SOQLParser extends Parser {
 		try {
 			this.enterOuterAlt(_localctx, 1);
 			{
-			this.state = 399;
+			this.state = 404;
 			this.field();
-			this.state = 401;
+			this.state = 406;
 			this._errHandler.sync(this);
 			_la = this._input.LA(1);
-			if (_la===SOQLParser.AS || ((((_la - 34)) & ~0x1F) === 0 && ((1 << (_la - 34)) & ((1 << (SOQLParser.ABOVE - 34)) | (1 << (SOQLParser.ABOVE_OR_BELOW - 34)) | (1 << (SOQLParser.AT - 34)) | (1 << (SOQLParser.BELOW - 34)) | (1 << (SOQLParser.CATEGORY - 34)) | (1 << (SOQLParser.DATA - 34)) | (1 << (SOQLParser.END - 34)) | (1 << (SOQLParser.OFFSET - 34)) | (1 << (SOQLParser.ORDER - 34)) | (1 << (SOQLParser.REFERENCE - 34)) | (1 << (SOQLParser.SCOPE - 34)) | (1 << (SOQLParser.TRACKING - 34)) | (1 << (SOQLParser.THEN - 34)) | (1 << (SOQLParser.TYPEOF - 34)) | (1 << (SOQLParser.VIEW - 34)) | (1 << (SOQLParser.VIEWSTAT - 34)) | (1 << (SOQLParser.WHEN - 34)) | (1 << (SOQLParser.CALENDAR_MONTH - 34)) | (1 << (SOQLParser.CALENDAR_QUARTER - 34)) | (1 << (SOQLParser.CALENDAR_YEAR - 34)) | (1 << (SOQLParser.DAY_IN_MONTH - 34)) | (1 << (SOQLParser.DAY_IN_WEEK - 34)) | (1 << (SOQLParser.DAY_IN_YEAR - 34)) | (1 << (SOQLParser.DAY_ONLY - 34)) | (1 << (SOQLParser.FISCAL_MONTH - 34)) | (1 << (SOQLParser.FISCAL_QUARTER - 34)) | (1 << (SOQLParser.FISCAL_YEAR - 34)) | (1 << (SOQLParser.HOUR_IN_DAY - 34)) | (1 << (SOQLParser.WEEK_IN_MONTH - 34)) | (1 << (SOQLParser.WEEK_IN_YEAR - 34)) | (1 << (SOQLParser.AVG - 34)) | (1 << (SOQLParser.COUNT - 34)))) !== 0) || ((((_la - 66)) & ~0x1F) === 0 && ((1 << (_la - 66)) & ((1 << (SOQLParser.COUNT_DISTINCT - 66)) | (1 << (SOQLParser.MIN - 66)) | (1 << (SOQLParser.MAX - 66)) | (1 << (SOQLParser.SUM - 66)) | (1 << (SOQLParser.DISTANCE - 66)) | (1 << (SOQLParser.GEOLOCATION - 66)) | (1 << (SOQLParser.FORMAT - 66)) | (1 << (SOQLParser.TOLABEL - 66)) | (1 << (SOQLParser.CONVERT_TIME_ZONE - 66)) | (1 << (SOQLParser.CONVERT_CURRENCY - 66)) | (1 << (SOQLParser.GROUPING - 66)) | (1 << (SOQLParser.YESTERDAY - 66)) | (1 << (SOQLParser.TODAY - 66)) | (1 << (SOQLParser.TOMORROW - 66)) | (1 << (SOQLParser.LAST_WEEK - 66)) | (1 << (SOQLParser.THIS_WEEK - 66)) | (1 << (SOQLParser.NEXT_WEEK - 66)) | (1 << (SOQLParser.LAST_MONTH - 66)) | (1 << (SOQLParser.THIS_MONTH - 66)) | (1 << (SOQLParser.NEXT_MONTH - 66)) | (1 << (SOQLParser.LAST_90_DAYS - 66)) | (1 << (SOQLParser.NEXT_90_DAYS - 66)) | (1 << (SOQLParser.THIS_QUARTER - 66)) | (1 << (SOQLParser.LAST_QUARTER - 66)) | (1 << (SOQLParser.NEXT_QUARTER - 66)) | (1 << (SOQLParser.THIS_YEAR - 66)) | (1 << (SOQLParser.LAST_YEAR - 66)) | (1 << (SOQLParser.NEXT_YEAR - 66)) | (1 << (SOQLParser.THIS_FISCAL_QUARTER - 66)) | (1 << (SOQLParser.LAST_FISCAL_QUARTER - 66)) | (1 << (SOQLParser.NEXT_FISCAL_QUARTER - 66)) | (1 << (SOQLParser.THIS_FISCAL_YEAR - 66)))) !== 0) || ((((_la - 98)) & ~0x1F) === 0 && ((1 << (_la - 98)) & ((1 << (SOQLParser.LAST_FISCAL_YEAR - 98)) | (1 << (SOQLParser.NEXT_FISCAL_YEAR - 98)) | (1 << (SOQLParser.NEXT_N_DAYS - 98)) | (1 << (SOQLParser.LAST_N_DAYS - 98)) | (1 << (SOQLParser.N_DAYS_AGO - 98)) | (1 << (SOQLParser.NEXT_N_WEEKS - 98)) | (1 << (SOQLParser.LAST_N_WEEKS - 98)) | (1 << (SOQLParser.N_WEEKS_AGO - 98)) | (1 << (SOQLParser.NEXT_N_MONTHS - 98)) | (1 << (SOQLParser.LAST_N_MONTHS - 98)) | (1 << (SOQLParser.N_MONTHS_AGO - 98)) | (1 << (SOQLParser.NEXT_N_QUARTERS - 98)) | (1 << (SOQLParser.LAST_N_QUARTERS - 98)) | (1 << (SOQLParser.N_QUARTERS_AGO - 98)) | (1 << (SOQLParser.NEXT_N_YEARS - 98)) | (1 << (SOQLParser.LAST_N_YEARS - 98)) | (1 << (SOQLParser.N_YEARS_AGO - 98)) | (1 << (SOQLParser.NEXT_N_FISCAL_QUARTERS - 98)) | (1 << (SOQLParser.LAST_N_FISCAL_QUARTERS - 98)) | (1 << (SOQLParser.N_FISCAL_QUARTERS_AGO - 98)) | (1 << (SOQLParser.NEXT_N_FISCAL_YEARS - 98)) | (1 << (SOQLParser.LAST_N_FISCAL_YEARS - 98)) | (1 << (SOQLParser.N_FISCAL_YEARS_AGO - 98)))) !== 0) || _la===SOQLParser.ID) {
+			if (_la===SOQLParser.AS || ((((_la - 34)) & ~0x1F) === 0 && ((1 << (_la - 34)) & ((1 << (SOQLParser.ABOVE - 34)) | (1 << (SOQLParser.ABOVE_OR_BELOW - 34)) | (1 << (SOQLParser.AT - 34)) | (1 << (SOQLParser.BELOW - 34)) | (1 << (SOQLParser.CATEGORY - 34)) | (1 << (SOQLParser.DATA - 34)) | (1 << (SOQLParser.END - 34)) | (1 << (SOQLParser.OFFSET - 34)) | (1 << (SOQLParser.ORDER - 34)) | (1 << (SOQLParser.REFERENCE - 34)) | (1 << (SOQLParser.SCOPE - 34)) | (1 << (SOQLParser.TRACKING - 34)) | (1 << (SOQLParser.THEN - 34)) | (1 << (SOQLParser.TYPEOF - 34)) | (1 << (SOQLParser.VIEW - 34)) | (1 << (SOQLParser.VIEWSTAT - 34)) | (1 << (SOQLParser.WHEN - 34)) | (1 << (SOQLParser.SECURITY_ENFORCED - 34)) | (1 << (SOQLParser.CALENDAR_MONTH - 34)) | (1 << (SOQLParser.CALENDAR_QUARTER - 34)) | (1 << (SOQLParser.CALENDAR_YEAR - 34)) | (1 << (SOQLParser.DAY_IN_MONTH - 34)) | (1 << (SOQLParser.DAY_IN_WEEK - 34)) | (1 << (SOQLParser.DAY_IN_YEAR - 34)) | (1 << (SOQLParser.DAY_ONLY - 34)) | (1 << (SOQLParser.FISCAL_MONTH - 34)) | (1 << (SOQLParser.FISCAL_QUARTER - 34)) | (1 << (SOQLParser.FISCAL_YEAR - 34)) | (1 << (SOQLParser.HOUR_IN_DAY - 34)) | (1 << (SOQLParser.WEEK_IN_MONTH - 34)) | (1 << (SOQLParser.WEEK_IN_YEAR - 34)) | (1 << (SOQLParser.AVG - 34)))) !== 0) || ((((_la - 66)) & ~0x1F) === 0 && ((1 << (_la - 66)) & ((1 << (SOQLParser.COUNT - 66)) | (1 << (SOQLParser.COUNT_DISTINCT - 66)) | (1 << (SOQLParser.MIN - 66)) | (1 << (SOQLParser.MAX - 66)) | (1 << (SOQLParser.SUM - 66)) | (1 << (SOQLParser.DISTANCE - 66)) | (1 << (SOQLParser.GEOLOCATION - 66)) | (1 << (SOQLParser.FORMAT - 66)) | (1 << (SOQLParser.TOLABEL - 66)) | (1 << (SOQLParser.CONVERT_TIME_ZONE - 66)) | (1 << (SOQLParser.CONVERT_CURRENCY - 66)) | (1 << (SOQLParser.GROUPING - 66)) | (1 << (SOQLParser.YESTERDAY - 66)) | (1 << (SOQLParser.TODAY - 66)) | (1 << (SOQLParser.TOMORROW - 66)) | (1 << (SOQLParser.LAST_WEEK - 66)) | (1 << (SOQLParser.THIS_WEEK - 66)) | (1 << (SOQLParser.NEXT_WEEK - 66)) | (1 << (SOQLParser.LAST_MONTH - 66)) | (1 << (SOQLParser.THIS_MONTH - 66)) | (1 << (SOQLParser.NEXT_MONTH - 66)) | (1 << (SOQLParser.LAST_90_DAYS - 66)) | (1 << (SOQLParser.NEXT_90_DAYS - 66)) | (1 << (SOQLParser.THIS_QUARTER - 66)) | (1 << (SOQLParser.LAST_QUARTER - 66)) | (1 << (SOQLParser.NEXT_QUARTER - 66)) | (1 << (SOQLParser.THIS_YEAR - 66)) | (1 << (SOQLParser.LAST_YEAR - 66)) | (1 << (SOQLParser.NEXT_YEAR - 66)) | (1 << (SOQLParser.THIS_FISCAL_QUARTER - 66)) | (1 << (SOQLParser.LAST_FISCAL_QUARTER - 66)) | (1 << (SOQLParser.NEXT_FISCAL_QUARTER - 66)))) !== 0) || ((((_la - 98)) & ~0x1F) === 0 && ((1 << (_la - 98)) & ((1 << (SOQLParser.THIS_FISCAL_YEAR - 98)) | (1 << (SOQLParser.LAST_FISCAL_YEAR - 98)) | (1 << (SOQLParser.NEXT_FISCAL_YEAR - 98)) | (1 << (SOQLParser.NEXT_N_DAYS - 98)) | (1 << (SOQLParser.LAST_N_DAYS - 98)) | (1 << (SOQLParser.N_DAYS_AGO - 98)) | (1 << (SOQLParser.NEXT_N_WEEKS - 98)) | (1 << (SOQLParser.LAST_N_WEEKS - 98)) | (1 << (SOQLParser.N_WEEKS_AGO - 98)) | (1 << (SOQLParser.NEXT_N_MONTHS - 98)) | (1 << (SOQLParser.LAST_N_MONTHS - 98)) | (1 << (SOQLParser.N_MONTHS_AGO - 98)) | (1 << (SOQLParser.NEXT_N_QUARTERS - 98)) | (1 << (SOQLParser.LAST_N_QUARTERS - 98)) | (1 << (SOQLParser.N_QUARTERS_AGO - 98)) | (1 << (SOQLParser.NEXT_N_YEARS - 98)) | (1 << (SOQLParser.LAST_N_YEARS - 98)) | (1 << (SOQLParser.N_YEARS_AGO - 98)) | (1 << (SOQLParser.NEXT_N_FISCAL_QUARTERS - 98)) | (1 << (SOQLParser.LAST_N_FISCAL_QUARTERS - 98)) | (1 << (SOQLParser.N_FISCAL_QUARTERS_AGO - 98)) | (1 << (SOQLParser.NEXT_N_FISCAL_YEARS - 98)) | (1 << (SOQLParser.LAST_N_FISCAL_YEARS - 98)) | (1 << (SOQLParser.N_FISCAL_YEARS_AGO - 98)))) !== 0) || _la===SOQLParser.ID) {
 				{
-				this.state = 400;
+				this.state = 405;
 				this.alias();
 				}
 			}
@@ -5243,14 +5287,14 @@ export class SOQLParser extends Parser {
 		try {
 			this.enterOuterAlt(_localctx, 1);
 			{
-			this.state = 403;
+			this.state = 408;
 			this.function_call();
-			this.state = 405;
+			this.state = 410;
 			this._errHandler.sync(this);
 			_la = this._input.LA(1);
-			if (_la===SOQLParser.AS || ((((_la - 34)) & ~0x1F) === 0 && ((1 << (_la - 34)) & ((1 << (SOQLParser.ABOVE - 34)) | (1 << (SOQLParser.ABOVE_OR_BELOW - 34)) | (1 << (SOQLParser.AT - 34)) | (1 << (SOQLParser.BELOW - 34)) | (1 << (SOQLParser.CATEGORY - 34)) | (1 << (SOQLParser.DATA - 34)) | (1 << (SOQLParser.END - 34)) | (1 << (SOQLParser.OFFSET - 34)) | (1 << (SOQLParser.ORDER - 34)) | (1 << (SOQLParser.REFERENCE - 34)) | (1 << (SOQLParser.SCOPE - 34)) | (1 << (SOQLParser.TRACKING - 34)) | (1 << (SOQLParser.THEN - 34)) | (1 << (SOQLParser.TYPEOF - 34)) | (1 << (SOQLParser.VIEW - 34)) | (1 << (SOQLParser.VIEWSTAT - 34)) | (1 << (SOQLParser.WHEN - 34)) | (1 << (SOQLParser.CALENDAR_MONTH - 34)) | (1 << (SOQLParser.CALENDAR_QUARTER - 34)) | (1 << (SOQLParser.CALENDAR_YEAR - 34)) | (1 << (SOQLParser.DAY_IN_MONTH - 34)) | (1 << (SOQLParser.DAY_IN_WEEK - 34)) | (1 << (SOQLParser.DAY_IN_YEAR - 34)) | (1 << (SOQLParser.DAY_ONLY - 34)) | (1 << (SOQLParser.FISCAL_MONTH - 34)) | (1 << (SOQLParser.FISCAL_QUARTER - 34)) | (1 << (SOQLParser.FISCAL_YEAR - 34)) | (1 << (SOQLParser.HOUR_IN_DAY - 34)) | (1 << (SOQLParser.WEEK_IN_MONTH - 34)) | (1 << (SOQLParser.WEEK_IN_YEAR - 34)) | (1 << (SOQLParser.AVG - 34)) | (1 << (SOQLParser.COUNT - 34)))) !== 0) || ((((_la - 66)) & ~0x1F) === 0 && ((1 << (_la - 66)) & ((1 << (SOQLParser.COUNT_DISTINCT - 66)) | (1 << (SOQLParser.MIN - 66)) | (1 << (SOQLParser.MAX - 66)) | (1 << (SOQLParser.SUM - 66)) | (1 << (SOQLParser.DISTANCE - 66)) | (1 << (SOQLParser.GEOLOCATION - 66)) | (1 << (SOQLParser.FORMAT - 66)) | (1 << (SOQLParser.TOLABEL - 66)) | (1 << (SOQLParser.CONVERT_TIME_ZONE - 66)) | (1 << (SOQLParser.CONVERT_CURRENCY - 66)) | (1 << (SOQLParser.GROUPING - 66)) | (1 << (SOQLParser.YESTERDAY - 66)) | (1 << (SOQLParser.TODAY - 66)) | (1 << (SOQLParser.TOMORROW - 66)) | (1 << (SOQLParser.LAST_WEEK - 66)) | (1 << (SOQLParser.THIS_WEEK - 66)) | (1 << (SOQLParser.NEXT_WEEK - 66)) | (1 << (SOQLParser.LAST_MONTH - 66)) | (1 << (SOQLParser.THIS_MONTH - 66)) | (1 << (SOQLParser.NEXT_MONTH - 66)) | (1 << (SOQLParser.LAST_90_DAYS - 66)) | (1 << (SOQLParser.NEXT_90_DAYS - 66)) | (1 << (SOQLParser.THIS_QUARTER - 66)) | (1 << (SOQLParser.LAST_QUARTER - 66)) | (1 << (SOQLParser.NEXT_QUARTER - 66)) | (1 << (SOQLParser.THIS_YEAR - 66)) | (1 << (SOQLParser.LAST_YEAR - 66)) | (1 << (SOQLParser.NEXT_YEAR - 66)) | (1 << (SOQLParser.THIS_FISCAL_QUARTER - 66)) | (1 << (SOQLParser.LAST_FISCAL_QUARTER - 66)) | (1 << (SOQLParser.NEXT_FISCAL_QUARTER - 66)) | (1 << (SOQLParser.THIS_FISCAL_YEAR - 66)))) !== 0) || ((((_la - 98)) & ~0x1F) === 0 && ((1 << (_la - 98)) & ((1 << (SOQLParser.LAST_FISCAL_YEAR - 98)) | (1 << (SOQLParser.NEXT_FISCAL_YEAR - 98)) | (1 << (SOQLParser.NEXT_N_DAYS - 98)) | (1 << (SOQLParser.LAST_N_DAYS - 98)) | (1 << (SOQLParser.N_DAYS_AGO - 98)) | (1 << (SOQLParser.NEXT_N_WEEKS - 98)) | (1 << (SOQLParser.LAST_N_WEEKS - 98)) | (1 << (SOQLParser.N_WEEKS_AGO - 98)) | (1 << (SOQLParser.NEXT_N_MONTHS - 98)) | (1 << (SOQLParser.LAST_N_MONTHS - 98)) | (1 << (SOQLParser.N_MONTHS_AGO - 98)) | (1 << (SOQLParser.NEXT_N_QUARTERS - 98)) | (1 << (SOQLParser.LAST_N_QUARTERS - 98)) | (1 << (SOQLParser.N_QUARTERS_AGO - 98)) | (1 << (SOQLParser.NEXT_N_YEARS - 98)) | (1 << (SOQLParser.LAST_N_YEARS - 98)) | (1 << (SOQLParser.N_YEARS_AGO - 98)) | (1 << (SOQLParser.NEXT_N_FISCAL_QUARTERS - 98)) | (1 << (SOQLParser.LAST_N_FISCAL_QUARTERS - 98)) | (1 << (SOQLParser.N_FISCAL_QUARTERS_AGO - 98)) | (1 << (SOQLParser.NEXT_N_FISCAL_YEARS - 98)) | (1 << (SOQLParser.LAST_N_FISCAL_YEARS - 98)) | (1 << (SOQLParser.N_FISCAL_YEARS_AGO - 98)))) !== 0) || _la===SOQLParser.ID) {
+			if (_la===SOQLParser.AS || ((((_la - 34)) & ~0x1F) === 0 && ((1 << (_la - 34)) & ((1 << (SOQLParser.ABOVE - 34)) | (1 << (SOQLParser.ABOVE_OR_BELOW - 34)) | (1 << (SOQLParser.AT - 34)) | (1 << (SOQLParser.BELOW - 34)) | (1 << (SOQLParser.CATEGORY - 34)) | (1 << (SOQLParser.DATA - 34)) | (1 << (SOQLParser.END - 34)) | (1 << (SOQLParser.OFFSET - 34)) | (1 << (SOQLParser.ORDER - 34)) | (1 << (SOQLParser.REFERENCE - 34)) | (1 << (SOQLParser.SCOPE - 34)) | (1 << (SOQLParser.TRACKING - 34)) | (1 << (SOQLParser.THEN - 34)) | (1 << (SOQLParser.TYPEOF - 34)) | (1 << (SOQLParser.VIEW - 34)) | (1 << (SOQLParser.VIEWSTAT - 34)) | (1 << (SOQLParser.WHEN - 34)) | (1 << (SOQLParser.SECURITY_ENFORCED - 34)) | (1 << (SOQLParser.CALENDAR_MONTH - 34)) | (1 << (SOQLParser.CALENDAR_QUARTER - 34)) | (1 << (SOQLParser.CALENDAR_YEAR - 34)) | (1 << (SOQLParser.DAY_IN_MONTH - 34)) | (1 << (SOQLParser.DAY_IN_WEEK - 34)) | (1 << (SOQLParser.DAY_IN_YEAR - 34)) | (1 << (SOQLParser.DAY_ONLY - 34)) | (1 << (SOQLParser.FISCAL_MONTH - 34)) | (1 << (SOQLParser.FISCAL_QUARTER - 34)) | (1 << (SOQLParser.FISCAL_YEAR - 34)) | (1 << (SOQLParser.HOUR_IN_DAY - 34)) | (1 << (SOQLParser.WEEK_IN_MONTH - 34)) | (1 << (SOQLParser.WEEK_IN_YEAR - 34)) | (1 << (SOQLParser.AVG - 34)))) !== 0) || ((((_la - 66)) & ~0x1F) === 0 && ((1 << (_la - 66)) & ((1 << (SOQLParser.COUNT - 66)) | (1 << (SOQLParser.COUNT_DISTINCT - 66)) | (1 << (SOQLParser.MIN - 66)) | (1 << (SOQLParser.MAX - 66)) | (1 << (SOQLParser.SUM - 66)) | (1 << (SOQLParser.DISTANCE - 66)) | (1 << (SOQLParser.GEOLOCATION - 66)) | (1 << (SOQLParser.FORMAT - 66)) | (1 << (SOQLParser.TOLABEL - 66)) | (1 << (SOQLParser.CONVERT_TIME_ZONE - 66)) | (1 << (SOQLParser.CONVERT_CURRENCY - 66)) | (1 << (SOQLParser.GROUPING - 66)) | (1 << (SOQLParser.YESTERDAY - 66)) | (1 << (SOQLParser.TODAY - 66)) | (1 << (SOQLParser.TOMORROW - 66)) | (1 << (SOQLParser.LAST_WEEK - 66)) | (1 << (SOQLParser.THIS_WEEK - 66)) | (1 << (SOQLParser.NEXT_WEEK - 66)) | (1 << (SOQLParser.LAST_MONTH - 66)) | (1 << (SOQLParser.THIS_MONTH - 66)) | (1 << (SOQLParser.NEXT_MONTH - 66)) | (1 << (SOQLParser.LAST_90_DAYS - 66)) | (1 << (SOQLParser.NEXT_90_DAYS - 66)) | (1 << (SOQLParser.THIS_QUARTER - 66)) | (1 << (SOQLParser.LAST_QUARTER - 66)) | (1 << (SOQLParser.NEXT_QUARTER - 66)) | (1 << (SOQLParser.THIS_YEAR - 66)) | (1 << (SOQLParser.LAST_YEAR - 66)) | (1 << (SOQLParser.NEXT_YEAR - 66)) | (1 << (SOQLParser.THIS_FISCAL_QUARTER - 66)) | (1 << (SOQLParser.LAST_FISCAL_QUARTER - 66)) | (1 << (SOQLParser.NEXT_FISCAL_QUARTER - 66)))) !== 0) || ((((_la - 98)) & ~0x1F) === 0 && ((1 << (_la - 98)) & ((1 << (SOQLParser.THIS_FISCAL_YEAR - 98)) | (1 << (SOQLParser.LAST_FISCAL_YEAR - 98)) | (1 << (SOQLParser.NEXT_FISCAL_YEAR - 98)) | (1 << (SOQLParser.NEXT_N_DAYS - 98)) | (1 << (SOQLParser.LAST_N_DAYS - 98)) | (1 << (SOQLParser.N_DAYS_AGO - 98)) | (1 << (SOQLParser.NEXT_N_WEEKS - 98)) | (1 << (SOQLParser.LAST_N_WEEKS - 98)) | (1 << (SOQLParser.N_WEEKS_AGO - 98)) | (1 << (SOQLParser.NEXT_N_MONTHS - 98)) | (1 << (SOQLParser.LAST_N_MONTHS - 98)) | (1 << (SOQLParser.N_MONTHS_AGO - 98)) | (1 << (SOQLParser.NEXT_N_QUARTERS - 98)) | (1 << (SOQLParser.LAST_N_QUARTERS - 98)) | (1 << (SOQLParser.N_QUARTERS_AGO - 98)) | (1 << (SOQLParser.NEXT_N_YEARS - 98)) | (1 << (SOQLParser.LAST_N_YEARS - 98)) | (1 << (SOQLParser.N_YEARS_AGO - 98)) | (1 << (SOQLParser.NEXT_N_FISCAL_QUARTERS - 98)) | (1 << (SOQLParser.LAST_N_FISCAL_QUARTERS - 98)) | (1 << (SOQLParser.N_FISCAL_QUARTERS_AGO - 98)) | (1 << (SOQLParser.NEXT_N_FISCAL_YEARS - 98)) | (1 << (SOQLParser.LAST_N_FISCAL_YEARS - 98)) | (1 << (SOQLParser.N_FISCAL_YEARS_AGO - 98)))) !== 0) || _la===SOQLParser.ID) {
 				{
-				this.state = 404;
+				this.state = 409;
 				this.alias();
 				}
 			}
@@ -5278,17 +5322,17 @@ export class SOQLParser extends Parser {
 		try {
 			this.enterOuterAlt(_localctx, 1);
 			{
-			this.state = 408;
+			this.state = 413;
 			this._errHandler.sync(this);
-			switch ( this.interpreter.adaptivePredict(this._input,35,this._ctx) ) {
+			switch ( this.interpreter.adaptivePredict(this._input,36,this._ctx) ) {
 			case 1:
 				{
-				this.state = 407;
+				this.state = 412;
 				this.object_prefix();
 				}
 				break;
 			}
-			this.state = 410;
+			this.state = 415;
 			this.field_name();
 			}
 		}
@@ -5314,21 +5358,21 @@ export class SOQLParser extends Parser {
 		try {
 			this.enterOuterAlt(_localctx, 1);
 			{
-			this.state = 412;
+			this.state = 417;
 			this.function_name();
-			this.state = 413;
+			this.state = 418;
 			this.match(SOQLParser.LPAREN);
-			this.state = 415;
+			this.state = 420;
 			this._errHandler.sync(this);
 			_la = this._input.LA(1);
-			if ((((_la) & ~0x1F) === 0 && ((1 << _la) & ((1 << SOQLParser.STRING_VALUE) | (1 << SOQLParser.FALSE) | (1 << SOQLParser.GROUP) | (1 << SOQLParser.NULL) | (1 << SOQLParser.TRUE))) !== 0) || ((((_la - 34)) & ~0x1F) === 0 && ((1 << (_la - 34)) & ((1 << (SOQLParser.ABOVE - 34)) | (1 << (SOQLParser.ABOVE_OR_BELOW - 34)) | (1 << (SOQLParser.AT - 34)) | (1 << (SOQLParser.BELOW - 34)) | (1 << (SOQLParser.CATEGORY - 34)) | (1 << (SOQLParser.DATA - 34)) | (1 << (SOQLParser.END - 34)) | (1 << (SOQLParser.OFFSET - 34)) | (1 << (SOQLParser.ORDER - 34)) | (1 << (SOQLParser.REFERENCE - 34)) | (1 << (SOQLParser.SCOPE - 34)) | (1 << (SOQLParser.TRACKING - 34)) | (1 << (SOQLParser.THEN - 34)) | (1 << (SOQLParser.TYPEOF - 34)) | (1 << (SOQLParser.VIEW - 34)) | (1 << (SOQLParser.VIEWSTAT - 34)) | (1 << (SOQLParser.WHEN - 34)) | (1 << (SOQLParser.CALENDAR_MONTH - 34)) | (1 << (SOQLParser.CALENDAR_QUARTER - 34)) | (1 << (SOQLParser.CALENDAR_YEAR - 34)) | (1 << (SOQLParser.DAY_IN_MONTH - 34)) | (1 << (SOQLParser.DAY_IN_WEEK - 34)) | (1 << (SOQLParser.DAY_IN_YEAR - 34)) | (1 << (SOQLParser.DAY_ONLY - 34)) | (1 << (SOQLParser.FISCAL_MONTH - 34)) | (1 << (SOQLParser.FISCAL_QUARTER - 34)) | (1 << (SOQLParser.FISCAL_YEAR - 34)) | (1 << (SOQLParser.HOUR_IN_DAY - 34)) | (1 << (SOQLParser.WEEK_IN_MONTH - 34)) | (1 << (SOQLParser.WEEK_IN_YEAR - 34)) | (1 << (SOQLParser.AVG - 34)) | (1 << (SOQLParser.COUNT - 34)))) !== 0) || ((((_la - 66)) & ~0x1F) === 0 && ((1 << (_la - 66)) & ((1 << (SOQLParser.COUNT_DISTINCT - 66)) | (1 << (SOQLParser.MIN - 66)) | (1 << (SOQLParser.MAX - 66)) | (1 << (SOQLParser.SUM - 66)) | (1 << (SOQLParser.DISTANCE - 66)) | (1 << (SOQLParser.GEOLOCATION - 66)) | (1 << (SOQLParser.FORMAT - 66)) | (1 << (SOQLParser.TOLABEL - 66)) | (1 << (SOQLParser.CONVERT_TIME_ZONE - 66)) | (1 << (SOQLParser.CONVERT_CURRENCY - 66)) | (1 << (SOQLParser.GROUPING - 66)) | (1 << (SOQLParser.YESTERDAY - 66)) | (1 << (SOQLParser.TODAY - 66)) | (1 << (SOQLParser.TOMORROW - 66)) | (1 << (SOQLParser.LAST_WEEK - 66)) | (1 << (SOQLParser.THIS_WEEK - 66)) | (1 << (SOQLParser.NEXT_WEEK - 66)) | (1 << (SOQLParser.LAST_MONTH - 66)) | (1 << (SOQLParser.THIS_MONTH - 66)) | (1 << (SOQLParser.NEXT_MONTH - 66)) | (1 << (SOQLParser.LAST_90_DAYS - 66)) | (1 << (SOQLParser.NEXT_90_DAYS - 66)) | (1 << (SOQLParser.THIS_QUARTER - 66)) | (1 << (SOQLParser.LAST_QUARTER - 66)) | (1 << (SOQLParser.NEXT_QUARTER - 66)) | (1 << (SOQLParser.THIS_YEAR - 66)) | (1 << (SOQLParser.LAST_YEAR - 66)) | (1 << (SOQLParser.NEXT_YEAR - 66)) | (1 << (SOQLParser.THIS_FISCAL_QUARTER - 66)) | (1 << (SOQLParser.LAST_FISCAL_QUARTER - 66)) | (1 << (SOQLParser.NEXT_FISCAL_QUARTER - 66)) | (1 << (SOQLParser.THIS_FISCAL_YEAR - 66)))) !== 0) || ((((_la - 98)) & ~0x1F) === 0 && ((1 << (_la - 98)) & ((1 << (SOQLParser.LAST_FISCAL_YEAR - 98)) | (1 << (SOQLParser.NEXT_FISCAL_YEAR - 98)) | (1 << (SOQLParser.NEXT_N_DAYS - 98)) | (1 << (SOQLParser.LAST_N_DAYS - 98)) | (1 << (SOQLParser.N_DAYS_AGO - 98)) | (1 << (SOQLParser.NEXT_N_WEEKS - 98)) | (1 << (SOQLParser.LAST_N_WEEKS - 98)) | (1 << (SOQLParser.N_WEEKS_AGO - 98)) | (1 << (SOQLParser.NEXT_N_MONTHS - 98)) | (1 << (SOQLParser.LAST_N_MONTHS - 98)) | (1 << (SOQLParser.N_MONTHS_AGO - 98)) | (1 << (SOQLParser.NEXT_N_QUARTERS - 98)) | (1 << (SOQLParser.LAST_N_QUARTERS - 98)) | (1 << (SOQLParser.N_QUARTERS_AGO - 98)) | (1 << (SOQLParser.NEXT_N_YEARS - 98)) | (1 << (SOQLParser.LAST_N_YEARS - 98)) | (1 << (SOQLParser.N_YEARS_AGO - 98)) | (1 << (SOQLParser.NEXT_N_FISCAL_QUARTERS - 98)) | (1 << (SOQLParser.LAST_N_FISCAL_QUARTERS - 98)) | (1 << (SOQLParser.N_FISCAL_QUARTERS_AGO - 98)) | (1 << (SOQLParser.NEXT_N_FISCAL_YEARS - 98)) | (1 << (SOQLParser.LAST_N_FISCAL_YEARS - 98)) | (1 << (SOQLParser.N_FISCAL_YEARS_AGO - 98)))) !== 0) || ((((_la - 136)) & ~0x1F) === 0 && ((1 << (_la - 136)) & ((1 << (SOQLParser.ID - 136)) | (1 << (SOQLParser.DATE - 136)) | (1 << (SOQLParser.DATETIME - 136)) | (1 << (SOQLParser.UNSIGNED_INTEGER - 136)) | (1 << (SOQLParser.REAL_NUMBER - 136)) | (1 << (SOQLParser.SIGNED_INTEGER - 136)))) !== 0)) {
+			if ((((_la) & ~0x1F) === 0 && ((1 << _la) & ((1 << SOQLParser.STRING_VALUE) | (1 << SOQLParser.FALSE) | (1 << SOQLParser.GROUP) | (1 << SOQLParser.NULL) | (1 << SOQLParser.TRUE))) !== 0) || ((((_la - 34)) & ~0x1F) === 0 && ((1 << (_la - 34)) & ((1 << (SOQLParser.ABOVE - 34)) | (1 << (SOQLParser.ABOVE_OR_BELOW - 34)) | (1 << (SOQLParser.AT - 34)) | (1 << (SOQLParser.BELOW - 34)) | (1 << (SOQLParser.CATEGORY - 34)) | (1 << (SOQLParser.DATA - 34)) | (1 << (SOQLParser.END - 34)) | (1 << (SOQLParser.OFFSET - 34)) | (1 << (SOQLParser.ORDER - 34)) | (1 << (SOQLParser.REFERENCE - 34)) | (1 << (SOQLParser.SCOPE - 34)) | (1 << (SOQLParser.TRACKING - 34)) | (1 << (SOQLParser.THEN - 34)) | (1 << (SOQLParser.TYPEOF - 34)) | (1 << (SOQLParser.VIEW - 34)) | (1 << (SOQLParser.VIEWSTAT - 34)) | (1 << (SOQLParser.WHEN - 34)) | (1 << (SOQLParser.SECURITY_ENFORCED - 34)) | (1 << (SOQLParser.CALENDAR_MONTH - 34)) | (1 << (SOQLParser.CALENDAR_QUARTER - 34)) | (1 << (SOQLParser.CALENDAR_YEAR - 34)) | (1 << (SOQLParser.DAY_IN_MONTH - 34)) | (1 << (SOQLParser.DAY_IN_WEEK - 34)) | (1 << (SOQLParser.DAY_IN_YEAR - 34)) | (1 << (SOQLParser.DAY_ONLY - 34)) | (1 << (SOQLParser.FISCAL_MONTH - 34)) | (1 << (SOQLParser.FISCAL_QUARTER - 34)) | (1 << (SOQLParser.FISCAL_YEAR - 34)) | (1 << (SOQLParser.HOUR_IN_DAY - 34)) | (1 << (SOQLParser.WEEK_IN_MONTH - 34)) | (1 << (SOQLParser.WEEK_IN_YEAR - 34)) | (1 << (SOQLParser.AVG - 34)))) !== 0) || ((((_la - 66)) & ~0x1F) === 0 && ((1 << (_la - 66)) & ((1 << (SOQLParser.COUNT - 66)) | (1 << (SOQLParser.COUNT_DISTINCT - 66)) | (1 << (SOQLParser.MIN - 66)) | (1 << (SOQLParser.MAX - 66)) | (1 << (SOQLParser.SUM - 66)) | (1 << (SOQLParser.DISTANCE - 66)) | (1 << (SOQLParser.GEOLOCATION - 66)) | (1 << (SOQLParser.FORMAT - 66)) | (1 << (SOQLParser.TOLABEL - 66)) | (1 << (SOQLParser.CONVERT_TIME_ZONE - 66)) | (1 << (SOQLParser.CONVERT_CURRENCY - 66)) | (1 << (SOQLParser.GROUPING - 66)) | (1 << (SOQLParser.YESTERDAY - 66)) | (1 << (SOQLParser.TODAY - 66)) | (1 << (SOQLParser.TOMORROW - 66)) | (1 << (SOQLParser.LAST_WEEK - 66)) | (1 << (SOQLParser.THIS_WEEK - 66)) | (1 << (SOQLParser.NEXT_WEEK - 66)) | (1 << (SOQLParser.LAST_MONTH - 66)) | (1 << (SOQLParser.THIS_MONTH - 66)) | (1 << (SOQLParser.NEXT_MONTH - 66)) | (1 << (SOQLParser.LAST_90_DAYS - 66)) | (1 << (SOQLParser.NEXT_90_DAYS - 66)) | (1 << (SOQLParser.THIS_QUARTER - 66)) | (1 << (SOQLParser.LAST_QUARTER - 66)) | (1 << (SOQLParser.NEXT_QUARTER - 66)) | (1 << (SOQLParser.THIS_YEAR - 66)) | (1 << (SOQLParser.LAST_YEAR - 66)) | (1 << (SOQLParser.NEXT_YEAR - 66)) | (1 << (SOQLParser.THIS_FISCAL_QUARTER - 66)) | (1 << (SOQLParser.LAST_FISCAL_QUARTER - 66)) | (1 << (SOQLParser.NEXT_FISCAL_QUARTER - 66)))) !== 0) || ((((_la - 98)) & ~0x1F) === 0 && ((1 << (_la - 98)) & ((1 << (SOQLParser.THIS_FISCAL_YEAR - 98)) | (1 << (SOQLParser.LAST_FISCAL_YEAR - 98)) | (1 << (SOQLParser.NEXT_FISCAL_YEAR - 98)) | (1 << (SOQLParser.NEXT_N_DAYS - 98)) | (1 << (SOQLParser.LAST_N_DAYS - 98)) | (1 << (SOQLParser.N_DAYS_AGO - 98)) | (1 << (SOQLParser.NEXT_N_WEEKS - 98)) | (1 << (SOQLParser.LAST_N_WEEKS - 98)) | (1 << (SOQLParser.N_WEEKS_AGO - 98)) | (1 << (SOQLParser.NEXT_N_MONTHS - 98)) | (1 << (SOQLParser.LAST_N_MONTHS - 98)) | (1 << (SOQLParser.N_MONTHS_AGO - 98)) | (1 << (SOQLParser.NEXT_N_QUARTERS - 98)) | (1 << (SOQLParser.LAST_N_QUARTERS - 98)) | (1 << (SOQLParser.N_QUARTERS_AGO - 98)) | (1 << (SOQLParser.NEXT_N_YEARS - 98)) | (1 << (SOQLParser.LAST_N_YEARS - 98)) | (1 << (SOQLParser.N_YEARS_AGO - 98)) | (1 << (SOQLParser.NEXT_N_FISCAL_QUARTERS - 98)) | (1 << (SOQLParser.LAST_N_FISCAL_QUARTERS - 98)) | (1 << (SOQLParser.N_FISCAL_QUARTERS_AGO - 98)) | (1 << (SOQLParser.NEXT_N_FISCAL_YEARS - 98)) | (1 << (SOQLParser.LAST_N_FISCAL_YEARS - 98)) | (1 << (SOQLParser.N_FISCAL_YEARS_AGO - 98)))) !== 0) || ((((_la - 137)) & ~0x1F) === 0 && ((1 << (_la - 137)) & ((1 << (SOQLParser.ID - 137)) | (1 << (SOQLParser.DATE - 137)) | (1 << (SOQLParser.DATETIME - 137)) | (1 << (SOQLParser.UNSIGNED_INTEGER - 137)) | (1 << (SOQLParser.REAL_NUMBER - 137)) | (1 << (SOQLParser.SIGNED_INTEGER - 137)))) !== 0)) {
 				{
-				this.state = 414;
+				this.state = 419;
 				this.function_parameter_list();
 				}
 			}
 
-			this.state = 417;
+			this.state = 422;
 			this.match(SOQLParser.RPAREN);
 			}
 		}
@@ -5354,21 +5398,21 @@ export class SOQLParser extends Parser {
 		try {
 			this.enterOuterAlt(_localctx, 1);
 			{
-			this.state = 419;
-			this.function_parameter();
 			this.state = 424;
+			this.function_parameter();
+			this.state = 429;
 			this._errHandler.sync(this);
 			_la = this._input.LA(1);
 			while (_la===SOQLParser.COMMA) {
 				{
 				{
-				this.state = 420;
+				this.state = 425;
 				this.match(SOQLParser.COMMA);
-				this.state = 421;
+				this.state = 426;
 				this.function_parameter();
 				}
 				}
-				this.state = 426;
+				this.state = 431;
 				this._errHandler.sync(this);
 				_la = this._input.LA(1);
 			}
@@ -5393,13 +5437,13 @@ export class SOQLParser extends Parser {
 		let _localctx: Function_parameterContext = new Function_parameterContext(this._ctx, this.state);
 		this.enterRule(_localctx, 94, SOQLParser.RULE_function_parameter);
 		try {
-			this.state = 430;
+			this.state = 435;
 			this._errHandler.sync(this);
-			switch ( this.interpreter.adaptivePredict(this._input,38,this._ctx) ) {
+			switch ( this.interpreter.adaptivePredict(this._input,39,this._ctx) ) {
 			case 1:
 				this.enterOuterAlt(_localctx, 1);
 				{
-				this.state = 427;
+				this.state = 432;
 				this.field();
 				}
 				break;
@@ -5407,7 +5451,7 @@ export class SOQLParser extends Parser {
 			case 2:
 				this.enterOuterAlt(_localctx, 2);
 				{
-				this.state = 428;
+				this.state = 433;
 				this.literal();
 				}
 				break;
@@ -5415,7 +5459,7 @@ export class SOQLParser extends Parser {
 			case 3:
 				this.enterOuterAlt(_localctx, 3);
 				{
-				this.state = 429;
+				this.state = 434;
 				this.function_call();
 				}
 				break;
@@ -5443,23 +5487,23 @@ export class SOQLParser extends Parser {
 		try {
 			this.enterOuterAlt(_localctx, 1);
 			{
-			this.state = 432;
+			this.state = 437;
 			this.match(SOQLParser.TYPEOF);
-			this.state = 433;
+			this.state = 438;
 			this.field();
-			this.state = 434;
+			this.state = 439;
 			this.typeof_when_then_clause_list();
-			this.state = 436;
+			this.state = 441;
 			this._errHandler.sync(this);
 			_la = this._input.LA(1);
 			if (_la===SOQLParser.ELSE) {
 				{
-				this.state = 435;
+				this.state = 440;
 				this.typeof_else_clause();
 				}
 			}
 
-			this.state = 438;
+			this.state = 443;
 			this.match(SOQLParser.END);
 			}
 		}
@@ -5485,17 +5529,17 @@ export class SOQLParser extends Parser {
 		try {
 			this.enterOuterAlt(_localctx, 1);
 			{
-			this.state = 441; 
+			this.state = 446; 
 			this._errHandler.sync(this);
 			_la = this._input.LA(1);
 			do {
 				{
 				{
-				this.state = 440;
+				this.state = 445;
 				this.typeof_when_then_clause();
 				}
 				}
-				this.state = 443; 
+				this.state = 448; 
 				this._errHandler.sync(this);
 				_la = this._input.LA(1);
 			} while ( _la===SOQLParser.WHEN );
@@ -5522,11 +5566,11 @@ export class SOQLParser extends Parser {
 		try {
 			this.enterOuterAlt(_localctx, 1);
 			{
-			this.state = 445;
+			this.state = 450;
 			this.match(SOQLParser.WHEN);
-			this.state = 446;
+			this.state = 451;
 			this.object_name();
-			this.state = 447;
+			this.state = 452;
 			this.typeof_then_clause();
 			}
 		}
@@ -5551,9 +5595,9 @@ export class SOQLParser extends Parser {
 		try {
 			this.enterOuterAlt(_localctx, 1);
 			{
-			this.state = 449;
+			this.state = 454;
 			this.match(SOQLParser.THEN);
-			this.state = 450;
+			this.state = 455;
 			this.field_list();
 			}
 		}
@@ -5578,9 +5622,9 @@ export class SOQLParser extends Parser {
 		try {
 			this.enterOuterAlt(_localctx, 1);
 			{
-			this.state = 452;
+			this.state = 457;
 			this.match(SOQLParser.ELSE);
-			this.state = 453;
+			this.state = 458;
 			this.field_list();
 			}
 		}
@@ -5606,21 +5650,21 @@ export class SOQLParser extends Parser {
 		try {
 			this.enterOuterAlt(_localctx, 1);
 			{
-			this.state = 455;
-			this.field();
 			this.state = 460;
+			this.field();
+			this.state = 465;
 			this._errHandler.sync(this);
 			_la = this._input.LA(1);
 			while (_la===SOQLParser.COMMA) {
 				{
 				{
-				this.state = 456;
+				this.state = 461;
 				this.match(SOQLParser.COMMA);
-				this.state = 457;
+				this.state = 462;
 				this.field();
 				}
 				}
-				this.state = 462;
+				this.state = 467;
 				this._errHandler.sync(this);
 				_la = this._input.LA(1);
 			}
@@ -5647,24 +5691,24 @@ export class SOQLParser extends Parser {
 		try {
 			this.enterOuterAlt(_localctx, 1);
 			{
-			this.state = 464;
-			this._errHandler.sync(this);
-			switch ( this.interpreter.adaptivePredict(this._input,42,this._ctx) ) {
-			case 1:
-				{
-				this.state = 463;
-				this.object_prefix();
-				}
-				break;
-			}
-			this.state = 466;
-			this.object_name();
-			this.state = 468;
+			this.state = 469;
 			this._errHandler.sync(this);
 			switch ( this.interpreter.adaptivePredict(this._input,43,this._ctx) ) {
 			case 1:
 				{
-				this.state = 467;
+				this.state = 468;
+				this.object_prefix();
+				}
+				break;
+			}
+			this.state = 471;
+			this.object_name();
+			this.state = 473;
+			this._errHandler.sync(this);
+			switch ( this.interpreter.adaptivePredict(this._input,44,this._ctx) ) {
+			case 1:
+				{
+				this.state = 472;
 				this.alias();
 				}
 				break;
@@ -5693,7 +5737,7 @@ export class SOQLParser extends Parser {
 			let _alt: number;
 			this.enterOuterAlt(_localctx, 1);
 			{
-			this.state = 473; 
+			this.state = 478; 
 			this._errHandler.sync(this);
 			_alt = 1;
 			do {
@@ -5701,9 +5745,9 @@ export class SOQLParser extends Parser {
 				case 1:
 					{
 					{
-					this.state = 470;
+					this.state = 475;
 					this.object_name();
-					this.state = 471;
+					this.state = 476;
 					this.match(SOQLParser.DOT);
 					}
 					}
@@ -5711,9 +5755,9 @@ export class SOQLParser extends Parser {
 				default:
 					throw new NoViableAltException(this);
 				}
-				this.state = 475; 
+				this.state = 480; 
 				this._errHandler.sync(this);
-				_alt = this.interpreter.adaptivePredict(this._input,44,this._ctx);
+				_alt = this.interpreter.adaptivePredict(this._input,45,this._ctx);
 			} while ( _alt!==2 && _alt!==ATN.INVALID_ALT_NUMBER );
 			}
 		}
@@ -5736,13 +5780,13 @@ export class SOQLParser extends Parser {
 		let _localctx: Comparison_operatorContext = new Comparison_operatorContext(this._ctx, this.state);
 		this.enterRule(_localctx, 112, SOQLParser.RULE_comparison_operator);
 		try {
-			this.state = 487;
+			this.state = 492;
 			this._errHandler.sync(this);
-			switch ( this.interpreter.adaptivePredict(this._input,45,this._ctx) ) {
+			switch ( this.interpreter.adaptivePredict(this._input,46,this._ctx) ) {
 			case 1:
 				this.enterOuterAlt(_localctx, 1);
 				{
-				this.state = 477;
+				this.state = 482;
 				this.match(SOQLParser.EQ);
 				}
 				break;
@@ -5750,7 +5794,7 @@ export class SOQLParser extends Parser {
 			case 2:
 				this.enterOuterAlt(_localctx, 2);
 				{
-				this.state = 478;
+				this.state = 483;
 				this.match(SOQLParser.NOT_EQ);
 				}
 				break;
@@ -5758,7 +5802,7 @@ export class SOQLParser extends Parser {
 			case 3:
 				this.enterOuterAlt(_localctx, 3);
 				{
-				this.state = 479;
+				this.state = 484;
 				this.match(SOQLParser.LET);
 				}
 				break;
@@ -5766,7 +5810,7 @@ export class SOQLParser extends Parser {
 			case 4:
 				this.enterOuterAlt(_localctx, 4);
 				{
-				this.state = 480;
+				this.state = 485;
 				this.match(SOQLParser.GET);
 				}
 				break;
@@ -5774,7 +5818,7 @@ export class SOQLParser extends Parser {
 			case 5:
 				this.enterOuterAlt(_localctx, 5);
 				{
-				this.state = 481;
+				this.state = 486;
 				this.match(SOQLParser.GTH);
 				}
 				break;
@@ -5782,7 +5826,7 @@ export class SOQLParser extends Parser {
 			case 6:
 				this.enterOuterAlt(_localctx, 6);
 				{
-				this.state = 482;
+				this.state = 487;
 				this.match(SOQLParser.LTH);
 				}
 				break;
@@ -5790,9 +5834,9 @@ export class SOQLParser extends Parser {
 			case 7:
 				this.enterOuterAlt(_localctx, 7);
 				{
-				this.state = 483;
+				this.state = 488;
 				this.match(SOQLParser.GTH);
-				this.state = 484;
+				this.state = 489;
 				this.match(SOQLParser.EQ);
 				}
 				break;
@@ -5800,9 +5844,9 @@ export class SOQLParser extends Parser {
 			case 8:
 				this.enterOuterAlt(_localctx, 8);
 				{
-				this.state = 485;
+				this.state = 490;
 				this.match(SOQLParser.LTH);
-				this.state = 486;
+				this.state = 491;
 				this.match(SOQLParser.EQ);
 				}
 				break;
@@ -5827,36 +5871,36 @@ export class SOQLParser extends Parser {
 		let _localctx: Set_operatorContext = new Set_operatorContext(this._ctx, this.state);
 		this.enterRule(_localctx, 114, SOQLParser.RULE_set_operator);
 		try {
-			this.state = 494;
+			this.state = 499;
 			this._errHandler.sync(this);
 			switch (this._input.LA(1)) {
 			case SOQLParser.IN:
 				this.enterOuterAlt(_localctx, 1);
 				{
-				this.state = 489;
+				this.state = 494;
 				this.match(SOQLParser.IN);
 				}
 				break;
 			case SOQLParser.NOT:
 				this.enterOuterAlt(_localctx, 2);
 				{
-				this.state = 490;
+				this.state = 495;
 				this.match(SOQLParser.NOT);
-				this.state = 491;
+				this.state = 496;
 				this.match(SOQLParser.IN);
 				}
 				break;
 			case SOQLParser.INCLUDES:
 				this.enterOuterAlt(_localctx, 3);
 				{
-				this.state = 492;
+				this.state = 497;
 				this.match(SOQLParser.INCLUDES);
 				}
 				break;
 			case SOQLParser.EXCLUDES:
 				this.enterOuterAlt(_localctx, 4);
 				{
-				this.state = 493;
+				this.state = 498;
 				this.match(SOQLParser.EXCLUDES);
 				}
 				break;
@@ -5886,15 +5930,15 @@ export class SOQLParser extends Parser {
 		try {
 			this.enterOuterAlt(_localctx, 1);
 			{
-			this.state = 496;
-			this.condition1();
 			this.state = 501;
+			this.condition1();
+			this.state = 506;
 			this._errHandler.sync(this);
 			_la = this._input.LA(1);
 			while (_la===SOQLParser.AND || _la===SOQLParser.OR) {
 				{
 				{
-				this.state = 497;
+				this.state = 502;
 				_la = this._input.LA(1);
 				if ( !(_la===SOQLParser.AND || _la===SOQLParser.OR) ) {
 				this._errHandler.recoverInline(this);
@@ -5906,11 +5950,11 @@ export class SOQLParser extends Parser {
 					this._errHandler.reportMatch(this);
 					this.consume();
 				}
-				this.state = 498;
+				this.state = 503;
 				this.condition1();
 				}
 				}
-				this.state = 503;
+				this.state = 508;
 				this._errHandler.sync(this);
 				_la = this._input.LA(1);
 			}
@@ -5938,17 +5982,17 @@ export class SOQLParser extends Parser {
 		try {
 			this.enterOuterAlt(_localctx, 1);
 			{
-			this.state = 505;
+			this.state = 510;
 			this._errHandler.sync(this);
 			_la = this._input.LA(1);
 			if (_la===SOQLParser.NOT) {
 				{
-				this.state = 504;
+				this.state = 509;
 				this.match(SOQLParser.NOT);
 				}
 			}
 
-			this.state = 509;
+			this.state = 514;
 			this._errHandler.sync(this);
 			switch (this._input.LA(1)) {
 			case SOQLParser.GROUP:
@@ -5969,6 +6013,7 @@ export class SOQLParser extends Parser {
 			case SOQLParser.VIEW:
 			case SOQLParser.VIEWSTAT:
 			case SOQLParser.WHEN:
+			case SOQLParser.SECURITY_ENFORCED:
 			case SOQLParser.CALENDAR_MONTH:
 			case SOQLParser.CALENDAR_QUARTER:
 			case SOQLParser.CALENDAR_YEAR:
@@ -6041,13 +6086,13 @@ export class SOQLParser extends Parser {
 			case SOQLParser.N_FISCAL_YEARS_AGO:
 			case SOQLParser.ID:
 				{
-				this.state = 507;
+				this.state = 512;
 				this.simple_condition();
 				}
 				break;
 			case SOQLParser.LPAREN:
 				{
-				this.state = 508;
+				this.state = 513;
 				this.parenthesis();
 				}
 				break;
@@ -6077,11 +6122,11 @@ export class SOQLParser extends Parser {
 		try {
 			this.enterOuterAlt(_localctx, 1);
 			{
-			this.state = 511;
+			this.state = 516;
 			this.match(SOQLParser.LPAREN);
-			this.state = 512;
+			this.state = 517;
 			this.condition();
-			this.state = 513;
+			this.state = 518;
 			this.match(SOQLParser.RPAREN);
 			}
 		}
@@ -6104,13 +6149,13 @@ export class SOQLParser extends Parser {
 		let _localctx: Simple_conditionContext = new Simple_conditionContext(this._ctx, this.state);
 		this.enterRule(_localctx, 122, SOQLParser.RULE_simple_condition);
 		try {
-			this.state = 518;
+			this.state = 523;
 			this._errHandler.sync(this);
-			switch ( this.interpreter.adaptivePredict(this._input,50,this._ctx) ) {
+			switch ( this.interpreter.adaptivePredict(this._input,51,this._ctx) ) {
 			case 1:
 				this.enterOuterAlt(_localctx, 1);
 				{
-				this.state = 515;
+				this.state = 520;
 				this.field_based_condition();
 				}
 				break;
@@ -6118,7 +6163,7 @@ export class SOQLParser extends Parser {
 			case 2:
 				this.enterOuterAlt(_localctx, 2);
 				{
-				this.state = 516;
+				this.state = 521;
 				this.set_based_condition();
 				}
 				break;
@@ -6126,7 +6171,7 @@ export class SOQLParser extends Parser {
 			case 3:
 				this.enterOuterAlt(_localctx, 3);
 				{
-				this.state = 517;
+				this.state = 522;
 				this.like_based_condition();
 				}
 				break;
@@ -6153,11 +6198,11 @@ export class SOQLParser extends Parser {
 		try {
 			this.enterOuterAlt(_localctx, 1);
 			{
-			this.state = 520;
+			this.state = 525;
 			this.condition_field();
-			this.state = 521;
+			this.state = 526;
 			this.comparison_operator();
-			this.state = 522;
+			this.state = 527;
 			this.literal();
 			}
 		}
@@ -6182,23 +6227,23 @@ export class SOQLParser extends Parser {
 		try {
 			this.enterOuterAlt(_localctx, 1);
 			{
-			this.state = 524;
+			this.state = 529;
 			this.condition_field();
-			this.state = 525;
+			this.state = 530;
 			this.set_operator();
-			this.state = 528;
+			this.state = 533;
 			this._errHandler.sync(this);
-			switch ( this.interpreter.adaptivePredict(this._input,51,this._ctx) ) {
+			switch ( this.interpreter.adaptivePredict(this._input,52,this._ctx) ) {
 			case 1:
 				{
-				this.state = 526;
+				this.state = 531;
 				this.soql_subquery();
 				}
 				break;
 
 			case 2:
 				{
-				this.state = 527;
+				this.state = 532;
 				this.set_values();
 				}
 				break;
@@ -6227,11 +6272,11 @@ export class SOQLParser extends Parser {
 		try {
 			this.enterOuterAlt(_localctx, 1);
 			{
-			this.state = 530;
+			this.state = 535;
 			this.condition_field();
-			this.state = 531;
+			this.state = 536;
 			this.match(SOQLParser.LIKE);
-			this.state = 532;
+			this.state = 537;
 			_la = this._input.LA(1);
 			if ( !(_la===SOQLParser.STRING_VALUE || _la===SOQLParser.LIKE_STRING_VALUE) ) {
 			this._errHandler.recoverInline(this);
@@ -6264,13 +6309,13 @@ export class SOQLParser extends Parser {
 		let _localctx: Condition_fieldContext = new Condition_fieldContext(this._ctx, this.state);
 		this.enterRule(_localctx, 130, SOQLParser.RULE_condition_field);
 		try {
-			this.state = 536;
+			this.state = 541;
 			this._errHandler.sync(this);
-			switch ( this.interpreter.adaptivePredict(this._input,52,this._ctx) ) {
+			switch ( this.interpreter.adaptivePredict(this._input,53,this._ctx) ) {
 			case 1:
 				this.enterOuterAlt(_localctx, 1);
 				{
-				this.state = 534;
+				this.state = 539;
 				this.field();
 				}
 				break;
@@ -6278,7 +6323,7 @@ export class SOQLParser extends Parser {
 			case 2:
 				this.enterOuterAlt(_localctx, 2);
 				{
-				this.state = 535;
+				this.state = 540;
 				this.function_call();
 				}
 				break;
@@ -6305,11 +6350,11 @@ export class SOQLParser extends Parser {
 		try {
 			this.enterOuterAlt(_localctx, 1);
 			{
-			this.state = 538;
+			this.state = 543;
 			this.match(SOQLParser.LPAREN);
-			this.state = 539;
+			this.state = 544;
 			this.set_value_list();
-			this.state = 540;
+			this.state = 545;
 			this.match(SOQLParser.RPAREN);
 			}
 		}
@@ -6335,21 +6380,21 @@ export class SOQLParser extends Parser {
 		try {
 			this.enterOuterAlt(_localctx, 1);
 			{
-			this.state = 542;
-			this.literal();
 			this.state = 547;
+			this.literal();
+			this.state = 552;
 			this._errHandler.sync(this);
 			_la = this._input.LA(1);
 			while (_la===SOQLParser.COMMA) {
 				{
 				{
-				this.state = 543;
+				this.state = 548;
 				this.match(SOQLParser.COMMA);
-				this.state = 544;
+				this.state = 549;
 				this.literal();
 				}
 				}
-				this.state = 549;
+				this.state = 554;
 				this._errHandler.sync(this);
 				_la = this._input.LA(1);
 			}
@@ -6376,21 +6421,21 @@ export class SOQLParser extends Parser {
 		try {
 			this.enterOuterAlt(_localctx, 1);
 			{
-			this.state = 550;
+			this.state = 555;
 			this.match(SOQLParser.WITH);
-			this.state = 553;
+			this.state = 558;
 			this._errHandler.sync(this);
-			switch ( this.interpreter.adaptivePredict(this._input,54,this._ctx) ) {
+			switch ( this.interpreter.adaptivePredict(this._input,55,this._ctx) ) {
 			case 1:
 				{
-				this.state = 551;
+				this.state = 556;
 				this.with_plain_clause();
 				}
 				break;
 
 			case 2:
 				{
-				this.state = 552;
+				this.state = 557;
 				this.with_data_category_clause();
 				}
 				break;
@@ -6418,7 +6463,7 @@ export class SOQLParser extends Parser {
 		try {
 			this.enterOuterAlt(_localctx, 1);
 			{
-			this.state = 555;
+			this.state = 560;
 			this.field_based_condition();
 			}
 		}
@@ -6443,11 +6488,11 @@ export class SOQLParser extends Parser {
 		try {
 			this.enterOuterAlt(_localctx, 1);
 			{
-			this.state = 557;
+			this.state = 562;
 			this.match(SOQLParser.DATA);
-			this.state = 558;
+			this.state = 563;
 			this.match(SOQLParser.CATEGORY);
-			this.state = 559;
+			this.state = 564;
 			this.data_category_spec_list();
 			}
 		}
@@ -6473,21 +6518,21 @@ export class SOQLParser extends Parser {
 		try {
 			this.enterOuterAlt(_localctx, 1);
 			{
-			this.state = 561;
-			this.data_category_spec();
 			this.state = 566;
+			this.data_category_spec();
+			this.state = 571;
 			this._errHandler.sync(this);
 			_la = this._input.LA(1);
 			while (_la===SOQLParser.AND) {
 				{
 				{
-				this.state = 562;
+				this.state = 567;
 				this.match(SOQLParser.AND);
-				this.state = 563;
+				this.state = 568;
 				this.data_category_spec();
 				}
 				}
-				this.state = 568;
+				this.state = 573;
 				this._errHandler.sync(this);
 				_la = this._input.LA(1);
 			}
@@ -6514,11 +6559,11 @@ export class SOQLParser extends Parser {
 		try {
 			this.enterOuterAlt(_localctx, 1);
 			{
-			this.state = 569;
+			this.state = 574;
 			this.data_category_group_name();
-			this.state = 570;
+			this.state = 575;
 			this.data_category_selector();
-			this.state = 571;
+			this.state = 576;
 			this.data_category_parameter_list();
 			}
 		}
@@ -6542,7 +6587,7 @@ export class SOQLParser extends Parser {
 		this.enterRule(_localctx, 146, SOQLParser.RULE_data_category_parameter_list);
 		let _la: number;
 		try {
-			this.state = 585;
+			this.state = 590;
 			this._errHandler.sync(this);
 			switch (this._input.LA(1)) {
 			case SOQLParser.GROUP:
@@ -6563,6 +6608,7 @@ export class SOQLParser extends Parser {
 			case SOQLParser.VIEW:
 			case SOQLParser.VIEWSTAT:
 			case SOQLParser.WHEN:
+			case SOQLParser.SECURITY_ENFORCED:
 			case SOQLParser.CALENDAR_MONTH:
 			case SOQLParser.CALENDAR_QUARTER:
 			case SOQLParser.CALENDAR_YEAR:
@@ -6636,34 +6682,34 @@ export class SOQLParser extends Parser {
 			case SOQLParser.ID:
 				this.enterOuterAlt(_localctx, 1);
 				{
-				this.state = 573;
+				this.state = 578;
 				this.data_category_name();
 				}
 				break;
 			case SOQLParser.LPAREN:
 				this.enterOuterAlt(_localctx, 2);
 				{
-				this.state = 574;
+				this.state = 579;
 				this.match(SOQLParser.LPAREN);
-				this.state = 575;
-				this.data_category_name();
 				this.state = 580;
+				this.data_category_name();
+				this.state = 585;
 				this._errHandler.sync(this);
 				_la = this._input.LA(1);
 				while (_la===SOQLParser.COMMA) {
 					{
 					{
-					this.state = 576;
+					this.state = 581;
 					this.match(SOQLParser.COMMA);
-					this.state = 577;
+					this.state = 582;
 					this.data_category_name();
 					}
 					}
-					this.state = 582;
+					this.state = 587;
 					this._errHandler.sync(this);
 					_la = this._input.LA(1);
 				}
-				this.state = 583;
+				this.state = 588;
 				this.match(SOQLParser.RPAREN);
 				}
 				break;
@@ -6693,7 +6739,7 @@ export class SOQLParser extends Parser {
 		try {
 			this.enterOuterAlt(_localctx, 1);
 			{
-			this.state = 587;
+			this.state = 592;
 			_la = this._input.LA(1);
 			if ( !(((((_la - 34)) & ~0x1F) === 0 && ((1 << (_la - 34)) & ((1 << (SOQLParser.ABOVE - 34)) | (1 << (SOQLParser.ABOVE_OR_BELOW - 34)) | (1 << (SOQLParser.AT - 34)) | (1 << (SOQLParser.BELOW - 34)))) !== 0)) ) {
 			this._errHandler.recoverInline(this);
@@ -6722,13 +6768,40 @@ export class SOQLParser extends Parser {
 		return _localctx;
 	}
 	@RuleVersion(0)
-	public group_by_plain_clause(): Group_by_plain_clauseContext {
-		let _localctx: Group_by_plain_clauseContext = new Group_by_plain_clauseContext(this._ctx, this.state);
-		this.enterRule(_localctx, 150, SOQLParser.RULE_group_by_plain_clause);
+	public with_security_enforced_clause(): With_security_enforced_clauseContext {
+		let _localctx: With_security_enforced_clauseContext = new With_security_enforced_clauseContext(this._ctx, this.state);
+		this.enterRule(_localctx, 150, SOQLParser.RULE_with_security_enforced_clause);
 		try {
 			this.enterOuterAlt(_localctx, 1);
 			{
-			this.state = 589;
+			this.state = 594;
+			this.match(SOQLParser.WITH);
+			this.state = 595;
+			this.match(SOQLParser.SECURITY_ENFORCED);
+			}
+		}
+		catch (re) {
+			if (re instanceof RecognitionException) {
+				_localctx.exception = re;
+				this._errHandler.reportError(this, re);
+				this._errHandler.recover(this, re);
+			} else {
+				throw re;
+			}
+		}
+		finally {
+			this.exitRule();
+		}
+		return _localctx;
+	}
+	@RuleVersion(0)
+	public group_by_plain_clause(): Group_by_plain_clauseContext {
+		let _localctx: Group_by_plain_clauseContext = new Group_by_plain_clauseContext(this._ctx, this.state);
+		this.enterRule(_localctx, 152, SOQLParser.RULE_group_by_plain_clause);
+		try {
+			this.enterOuterAlt(_localctx, 1);
+			{
+			this.state = 597;
 			this.group_by_list();
 			}
 		}
@@ -6749,17 +6822,17 @@ export class SOQLParser extends Parser {
 	@RuleVersion(0)
 	public group_by_rollup_clause(): Group_by_rollup_clauseContext {
 		let _localctx: Group_by_rollup_clauseContext = new Group_by_rollup_clauseContext(this._ctx, this.state);
-		this.enterRule(_localctx, 152, SOQLParser.RULE_group_by_rollup_clause);
+		this.enterRule(_localctx, 154, SOQLParser.RULE_group_by_rollup_clause);
 		try {
 			this.enterOuterAlt(_localctx, 1);
 			{
-			this.state = 591;
+			this.state = 599;
 			this.match(SOQLParser.ROLLUP);
-			this.state = 592;
+			this.state = 600;
 			this.match(SOQLParser.LPAREN);
-			this.state = 593;
+			this.state = 601;
 			this.group_by_list();
-			this.state = 594;
+			this.state = 602;
 			this.match(SOQLParser.RPAREN);
 			}
 		}
@@ -6780,17 +6853,17 @@ export class SOQLParser extends Parser {
 	@RuleVersion(0)
 	public group_by_cube_clause(): Group_by_cube_clauseContext {
 		let _localctx: Group_by_cube_clauseContext = new Group_by_cube_clauseContext(this._ctx, this.state);
-		this.enterRule(_localctx, 154, SOQLParser.RULE_group_by_cube_clause);
+		this.enterRule(_localctx, 156, SOQLParser.RULE_group_by_cube_clause);
 		try {
 			this.enterOuterAlt(_localctx, 1);
 			{
-			this.state = 596;
+			this.state = 604;
 			this.match(SOQLParser.CUBE);
-			this.state = 597;
+			this.state = 605;
 			this.match(SOQLParser.LPAREN);
-			this.state = 598;
+			this.state = 606;
 			this.group_by_list();
-			this.state = 599;
+			this.state = 607;
 			this.match(SOQLParser.RPAREN);
 			}
 		}
@@ -6811,26 +6884,26 @@ export class SOQLParser extends Parser {
 	@RuleVersion(0)
 	public group_by_list(): Group_by_listContext {
 		let _localctx: Group_by_listContext = new Group_by_listContext(this._ctx, this.state);
-		this.enterRule(_localctx, 156, SOQLParser.RULE_group_by_list);
+		this.enterRule(_localctx, 158, SOQLParser.RULE_group_by_list);
 		let _la: number;
 		try {
 			this.enterOuterAlt(_localctx, 1);
 			{
-			this.state = 601;
+			this.state = 609;
 			this.group_by_spec();
-			this.state = 606;
+			this.state = 614;
 			this._errHandler.sync(this);
 			_la = this._input.LA(1);
 			while (_la===SOQLParser.COMMA) {
 				{
 				{
-				this.state = 602;
+				this.state = 610;
 				this.match(SOQLParser.COMMA);
-				this.state = 603;
+				this.state = 611;
 				this.group_by_spec();
 				}
 				}
-				this.state = 608;
+				this.state = 616;
 				this._errHandler.sync(this);
 				_la = this._input.LA(1);
 			}
@@ -6853,15 +6926,15 @@ export class SOQLParser extends Parser {
 	@RuleVersion(0)
 	public group_by_spec(): Group_by_specContext {
 		let _localctx: Group_by_specContext = new Group_by_specContext(this._ctx, this.state);
-		this.enterRule(_localctx, 158, SOQLParser.RULE_group_by_spec);
+		this.enterRule(_localctx, 160, SOQLParser.RULE_group_by_spec);
 		try {
-			this.state = 611;
+			this.state = 619;
 			this._errHandler.sync(this);
-			switch ( this.interpreter.adaptivePredict(this._input,59,this._ctx) ) {
+			switch ( this.interpreter.adaptivePredict(this._input,60,this._ctx) ) {
 			case 1:
 				this.enterOuterAlt(_localctx, 1);
 				{
-				this.state = 609;
+				this.state = 617;
 				this.field();
 				}
 				break;
@@ -6869,7 +6942,7 @@ export class SOQLParser extends Parser {
 			case 2:
 				this.enterOuterAlt(_localctx, 2);
 				{
-				this.state = 610;
+				this.state = 618;
 				this.function_call();
 				}
 				break;
@@ -6892,26 +6965,26 @@ export class SOQLParser extends Parser {
 	@RuleVersion(0)
 	public order_by_list(): Order_by_listContext {
 		let _localctx: Order_by_listContext = new Order_by_listContext(this._ctx, this.state);
-		this.enterRule(_localctx, 160, SOQLParser.RULE_order_by_list);
+		this.enterRule(_localctx, 162, SOQLParser.RULE_order_by_list);
 		let _la: number;
 		try {
 			this.enterOuterAlt(_localctx, 1);
 			{
-			this.state = 613;
+			this.state = 621;
 			this.order_by_spec();
-			this.state = 618;
+			this.state = 626;
 			this._errHandler.sync(this);
 			_la = this._input.LA(1);
 			while (_la===SOQLParser.COMMA) {
 				{
 				{
-				this.state = 614;
+				this.state = 622;
 				this.match(SOQLParser.COMMA);
-				this.state = 615;
+				this.state = 623;
 				this.order_by_spec();
 				}
 				}
-				this.state = 620;
+				this.state = 628;
 				this._errHandler.sync(this);
 				_la = this._input.LA(1);
 			}
@@ -6934,29 +7007,29 @@ export class SOQLParser extends Parser {
 	@RuleVersion(0)
 	public order_by_spec(): Order_by_specContext {
 		let _localctx: Order_by_specContext = new Order_by_specContext(this._ctx, this.state);
-		this.enterRule(_localctx, 162, SOQLParser.RULE_order_by_spec);
+		this.enterRule(_localctx, 164, SOQLParser.RULE_order_by_spec);
 		let _la: number;
 		try {
 			this.enterOuterAlt(_localctx, 1);
 			{
-			this.state = 621;
+			this.state = 629;
 			this.order_by_field();
-			this.state = 623;
+			this.state = 631;
 			this._errHandler.sync(this);
 			_la = this._input.LA(1);
 			if (_la===SOQLParser.ASC || _la===SOQLParser.DESC) {
 				{
-				this.state = 622;
+				this.state = 630;
 				this.order_by_direction_clause();
 				}
 			}
 
-			this.state = 626;
+			this.state = 634;
 			this._errHandler.sync(this);
 			_la = this._input.LA(1);
 			if (_la===SOQLParser.NULLS) {
 				{
-				this.state = 625;
+				this.state = 633;
 				this.order_by_nulls_clause();
 				}
 			}
@@ -6980,12 +7053,12 @@ export class SOQLParser extends Parser {
 	@RuleVersion(0)
 	public order_by_direction_clause(): Order_by_direction_clauseContext {
 		let _localctx: Order_by_direction_clauseContext = new Order_by_direction_clauseContext(this._ctx, this.state);
-		this.enterRule(_localctx, 164, SOQLParser.RULE_order_by_direction_clause);
+		this.enterRule(_localctx, 166, SOQLParser.RULE_order_by_direction_clause);
 		let _la: number;
 		try {
 			this.enterOuterAlt(_localctx, 1);
 			{
-			this.state = 628;
+			this.state = 636;
 			_la = this._input.LA(1);
 			if ( !(_la===SOQLParser.ASC || _la===SOQLParser.DESC) ) {
 			this._errHandler.recoverInline(this);
@@ -7016,14 +7089,14 @@ export class SOQLParser extends Parser {
 	@RuleVersion(0)
 	public order_by_nulls_clause(): Order_by_nulls_clauseContext {
 		let _localctx: Order_by_nulls_clauseContext = new Order_by_nulls_clauseContext(this._ctx, this.state);
-		this.enterRule(_localctx, 166, SOQLParser.RULE_order_by_nulls_clause);
+		this.enterRule(_localctx, 168, SOQLParser.RULE_order_by_nulls_clause);
 		let _la: number;
 		try {
 			this.enterOuterAlt(_localctx, 1);
 			{
-			this.state = 630;
+			this.state = 638;
 			this.match(SOQLParser.NULLS);
-			this.state = 631;
+			this.state = 639;
 			_la = this._input.LA(1);
 			if ( !(_la===SOQLParser.FIRST || _la===SOQLParser.LAST) ) {
 			this._errHandler.recoverInline(this);
@@ -7054,15 +7127,15 @@ export class SOQLParser extends Parser {
 	@RuleVersion(0)
 	public order_by_field(): Order_by_fieldContext {
 		let _localctx: Order_by_fieldContext = new Order_by_fieldContext(this._ctx, this.state);
-		this.enterRule(_localctx, 168, SOQLParser.RULE_order_by_field);
+		this.enterRule(_localctx, 170, SOQLParser.RULE_order_by_field);
 		try {
-			this.state = 635;
+			this.state = 643;
 			this._errHandler.sync(this);
-			switch ( this.interpreter.adaptivePredict(this._input,63,this._ctx) ) {
+			switch ( this.interpreter.adaptivePredict(this._input,64,this._ctx) ) {
 			case 1:
 				this.enterOuterAlt(_localctx, 1);
 				{
-				this.state = 633;
+				this.state = 641;
 				this.field();
 				}
 				break;
@@ -7070,7 +7143,7 @@ export class SOQLParser extends Parser {
 			case 2:
 				this.enterOuterAlt(_localctx, 2);
 				{
-				this.state = 634;
+				this.state = 642;
 				this.function_call();
 				}
 				break;
@@ -7093,12 +7166,12 @@ export class SOQLParser extends Parser {
 	@RuleVersion(0)
 	public for_value(): For_valueContext {
 		let _localctx: For_valueContext = new For_valueContext(this._ctx, this.state);
-		this.enterRule(_localctx, 170, SOQLParser.RULE_for_value);
+		this.enterRule(_localctx, 172, SOQLParser.RULE_for_value);
 		let _la: number;
 		try {
 			this.enterOuterAlt(_localctx, 1);
 			{
-			this.state = 637;
+			this.state = 645;
 			_la = this._input.LA(1);
 			if ( !(((((_la - 33)) & ~0x1F) === 0 && ((1 << (_la - 33)) & ((1 << (SOQLParser.UPDATE - 33)) | (1 << (SOQLParser.REFERENCE - 33)) | (1 << (SOQLParser.VIEW - 33)))) !== 0)) ) {
 			this._errHandler.recoverInline(this);
@@ -7129,12 +7202,12 @@ export class SOQLParser extends Parser {
 	@RuleVersion(0)
 	public update_value(): Update_valueContext {
 		let _localctx: Update_valueContext = new Update_valueContext(this._ctx, this.state);
-		this.enterRule(_localctx, 172, SOQLParser.RULE_update_value);
+		this.enterRule(_localctx, 174, SOQLParser.RULE_update_value);
 		let _la: number;
 		try {
 			this.enterOuterAlt(_localctx, 1);
 			{
-			this.state = 639;
+			this.state = 647;
 			_la = this._input.LA(1);
 			if ( !(_la===SOQLParser.TRACKING || _la===SOQLParser.VIEWSTAT) ) {
 			this._errHandler.recoverInline(this);
@@ -7165,7 +7238,7 @@ export class SOQLParser extends Parser {
 
 	private static readonly _serializedATNSegments: number = 2;
 	private static readonly _serializedATNSegment0: string =
-		"\x03\uAF6F\u8320\u479D\uB75C\u4880\u1605\u191C\uAB37\x03\x8F\u0284\x04"+
+		"\x03\uAF6F\u8320\u479D\uB75C\u4880\u1605\u191C\uAB37\x03\x90\u028C\x04"+
 		"\x02\t\x02\x04\x03\t\x03\x04\x04\t\x04\x04\x05\t\x05\x04\x06\t\x06\x04"+
 		"\x07\t\x07\x04\b\t\b\x04\t\t\t\x04\n\t\n\x04\v\t\v\x04\f\t\f\x04\r\t\r"+
 		"\x04\x0E\t\x0E\x04\x0F\t\x0F\x04\x10\t\x10\x04\x11\t\x11\x04\x12\t\x12"+
@@ -7178,298 +7251,302 @@ export class SOQLParser extends Parser {
 		"=\t=\x04>\t>\x04?\t?\x04@\t@\x04A\tA\x04B\tB\x04C\tC\x04D\tD\x04E\tE\x04"+
 		"F\tF\x04G\tG\x04H\tH\x04I\tI\x04J\tJ\x04K\tK\x04L\tL\x04M\tM\x04N\tN\x04"+
 		"O\tO\x04P\tP\x04Q\tQ\x04R\tR\x04S\tS\x04T\tT\x04U\tU\x04V\tV\x04W\tW\x04"+
-		"X\tX\x03\x02\x03\x02\x03\x03\x03\x03\x05\x03\xB5\n\x03\x03\x04\x03\x04"+
-		"\x03\x04\x03\x04\x03\x04\x05\x04\xBC\n\x04\x03\x05\x03\x05\x03\x06\x03"+
-		"\x06\x03\x07\x03\x07\x03\b\x03\b\x03\t\x03\t\x03\n\x03\n\x03\n\x03\n\x03"+
-		"\n\x05\n\xCD\n\n\x03\v\x05\v\xD0\n\v\x03\v\x03\v\x03\f\x03\f\x03\f\x03"+
-		"\f\x03\f\x03\f\x03\f\x03\f\x03\f\x05\f\xDD\n\f\x03\r\x03\r\x03\x0E\x03"+
-		"\x0E\x03\x0F\x03\x0F\x03\x0F\x03\x0F\x03\x10\x03\x10\x03\x11\x03\x11\x03"+
-		"\x12\x03\x12\x03\x13\x03\x13\x03\x14\x03\x14\x03\x15\x03\x15\x03\x16\x03"+
-		"\x16\x03\x17\x03\x17\x03\x17\x03\x17\x05\x17\xF9\n\x17\x03\x18\x03\x18"+
-		"\x03\x19\x03\x19\x03\x1A\x03\x1A\x03\x1B\x03\x1B\x03\x1C\x03\x1C\x03\x1C"+
-		"\x05\x1C\u0106\n\x1C\x03\x1C\x05\x1C\u0109\n\x1C\x03\x1C\x05\x1C\u010C"+
-		"\n\x1C\x03\x1C\x03\x1C\x05\x1C\u0110\n\x1C\x05\x1C\u0112\n\x1C\x03\x1C"+
-		"\x05\x1C\u0115\n\x1C\x03\x1C\x05\x1C\u0118\n\x1C\x03\x1C\x05\x1C\u011B"+
-		"\n\x1C\x03\x1C\x05\x1C\u011E\n\x1C\x03\x1C\x05\x1C\u0121\n\x1C\x03\x1C"+
-		"\x03\x1C\x03\x1D\x03\x1D\x03\x1D\x03\x1D\x07\x1D\u0129\n\x1D\f\x1D\x0E"+
-		"\x1D\u012C\v\x1D\x03\x1E\x03\x1E\x03\x1E\x03\x1E\x07\x1E\u0132\n\x1E\f"+
-		"\x1E\x0E\x1E\u0135\v\x1E\x03\x1F\x03\x1F\x03\x1F\x03\x1F\x03 \x03 \x03"+
-		" \x03!\x03!\x03!\x03!\x03!\x05!\u0143\n!\x03\"\x03\"\x03\"\x03#\x03#\x03"+
-		"#\x03#\x03$\x03$\x03$\x03%\x03%\x03%\x03&\x03&\x03&\x03&\x05&\u0156\n"+
-		"&\x03&\x03&\x05&\u015A\n&\x03\'\x03\'\x03\'\x03\'\x05\'\u0160\n\'\x03"+
-		"(\x03(\x03(\x03(\x05(\u0166\n(\x03(\x05(\u0169\n(\x03(\x05(\u016C\n(\x03"+
-		"(\x05(\u016F\n(\x03(\x05(\u0172\n(\x03(\x05(\u0175\n(\x03(\x05(\u0178"+
-		"\n(\x03(\x05(\u017B\n(\x03(\x03(\x03)\x03)\x03)\x03)\x07)\u0183\n)\f)"+
-		"\x0E)\u0186\v)\x03*\x03*\x03*\x03*\x05*\u018C\n*\x03+\x03+\x05+\u0190"+
-		"\n+\x03,\x03,\x05,\u0194\n,\x03-\x03-\x05-\u0198\n-\x03.\x05.\u019B\n"+
-		".\x03.\x03.\x03/\x03/\x03/\x05/\u01A2\n/\x03/\x03/\x030\x030\x030\x07"+
-		"0\u01A9\n0\f0\x0E0\u01AC\v0\x031\x031\x031\x051\u01B1\n1\x032\x032\x03"+
-		"2\x032\x052\u01B7\n2\x032\x032\x033\x063\u01BC\n3\r3\x0E3\u01BD\x034\x03"+
-		"4\x034\x034\x035\x035\x035\x036\x036\x036\x037\x037\x037\x077\u01CD\n"+
-		"7\f7\x0E7\u01D0\v7\x038\x058\u01D3\n8\x038\x038\x058\u01D7\n8\x039\x03"+
-		"9\x039\x069\u01DC\n9\r9\x0E9\u01DD\x03:\x03:\x03:\x03:\x03:\x03:\x03:"+
-		"\x03:\x03:\x03:\x05:\u01EA\n:\x03;\x03;\x03;\x03;\x03;\x05;\u01F1\n;\x03"+
-		"<\x03<\x03<\x07<\u01F6\n<\f<\x0E<\u01F9\v<\x03=\x05=\u01FC\n=\x03=\x03"+
-		"=\x05=\u0200\n=\x03>\x03>\x03>\x03>\x03?\x03?\x03?\x05?\u0209\n?\x03@"+
-		"\x03@\x03@\x03@\x03A\x03A\x03A\x03A\x05A\u0213\nA\x03B\x03B\x03B\x03B"+
-		"\x03C\x03C\x05C\u021B\nC\x03D\x03D\x03D\x03D\x03E\x03E\x03E\x07E\u0224"+
-		"\nE\fE\x0EE\u0227\vE\x03F\x03F\x03F\x05F\u022C\nF\x03G\x03G\x03H\x03H"+
-		"\x03H\x03H\x03I\x03I\x03I\x07I\u0237\nI\fI\x0EI\u023A\vI\x03J\x03J\x03"+
-		"J\x03J\x03K\x03K\x03K\x03K\x03K\x07K\u0245\nK\fK\x0EK\u0248\vK\x03K\x03"+
-		"K\x05K\u024C\nK\x03L\x03L\x03M\x03M\x03N\x03N\x03N\x03N\x03N\x03O\x03"+
-		"O\x03O\x03O\x03O\x03P\x03P\x03P\x07P\u025F\nP\fP\x0EP\u0262\vP\x03Q\x03"+
-		"Q\x05Q\u0266\nQ\x03R\x03R\x03R\x07R\u026B\nR\fR\x0ER\u026E\vR\x03S\x03"+
-		"S\x05S\u0272\nS\x03S\x05S\u0275\nS\x03T\x03T\x03U\x03U\x03U\x03V\x03V"+
-		"\x05V\u027E\nV\x03W\x03W\x03X\x03X\x03X\x02\x02\x02Y\x02\x02\x04\x02\x06"+
-		"\x02\b\x02\n\x02\f\x02\x0E\x02\x10\x02\x12\x02\x14\x02\x16\x02\x18\x02"+
-		"\x1A\x02\x1C\x02\x1E\x02 \x02\"\x02$\x02&\x02(\x02*\x02,\x02.\x020\x02"+
-		"2\x024\x026\x028\x02:\x02<\x02>\x02@\x02B\x02D\x02F\x02H\x02J\x02L\x02"+
-		"N\x02P\x02R\x02T\x02V\x02X\x02Z\x02\\\x02^\x02`\x02b\x02d\x02f\x02h\x02"+
-		"j\x02l\x02n\x02p\x02r\x02t\x02v\x02x\x02z\x02|\x02~\x02\x80\x02\x82\x02"+
-		"\x84\x02\x86\x02\x88\x02\x8A\x02\x8C\x02\x8E\x02\x90\x02\x92\x02\x94\x02"+
-		"\x96\x02\x98\x02\x9A\x02\x9C\x02\x9E\x02\xA0\x02\xA2\x02\xA4\x02\xA6\x02"+
-		"\xA8\x02\xAA\x02\xAC\x02\xAE\x02\x02\x12\x03\x02$4\x03\x02Oe\x03\x02f"+
-		"z\x04\x02\x8D\x8D\x8F\x8F\x04\x02\x0E\x0E\x1E\x1E\x03\x025A\x03\x02BG"+
-		"\x03\x02HI\x03\x02JN\x04\x02\x06\x06\x1B\x1B\x03\x02\x04\x05\x03\x02$"+
-		"\'\x04\x02\b\b\v\v\x04\x02\x0F\x0F\x15\x15\x05\x02##--22\x04\x02//33\u0288"+
-		"\x02\xB0\x03\x02\x02\x02\x04\xB4\x03\x02\x02\x02\x06\xBB\x03\x02\x02\x02"+
-		"\b\xBD\x03\x02\x02\x02\n\xBF\x03\x02\x02\x02\f\xC1\x03\x02\x02\x02\x0E"+
-		"\xC3\x03\x02\x02\x02\x10\xC5\x03\x02\x02\x02\x12\xCC\x03\x02\x02\x02\x14"+
-		"\xCF\x03\x02\x02\x02\x16\xDC\x03\x02\x02\x02\x18\xDE\x03\x02\x02\x02\x1A"+
-		"\xE0\x03\x02\x02\x02\x1C\xE2\x03\x02\x02\x02\x1E\xE6\x03\x02\x02\x02 "+
-		"\xE8\x03\x02\x02\x02\"\xEA\x03\x02\x02\x02$\xEC\x03\x02\x02\x02&\xEE\x03"+
-		"\x02\x02\x02(\xF0\x03\x02\x02\x02*\xF2\x03\x02\x02\x02,\xF8\x03\x02\x02"+
-		"\x02.\xFA\x03\x02\x02\x020\xFC\x03\x02\x02\x022\xFE\x03\x02\x02\x024\u0100"+
-		"\x03\x02\x02\x026\u0102\x03\x02\x02\x028\u0124\x03\x02\x02\x02:\u012D"+
-		"\x03\x02\x02\x02<\u0136\x03\x02\x02\x02>\u013A\x03\x02\x02\x02@\u013D"+
-		"\x03\x02\x02\x02B\u0144\x03\x02\x02\x02D\u0147\x03\x02\x02\x02F\u014B"+
-		"\x03\x02\x02\x02H\u014E\x03\x02\x02\x02J\u0151\x03\x02\x02\x02L\u015B"+
-		"\x03\x02\x02\x02N\u0161\x03\x02\x02\x02P\u017E\x03\x02\x02\x02R\u018B"+
-		"\x03\x02\x02\x02T\u018F\x03\x02\x02\x02V\u0191\x03\x02\x02\x02X\u0195"+
-		"\x03\x02\x02\x02Z\u019A\x03\x02\x02\x02\\\u019E\x03\x02\x02\x02^\u01A5"+
-		"\x03\x02\x02\x02`\u01B0\x03\x02\x02\x02b\u01B2\x03\x02\x02\x02d\u01BB"+
-		"\x03\x02\x02\x02f\u01BF\x03\x02\x02\x02h\u01C3\x03\x02\x02\x02j\u01C6"+
-		"\x03\x02\x02\x02l\u01C9\x03\x02\x02\x02n\u01D2\x03\x02\x02\x02p\u01DB"+
-		"\x03\x02\x02\x02r\u01E9\x03\x02\x02\x02t\u01F0\x03\x02\x02\x02v\u01F2"+
-		"\x03\x02\x02\x02x\u01FB\x03\x02\x02\x02z\u0201\x03\x02\x02\x02|\u0208"+
-		"\x03\x02\x02\x02~\u020A\x03\x02\x02\x02\x80\u020E\x03\x02\x02\x02\x82"+
-		"\u0214\x03\x02\x02\x02\x84\u021A\x03\x02\x02\x02\x86\u021C\x03\x02\x02"+
-		"\x02\x88\u0220\x03\x02\x02\x02\x8A\u0228\x03\x02\x02\x02\x8C\u022D\x03"+
-		"\x02\x02\x02\x8E\u022F\x03\x02\x02\x02\x90\u0233\x03\x02\x02\x02\x92\u023B"+
-		"\x03\x02\x02\x02\x94\u024B\x03\x02\x02\x02\x96\u024D\x03\x02\x02\x02\x98"+
-		"\u024F\x03\x02\x02\x02\x9A\u0251\x03\x02\x02\x02\x9C\u0256\x03\x02\x02"+
-		"\x02\x9E\u025B\x03\x02\x02\x02\xA0\u0265\x03\x02\x02\x02\xA2\u0267\x03"+
-		"\x02\x02\x02\xA4\u026F\x03\x02\x02\x02\xA6\u0276\x03\x02\x02\x02\xA8\u0278"+
-		"\x03\x02\x02\x02\xAA\u027D\x03\x02\x02\x02\xAC\u027F\x03\x02\x02\x02\xAE"+
-		"\u0281\x03\x02\x02\x02\xB0\xB1\t\x02\x02\x02\xB1\x03\x03\x02\x02\x02\xB2"+
-		"\xB5\x05\x02\x02\x02\xB3\xB5\x07\x11\x02\x02\xB4\xB2\x03\x02\x02\x02\xB4"+
-		"\xB3\x03\x02\x02\x02\xB5\x05\x03\x02\x02\x02\xB6\xBC\x07\x8A\x02\x02\xB7"+
-		"\xBC\x05\x04\x03\x02\xB8\xBC\x05\x18\r\x02\xB9\xBC\x05\x1A\x0E\x02\xBA"+
-		"\xBC\x05,\x17\x02\xBB\xB6\x03\x02\x02\x02\xBB\xB7\x03\x02\x02\x02\xBB"+
-		"\xB8\x03\x02\x02\x02\xBB\xB9\x03\x02\x02\x02\xBB\xBA\x03\x02\x02\x02\xBC"+
-		"\x07\x03\x02\x02\x02\xBD\xBE\x05\x06\x04\x02\xBE\t\x03\x02\x02\x02\xBF"+
-		"\xC0\x05\x06\x04\x02\xC0\v\x03\x02\x02\x02\xC1\xC2\x05\x06\x04\x02\xC2"+
-		"\r\x03\x02\x02\x02\xC3\xC4\x05\x06\x04\x02\xC4\x0F\x03\x02\x02\x02\xC5"+
-		"\xC6\x05\x06\x04\x02\xC6\x11\x03\x02\x02\x02\xC7\xCD\x07\x8A\x02\x02\xC8"+
-		"\xCD\x05\x02\x02\x02\xC9\xCD\x05\x18\r\x02\xCA\xCD\x05\x1A\x0E\x02\xCB"+
-		"\xCD\x05,\x17\x02\xCC\xC7\x03\x02\x02\x02\xCC\xC8\x03\x02\x02\x02\xCC"+
-		"\xC9\x03\x02\x02\x02\xCC\xCA\x03\x02\x02\x02\xCC\xCB\x03\x02\x02\x02\xCD"+
-		"\x13\x03\x02\x02\x02\xCE\xD0\x07\x07\x02\x02\xCF\xCE\x03\x02\x02\x02\xCF"+
-		"\xD0\x03\x02\x02\x02\xD0\xD1\x03\x02\x02\x02\xD1\xD2\x05\x12\n\x02\xD2"+
-		"\x15\x03\x02\x02\x02\xD3\xDD\x05\x18\r\x02\xD4\xDD\x05\x1C\x0F\x02\xD5"+
-		"\xDD\x05\x1E\x10\x02\xD6\xDD\x05 \x11\x02\xD7\xDD\x05\"\x12\x02\xD8\xDD"+
-		"\x05$\x13\x02\xD9\xDD\x05&\x14\x02\xDA\xDD\x05(\x15\x02\xDB\xDD\x05*\x16"+
-		"\x02\xDC\xD3\x03\x02\x02\x02\xDC\xD4\x03\x02\x02\x02\xDC\xD5\x03\x02\x02"+
-		"\x02\xDC\xD6\x03\x02\x02\x02\xDC\xD7\x03\x02\x02\x02\xDC\xD8\x03\x02\x02"+
-		"\x02\xDC\xD9\x03\x02\x02\x02\xDC\xDA\x03\x02\x02\x02\xDC\xDB\x03\x02\x02"+
-		"\x02\xDD\x17\x03\x02\x02\x02\xDE\xDF\t\x03\x02\x02\xDF\x19\x03\x02\x02"+
-		"\x02\xE0\xE1\t\x04\x02\x02\xE1\x1B\x03\x02\x02\x02\xE2\xE3\x05\x1A\x0E"+
-		"\x02\xE3\xE4\x07\x82\x02\x02\xE4\xE5\x07\x8D\x02\x02\xE5\x1D\x03\x02\x02"+
-		"\x02\xE6\xE7\x07\x8C\x02\x02\xE7\x1F\x03\x02\x02\x02\xE8\xE9\x07\x8B\x02"+
-		"\x02\xE9!\x03\x02\x02\x02\xEA\xEB\t\x05\x02\x02\xEB#\x03\x02\x02\x02\xEC"+
-		"\xED\x07\x8E\x02\x02\xED%\x03\x02\x02\x02\xEE\xEF\x07\x04\x02\x02\xEF"+
-		"\'\x03\x02\x02\x02\xF0\xF1\t\x06\x02\x02\xF1)\x03\x02\x02\x02\xF2\xF3"+
-		"\x07\x19\x02\x02\xF3+\x03\x02\x02\x02\xF4\xF9\x05.\x18\x02\xF5\xF9\x05"+
-		"0\x19\x02\xF6\xF9\x052\x1A\x02\xF7\xF9\x054\x1B\x02\xF8\xF4\x03\x02\x02"+
-		"\x02\xF8\xF5\x03\x02\x02\x02\xF8\xF6\x03\x02\x02\x02\xF8\xF7\x03\x02\x02"+
-		"\x02\xF9-\x03\x02\x02\x02\xFA\xFB\t\x07\x02\x02\xFB/\x03\x02\x02\x02\xFC"+
-		"\xFD\t\b\x02\x02\xFD1\x03\x02\x02\x02\xFE\xFF\t\t\x02\x02\xFF3\x03\x02"+
-		"\x02\x02\u0100\u0101\t\n\x02\x02\u01015\x03\x02\x02\x02\u0102\u0103\x05"+
-		"8\x1D\x02\u0103\u0105\x05:\x1E\x02\u0104\u0106\x05<\x1F\x02\u0105\u0104"+
-		"\x03\x02\x02\x02\u0105\u0106\x03\x02\x02\x02\u0106\u0108\x03\x02\x02\x02"+
-		"\u0107\u0109\x05> \x02\u0108\u0107\x03\x02\x02\x02\u0108\u0109\x03\x02"+
-		"\x02\x02\u0109\u010B\x03\x02\x02\x02\u010A\u010C\x05\x8AF\x02\u010B\u010A"+
-		"\x03\x02\x02\x02\u010B\u010C\x03\x02\x02\x02\u010C\u0111\x03\x02\x02\x02"+
-		"\u010D\u010F\x05@!\x02\u010E\u0110\x05B\"\x02\u010F\u010E\x03\x02\x02"+
-		"\x02\u010F\u0110\x03\x02\x02\x02\u0110\u0112\x03\x02\x02\x02\u0111\u010D"+
-		"\x03\x02\x02\x02\u0111\u0112\x03\x02\x02\x02\u0112\u0114\x03\x02\x02\x02"+
-		"\u0113\u0115\x05D#\x02\u0114\u0113\x03\x02\x02\x02\u0114\u0115\x03\x02"+
-		"\x02\x02\u0115\u0117\x03\x02\x02\x02\u0116\u0118\x05F$\x02\u0117\u0116"+
-		"\x03\x02\x02\x02\u0117\u0118\x03\x02\x02\x02\u0118\u011A\x03\x02\x02\x02"+
-		"\u0119\u011B\x05H%\x02\u011A\u0119\x03\x02\x02\x02\u011A\u011B\x03\x02"+
-		"\x02\x02\u011B\u011D\x03\x02\x02\x02\u011C\u011E\x05J&\x02\u011D\u011C"+
-		"\x03\x02\x02\x02\u011D\u011E\x03\x02\x02\x02\u011E\u0120\x03\x02\x02\x02"+
-		"\u011F\u0121\x05L\'\x02\u0120\u011F\x03\x02\x02\x02\u0120\u0121\x03\x02"+
-		"\x02\x02\u0121\u0122\x03\x02\x02\x02\u0122\u0123\x07\x02\x02\x03\u0123"+
-		"7\x03\x02\x02\x02\u0124\u0125\x07\x1D\x02\x02\u0125\u012A\x05R*\x02\u0126"+
-		"\u0127\x07\x84\x02\x02\u0127\u0129\x05R*\x02\u0128\u0126\x03\x02\x02\x02"+
-		"\u0129\u012C\x03\x02\x02\x02\u012A\u0128\x03\x02\x02\x02\u012A\u012B\x03"+
-		"\x02\x02\x02\u012B9\x03\x02\x02\x02\u012C\u012A\x03\x02\x02\x02\u012D"+
-		"\u012E\x07\x10\x02\x02\u012E\u0133\x05n8\x02\u012F\u0130\x07\x84\x02\x02"+
-		"\u0130\u0132\x05n8\x02\u0131\u012F\x03\x02\x02\x02\u0132\u0135\x03\x02"+
-		"\x02\x02\u0133\u0131\x03\x02\x02\x02\u0133\u0134\x03\x02\x02\x02\u0134"+
-		";\x03\x02\x02\x02\u0135\u0133\x03\x02\x02\x02\u0136\u0137\x07\x1F\x02"+
-		"\x02\u0137\u0138\x07.\x02\x02\u0138\u0139\x05\f\x07\x02\u0139=\x03\x02"+
-		"\x02\x02\u013A\u013B\x07 \x02\x02\u013B\u013C\x05v<\x02\u013C?\x03\x02"+
-		"\x02\x02\u013D\u013E\x07\x11\x02\x02\u013E\u0142\x07\t\x02\x02\u013F\u0143"+
-		"\x05\x9AN\x02\u0140\u0143\x05\x9CO\x02\u0141\u0143\x05\x98M\x02\u0142"+
-		"\u013F\x03\x02\x02\x02\u0142\u0140\x03\x02\x02\x02\u0142\u0141\x03\x02"+
-		"\x02\x02\u0143A\x03\x02\x02\x02\u0144\u0145\x07\x12\x02\x02\u0145\u0146"+
-		"\x05v<\x02\u0146C\x03\x02\x02\x02\u0147\u0148\x07,\x02\x02\u0148\u0149"+
-		"\x07\t\x02\x02\u0149\u014A\x05\xA2R\x02\u014AE\x03\x02\x02\x02\u014B\u014C"+
-		"\x07\x17\x02\x02\u014C\u014D\x07\x8D\x02\x02\u014DG\x03\x02\x02\x02\u014E"+
-		"\u014F\x07+\x02\x02\u014F\u0150\x07\x8D\x02\x02\u0150I\x03\x02\x02\x02"+
-		"\u0151\u0152\x07\"\x02\x02\u0152\u0155\x05\xACW\x02\u0153\u0154\x07\x84"+
-		"\x02\x02\u0154\u0156\x05\xACW\x02\u0155\u0153\x03\x02\x02\x02\u0155\u0156"+
-		"\x03\x02\x02\x02\u0156\u0159\x03\x02\x02\x02\u0157\u0158\x07\x84\x02\x02"+
-		"\u0158\u015A\x05\xACW\x02\u0159\u0157\x03\x02\x02\x02\u0159\u015A\x03"+
-		"\x02\x02\x02\u015AK\x03\x02\x02\x02\u015B\u015C\x07#\x02\x02\u015C\u015F"+
-		"\x05\xAEX\x02\u015D\u015E\x07\x84\x02\x02\u015E\u0160\x05\xAEX\x02\u015F"+
-		"\u015D\x03\x02\x02\x02\u015F\u0160\x03\x02\x02\x02\u0160M\x03\x02\x02"+
-		"\x02\u0161\u0162\x07\x87\x02\x02\u0162\u0163\x05P)\x02\u0163\u0165\x05"+
-		":\x1E\x02\u0164\u0166\x05<\x1F\x02\u0165\u0164\x03\x02\x02\x02\u0165\u0166"+
-		"\x03\x02\x02\x02\u0166\u0168\x03\x02\x02\x02\u0167\u0169\x05> \x02\u0168"+
-		"\u0167\x03\x02\x02\x02\u0168\u0169\x03\x02\x02\x02\u0169\u016B\x03\x02"+
-		"\x02\x02\u016A\u016C\x05\x8AF\x02\u016B\u016A\x03\x02\x02\x02\u016B\u016C"+
-		"\x03\x02\x02\x02\u016C\u016E\x03\x02\x02\x02\u016D\u016F\x05D#\x02\u016E"+
-		"\u016D\x03\x02\x02\x02\u016E\u016F\x03\x02\x02\x02\u016F\u0171\x03\x02"+
-		"\x02\x02\u0170\u0172\x05F$\x02\u0171\u0170\x03\x02\x02\x02\u0171\u0172"+
-		"\x03\x02\x02\x02\u0172\u0174\x03\x02\x02\x02\u0173\u0175\x05H%\x02\u0174"+
-		"\u0173\x03\x02\x02\x02\u0174\u0175\x03\x02\x02\x02\u0175\u0177\x03\x02"+
-		"\x02\x02\u0176\u0178\x05J&\x02\u0177\u0176\x03\x02\x02\x02\u0177\u0178"+
-		"\x03\x02\x02\x02\u0178\u017A\x03\x02\x02\x02\u0179\u017B\x05L\'\x02\u017A"+
-		"\u0179\x03\x02\x02\x02\u017A\u017B\x03\x02\x02\x02\u017B\u017C\x03\x02"+
-		"\x02\x02\u017C\u017D\x07\x86\x02\x02\u017DO\x03\x02\x02\x02\u017E\u017F"+
-		"\x07\x1D\x02\x02\u017F\u0184\x05T+\x02\u0180\u0181\x07\x84\x02\x02\u0181"+
-		"\u0183\x05T+\x02\u0182\u0180\x03\x02\x02\x02\u0183\u0186\x03\x02\x02\x02"+
-		"\u0184\u0182\x03\x02\x02\x02\u0184\u0185\x03\x02\x02\x02\u0185Q\x03\x02"+
-		"\x02\x02\u0186\u0184\x03\x02\x02\x02\u0187\u018C\x05V,\x02\u0188\u018C"+
-		"\x05X-\x02\u0189\u018C\x05N(\x02\u018A\u018C\x05b2\x02\u018B\u0187\x03"+
-		"\x02\x02\x02\u018B\u0188\x03\x02\x02\x02\u018B\u0189\x03\x02\x02\x02\u018B"+
-		"\u018A\x03\x02\x02\x02\u018CS\x03\x02\x02\x02\u018D\u0190\x05V,\x02\u018E"+
-		"\u0190\x05X-\x02\u018F\u018D\x03\x02\x02\x02\u018F\u018E\x03\x02\x02\x02"+
-		"\u0190U\x03\x02\x02\x02\u0191\u0193\x05Z.\x02\u0192\u0194\x05\x14\v\x02"+
-		"\u0193\u0192\x03\x02\x02\x02\u0193\u0194\x03\x02\x02\x02\u0194W\x03\x02"+
-		"\x02\x02\u0195\u0197\x05\\/\x02\u0196\u0198\x05\x14\v\x02\u0197\u0196"+
-		"\x03\x02\x02\x02\u0197\u0198\x03\x02\x02\x02\u0198Y\x03\x02\x02\x02\u0199"+
-		"\u019B\x05p9\x02\u019A\u0199\x03\x02\x02\x02\u019A\u019B\x03\x02\x02\x02"+
-		"\u019B\u019C\x03\x02\x02\x02\u019C\u019D\x05\n\x06\x02\u019D[\x03\x02"+
-		"\x02\x02\u019E\u019F\x05,\x17\x02\u019F\u01A1\x07\x87\x02\x02\u01A0\u01A2"+
-		"\x05^0\x02\u01A1\u01A0\x03\x02\x02\x02\u01A1\u01A2\x03\x02\x02\x02\u01A2"+
-		"\u01A3\x03\x02\x02\x02\u01A3\u01A4\x07\x86\x02\x02\u01A4]\x03\x02\x02"+
-		"\x02\u01A5\u01AA\x05`1\x02\u01A6\u01A7\x07\x84\x02\x02\u01A7\u01A9\x05"+
-		"`1\x02\u01A8\u01A6\x03\x02\x02\x02\u01A9\u01AC\x03\x02\x02\x02\u01AA\u01A8"+
-		"\x03\x02\x02\x02\u01AA\u01AB\x03\x02\x02\x02\u01AB_\x03\x02\x02\x02\u01AC"+
-		"\u01AA\x03\x02\x02\x02\u01AD\u01B1\x05Z.\x02\u01AE\u01B1\x05\x16\f\x02"+
-		"\u01AF\u01B1\x05\\/\x02\u01B0\u01AD\x03\x02\x02\x02\u01B0\u01AE\x03\x02"+
-		"\x02\x02\u01B0\u01AF\x03\x02\x02\x02\u01B1a\x03\x02\x02\x02\u01B2\u01B3"+
-		"\x071\x02\x02\u01B3\u01B4\x05Z.\x02\u01B4\u01B6\x05d3\x02\u01B5\u01B7"+
-		"\x05j6\x02\u01B6\u01B5\x03\x02\x02\x02\u01B6\u01B7\x03\x02\x02\x02\u01B7"+
-		"\u01B8\x03\x02\x02\x02\u01B8\u01B9\x07*\x02\x02\u01B9c\x03\x02\x02\x02"+
-		"\u01BA\u01BC\x05f4\x02\u01BB\u01BA\x03\x02\x02\x02\u01BC\u01BD\x03\x02"+
-		"\x02\x02\u01BD\u01BB\x03\x02\x02\x02\u01BD\u01BE\x03\x02\x02\x02\u01BE"+
-		"e\x03\x02\x02\x02\u01BF\u01C0\x074\x02\x02\u01C0\u01C1\x05\b\x05\x02\u01C1"+
-		"\u01C2\x05h5\x02\u01C2g\x03\x02\x02\x02\u01C3\u01C4\x070\x02\x02\u01C4"+
-		"\u01C5\x05l7\x02\u01C5i\x03\x02\x02\x02\u01C6\u01C7\x07\f\x02\x02\u01C7"+
-		"\u01C8\x05l7\x02\u01C8k\x03\x02\x02\x02\u01C9\u01CE\x05Z.\x02\u01CA\u01CB"+
-		"\x07\x84\x02\x02\u01CB\u01CD\x05Z.\x02\u01CC\u01CA\x03\x02\x02\x02\u01CD"+
-		"\u01D0\x03\x02\x02\x02\u01CE\u01CC\x03\x02\x02\x02\u01CE\u01CF\x03\x02"+
-		"\x02\x02\u01CFm\x03\x02\x02\x02\u01D0\u01CE\x03\x02\x02\x02\u01D1\u01D3"+
-		"\x05p9\x02\u01D2\u01D1\x03\x02\x02\x02\u01D2\u01D3\x03\x02\x02\x02\u01D3"+
-		"\u01D4\x03\x02\x02\x02\u01D4\u01D6\x05\b\x05\x02\u01D5\u01D7\x05\x14\v"+
-		"\x02\u01D6\u01D5\x03\x02\x02\x02\u01D6\u01D7\x03\x02\x02\x02\u01D7o\x03"+
-		"\x02\x02\x02\u01D8\u01D9\x05\b\x05\x02\u01D9\u01DA\x07\x81\x02\x02\u01DA"+
-		"\u01DC\x03\x02\x02\x02\u01DB\u01D8\x03\x02\x02\x02\u01DC\u01DD\x03\x02"+
-		"\x02\x02\u01DD\u01DB\x03\x02\x02\x02\u01DD\u01DE\x03\x02\x02\x02\u01DE"+
-		"q\x03\x02\x02\x02\u01DF\u01EA\x07{\x02\x02\u01E0\u01EA\x07|\x02\x02\u01E1"+
-		"\u01EA\x07}\x02\x02\u01E2\u01EA\x07~\x02\x02\u01E3\u01EA\x07\x7F\x02\x02"+
-		"\u01E4\u01EA\x07\x80\x02\x02\u01E5\u01E6\x07\x7F\x02\x02\u01E6\u01EA\x07"+
-		"{\x02\x02\u01E7\u01E8\x07\x80\x02\x02\u01E8\u01EA\x07{\x02\x02\u01E9\u01DF"+
-		"\x03\x02\x02\x02\u01E9\u01E0\x03\x02\x02\x02\u01E9\u01E1\x03\x02\x02\x02"+
-		"\u01E9\u01E2\x03\x02\x02\x02\u01E9\u01E3\x03\x02\x02\x02\u01E9\u01E4\x03"+
-		"\x02\x02\x02\u01E9\u01E5\x03\x02\x02\x02\u01E9\u01E7\x03\x02\x02\x02\u01EA"+
-		"s\x03\x02\x02\x02\u01EB\u01F1\x07\x13\x02\x02\u01EC\u01ED\x07\x18\x02"+
-		"\x02\u01ED\u01F1\x07\x13\x02\x02\u01EE\u01F1\x07\x14\x02\x02\u01EF\u01F1"+
-		"\x07\r\x02\x02\u01F0\u01EB\x03\x02\x02\x02\u01F0\u01EC\x03\x02\x02\x02"+
-		"\u01F0\u01EE\x03\x02\x02\x02\u01F0\u01EF\x03\x02\x02\x02\u01F1u\x03\x02"+
-		"\x02\x02\u01F2\u01F7\x05x=\x02\u01F3\u01F4\t\v\x02\x02\u01F4\u01F6\x05"+
-		"x=\x02\u01F5\u01F3\x03\x02\x02\x02\u01F6\u01F9\x03\x02\x02\x02\u01F7\u01F5"+
-		"\x03\x02\x02\x02\u01F7\u01F8\x03\x02\x02\x02\u01F8w\x03\x02\x02\x02\u01F9"+
-		"\u01F7\x03\x02\x02\x02\u01FA\u01FC\x07\x18\x02\x02\u01FB\u01FA\x03\x02"+
-		"\x02\x02\u01FB\u01FC\x03\x02\x02\x02\u01FC\u01FF\x03\x02\x02\x02\u01FD"+
-		"\u0200\x05|?\x02\u01FE\u0200\x05z>\x02\u01FF\u01FD\x03\x02\x02\x02\u01FF"+
-		"\u01FE\x03\x02\x02\x02\u0200y\x03\x02\x02\x02\u0201\u0202\x07\x87\x02"+
-		"\x02\u0202\u0203\x05v<\x02\u0203\u0204\x07\x86\x02\x02\u0204{\x03\x02"+
-		"\x02\x02\u0205\u0209\x05~@\x02\u0206\u0209\x05\x80A\x02\u0207\u0209\x05"+
-		"\x82B\x02\u0208\u0205\x03\x02\x02\x02\u0208\u0206\x03\x02\x02\x02\u0208"+
-		"\u0207\x03\x02\x02\x02\u0209}\x03\x02\x02\x02\u020A\u020B\x05\x84C\x02"+
-		"\u020B\u020C\x05r:\x02\u020C\u020D\x05\x16\f\x02\u020D\x7F\x03\x02\x02"+
-		"\x02\u020E\u020F\x05\x84C\x02\u020F\u0212\x05t;\x02\u0210\u0213\x05N("+
-		"\x02\u0211\u0213\x05\x86D\x02\u0212\u0210\x03\x02\x02\x02\u0212\u0211"+
-		"\x03\x02\x02\x02\u0213\x81\x03\x02\x02\x02\u0214\u0215\x05\x84C\x02\u0215"+
-		"\u0216\x07\x16\x02\x02\u0216\u0217\t\f\x02\x02\u0217\x83\x03\x02\x02\x02"+
-		"\u0218\u021B\x05Z.\x02\u0219\u021B\x05\\/\x02\u021A\u0218\x03\x02\x02"+
-		"\x02\u021A\u0219\x03\x02\x02\x02\u021B\x85\x03\x02\x02\x02\u021C\u021D"+
-		"\x07\x87\x02\x02\u021D\u021E\x05\x88E\x02\u021E\u021F\x07\x86\x02\x02"+
-		"\u021F\x87\x03\x02\x02\x02\u0220\u0225\x05\x16\f\x02\u0221\u0222\x07\x84"+
-		"\x02\x02\u0222\u0224\x05\x16\f\x02\u0223\u0221\x03\x02\x02\x02\u0224\u0227"+
-		"\x03\x02\x02\x02\u0225\u0223\x03\x02\x02\x02\u0225\u0226\x03\x02\x02\x02"+
-		"\u0226\x89\x03\x02\x02\x02\u0227\u0225\x03\x02\x02\x02\u0228\u022B\x07"+
-		"!\x02\x02\u0229\u022C\x05\x8CG\x02\u022A\u022C\x05\x8EH\x02\u022B\u0229"+
-		"\x03\x02\x02\x02\u022B\u022A\x03\x02\x02\x02\u022C\x8B\x03\x02\x02\x02"+
-		"\u022D\u022E\x05~@\x02\u022E\x8D\x03\x02\x02\x02\u022F\u0230\x07)\x02"+
-		"\x02\u0230\u0231\x07(\x02\x02\u0231\u0232\x05\x90I\x02\u0232\x8F\x03\x02"+
-		"\x02\x02\u0233\u0238\x05\x92J\x02\u0234\u0235\x07\x06\x02\x02\u0235\u0237"+
-		"\x05\x92J\x02\u0236\u0234\x03\x02\x02\x02";
+		"X\tX\x04Y\tY\x03\x02\x03\x02\x03\x03\x03\x03\x05\x03\xB7\n\x03\x03\x04"+
+		"\x03\x04\x03\x04\x03\x04\x03\x04\x05\x04\xBE\n\x04\x03\x05\x03\x05\x03"+
+		"\x06\x03\x06\x03\x07\x03\x07\x03\b\x03\b\x03\t\x03\t\x03\n\x03\n\x03\n"+
+		"\x03\n\x03\n\x05\n\xCF\n\n\x03\v\x05\v\xD2\n\v\x03\v\x03\v\x03\f\x03\f"+
+		"\x03\f\x03\f\x03\f\x03\f\x03\f\x03\f\x03\f\x05\f\xDF\n\f\x03\r\x03\r\x03"+
+		"\x0E\x03\x0E\x03\x0F\x03\x0F\x03\x0F\x03\x0F\x03\x10\x03\x10\x03\x11\x03"+
+		"\x11\x03\x12\x03\x12\x03\x13\x03\x13\x03\x14\x03\x14\x03\x15\x03\x15\x03"+
+		"\x16\x03\x16\x03\x17\x03\x17\x03\x17\x03\x17\x05\x17\xFB\n\x17\x03\x18"+
+		"\x03\x18\x03\x19\x03\x19\x03\x1A\x03\x1A\x03\x1B\x03\x1B\x03\x1C\x03\x1C"+
+		"\x03\x1C\x05\x1C\u0108\n\x1C\x03\x1C\x05\x1C\u010B\n\x1C\x03\x1C\x05\x1C"+
+		"\u010E\n\x1C\x03\x1C\x05\x1C\u0111\n\x1C\x03\x1C\x03\x1C\x05\x1C\u0115"+
+		"\n\x1C\x05\x1C\u0117\n\x1C\x03\x1C\x05\x1C\u011A\n\x1C\x03\x1C\x05\x1C"+
+		"\u011D\n\x1C\x03\x1C\x05\x1C\u0120\n\x1C\x03\x1C\x05\x1C\u0123\n\x1C\x03"+
+		"\x1C\x05\x1C\u0126\n\x1C\x03\x1C\x03\x1C\x03\x1D\x03\x1D\x03\x1D\x03\x1D"+
+		"\x07\x1D\u012E\n\x1D\f\x1D\x0E\x1D\u0131\v\x1D\x03\x1E\x03\x1E\x03\x1E"+
+		"\x03\x1E\x07\x1E\u0137\n\x1E\f\x1E\x0E\x1E\u013A\v\x1E\x03\x1F\x03\x1F"+
+		"\x03\x1F\x03\x1F\x03 \x03 \x03 \x03!\x03!\x03!\x03!\x03!\x05!\u0148\n"+
+		"!\x03\"\x03\"\x03\"\x03#\x03#\x03#\x03#\x03$\x03$\x03$\x03%\x03%\x03%"+
+		"\x03&\x03&\x03&\x03&\x05&\u015B\n&\x03&\x03&\x05&\u015F\n&\x03\'\x03\'"+
+		"\x03\'\x03\'\x05\'\u0165\n\'\x03(\x03(\x03(\x03(\x05(\u016B\n(\x03(\x05"+
+		"(\u016E\n(\x03(\x05(\u0171\n(\x03(\x05(\u0174\n(\x03(\x05(\u0177\n(\x03"+
+		"(\x05(\u017A\n(\x03(\x05(\u017D\n(\x03(\x05(\u0180\n(\x03(\x03(\x03)\x03"+
+		")\x03)\x03)\x07)\u0188\n)\f)\x0E)\u018B\v)\x03*\x03*\x03*\x03*\x05*\u0191"+
+		"\n*\x03+\x03+\x05+\u0195\n+\x03,\x03,\x05,\u0199\n,\x03-\x03-\x05-\u019D"+
+		"\n-\x03.\x05.\u01A0\n.\x03.\x03.\x03/\x03/\x03/\x05/\u01A7\n/\x03/\x03"+
+		"/\x030\x030\x030\x070\u01AE\n0\f0\x0E0\u01B1\v0\x031\x031\x031\x051\u01B6"+
+		"\n1\x032\x032\x032\x032\x052\u01BC\n2\x032\x032\x033\x063\u01C1\n3\r3"+
+		"\x0E3\u01C2\x034\x034\x034\x034\x035\x035\x035\x036\x036\x036\x037\x03"+
+		"7\x037\x077\u01D2\n7\f7\x0E7\u01D5\v7\x038\x058\u01D8\n8\x038\x038\x05"+
+		"8\u01DC\n8\x039\x039\x039\x069\u01E1\n9\r9\x0E9\u01E2\x03:\x03:\x03:\x03"+
+		":\x03:\x03:\x03:\x03:\x03:\x03:\x05:\u01EF\n:\x03;\x03;\x03;\x03;\x03"+
+		";\x05;\u01F6\n;\x03<\x03<\x03<\x07<\u01FB\n<\f<\x0E<\u01FE\v<\x03=\x05"+
+		"=\u0201\n=\x03=\x03=\x05=\u0205\n=\x03>\x03>\x03>\x03>\x03?\x03?\x03?"+
+		"\x05?\u020E\n?\x03@\x03@\x03@\x03@\x03A\x03A\x03A\x03A\x05A\u0218\nA\x03"+
+		"B\x03B\x03B\x03B\x03C\x03C\x05C\u0220\nC\x03D\x03D\x03D\x03D\x03E\x03"+
+		"E\x03E\x07E\u0229\nE\fE\x0EE\u022C\vE\x03F\x03F\x03F\x05F\u0231\nF\x03"+
+		"G\x03G\x03H\x03H\x03H\x03H\x03I\x03I\x03I\x07I\u023C\nI\fI\x0EI\u023F"+
+		"\vI\x03J\x03J\x03J\x03J\x03K\x03K\x03K\x03K\x03K\x07K\u024A\nK\fK\x0E"+
+		"K\u024D\vK\x03K\x03K\x05K\u0251\nK\x03L\x03L\x03M\x03M\x03M\x03N\x03N"+
+		"\x03O\x03O\x03O\x03O\x03O\x03P\x03P\x03P\x03P\x03P\x03Q\x03Q\x03Q\x07"+
+		"Q\u0267\nQ\fQ\x0EQ\u026A\vQ\x03R\x03R\x05R\u026E\nR\x03S\x03S\x03S\x07"+
+		"S\u0273\nS\fS\x0ES\u0276\vS\x03T\x03T\x05T\u027A\nT\x03T\x05T\u027D\n"+
+		"T\x03U\x03U\x03V\x03V\x03V\x03W\x03W\x05W\u0286\nW\x03X\x03X\x03Y\x03"+
+		"Y\x03Y\x02\x02\x02Z\x02\x02\x04\x02\x06\x02\b\x02\n\x02\f\x02\x0E\x02"+
+		"\x10\x02\x12\x02\x14\x02\x16\x02\x18\x02\x1A\x02\x1C\x02\x1E\x02 \x02"+
+		"\"\x02$\x02&\x02(\x02*\x02,\x02.\x020\x022\x024\x026\x028\x02:\x02<\x02"+
+		">\x02@\x02B\x02D\x02F\x02H\x02J\x02L\x02N\x02P\x02R\x02T\x02V\x02X\x02"+
+		"Z\x02\\\x02^\x02`\x02b\x02d\x02f\x02h\x02j\x02l\x02n\x02p\x02r\x02t\x02"+
+		"v\x02x\x02z\x02|\x02~\x02\x80\x02\x82\x02\x84\x02\x86\x02\x88\x02\x8A"+
+		"\x02\x8C\x02\x8E\x02\x90\x02\x92\x02\x94\x02\x96\x02\x98\x02\x9A\x02\x9C"+
+		"\x02\x9E\x02\xA0\x02\xA2\x02\xA4\x02\xA6\x02\xA8\x02\xAA\x02\xAC\x02\xAE"+
+		"\x02\xB0\x02\x02\x12\x03\x02$5\x03\x02Pf\x03\x02g{\x04\x02\x8E\x8E\x90"+
+		"\x90\x04\x02\x0E\x0E\x1E\x1E\x03\x026B\x03\x02CH\x03\x02IJ\x03\x02KO\x04"+
+		"\x02\x06\x06\x1B\x1B\x03\x02\x04\x05\x03\x02$\'\x04\x02\b\b\v\v\x04\x02"+
+		"\x0F\x0F\x15\x15\x05\x02##--22\x04\x02//33\u0290\x02\xB2\x03\x02\x02\x02"+
+		"\x04\xB6\x03\x02\x02\x02\x06\xBD\x03\x02\x02\x02\b\xBF\x03\x02\x02\x02"+
+		"\n\xC1\x03\x02\x02\x02\f\xC3\x03\x02\x02\x02\x0E\xC5\x03\x02\x02\x02\x10"+
+		"\xC7\x03\x02\x02\x02\x12\xCE\x03\x02\x02\x02\x14\xD1\x03\x02\x02\x02\x16"+
+		"\xDE\x03\x02\x02\x02\x18\xE0\x03\x02\x02\x02\x1A\xE2\x03\x02\x02\x02\x1C"+
+		"\xE4\x03\x02\x02\x02\x1E\xE8\x03\x02\x02\x02 \xEA\x03\x02\x02\x02\"\xEC"+
+		"\x03\x02\x02\x02$\xEE\x03\x02\x02\x02&\xF0\x03\x02\x02\x02(\xF2\x03\x02"+
+		"\x02\x02*\xF4\x03\x02\x02\x02,\xFA\x03\x02\x02\x02.\xFC\x03\x02\x02\x02"+
+		"0\xFE\x03\x02\x02\x022\u0100\x03\x02\x02\x024\u0102\x03\x02\x02\x026\u0104"+
+		"\x03\x02\x02\x028\u0129\x03\x02\x02\x02:\u0132\x03\x02\x02\x02<\u013B"+
+		"\x03\x02\x02\x02>\u013F\x03\x02\x02\x02@\u0142\x03\x02\x02\x02B\u0149"+
+		"\x03\x02\x02\x02D\u014C\x03\x02\x02\x02F\u0150\x03\x02\x02\x02H\u0153"+
+		"\x03\x02\x02\x02J\u0156\x03\x02\x02\x02L\u0160\x03\x02\x02\x02N\u0166"+
+		"\x03\x02\x02\x02P\u0183\x03\x02\x02\x02R\u0190\x03\x02\x02\x02T\u0194"+
+		"\x03\x02\x02\x02V\u0196\x03\x02\x02\x02X\u019A\x03\x02\x02\x02Z\u019F"+
+		"\x03\x02\x02\x02\\\u01A3\x03\x02\x02\x02^\u01AA\x03\x02\x02\x02`\u01B5"+
+		"\x03\x02\x02\x02b\u01B7\x03\x02\x02\x02d\u01C0\x03\x02\x02\x02f\u01C4"+
+		"\x03\x02\x02\x02h\u01C8\x03\x02\x02\x02j\u01CB\x03\x02\x02\x02l\u01CE"+
+		"\x03\x02\x02\x02n\u01D7\x03\x02\x02\x02p\u01E0\x03\x02\x02\x02r\u01EE"+
+		"\x03\x02\x02\x02t\u01F5\x03\x02\x02\x02v\u01F7\x03\x02\x02\x02x\u0200"+
+		"\x03\x02\x02\x02z\u0206\x03\x02\x02\x02|\u020D\x03\x02\x02\x02~\u020F"+
+		"\x03\x02\x02\x02\x80\u0213\x03\x02\x02\x02\x82\u0219\x03\x02\x02\x02\x84"+
+		"\u021F\x03\x02\x02\x02\x86\u0221\x03\x02\x02\x02\x88\u0225\x03\x02\x02"+
+		"\x02\x8A\u022D\x03\x02\x02\x02\x8C\u0232\x03\x02\x02\x02\x8E\u0234\x03"+
+		"\x02\x02\x02\x90\u0238\x03\x02\x02\x02\x92\u0240\x03\x02\x02\x02\x94\u0250"+
+		"\x03\x02\x02\x02\x96\u0252\x03\x02\x02\x02\x98\u0254\x03\x02\x02\x02\x9A"+
+		"\u0257\x03\x02\x02\x02\x9C\u0259\x03\x02\x02\x02\x9E\u025E\x03\x02\x02"+
+		"\x02\xA0\u0263\x03\x02\x02\x02\xA2\u026D\x03\x02\x02\x02\xA4\u026F\x03"+
+		"\x02\x02\x02\xA6\u0277\x03\x02\x02\x02\xA8\u027E\x03\x02\x02\x02\xAA\u0280"+
+		"\x03\x02\x02\x02\xAC\u0285\x03\x02\x02\x02\xAE\u0287\x03\x02\x02\x02\xB0"+
+		"\u0289\x03\x02\x02\x02\xB2\xB3\t\x02\x02\x02\xB3\x03\x03\x02\x02\x02\xB4"+
+		"\xB7\x05\x02\x02\x02\xB5\xB7\x07\x11\x02\x02\xB6\xB4\x03\x02\x02\x02\xB6"+
+		"\xB5\x03\x02\x02\x02\xB7\x05\x03\x02\x02\x02\xB8\xBE\x07\x8B\x02\x02\xB9"+
+		"\xBE\x05\x04\x03\x02\xBA\xBE\x05\x18\r\x02\xBB\xBE\x05\x1A\x0E\x02\xBC"+
+		"\xBE\x05,\x17\x02\xBD\xB8\x03\x02\x02\x02\xBD\xB9\x03\x02\x02\x02\xBD"+
+		"\xBA\x03\x02\x02\x02\xBD\xBB\x03\x02\x02\x02\xBD\xBC\x03\x02\x02\x02\xBE"+
+		"\x07\x03\x02\x02\x02\xBF\xC0\x05\x06\x04\x02\xC0\t\x03\x02\x02\x02\xC1"+
+		"\xC2\x05\x06\x04\x02\xC2\v\x03\x02\x02\x02\xC3\xC4\x05\x06\x04\x02\xC4"+
+		"\r\x03\x02\x02\x02\xC5\xC6\x05\x06\x04\x02\xC6\x0F\x03\x02\x02\x02\xC7"+
+		"\xC8\x05\x06\x04\x02\xC8\x11\x03\x02\x02\x02\xC9\xCF\x07\x8B\x02\x02\xCA"+
+		"\xCF\x05\x02\x02\x02\xCB\xCF\x05\x18\r\x02\xCC\xCF\x05\x1A\x0E\x02\xCD"+
+		"\xCF\x05,\x17\x02\xCE\xC9\x03\x02\x02\x02\xCE\xCA\x03\x02\x02\x02\xCE"+
+		"\xCB\x03\x02\x02\x02\xCE\xCC\x03\x02\x02\x02\xCE\xCD\x03\x02\x02\x02\xCF"+
+		"\x13\x03\x02\x02\x02\xD0\xD2\x07\x07\x02\x02\xD1\xD0\x03\x02\x02\x02\xD1"+
+		"\xD2\x03\x02\x02\x02\xD2\xD3\x03\x02\x02\x02\xD3\xD4\x05\x12\n\x02\xD4"+
+		"\x15\x03\x02\x02\x02\xD5\xDF\x05\x18\r\x02\xD6\xDF\x05\x1C\x0F\x02\xD7"+
+		"\xDF\x05\x1E\x10\x02\xD8\xDF\x05 \x11\x02\xD9\xDF\x05\"\x12\x02\xDA\xDF"+
+		"\x05$\x13\x02\xDB\xDF\x05&\x14\x02\xDC\xDF\x05(\x15\x02\xDD\xDF\x05*\x16"+
+		"\x02\xDE\xD5\x03\x02\x02\x02\xDE\xD6\x03\x02\x02\x02\xDE\xD7\x03\x02\x02"+
+		"\x02\xDE\xD8\x03\x02\x02\x02\xDE\xD9\x03\x02\x02\x02\xDE\xDA\x03\x02\x02"+
+		"\x02\xDE\xDB\x03\x02\x02\x02\xDE\xDC\x03\x02\x02\x02\xDE\xDD\x03\x02\x02"+
+		"\x02\xDF\x17\x03\x02\x02\x02\xE0\xE1\t\x03\x02\x02\xE1\x19\x03\x02\x02"+
+		"\x02\xE2\xE3\t\x04\x02\x02\xE3\x1B\x03\x02\x02\x02\xE4\xE5\x05\x1A\x0E"+
+		"\x02\xE5\xE6\x07\x83\x02\x02\xE6\xE7\x07\x8E\x02\x02\xE7\x1D\x03\x02\x02"+
+		"\x02\xE8\xE9\x07\x8D\x02\x02\xE9\x1F\x03\x02\x02\x02\xEA\xEB\x07\x8C\x02"+
+		"\x02\xEB!\x03\x02\x02\x02\xEC\xED\t\x05\x02\x02\xED#\x03\x02\x02\x02\xEE"+
+		"\xEF\x07\x8F\x02\x02\xEF%\x03\x02\x02\x02\xF0\xF1\x07\x04\x02\x02\xF1"+
+		"\'\x03\x02\x02\x02\xF2\xF3\t\x06\x02\x02\xF3)\x03\x02\x02\x02\xF4\xF5"+
+		"\x07\x19\x02\x02\xF5+\x03\x02\x02\x02\xF6\xFB\x05.\x18\x02\xF7\xFB\x05"+
+		"0\x19\x02\xF8\xFB\x052\x1A\x02\xF9\xFB\x054\x1B\x02\xFA\xF6\x03\x02\x02"+
+		"\x02\xFA\xF7\x03\x02\x02\x02\xFA\xF8\x03\x02\x02\x02\xFA\xF9\x03\x02\x02"+
+		"\x02\xFB-\x03\x02\x02\x02\xFC\xFD\t\x07\x02\x02\xFD/\x03\x02\x02\x02\xFE"+
+		"\xFF\t\b\x02\x02\xFF1\x03\x02\x02\x02\u0100\u0101\t\t\x02\x02\u01013\x03"+
+		"\x02\x02\x02\u0102\u0103\t\n\x02\x02\u01035\x03\x02\x02\x02\u0104\u0105"+
+		"\x058\x1D\x02\u0105\u0107\x05:\x1E\x02\u0106\u0108\x05<\x1F\x02\u0107"+
+		"\u0106\x03\x02\x02\x02\u0107\u0108\x03\x02\x02\x02\u0108\u010A\x03\x02"+
+		"\x02\x02\u0109\u010B\x05> \x02\u010A\u0109\x03\x02\x02\x02\u010A\u010B"+
+		"\x03\x02\x02\x02\u010B\u010D\x03\x02\x02\x02\u010C\u010E\x05\x8AF\x02"+
+		"\u010D\u010C\x03\x02\x02\x02\u010D\u010E\x03\x02\x02\x02\u010E\u0110\x03"+
+		"\x02\x02\x02\u010F\u0111\x05\x98M\x02\u0110\u010F\x03\x02\x02\x02\u0110"+
+		"\u0111\x03\x02\x02\x02\u0111\u0116\x03\x02\x02\x02\u0112\u0114\x05@!\x02"+
+		"\u0113\u0115\x05B\"\x02\u0114\u0113\x03\x02\x02\x02\u0114\u0115\x03\x02"+
+		"\x02\x02\u0115\u0117\x03\x02\x02\x02\u0116\u0112\x03\x02\x02\x02\u0116"+
+		"\u0117\x03\x02\x02\x02\u0117\u0119\x03\x02\x02\x02\u0118\u011A\x05D#\x02"+
+		"\u0119\u0118\x03\x02\x02\x02\u0119\u011A\x03\x02\x02\x02\u011A\u011C\x03"+
+		"\x02\x02\x02\u011B\u011D\x05F$\x02\u011C\u011B\x03\x02\x02\x02\u011C\u011D"+
+		"\x03\x02\x02\x02\u011D\u011F\x03\x02\x02\x02\u011E\u0120\x05H%\x02\u011F"+
+		"\u011E\x03\x02\x02\x02\u011F\u0120\x03\x02\x02\x02\u0120\u0122\x03\x02"+
+		"\x02\x02\u0121\u0123\x05J&\x02\u0122\u0121\x03\x02\x02\x02\u0122\u0123"+
+		"\x03\x02\x02\x02\u0123\u0125\x03\x02\x02\x02\u0124\u0126\x05L\'\x02\u0125"+
+		"\u0124\x03\x02\x02\x02\u0125\u0126\x03\x02\x02\x02\u0126\u0127\x03\x02"+
+		"\x02\x02\u0127\u0128\x07\x02\x02\x03\u01287\x03\x02\x02\x02\u0129\u012A"+
+		"\x07\x1D\x02\x02\u012A\u012F\x05R*\x02\u012B\u012C\x07\x85\x02\x02\u012C"+
+		"\u012E\x05R*\x02\u012D\u012B\x03\x02\x02\x02\u012E\u0131\x03\x02\x02\x02"+
+		"\u012F\u012D\x03\x02\x02\x02\u012F\u0130\x03\x02\x02\x02\u01309\x03\x02"+
+		"\x02\x02\u0131\u012F\x03\x02\x02\x02\u0132\u0133\x07\x10\x02\x02\u0133"+
+		"\u0138\x05n8\x02\u0134\u0135\x07\x85\x02\x02\u0135\u0137\x05n8\x02\u0136"+
+		"\u0134\x03\x02\x02\x02\u0137\u013A\x03\x02\x02\x02\u0138\u0136\x03\x02"+
+		"\x02\x02\u0138\u0139\x03\x02\x02\x02\u0139;\x03\x02\x02\x02\u013A\u0138"+
+		"\x03\x02\x02\x02\u013B\u013C\x07\x1F\x02\x02\u013C\u013D\x07.\x02\x02"+
+		"\u013D\u013E\x05\f\x07\x02\u013E=\x03\x02\x02\x02\u013F\u0140\x07 \x02"+
+		"\x02\u0140\u0141\x05v<\x02\u0141?\x03\x02\x02\x02\u0142\u0143\x07\x11"+
+		"\x02\x02\u0143\u0147\x07\t\x02\x02\u0144\u0148\x05\x9CO\x02\u0145\u0148"+
+		"\x05\x9EP\x02\u0146\u0148\x05\x9AN\x02\u0147\u0144\x03\x02\x02\x02\u0147"+
+		"\u0145\x03\x02\x02\x02\u0147\u0146\x03\x02\x02\x02\u0148A\x03\x02\x02"+
+		"\x02\u0149\u014A\x07\x12\x02\x02\u014A\u014B\x05v<\x02\u014BC\x03\x02"+
+		"\x02\x02\u014C\u014D\x07,\x02\x02\u014D\u014E\x07\t\x02\x02\u014E\u014F"+
+		"\x05\xA4S\x02\u014FE\x03\x02\x02\x02\u0150\u0151\x07\x17\x02\x02\u0151"+
+		"\u0152\x07\x8E\x02\x02\u0152G\x03\x02\x02\x02\u0153\u0154\x07+\x02\x02"+
+		"\u0154\u0155\x07\x8E\x02\x02\u0155I\x03\x02\x02\x02\u0156\u0157\x07\""+
+		"\x02\x02\u0157\u015A\x05\xAEX\x02\u0158\u0159\x07\x85\x02\x02\u0159\u015B"+
+		"\x05\xAEX\x02\u015A\u0158\x03\x02\x02\x02\u015A\u015B\x03\x02\x02\x02"+
+		"\u015B\u015E\x03\x02\x02\x02\u015C\u015D\x07\x85\x02\x02\u015D\u015F\x05"+
+		"\xAEX\x02\u015E\u015C\x03\x02\x02\x02\u015E\u015F\x03\x02\x02\x02\u015F"+
+		"K\x03\x02\x02\x02\u0160\u0161\x07#\x02\x02\u0161\u0164\x05\xB0Y\x02\u0162"+
+		"\u0163\x07\x85\x02\x02\u0163\u0165\x05\xB0Y\x02\u0164\u0162\x03\x02\x02"+
+		"\x02\u0164\u0165\x03\x02\x02\x02\u0165M\x03\x02\x02\x02\u0166\u0167\x07"+
+		"\x88\x02\x02\u0167\u0168\x05P)\x02\u0168\u016A\x05:\x1E\x02\u0169\u016B"+
+		"\x05<\x1F\x02\u016A\u0169\x03\x02\x02\x02\u016A\u016B\x03\x02\x02\x02"+
+		"\u016B\u016D\x03\x02\x02\x02\u016C\u016E\x05> \x02\u016D\u016C\x03\x02"+
+		"\x02\x02\u016D\u016E\x03\x02\x02\x02\u016E\u0170\x03\x02\x02\x02\u016F"+
+		"\u0171\x05\x8AF\x02\u0170\u016F\x03\x02\x02\x02\u0170\u0171\x03\x02\x02"+
+		"\x02\u0171\u0173\x03\x02\x02\x02\u0172\u0174\x05D#\x02\u0173\u0172\x03"+
+		"\x02\x02\x02\u0173\u0174\x03\x02\x02\x02\u0174\u0176\x03\x02\x02\x02\u0175"+
+		"\u0177\x05F$\x02\u0176\u0175\x03\x02\x02\x02\u0176\u0177\x03\x02\x02\x02"+
+		"\u0177\u0179\x03\x02\x02\x02\u0178\u017A\x05H%\x02\u0179\u0178\x03\x02"+
+		"\x02\x02\u0179\u017A\x03\x02\x02\x02\u017A\u017C\x03\x02\x02\x02\u017B"+
+		"\u017D\x05J&\x02\u017C\u017B\x03\x02\x02\x02\u017C\u017D\x03\x02\x02\x02"+
+		"\u017D\u017F\x03\x02\x02\x02\u017E\u0180\x05L\'\x02\u017F\u017E\x03\x02"+
+		"\x02\x02\u017F\u0180\x03\x02\x02\x02\u0180\u0181\x03\x02\x02\x02\u0181"+
+		"\u0182\x07\x87\x02\x02\u0182O\x03\x02\x02\x02\u0183\u0184\x07\x1D\x02"+
+		"\x02\u0184\u0189\x05T+\x02\u0185\u0186\x07\x85\x02\x02\u0186\u0188\x05"+
+		"T+\x02\u0187\u0185\x03\x02\x02\x02\u0188\u018B\x03\x02\x02\x02\u0189\u0187"+
+		"\x03\x02\x02\x02\u0189\u018A\x03\x02\x02\x02\u018AQ\x03\x02\x02\x02\u018B"+
+		"\u0189\x03\x02\x02\x02\u018C\u0191\x05V,\x02\u018D\u0191\x05X-\x02\u018E"+
+		"\u0191\x05N(\x02\u018F\u0191\x05b2\x02\u0190\u018C\x03\x02\x02\x02\u0190"+
+		"\u018D\x03\x02\x02\x02\u0190\u018E\x03\x02\x02\x02\u0190\u018F\x03\x02"+
+		"\x02\x02\u0191S\x03\x02\x02\x02\u0192\u0195\x05V,\x02\u0193\u0195\x05"+
+		"X-\x02\u0194\u0192\x03\x02\x02\x02\u0194\u0193\x03\x02\x02\x02\u0195U"+
+		"\x03\x02\x02\x02\u0196\u0198\x05Z.\x02\u0197\u0199\x05\x14\v\x02\u0198"+
+		"\u0197\x03\x02\x02\x02\u0198\u0199\x03\x02\x02\x02\u0199W\x03\x02\x02"+
+		"\x02\u019A\u019C\x05\\/\x02\u019B\u019D\x05\x14\v\x02\u019C\u019B\x03"+
+		"\x02\x02\x02\u019C\u019D\x03\x02\x02\x02\u019DY\x03\x02\x02\x02\u019E"+
+		"\u01A0\x05p9\x02\u019F\u019E\x03\x02\x02\x02\u019F\u01A0\x03\x02\x02\x02"+
+		"\u01A0\u01A1\x03\x02\x02\x02\u01A1\u01A2\x05\n\x06\x02\u01A2[\x03\x02"+
+		"\x02\x02\u01A3\u01A4\x05,\x17\x02\u01A4\u01A6\x07\x88\x02\x02\u01A5\u01A7"+
+		"\x05^0\x02\u01A6\u01A5\x03\x02\x02\x02\u01A6\u01A7\x03\x02\x02\x02\u01A7"+
+		"\u01A8\x03\x02\x02\x02\u01A8\u01A9\x07\x87\x02\x02\u01A9]\x03\x02\x02"+
+		"\x02\u01AA\u01AF\x05`1\x02\u01AB\u01AC\x07\x85\x02\x02\u01AC\u01AE\x05"+
+		"`1\x02\u01AD\u01AB\x03\x02\x02\x02\u01AE\u01B1\x03\x02\x02\x02\u01AF\u01AD"+
+		"\x03\x02\x02\x02\u01AF\u01B0\x03\x02\x02\x02\u01B0_\x03\x02\x02\x02\u01B1"+
+		"\u01AF\x03\x02\x02\x02\u01B2\u01B6\x05Z.\x02\u01B3\u01B6\x05\x16\f\x02"+
+		"\u01B4\u01B6\x05\\/\x02\u01B5\u01B2\x03\x02\x02\x02\u01B5\u01B3\x03\x02"+
+		"\x02\x02\u01B5\u01B4\x03\x02\x02\x02\u01B6a\x03\x02\x02\x02\u01B7\u01B8"+
+		"\x071\x02\x02\u01B8\u01B9\x05Z.\x02\u01B9\u01BB\x05d3\x02\u01BA\u01BC"+
+		"\x05j6\x02\u01BB\u01BA\x03\x02\x02\x02\u01BB\u01BC\x03\x02\x02\x02\u01BC"+
+		"\u01BD\x03\x02\x02\x02\u01BD\u01BE\x07*\x02\x02\u01BEc\x03\x02\x02\x02"+
+		"\u01BF\u01C1\x05f4\x02\u01C0\u01BF\x03\x02\x02\x02\u01C1\u01C2\x03\x02"+
+		"\x02\x02\u01C2\u01C0\x03\x02\x02\x02\u01C2\u01C3\x03\x02\x02\x02\u01C3"+
+		"e\x03\x02\x02\x02\u01C4\u01C5\x074\x02\x02\u01C5\u01C6\x05\b\x05\x02\u01C6"+
+		"\u01C7\x05h5\x02\u01C7g\x03\x02\x02\x02\u01C8\u01C9\x070\x02\x02\u01C9"+
+		"\u01CA\x05l7\x02\u01CAi\x03\x02\x02\x02\u01CB\u01CC\x07\f\x02\x02\u01CC"+
+		"\u01CD\x05l7\x02\u01CDk\x03\x02\x02\x02\u01CE\u01D3\x05Z.\x02\u01CF\u01D0"+
+		"\x07\x85\x02\x02\u01D0\u01D2\x05Z.\x02\u01D1\u01CF\x03\x02\x02\x02\u01D2"+
+		"\u01D5\x03\x02\x02\x02\u01D3\u01D1\x03\x02\x02\x02\u01D3\u01D4\x03\x02"+
+		"\x02\x02\u01D4m\x03\x02\x02\x02\u01D5\u01D3\x03\x02\x02\x02\u01D6\u01D8"+
+		"\x05p9\x02\u01D7\u01D6\x03\x02\x02\x02\u01D7\u01D8\x03\x02\x02\x02\u01D8"+
+		"\u01D9\x03\x02\x02\x02\u01D9\u01DB\x05\b\x05\x02\u01DA\u01DC\x05\x14\v"+
+		"\x02\u01DB\u01DA\x03\x02\x02\x02\u01DB\u01DC\x03\x02\x02\x02\u01DCo\x03"+
+		"\x02\x02\x02\u01DD\u01DE\x05\b\x05\x02\u01DE\u01DF\x07\x82\x02\x02\u01DF"+
+		"\u01E1\x03\x02\x02\x02\u01E0\u01DD\x03\x02\x02\x02\u01E1\u01E2\x03\x02"+
+		"\x02\x02\u01E2\u01E0\x03\x02\x02\x02\u01E2\u01E3\x03\x02\x02\x02\u01E3"+
+		"q\x03\x02\x02\x02\u01E4\u01EF\x07|\x02\x02\u01E5\u01EF\x07}\x02\x02\u01E6"+
+		"\u01EF\x07~\x02\x02\u01E7\u01EF\x07\x7F\x02\x02\u01E8\u01EF\x07\x80\x02"+
+		"\x02\u01E9\u01EF\x07\x81\x02\x02\u01EA\u01EB\x07\x80\x02\x02\u01EB\u01EF"+
+		"\x07|\x02\x02\u01EC\u01ED\x07\x81\x02\x02\u01ED\u01EF\x07|\x02\x02\u01EE"+
+		"\u01E4\x03\x02\x02\x02\u01EE\u01E5\x03\x02\x02\x02\u01EE\u01E6\x03\x02"+
+		"\x02\x02\u01EE\u01E7\x03\x02\x02\x02\u01EE\u01E8\x03\x02\x02\x02\u01EE"+
+		"\u01E9\x03\x02\x02\x02\u01EE\u01EA\x03\x02\x02\x02\u01EE\u01EC\x03\x02"+
+		"\x02\x02\u01EFs\x03\x02\x02\x02\u01F0\u01F6\x07\x13\x02\x02\u01F1\u01F2"+
+		"\x07\x18\x02\x02\u01F2\u01F6\x07\x13\x02\x02\u01F3\u01F6\x07\x14\x02\x02"+
+		"\u01F4\u01F6\x07\r\x02\x02\u01F5\u01F0\x03\x02\x02\x02\u01F5\u01F1\x03"+
+		"\x02\x02\x02\u01F5\u01F3\x03\x02\x02\x02\u01F5\u01F4\x03\x02\x02\x02\u01F6"+
+		"u\x03\x02\x02\x02\u01F7\u01FC\x05x=\x02\u01F8\u01F9\t\v\x02\x02\u01F9"+
+		"\u01FB\x05x=\x02\u01FA\u01F8\x03\x02\x02\x02\u01FB\u01FE\x03\x02\x02\x02"+
+		"\u01FC\u01FA\x03\x02\x02\x02\u01FC\u01FD\x03\x02\x02\x02\u01FDw\x03\x02"+
+		"\x02\x02\u01FE\u01FC\x03\x02\x02\x02\u01FF\u0201\x07\x18\x02\x02\u0200"+
+		"\u01FF\x03\x02\x02\x02\u0200\u0201\x03\x02\x02\x02\u0201\u0204\x03\x02"+
+		"\x02\x02\u0202\u0205\x05|?\x02\u0203\u0205\x05z>\x02\u0204\u0202\x03\x02"+
+		"\x02\x02\u0204\u0203\x03\x02\x02\x02\u0205y\x03\x02\x02\x02\u0206\u0207"+
+		"\x07\x88\x02\x02\u0207\u0208\x05v<\x02\u0208\u0209\x07\x87\x02\x02\u0209"+
+		"{\x03\x02\x02\x02\u020A\u020E\x05~@\x02\u020B\u020E\x05\x80A\x02\u020C"+
+		"\u020E\x05\x82B\x02\u020D\u020A\x03\x02\x02\x02\u020D\u020B\x03\x02\x02"+
+		"\x02\u020D\u020C\x03\x02\x02\x02\u020E}\x03\x02\x02\x02\u020F\u0210\x05"+
+		"\x84C\x02\u0210\u0211\x05r:\x02\u0211\u0212\x05\x16\f\x02\u0212\x7F\x03"+
+		"\x02\x02\x02\u0213\u0214\x05\x84C\x02\u0214\u0217\x05t;\x02\u0215\u0218"+
+		"\x05N(\x02\u0216\u0218\x05\x86D\x02\u0217\u0215\x03\x02\x02\x02\u0217"+
+		"\u0216\x03\x02\x02\x02\u0218\x81\x03\x02\x02\x02\u0219\u021A\x05\x84C"+
+		"\x02\u021A\u021B\x07\x16\x02\x02\u021B\u021C\t\f\x02\x02\u021C\x83\x03"+
+		"\x02\x02\x02\u021D\u0220\x05Z.\x02\u021E\u0220\x05\\/\x02\u021F\u021D"+
+		"\x03\x02\x02\x02\u021F\u021E\x03\x02\x02\x02\u0220\x85\x03\x02\x02\x02"+
+		"\u0221\u0222\x07\x88\x02\x02\u0222\u0223\x05\x88E\x02\u0223\u0224\x07"+
+		"\x87\x02\x02\u0224\x87\x03\x02\x02\x02\u0225\u022A\x05\x16\f\x02\u0226"+
+		"\u0227\x07\x85\x02\x02\u0227\u0229\x05\x16\f\x02\u0228\u0226\x03\x02\x02"+
+		"\x02\u0229\u022C\x03\x02\x02\x02\u022A\u0228\x03\x02\x02\x02\u022A\u022B"+
+		"\x03\x02\x02\x02\u022B\x89\x03\x02\x02\x02\u022C\u022A\x03\x02\x02\x02"+
+		"\u022D\u0230\x07!\x02\x02\u022E\u0231\x05\x8CG\x02\u022F\u0231\x05\x8E"+
+		"H\x02\u0230\u022E\x03\x02\x02\x02\u0230\u022F\x03\x02\x02\x02\u0231\x8B"+
+		"\x03\x02\x02\x02\u0232\u0233\x05~@\x02\u0233\x8D\x03\x02\x02";
 	private static readonly _serializedATNSegment1: string =
-		"\u0237\u023A\x03\x02\x02\x02\u0238\u0236\x03\x02\x02\x02\u0238\u0239\x03"+
-		"\x02\x02\x02\u0239\x91\x03\x02\x02\x02\u023A\u0238\x03\x02\x02\x02\u023B"+
-		"\u023C\x05\x0E\b\x02\u023C\u023D\x05\x96L\x02\u023D\u023E\x05\x94K\x02"+
-		"\u023E\x93\x03\x02\x02\x02\u023F\u024C\x05\x10\t\x02\u0240\u0241\x07\x87"+
-		"\x02\x02\u0241\u0246\x05\x10\t\x02\u0242\u0243\x07\x84\x02\x02\u0243\u0245"+
-		"\x05\x10\t\x02\u0244\u0242\x03\x02\x02\x02\u0245\u0248\x03\x02\x02\x02"+
-		"\u0246\u0244\x03\x02\x02\x02\u0246\u0247\x03\x02\x02\x02\u0247\u0249\x03"+
-		"\x02\x02\x02\u0248\u0246\x03\x02\x02\x02\u0249\u024A\x07\x86\x02\x02\u024A"+
-		"\u024C\x03\x02\x02\x02\u024B\u023F\x03\x02\x02\x02\u024B\u0240\x03\x02"+
-		"\x02\x02\u024C\x95\x03\x02\x02\x02\u024D\u024E\t\r\x02\x02\u024E\x97\x03"+
-		"\x02\x02\x02\u024F\u0250\x05\x9EP\x02\u0250\x99\x03\x02\x02\x02\u0251"+
-		"\u0252\x07\x1C\x02\x02\u0252\u0253\x07\x87\x02\x02\u0253\u0254\x05\x9E"+
-		"P\x02\u0254\u0255\x07\x86\x02\x02\u0255\x9B\x03\x02\x02\x02\u0256\u0257"+
-		"\x07\n\x02\x02\u0257\u0258\x07\x87\x02\x02\u0258\u0259\x05\x9EP\x02\u0259"+
-		"\u025A\x07\x86\x02\x02\u025A\x9D\x03\x02\x02\x02\u025B\u0260\x05\xA0Q"+
-		"\x02\u025C\u025D\x07\x84\x02\x02\u025D\u025F\x05\xA0Q\x02\u025E\u025C"+
-		"\x03\x02\x02\x02\u025F\u0262\x03\x02\x02\x02\u0260\u025E\x03\x02\x02\x02"+
-		"\u0260\u0261\x03\x02\x02\x02\u0261\x9F\x03\x02\x02\x02\u0262\u0260\x03"+
-		"\x02\x02\x02\u0263\u0266\x05Z.\x02\u0264\u0266\x05\\/\x02\u0265\u0263"+
-		"\x03\x02\x02\x02\u0265\u0264\x03\x02\x02\x02\u0266\xA1\x03\x02\x02\x02"+
-		"\u0267\u026C\x05\xA4S\x02\u0268\u0269\x07\x84\x02\x02\u0269\u026B\x05"+
-		"\xA4S\x02\u026A\u0268\x03\x02\x02\x02\u026B\u026E\x03\x02\x02\x02\u026C"+
-		"\u026A\x03\x02\x02\x02\u026C\u026D\x03\x02\x02\x02\u026D\xA3\x03\x02\x02"+
-		"\x02\u026E\u026C\x03\x02\x02\x02\u026F\u0271\x05\xAAV\x02\u0270\u0272"+
-		"\x05\xA6T\x02\u0271\u0270\x03\x02\x02\x02\u0271\u0272\x03\x02\x02\x02"+
-		"\u0272\u0274\x03\x02\x02\x02\u0273\u0275\x05\xA8U\x02\u0274\u0273\x03"+
-		"\x02\x02\x02\u0274\u0275\x03\x02\x02\x02\u0275\xA5\x03\x02\x02\x02\u0276"+
-		"\u0277\t\x0E\x02\x02\u0277\xA7\x03\x02\x02\x02\u0278\u0279\x07\x1A\x02"+
-		"\x02\u0279\u027A\t\x0F\x02\x02\u027A\xA9\x03\x02\x02\x02\u027B\u027E\x05"+
-		"Z.\x02\u027C\u027E\x05\\/\x02\u027D\u027B\x03\x02\x02\x02\u027D\u027C"+
-		"\x03\x02\x02\x02\u027E\xAB\x03\x02\x02\x02\u027F\u0280\t\x10\x02\x02\u0280"+
-		"\xAD\x03\x02\x02\x02\u0281\u0282\t\x11\x02\x02\u0282\xAF\x03\x02\x02\x02"+
-		"B\xB4\xBB\xCC\xCF\xDC\xF8\u0105\u0108\u010B\u010F\u0111\u0114\u0117\u011A"+
-		"\u011D\u0120\u012A\u0133\u0142\u0155\u0159\u015F\u0165\u0168\u016B\u016E"+
-		"\u0171\u0174\u0177\u017A\u0184\u018B\u018F\u0193\u0197\u019A\u01A1\u01AA"+
-		"\u01B0\u01B6\u01BD\u01CE\u01D2\u01D6\u01DD\u01E9\u01F0\u01F7\u01FB\u01FF"+
-		"\u0208\u0212\u021A\u0225\u022B\u0238\u0246\u024B\u0260\u0265\u026C\u0271"+
-		"\u0274\u027D";
+		"\x02\u0234\u0235\x07)\x02\x02\u0235\u0236\x07(\x02\x02\u0236\u0237\x05"+
+		"\x90I\x02\u0237\x8F\x03\x02\x02\x02\u0238\u023D\x05\x92J\x02\u0239\u023A"+
+		"\x07\x06\x02\x02\u023A\u023C\x05\x92J\x02\u023B\u0239\x03\x02\x02\x02"+
+		"\u023C\u023F\x03\x02\x02\x02\u023D\u023B\x03\x02\x02\x02\u023D\u023E\x03"+
+		"\x02\x02\x02\u023E\x91\x03\x02\x02\x02\u023F\u023D\x03\x02\x02\x02\u0240"+
+		"\u0241\x05\x0E\b\x02\u0241\u0242\x05\x96L\x02\u0242\u0243\x05\x94K\x02"+
+		"\u0243\x93\x03\x02\x02\x02\u0244\u0251\x05\x10\t\x02\u0245\u0246\x07\x88"+
+		"\x02\x02\u0246\u024B\x05\x10\t\x02\u0247\u0248\x07\x85\x02\x02\u0248\u024A"+
+		"\x05\x10\t\x02\u0249\u0247\x03\x02\x02\x02\u024A\u024D\x03\x02\x02\x02"+
+		"\u024B\u0249\x03\x02\x02\x02\u024B\u024C\x03\x02\x02\x02\u024C\u024E\x03"+
+		"\x02\x02\x02\u024D\u024B\x03\x02\x02\x02\u024E\u024F\x07\x87\x02\x02\u024F"+
+		"\u0251\x03\x02\x02\x02\u0250\u0244\x03\x02\x02\x02\u0250\u0245\x03\x02"+
+		"\x02\x02\u0251\x95\x03\x02\x02\x02\u0252\u0253\t\r\x02\x02\u0253\x97\x03"+
+		"\x02\x02\x02\u0254\u0255\x07!\x02\x02\u0255\u0256\x075\x02\x02\u0256\x99"+
+		"\x03\x02\x02\x02\u0257\u0258\x05\xA0Q\x02\u0258\x9B\x03\x02\x02\x02\u0259"+
+		"\u025A\x07\x1C\x02\x02\u025A\u025B\x07\x88\x02\x02\u025B\u025C\x05\xA0"+
+		"Q\x02\u025C\u025D\x07\x87\x02\x02\u025D\x9D\x03\x02\x02\x02\u025E\u025F"+
+		"\x07\n\x02\x02\u025F\u0260\x07\x88\x02\x02\u0260\u0261\x05\xA0Q\x02\u0261"+
+		"\u0262\x07\x87\x02\x02\u0262\x9F\x03\x02\x02\x02\u0263\u0268\x05\xA2R"+
+		"\x02\u0264\u0265\x07\x85\x02\x02\u0265\u0267\x05\xA2R\x02\u0266\u0264"+
+		"\x03\x02\x02\x02\u0267\u026A\x03\x02\x02\x02\u0268\u0266\x03\x02\x02\x02"+
+		"\u0268\u0269\x03\x02\x02\x02\u0269\xA1\x03\x02\x02\x02\u026A\u0268\x03"+
+		"\x02\x02\x02\u026B\u026E\x05Z.\x02\u026C\u026E\x05\\/\x02\u026D\u026B"+
+		"\x03\x02\x02\x02\u026D\u026C\x03\x02\x02\x02\u026E\xA3\x03\x02\x02\x02"+
+		"\u026F\u0274\x05\xA6T\x02\u0270\u0271\x07\x85\x02\x02\u0271\u0273\x05"+
+		"\xA6T\x02\u0272\u0270\x03\x02\x02\x02\u0273\u0276\x03\x02\x02\x02\u0274"+
+		"\u0272\x03\x02\x02\x02\u0274\u0275\x03\x02\x02\x02\u0275\xA5\x03\x02\x02"+
+		"\x02\u0276\u0274\x03\x02\x02\x02\u0277\u0279\x05\xACW\x02\u0278\u027A"+
+		"\x05\xA8U\x02\u0279\u0278\x03\x02\x02\x02\u0279\u027A\x03\x02\x02\x02"+
+		"\u027A\u027C\x03\x02\x02\x02\u027B\u027D\x05\xAAV\x02\u027C\u027B\x03"+
+		"\x02\x02\x02\u027C\u027D\x03\x02\x02\x02\u027D\xA7\x03\x02\x02\x02\u027E"+
+		"\u027F\t\x0E\x02\x02\u027F\xA9\x03\x02\x02\x02\u0280\u0281\x07\x1A\x02"+
+		"\x02\u0281\u0282\t\x0F\x02\x02\u0282\xAB\x03\x02\x02\x02\u0283\u0286\x05"+
+		"Z.\x02\u0284\u0286\x05\\/\x02\u0285\u0283\x03\x02\x02\x02\u0285\u0284"+
+		"\x03\x02\x02\x02\u0286\xAD\x03\x02\x02\x02\u0287\u0288\t\x10\x02\x02\u0288"+
+		"\xAF\x03\x02\x02\x02\u0289\u028A\t\x11\x02\x02\u028A\xB1\x03\x02\x02\x02"+
+		"C\xB6\xBD\xCE\xD1\xDE\xFA\u0107\u010A\u010D\u0110\u0114\u0116\u0119\u011C"+
+		"\u011F\u0122\u0125\u012F\u0138\u0147\u015A\u015E\u0164\u016A\u016D\u0170"+
+		"\u0173\u0176\u0179\u017C\u017F\u0189\u0190\u0194\u0198\u019C\u019F\u01A6"+
+		"\u01AF\u01B5\u01BB\u01C2\u01D3\u01D7\u01DB\u01E2\u01EE\u01F5\u01FC\u0200"+
+		"\u0204\u020D\u0217\u021F\u022A\u0230\u023D\u024B\u0250\u0268\u026D\u0274"+
+		"\u0279\u027C\u0285";
 	public static readonly _serializedATN: string = Utils.join(
 		[
 			SOQLParser._serializedATNSegment0,

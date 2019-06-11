@@ -1,4 +1,4 @@
-// Generated from src/main/g4/SOQL.g4 by ANTLR 4.6-SNAPSHOT
+// Generated from SOQL.g4 by ANTLR 4.6-SNAPSHOT
 
 
 import { ParseTreeListener } from 'antlr4ts/tree/ParseTreeListener';
@@ -78,6 +78,7 @@ import { Data_category_spec_listContext } from './SOQLParser';
 import { Data_category_specContext } from './SOQLParser';
 import { Data_category_parameter_listContext } from './SOQLParser';
 import { Data_category_selectorContext } from './SOQLParser';
+import { With_security_enforced_clauseContext } from './SOQLParser';
 import { Group_by_plain_clauseContext } from './SOQLParser';
 import { Group_by_rollup_clauseContext } from './SOQLParser';
 import { Group_by_cube_clauseContext } from './SOQLParser';
@@ -921,6 +922,17 @@ export interface SOQLListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	exitData_category_selector?: (ctx: Data_category_selectorContext) => void;
+
+	/**
+	 * Enter a parse tree produced by `SOQLParser.with_security_enforced_clause`.
+	 * @param ctx the parse tree
+	 */
+	enterWith_security_enforced_clause?: (ctx: With_security_enforced_clauseContext) => void;
+	/**
+	 * Exit a parse tree produced by `SOQLParser.with_security_enforced_clause`.
+	 * @param ctx the parse tree
+	 */
+	exitWith_security_enforced_clause?: (ctx: With_security_enforced_clauseContext) => void;
 
 	/**
 	 * Enter a parse tree produced by `SOQLParser.group_by_plain_clause`.

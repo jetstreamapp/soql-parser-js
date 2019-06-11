@@ -1733,5 +1733,59 @@ export const testCases: TestCase[] = [
       sObject: 'AuraDefinition',
     },
   },
+  {
+    testCase: 56,
+    soql: 'SELECT Id, Name, BillingCity FROM Account WITH SECURITY_ENFORCED',
+    output: {
+      fields: [
+        {
+          type: 'Field',
+          field: 'Id',
+        },
+        {
+          type: 'Field',
+          field: 'Name',
+        },
+        {
+          type: 'Field',
+          field: 'BillingCity',
+        },
+      ],
+      sObject: 'Account',
+      withSecurityEnforced: true,
+    },
+  },
+  {
+    testCase: 57,
+    soql:
+      "SELECT Title FROM KnowledgeArticleVersion WHERE PublishStatus = 'online' WITH DATA CATEGORY Geography__c ABOVE usa__c WITH SECURITY_ENFORCED",
+    output: {
+      fields: [
+        {
+          type: 'Field',
+          field: 'Title',
+        },
+      ],
+      sObject: 'KnowledgeArticleVersion',
+      where: {
+        left: {
+          field: 'PublishStatus',
+          operator: '=',
+          value: "'online'",
+          literalType: 'STRING',
+        },
+      },
+      withDataCategory: {
+        conditions: [
+          {
+            groupName: 'Geography__c',
+            selector: 'ABOVE',
+            parameters: ['usa__c'],
+          },
+        ],
+      },
+      withSecurityEnforced: true,
+    },
+  },
 ];
 export default testCases;

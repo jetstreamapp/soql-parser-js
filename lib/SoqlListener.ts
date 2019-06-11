@@ -95,6 +95,7 @@ export class SoqlQuery implements Query {
   having?: HavingClause;
   orderBy?: OrderByClause | OrderByClause[];
   withDataCategory?: WithDataCategoryClause;
+  withSecurityEnforced?: boolean;
   for?: ForClause;
   update?: UpdateClause;
 
@@ -1279,6 +1280,20 @@ export class Listener implements SOQLListener {
       console.log('enterData_category_spec_list:', ctx.text);
     }
   }
+
+  enterWith_security_enforced_clause(ctx: Parser.With_security_enforced_clauseContext) {
+    if (this.config.logging) {
+      console.log('enterWith_security_enforced_clause:', ctx.text);
+    }
+    this.getSoqlQuery().withSecurityEnforced = true;
+  }
+
+  exitWith_security_enforced_clause(ctx: Parser.With_security_enforced_clauseContext) {
+    if (this.config.logging) {
+      console.log('exitWith_security_enforced_clause:', ctx.text);
+    }
+  }
+
   exitData_category_spec_list(ctx: Parser.Data_category_spec_listContext) {
     if (this.config.logging) {
       console.log('exitData_category_spec_list:', ctx.text);

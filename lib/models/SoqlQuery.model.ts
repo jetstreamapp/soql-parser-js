@@ -71,6 +71,7 @@ export interface QueryBase {
   having?: HavingClause;
   orderBy?: OrderByClause | OrderByClause[];
   withDataCategory?: WithDataCategoryClause;
+  withSecurityEnforced?: boolean;
   for?: ForClause;
   update?: UpdateClause;
 }
