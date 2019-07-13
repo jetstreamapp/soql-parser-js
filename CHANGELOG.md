@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.2.0
+
+- Changed compose methods to public to allow external access (#65)
+- Fixed lodash security vulnerability
+- Updated README to reflect new changes and other minor changes
+
 ## 1.1.1
 
 - Removed files that accidentally got included with release with update of `release-it`

@@ -24,7 +24,9 @@
   "author": "Austin Turner <paustint@gmail.com>",
   "license": "MIT",
   "dependencies": {
+    "@types/lodash": "^4.14.136",
     "antlr4ts": "0.4.1-alpha.0",
+    "lodash": "^4.17.14",
     "minimist": "^1.2.0"
   },
   "devDependencies": {

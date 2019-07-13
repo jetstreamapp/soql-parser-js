@@ -6,41 +6,88 @@
 
 ## Description
 
+:sunny: This library allows parsing Salesforce SOQL queries using JavaScript or Typescript. Works in the browser and node. :sunny:
+
 SOQL Parser JS provides the following capabilities:
 
 1. Parse a SOQL query into a usable data structure.
-2. Turn a parsed query data structure back into well a SOQL query with various format options.
-3. Check if a SOQL query is syntactically valid (**note**: some cases may be structurally sound but not allowed by SFDC).
+2. Turn a parsed data structure back into a well formed SOQL query with various format options.
+3. Check if a SOQL query is syntactically valid (**note**: some cases may be structurally valid but not allowed by Salesforce, e.x. invalid field name).
 
 This library is written in Typescript and all type definitions are included with the library for your benefit if you choose to use Typescript or use VSCode's automatic type checking.
 
-_Warning_: antlr4 is dependency for this library and is a rather large library (~600 KB) and is required for the parser to function, use in the browser with care.
+:warning: antlr4 is dependency for this library and is a rather large library (~600 KB) and is required for the parser to function. Consider using dynamic imports to achieve lazy loading.
 
 ## Examples
 
-For an example of the parser, check out the [example application](https://paustint.github.io/soql-parser-js/).
+Want to try it out? [Check out the demo](https://paustint.github.io/soql-parser-js/).
 
-Have a look through the unit tests for many more examples.
+Look through the [unit tests](./test/TestCases.ts) for additional examples.
 
 # Usage
 
 ## Parsing
 
-Parsing a SOQL query can be completed by calling `parseQuery(soqlQueryString, options)` and a `Query` data structure will be returned;
+Parsing a SOQL query can be completed by calling `parseQuery(soqlQueryString, options)`. A `Query` data structure will be returned;
 
 #### Typescript / ES6
 
 ```typescript
-import { parseQuery } from 'soql-parser-js'; // TS / ES6 imports
+import { parseQuery } from 'soql-parser-js';
 // var soqlParserJs = require('soql-parser-js'); // node's require format - usage: soqlParserJs.parseQuery()
 
-const soql =
-  'SELECT UserId, COUNT(Id) from LoginHistory WHERE LoginTime > 2010-09-20T22:16:30.000Z AND LoginTime < 2010-09-21T22:16:30.000Z GROUP BY UserId';
+const soql = `
+  SELECT UserId, COUNT(Id)
+  FROM LoginHistory
+  WHERE LoginTime > 2010-09-20T22:16:30.000Z
+  AND LoginTime < 2010-09-21T22:16:30.000Z
+  GROUP BY UserId';
+`;
 
 const soqlQuery = parseQuery(soql);
-// const soqlQuery = soqlParserJs.parseQuery(soql); // using require()
 
 console.log(JSON.stringify(soqlQuery, null, 2));
+```
+
+**Results**
+
+```json
+{
+  "fields": [
+    {
+      "type": "Field",
+      "field": "UserId"
+    },
+    {
+      "type": "FieldFunctionExpression",
+      "rawValue": "COUNT(Id)",
+      "fn": "COUNT",
+      "isAggregateFn": true,
+      "parameters": ["Id"]
+    }
+  ],
+  "sObject": "LoginHistory",
+  "where": {
+    "left": {
+      "field": "LoginTime",
+      "operator": ">",
+      "value": "2010-09-20T22:16:30.000Z",
+      "literalType": "DATETIME"
+    },
+    "operator": "AND",
+    "right": {
+      "left": {
+        "field": "LoginTime",
+        "operator": "<",
+        "value": "2010-09-21T22:16:30.000Z",
+        "literalType": "DATETIME"
+      }
+    }
+  },
+  "groupBy": {
+    "field": "UserId"
+  }
+}
 ```
 
 #### Options
@@ -54,13 +101,13 @@ export interface SoqlQueryConfig {
 
 ## Composing
 
-Composing a query will turn a Query object back to a SOQL query. The exact same data structure returned from `parseQuery()` can be used,
-but there are many use-cases where you may need to build your own data structure to compose a query.
+Composing a query will turn a Query object back to a SOQL query string. The exact same data structure returned from `parseQuery()` can be used,
+but depending on your use-case, you may need to build your own data structure to compose a query.
 These examples show building your own Query object with the minimum required fields.
 
-**Note:** For some operators, they may be converted to upper case (e.x. NOT, AND)
+:page_facing_up: **Note:** Some operators may be converted to upper case (e.x. NOT, AND)
 
-**Note:** There are a number of fields populated on the Query object when `parseQuery()` is called that are not required to compose a query. Look at the examples below and the comments in the data model for more information.
+:page_facing_up: **Note:** There are a number of fields populated on the Query object when `parseQuery()` is called that are not required to compose a query. Look at the examples below and the comments in the data model for more information.
 
 **The base query object is shaped like this:**
 
@@ -84,7 +131,7 @@ The easiest way to build the fields is to call the utility function `getComposed
 
 ### Example
 
-This is the query that will be composed
+This is the query that will be composed programmatically
 
 ```sql
 SELECT Id, Name, FORMAT(Amount) MyFormattedAmount,
@@ -139,7 +186,7 @@ const soqlQuery = {
         operator: '=',
         value: 'Closed Won',
         // literalType is optional, but if set to STRING and our value is not already wrapped in "'", they will be added
-        // All other literalType values are ignored in composing a query
+        // All other literalType values are ignored when composing a query
         literalType: 'STRING',
       },
     },
@@ -152,8 +199,9 @@ const composedQuery = composeQuery(soqlQuery, { format: true });
 console.log(composedQuery);
 ```
 
-In the above examples, we made use of `getComposedField(input: string | ComposeFieldInput)` to help easily compose the fields. The input expects a string or one of the following shapes of data below. An error will be thrown if the data passed in is not one of the following shapes:
-and will return a `FieldType` object.
+In the example above, we made use of `getComposedField(input: string | ComposeFieldInput)` to compose the fields. The input expects a string or one of the following data structures listed below. An error will be thrown if the data passed in is not one of the following shapes.
+
+This returns a `FieldType` object.
 
 ```typescript
 export interface ComposeField {
@@ -183,9 +231,53 @@ export interface ComposeFieldTypeof {
 }
 ```
 
+### Composing a partial query
+
+If you need to compose just a part of a query instead of the entire query, you can create an instance of the Compose class directly.
+
+For example, if you just need the "WHERE" clause from a query as a string, you can do the following:
+
+```typescript
+import { Compose, getComposedField, parseQuery } from 'soql-parser-js';
+
+const soql = `SELECT Id FROM Account WHERE Name = 'Foo'`;
+const parsedQuery = parseQuery(soql);
+
+// Results of Parsed Query:
+  // const parsedQuery = {
+  //   fields: [
+  //     {
+  //       type: 'Field',
+  //       field: 'Id',
+  //     },
+  //   ],
+  //   sObject: 'Account',
+  //   where: {
+  //     left: {
+  //       field: 'Name',
+  //       operator: '=',
+  //       value: "'Foo'",
+  //       literalType: 'STRING',
+  //     },
+  //   },
+  // };
+
+  // Create a new instance of the compose class and set the autoCompose to false to avoid composing the entire query
+  const composer = new Compose(parsedQuery, { autoCompose: false });
+
+
+  const whereClause = composer.parseWhereClause(parsedQuery.where);
+
+  console.log(whereClause);
+  // Name = 'Foo'
+
+}
+
+```
+
 ## Checking if a Query is Valid
 
-This will parse the AST tree to confirm the syntax is valid, but will not parse the tree into a data structure.
+This will parse a Query to confirm valid syntax, but will not parse into the Query data structure, which will have a small performance gain.
 This method is faster than parsing the full query.
 
 Options:
@@ -204,25 +296,13 @@ const soql =
 
 const isValid = isQueryValid(soql);
 
-console.log('isValid', isValid);
-```
-
-#### Node
-
-```javascript
-var soqlParserJs = require('soql-parser-js');
-
-const soql =
-  'SELECT UserId, COUNT(Id) from LoginHistory WHERE LoginTime > 2010-09-20T22:16:30.000Z AND LoginTime < 2010-09-21T22:16:30.000Z GROUP BY UserId';
-
-const isValid = isQueryValid(soql);
-
-console.log('isValid', isValid);
+console.log(isValid);
 ```
 
 ## Format Query
 
-This function is provided as a convenience and just calls parse and compose under the hood.
+This function is provided as a convenience and just calls parse and compose.
+[Check out the demo](https://paustint.github.io/soql-parser-js/) to see the outcome of the various format options.
 
 ```typescript
 import { formatQuery } from 'soql-parser-js';
@@ -317,6 +397,7 @@ export interface SoqlComposeConfig {
   logging: boolean; // default=false
   format: boolean; // default=false
   formatOptions?: FormatOptions;
+  autoCompose: boolean; // default=true
 }
 
 export interface FormatOptions {
@@ -333,17 +414,18 @@ export interface FormatOptions {
 The following utility functions are available:
 
 1. `getComposedField(input: string | ComposeFieldInput)`
-1. Convenience method to construct fields in the correct data format. See example usage in the Compose example.
-1. `isSubquery(query: Query | Subquery)`
-1. Returns true if the data passed in is a subquery
-1. `getFlattenedFields(query: Query)`
-1. This provides a list of fields that are stringified and flattened in order to access data from a returned API call from Salesforce. Refer to `tests/publicUtils.spec.ts` for usage examples.
+   1. Convenience method to construct fields in the correct data format. See example usage in the Compose example.
+2. `isSubquery(query: Query | Subquery)`
+   1. Returns true if the data passed in is a subquery
+3. `getFlattenedFields(query: Query)`
+   1. Flatten a Salesforce record based on the parsed SOQL Query. this is useful if you have relationships in your query and want to show the results in a table, using `.` dot notation for the relationship fields.
+   2. Refer to `tests/publicUtils.spec.ts` for usage examples.
 
 ## Data Models
 
-### Query
-
 These are all available for import in your typescript projects
+
+### Query
 
 ```typescript
 export type LogicalOperator = 'AND' | 'OR';
@@ -496,6 +578,33 @@ export interface WithDataCategoryCondition {
   selector: GroupSelector;
   parameters: string[];
 }
+```
+
+### Compose Class
+
+You only need to interact with the compose class if you want to compose part of a SOQL query
+
+```typescript
+// Instance Properties
+logging: boolean; // default to false
+format: boolean; // default to false
+query: string;
+formatter: Formatter;
+
+// Instance Methods:
+constructor(private soql: Query, config?: Partial<SoqlComposeConfig>)
+start(): void
+// Pass in part of the parsed query to get the string representation for a given segment of a query
+parseQuery(query: Query | Subquery): string
+parseFields(fields: FieldType[]): string[]
+parseTypeOfField(typeOfField: FieldTypeOf): string
+parseFn(fn: FunctionExp): string
+parseWhereClause(where: WhereClause): string
+parseGroupByClause(groupBy: GroupByClause): string
+parseHavingClause(having: HavingClause): string
+parseOrderBy(orderBy: OrderByClause | OrderByClause[]): string
+parseWithDataCategory(withDataCategory: WithDataCategoryClause): string
+
 ```
 
 ### Utils

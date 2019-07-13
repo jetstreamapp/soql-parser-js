@@ -1,4 +1,4 @@
-import { parseQuery, composeQuery, isQueryValid, Query, FieldType, WhereClause, formatQuery } from '../lib';
+import { parseQuery, composeQuery, isQueryValid, Query, FieldType, WhereClause, formatQuery, Compose } from '../lib';
 import { expect } from 'chai';
 import 'mocha';
 import testCases from './TestCases';
@@ -90,6 +90,25 @@ describe('validate queries', () => {
         expect(isValid).equal(testCase.isValid);
       });
     });
+});
+
+describe('calls individual compose methods', () => {
+  // TODO: add more tests
+  // We have adequate coverage of overall queries, but these are public and should have adequate coverage individually
+  it(`Should compose the where clause properly`, () => {
+    const soql = `SELECT Id FROM Account WHERE Name = 'Foo'`;
+    const parsedQuery = parseQuery(soql);
+    const composer = new Compose(parsedQuery, { autoCompose: false });
+    const whereClause = composer.parseWhereClause(parsedQuery.where);
+    expect(whereClause).to.equal(`Name = 'Foo'`);
+  });
+  it(`Should compose the where clause properly with semi-join`, () => {
+    const soql = `SELECT Id FROM Account WHERE Id IN (SELECT AccountId FROM Contact WHERE Name LIKE '%foo%')`;
+    const parsedQuery = parseQuery(soql);
+    const composer = new Compose(parsedQuery, { autoCompose: false });
+    const whereClause = composer.parseWhereClause(parsedQuery.where);
+    expect(whereClause).to.equal(`Id IN (SELECT AccountId FROM Contact WHERE Name LIKE '%foo%')`);
+  });
 });
 
 function removeComposeOnlyFields(query: Query): Query {
