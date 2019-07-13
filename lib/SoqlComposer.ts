@@ -19,6 +19,7 @@ export interface SoqlComposeConfig {
   logging: boolean; // default=false
   format: boolean; // default=false
   formatOptions?: FormatOptions;
+  autoCompose: boolean; // default=true
 }
 /**
  * Formats query - This will compose and then parse a query with the provided format options
@@ -33,6 +34,8 @@ export function formatQuery(soql: string, formatOptions?: FormatOptions) {
 
 /**
  * Composes a parsed query back to a SOQL query
+ * The parsing methods are public in case there is a need to parse just a part of a query,
+ * but the common case is to call the "start()" method
  * @param soql
  * @param [config]
  * @returns query
@@ -66,6 +69,7 @@ export class Compose {
   public formatter: Formatter;
 
   constructor(private soql: Query, config: Partial<SoqlComposeConfig> = {}) {
+    config = { autoCompose: true, ...config };
     const { logging } = config;
     this.logging = logging;
     this.format = config.format;
@@ -75,8 +79,9 @@ export class Compose {
       logging: this.logging,
       ...config.formatOptions,
     });
-
-    this.start();
+    if (config.autoCompose) {
+      this.start();
+    }
   }
 
   /**
@@ -86,6 +91,10 @@ export class Compose {
     this.query = this.parseQuery(this.soql);
   }
 
+  /**
+   * If logging is enabled, print the query to the console
+   * @param soql
+   */
   private log(soql: string) {
     if (this.logging) {
       console.log('Current SOQL:', soql);
@@ -99,7 +108,7 @@ export class Compose {
    * @param query
    * @returns query
    */
-  private parseQuery(query: Query | Subquery): string {
+  public parseQuery(query: Query | Subquery): string {
     const fieldData: FieldData = {
       fields: this.parseFields(query.fields).map(field => ({
         text: field,
@@ -137,7 +146,6 @@ export class Compose {
       this.log(output);
     }
 
-    // TODO: add WITH support https://github.com/paustint/soql-parser-js/issues/18
     if (query.groupBy) {
       output += this.formatter.formatClause('GROUP BY');
       output += ` ${this.parseGroupByClause(query.groupBy)}`;
@@ -199,7 +207,7 @@ export class Compose {
    * @param fields
    * @returns fields
    */
-  private parseFields(fields: FieldType[]): string[] {
+  public parseFields(fields: FieldType[]): string[] {
     return fields.map(field => {
       const objPrefix = (field as any).objectPrefix ? `${(field as any).objectPrefix}.` : '';
       switch (field.type) {
@@ -238,7 +246,7 @@ export class Compose {
    * @param typeOfField
    * @returns type of field
    */
-  private parseTypeOfField(typeOfField: FieldTypeOf): string {
+  public parseTypeOfField(typeOfField: FieldTypeOf): string {
     let output = `TYPEOF ${typeOfField.field} `;
     output += typeOfField.conditions
       .map(cond => {
@@ -265,7 +273,7 @@ export class Compose {
    * @param where
    * @returns where clause
    */
-  private parseWhereClause(where: WhereClause): string {
+  public parseWhereClause(where: WhereClause): string {
     let output = '';
     if (where.left) {
       output +=
@@ -289,9 +297,6 @@ export class Compose {
         this.parseWhereClause(where.right)
       );
       return `${output}${formattedData}`.trim();
-      // return `${output}${this.formatter.formatAddNewLine(' ')}${utils.get(where.operator)} ${this.parseWhereClause(
-      //   where.right
-      // )}`.trim();
     } else {
       return output.trim();
     }
@@ -303,7 +308,7 @@ export class Compose {
    * @param groupBy
    * @returns group by clause
    */
-  private parseGroupByClause(groupBy: GroupByClause): string {
+  public parseGroupByClause(groupBy: GroupByClause): string {
     if (groupBy.type) {
       return `${groupBy.type}${utils.getAsArrayStr(groupBy.field, true)}`;
     } else {
@@ -317,7 +322,7 @@ export class Compose {
    * @param having
    * @returns having clause
    */
-  private parseHavingClause(having: HavingClause): string {
+  public parseHavingClause(having: HavingClause): string {
     let output = '';
     if (having.left) {
       output += new Array(having.left.openParen || 0).fill('(').join('');
@@ -338,7 +343,7 @@ export class Compose {
    * @param orderBy
    * @returns order by
    */
-  private parseOrderBy(orderBy: OrderByClause | OrderByClause[]): string {
+  public parseOrderBy(orderBy: OrderByClause | OrderByClause[]): string {
     if (Array.isArray(orderBy)) {
       return this.formatter.formatOrderByArray(orderBy.map(ob => this.parseOrderBy(ob)));
     } else {
@@ -355,7 +360,7 @@ export class Compose {
    * @param withDataCategory
    * @returns with data category
    */
-  private parseWithDataCategory(withDataCategory: WithDataCategoryClause): string {
+  public parseWithDataCategory(withDataCategory: WithDataCategoryClause): string {
     return withDataCategory.conditions
       .map(condition => {
         const params =
