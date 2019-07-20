@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.2.1
+
+- Queries with multiple consecutive left parens in a where clause were not correctly parsed. (#69)
+- Fixed npm reported security vulnerabilities.
+
 ## 1.2.0
 
 - Changed compose methods to public to allow external access (#65)

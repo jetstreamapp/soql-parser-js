@@ -1069,7 +1069,8 @@ export class Listener implements SOQLListener {
       console.log('enterParenthesis:', ctx.text);
     }
     if (this.context.currentItem === 'where' || this.context.currentItem === 'having') {
-      this.context.tempData.nextHasOpenParen = true;
+      this.context.tempData.nextOpenParenCount = this.context.tempData.nextOpenParenCount || 0;
+      this.context.tempData.nextOpenParenCount += 1;
     }
   }
   exitParenthesis(ctx: Parser.ParenthesisContext) {
@@ -1100,10 +1101,10 @@ export class Listener implements SOQLListener {
       const currItem: any = {};
       if (!this.context.tempData.currConditionOperation.left) {
         this.context.tempData.currConditionOperation.left = currItem;
-        if (this.context.tempData.nextHasOpenParen) {
+        if (this.context.tempData.nextOpenParenCount) {
           currItem.openParen = currItem.openParen || 0;
-          currItem.openParen += 1;
-          this.context.tempData.nextHasOpenParen = false;
+          currItem.openParen += this.context.tempData.nextOpenParenCount;
+          this.context.tempData.nextOpenParenCount = 0;
         }
         if (this.context.tempData.nextHasLogicalPrefix) {
           currItem.logicalPrefix = this.context.tempData.nextHasLogicalPrefix;
@@ -1121,10 +1122,10 @@ export class Listener implements SOQLListener {
       const currItem: any = {};
       if (!this.context.tempData.currConditionOperation.left) {
         this.context.tempData.currConditionOperation.left = currItem;
-        if (this.context.tempData.nextHasOpenParen) {
+        if (this.context.tempData.nextOpenParenCount) {
           currItem.openParen = currItem.openParen || 0;
-          currItem.openParen += 1;
-          this.context.tempData.nextHasOpenParen = false;
+          currItem.openParen += this.context.tempData.nextOpenParenCount;
+          this.context.tempData.nextOpenParenCount = 0;
         }
         if (this.context.tempData.nextHasLogicalPrefix) {
           currItem.logicalPrefix = this.context.tempData.nextHasLogicalPrefix;
@@ -1151,10 +1152,10 @@ export class Listener implements SOQLListener {
       const currItem: any = {};
       if (!this.context.tempData.currConditionOperation.left) {
         this.context.tempData.currConditionOperation.left = currItem;
-        if (this.context.tempData.nextHasOpenParen) {
+        if (this.context.tempData.nextOpenParenCount) {
           currItem.openParen = currItem.openParen || 0;
-          currItem.openParen += 1;
-          this.context.tempData.nextHasOpenParen = false;
+          currItem.openParen += this.context.tempData.nextOpenParenCount;
+          this.context.tempData.nextOpenParenCount = 0;
         }
         if (this.context.tempData.nextHasLogicalPrefix) {
           currItem.logicalPrefix = this.context.tempData.nextHasLogicalPrefix;
@@ -1185,10 +1186,10 @@ export class Listener implements SOQLListener {
       const currItem: any = {};
       if (!this.context.tempData.currConditionOperation.left) {
         this.context.tempData.currConditionOperation.left = currItem;
-        if (this.context.tempData.nextHasOpenParen) {
+        if (this.context.tempData.nextOpenParenCount) {
           currItem.openParen = currItem.openParen || 0;
-          currItem.openParen += 1;
-          this.context.tempData.nextHasOpenParen = false;
+          currItem.openParen += this.context.tempData.nextOpenParenCount;
+          this.context.tempData.nextOpenParenCount = 0;
         }
         if (this.context.tempData.nextHasLogicalPrefix) {
           currItem.logicalPrefix = this.context.tempData.nextHasLogicalPrefix;

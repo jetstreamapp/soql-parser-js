@@ -39,7 +39,7 @@
     "lodash.get": "^4.4.2",
     "magic-string": "^0.25.1",
     "mocha": "^5.2.0",
-    "release-it": "^12.3.0",
+    "release-it": "^12.3.3",
     "rollup": "^0.66.6",
     "rollup-plugin-cli": "^0.1.5",
     "rollup-plugin-typescript2": "^0.21.1",

@@ -1787,5 +1787,89 @@ export const testCases: TestCase[] = [
       withSecurityEnforced: true,
     },
   },
+
+  {
+    testCase: 58,
+    soql:
+      "SELECT Id FROM Account WHERE (((Name = '1' OR Name = '2') AND Name = '3')) AND (((Description = '123') OR (Id = '1' AND Id = '2'))) AND Id = '1'",
+    output: {
+      fields: [
+        {
+          type: 'Field',
+          field: 'Id',
+        },
+      ],
+      sObject: 'Account',
+      where: {
+        left: {
+          openParen: 3,
+          field: 'Name',
+          operator: '=',
+          value: "'1'",
+          literalType: 'STRING',
+        },
+        operator: 'OR',
+        right: {
+          left: {
+            field: 'Name',
+            operator: '=',
+            value: "'2'",
+            literalType: 'STRING',
+            closeParen: 1,
+          },
+          operator: 'AND',
+          right: {
+            left: {
+              field: 'Name',
+              operator: '=',
+              value: "'3'",
+              literalType: 'STRING',
+              closeParen: 2,
+            },
+            operator: 'AND',
+            right: {
+              left: {
+                openParen: 3,
+                field: 'Description',
+                operator: '=',
+                value: "'123'",
+                literalType: 'STRING',
+                closeParen: 1,
+              },
+              operator: 'OR',
+              right: {
+                left: {
+                  openParen: 1,
+                  field: 'Id',
+                  operator: '=',
+                  value: "'1'",
+                  literalType: 'STRING',
+                },
+                operator: 'AND',
+                right: {
+                  left: {
+                    field: 'Id',
+                    operator: '=',
+                    value: "'2'",
+                    literalType: 'STRING',
+                    closeParen: 3,
+                  },
+                  operator: 'AND',
+                  right: {
+                    left: {
+                      field: 'Id',
+                      operator: '=',
+                      value: "'1'",
+                      literalType: 'STRING',
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  },
 ];
 export default testCases;
