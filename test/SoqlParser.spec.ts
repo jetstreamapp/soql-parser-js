@@ -31,6 +31,10 @@ describe('compose queries', () => {
       replacements.forEach(replacement => (soql = soql.replace(replacement.matching, replacement.replace)));
       expect(soqlQuery).to.equal(soql);
     });
+    it(`should have valid composed queries - test case ${testCase.testCase} - ${testCase.soql}`, () => {
+      const soqlQuery = composeQuery(removeComposeOnlyFields(parseQuery(testCase.soql)));
+      expect(isQueryValid(soqlQuery)).equal(true);
+    });
   });
   it('Should add single quotes to WHERE clause if not already exists', () => {
     const query: Query = {

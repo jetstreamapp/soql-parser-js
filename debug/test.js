@@ -1,6 +1,14 @@
 var soqlParserJs = require('./lib');
 
-const query = `SELECT Title FROM KnowledgeArticleVersion WHERE PublishStatus = 'online' WITH DATA CATEGORY Geography__c ABOVE usa__c WITH SECURITY_ENFORCED`;
+const query = `SELECT Id, Name
+FROM Account
+WHERE (((Name = '1'
+OR Name = '2')
+AND Name = '3'))
+AND (((Description = '123')
+OR (Id = '1'
+AND Id = '2')))
+AND Id = '1'`;
 // const query = `
 // SELECT Id, Name, FORMAT(Amount),
 //   (SELECT Quantity, ListPrice, PricebookEntry.UnitPrice, PricebookEntry.Name FROM OpportunityLineItems)
