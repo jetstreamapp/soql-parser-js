@@ -6,31 +6,66 @@
 
 ## Description
 
-:sunny: This library allows parsing Salesforce SOQL queries using JavaScript or Typescript. Works in the browser and node. :sunny:
+**This library allows parsing and composing SOQL queries from Salesforce using JavaScript or Typescript.**
 
-SOQL Parser JS provides the following capabilities:
+**Available Features:**
 
-1. Parse a SOQL query into a usable data structure.
-2. Turn a parsed data structure back into a well formed SOQL query with various format options.
-3. Check if a SOQL query is syntactically valid (**note**: some cases may be structurally valid but not allowed by Salesforce, e.x. invalid field name).
+1. Parse SOQL queries into a common `Query` data structure.
+2. Compose a `Query` data structure back into a SOQL query.
+3. Validate a query to check if the syntax is valid. (Note: even if a query is valid, it might still be invalid based on your org configuration)
 
-This library is written in Typescript and all type definitions are included with the library for your benefit if you choose to use Typescript or use VSCode's automatic type checking.
-
-:warning: antlr4 is dependency for this library and is a rather large library (~600 KB) and is required for the parser to function. Consider using dynamic imports to achieve lazy loading.
-
-## Examples
+This library uses [Chevrotain](https://github.com/SAP/chevrotain) to parse queries. Prior to version 2.0.0, [antlr4](https://github.com/antlr/antlr4) was used. The move to Chevrotain provided a 35% performance improvement and resulted in a 36% decrease in bundle size. :tada:
 
 Want to try it out? [Check out the demo](https://paustint.github.io/soql-parser-js/).
 
-Look through the [unit tests](./test/TestCases.ts) for additional examples.
+## Quick Start
 
-# Usage
+```javascript
+import { parseQuery, composeQuery, isQueryValid } from 'soql-parser-js';
 
-## Parsing
+const query = parseQuery(`SELECT Id FROM Account WHERE Id = 'FOO'`);
+console.log('query', query);
 
-Parsing a SOQL query can be completed by calling `parseQuery(soqlQueryString, options)`. A `Query` data structure will be returned;
+const soql = composeQuery(query);
+console.log('soql', soql); // SELECT Id FROM Account WHERE Id = 'FOO'
 
-#### Typescript / ES6
+isQueryValid('SELECT Id, Foo FROM Baz'); // true
+isQueryValid('SELECT Id Foo FROM Baz'); // false
+```
+
+## Available Features
+
+| Function     | Description                                            | Arguments                                  |
+| ------------ | ------------------------------------------------------ | ------------------------------------------ |
+| parseQuery   | Parse a SOQL query string into a Query data structure. | soql: Query                                |
+| isQueryValid | Returns true if the query was able to be parsed.       | soql: Query                                |
+| composeQuery | Turn a Query object back into a SOQL statement         | soql: Query<br> config?: SoqlComposeConfig |
+| formatQuery  | Format a SOQL query string.                            | soql: Query<br> config?: FormatOptions     |
+
+**SoqlComposeConfig**
+
+| Property      | Type          | Description                                                                                                                                                                                                              | required | default |
+| ------------- | ------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | -------- | ------- |
+| format        | boolean       | Apply formatting the the composed query. This will result in a multi-line soql statement.                                                                                                                                | FALSE    | TRUE    |
+| formatOptions | FormatOptions | Options to apply to the formatter.                                                                                                                                                                                       | FALSE    |         |
+| autoCompose   | boolean       | If you need to compose just part of a query, you can create your own instance of the Compose class and set this to false, then call any methods that you need to just for what you would like to turn into a SOQL query. | FALSE    | TRUE    |
+| logging       | boolean       | Print out logging statements to the console about the format operation.                                                                                                                                                  | FALSE    | FALSE   |
+
+**FormatOptions**
+
+| Property                     | Type    | Description                                                                                                                          | required | default |
+| ---------------------------- | ------- | ------------------------------------------------------------------------------------------------------------------------------------ | -------- | ------- |
+| numIndent                    | number  | The number of tab characters to indent.                                                                                              | FALSE    | 1       |
+| fieldMaxLineLength           | number  | The number of characters that the fields should take up before making a new line. Set this to 1 to have every field on its own line. | FALSE    | 60      |
+| fieldSubqueryParensOnOwnLine | boolean | If true, the opening and closing parentheses will be on their own line for subqueries.                                               | FALSE    | TRUE    |
+| whereClauseOperatorsIndented | boolean | If true, indents the where clause operators                                                                                          | FALSE    | FALSE   |
+| logging                      | boolean | Print out logging statements to the console about the format operation.                                                              | FALSE    | FALSE   |
+
+## Examples
+
+### Parsing Queries
+
+Parsing a SOQL query can be completed by calling `parseQuery(soqlQueryString)`. A `Query` data structure will be returned.
 
 ```typescript
 import { parseQuery } from 'soql-parser-js';
@@ -41,7 +76,7 @@ const soql = `
   FROM LoginHistory
   WHERE LoginTime > 2010-09-20T22:16:30.000Z
   AND LoginTime < 2010-09-21T22:16:30.000Z
-  GROUP BY UserId';
+  GROUP BY UserId
 `;
 
 const soqlQuery = parseQuery(soql);
@@ -49,7 +84,8 @@ const soqlQuery = parseQuery(soql);
 console.log(JSON.stringify(soqlQuery, null, 2));
 ```
 
-**Results**
+<details>
+  <summary><b>Results (click to show)</b></summary>
 
 ```json
 {
@@ -60,10 +96,10 @@ console.log(JSON.stringify(soqlQuery, null, 2));
     },
     {
       "type": "FieldFunctionExpression",
-      "rawValue": "COUNT(Id)",
-      "fn": "COUNT",
+      "functionName": "COUNT",
+      "parameters": ["Id"],
       "isAggregateFn": true,
-      "parameters": ["Id"]
+      "rawValue": "COUNT(Id)"
     }
   ],
   "sObject": "LoginHistory",
@@ -90,70 +126,48 @@ console.log(JSON.stringify(soqlQuery, null, 2));
 }
 ```
 
-#### Options
+</details>
+
+### Validating Queries
 
 ```typescript
-export interface SoqlQueryConfig {
-  continueIfErrors?: boolean; // default=false
-  logging: boolean; // default=false
-}
+import { isQueryValid } from 'soql-parser-js';
+// var soqlParserJs = require('soql-parser-js'); // node's require format - usage: soqlParserJs.parseQuery()
+
+const invalidSoql = `SELECT UserId, COUNT(Id) Account`;
+const validSoql = `SELECT UserId, COUNT(Id) Account`;
+
+console.log(isQueryValid(soql));
+console.log(isQueryValid(soql));
 ```
 
-## Composing
+### Composing Queries
+
+Build a `Query` data structure to have it converted back into a SOQL query.
 
 Composing a query will turn a Query object back to a SOQL query string. The exact same data structure returned from `parseQuery()` can be used,
 but depending on your use-case, you may need to build your own data structure to compose a query.
 These examples show building your own Query object with the minimum required fields.
 
-:page_facing_up: **Note:** Some operators may be converted to upper case (e.x. NOT, AND)
+Some utility methods have been provided to make it easier to build the field data structures.
 
-:page_facing_up: **Note:** There are a number of fields populated on the Query object when `parseQuery()` is called that are not required to compose a query. Look at the examples below and the comments in the data model for more information.
+**Note:** Some operators may be converted to upper case (e.x. NOT, AND)
 
-**The base query object is shaped like this:**
-
-```typescript
-export interface QueryBase {
-  fields: FieldType[];
-  sObjectAlias?: string;
-  where?: WhereClause;
-  limit?: number;
-  offset?: number;
-  groupBy?: GroupByClause;
-  having?: HavingClause;
-  orderBy?: OrderByClause | OrderByClause[];
-  withDataCategory?: WithDataCategoryClause;
-  for?: ForClause;
-  update?: UpdateClause;
-}
-```
-
-The easiest way to build the fields is to call the utility function `getComposedField()`.
-
-### Example
-
-This is the query that will be composed programmatically
-
-```sql
-SELECT Id, Name, FORMAT(Amount) MyFormattedAmount,
-  (SELECT Quantity, ListPrice, PricebookEntry.UnitPrice, PricebookEntry.Name FROM OpportunityLineItems)
-FROM Opportunity
-WHERE CreatedDate > LAST_N_YEARS:1
-AND StageName = 'Closed Won'
-LIMIT 150
-```
+**Note:** There are a number of fields populated on the Query object when `parseQuery()` is called that are not required to compose a query. Look at the examples below and the comments in the data model for more information.
 
 ```typescript
-import { composeQuery, getComposedField } from 'soql-parser-js';
+import { composeQuery, getField, Query } from 'soql-parser-js';
 
+// Build a subquery
 const oppLineItemsSubquery = {
   fields: [
-    getComposedField('Quantity'),
-    getComposedField('ListPrice'),
-    getComposedField({
+    getField('Quantity'),
+    getField('ListPrice'),
+    getField({
       field: 'UnitPrice',
       relationships: ['PricebookEntry'],
     }),
-    getComposedField({
+    getField({
       field: 'Name',
       relationships: ['PricebookEntry'],
     }),
@@ -161,16 +175,17 @@ const oppLineItemsSubquery = {
   relationshipName: 'OpportunityLineItems',
 };
 
-const soqlQuery = {
+// build the main query and add the subquery as a field
+const soqlQuery: Query = {
   fields: [
-    getComposedField('Id'),
-    getComposedField('Name'),
-    getComposedField({
-      fn: 'FORMAT',
+    getField('Id'),
+    getField('Name'),
+    getField({
+      functionName: 'FORMAT',
       parameters: 'Amount',
       alias: 'MyFormattedAmount',
     }),
-    getComposedField({ subquery: oppLineItemsSubquery }),
+    getField({ subquery: oppLineItemsSubquery }),
   ],
   sObject: 'Opportunity',
   where: {
@@ -199,36 +214,19 @@ const composedQuery = composeQuery(soqlQuery, { format: true });
 console.log(composedQuery);
 ```
 
-In the example above, we made use of `getComposedField(input: string | ComposeFieldInput)` to compose the fields. The input expects a string or one of the following data structures listed below. An error will be thrown if the data passed in is not one of the following shapes.
+**Results**
 
-This returns a `FieldType` object.
-
-```typescript
-export interface ComposeField {
-  field: string;
-  objectPrefix?: string;
-}
-
-export interface ComposeFieldFunction {
-  fn: string;
-  parameters?: string | string[] | FieldFunctionExpression | FieldFunctionExpression[];
-  alias?: string;
-}
-
-export interface ComposeFieldRelationship {
-  field: string;
-  relationships: string[];
-  objectPrefix?: string;
-}
-
-export interface ComposeFieldSubquery {
-  subquery?: Subquery;
-}
-
-export interface ComposeFieldTypeof {
-  field: string;
-  conditions: FieldTypeOfCondition[];
-}
+```sql
+SELECT Id, Name, FORMAT(Amount) MyFormattedAmount,
+  (
+    SELECT Quantity, ListPrice, PricebookEntry.UnitPrice,
+      PricebookEntry.Name
+    FROM OpportunityLineItems
+  )
+FROM Opportunity
+WHERE CreatedDate > LAST_N_YEARS:1
+AND StageName = 'Closed Won'
+LIMIT 150
 ```
 
 ### Composing a partial query
@@ -270,33 +268,8 @@ const parsedQuery = parseQuery(soql);
 
   console.log(whereClause);
   // Name = 'Foo'
-
 }
 
-```
-
-## Checking if a Query is Valid
-
-This will parse a Query to confirm valid syntax, but will not parse into the Query data structure, which will have a small performance gain.
-This method is faster than parsing the full query.
-
-Options:
-
-```typescript
-export interface ConfigBase {
-  logging: boolean; // default=false
-}
-```
-
-```typescript
-import { isQueryValid } from 'soql-parser-js';
-
-const soql =
-  'SELECT UserId, COUNT(Id) from LoginHistory WHERE LoginTime > 2010-09-20T22:16:30.000Z AND LoginTime < 2010-09-21T22:16:30.000Z GROUP BY UserId';
-
-const isValid = isQueryValid(soql);
-
-console.log(isValid);
 ```
 
 ## Format Query
@@ -311,7 +284,7 @@ const query = `SELECT Id, Name, AccountNumber, AccountSource, AnnualRevenue, Bil
 
 const formattedQuery1 = formatQuery(query);
 const formattedQuery2 = formatQuery(query, {
-  fieldMaxLineLen: 20,
+  fieldMaxLineLength: 20,
   fieldSubqueryParensOnOwnLine: false,
   whereClauseOperatorsIndented: true,
 });
@@ -384,46 +357,19 @@ WHERE Name LIKE 'a%'
 	OR Name LIKE 'c%'
 ```
 
-### Options
-
-```typescript
-export interface SoqlQueryConfig {
-  continueIfErrors?: boolean; // default=false
-  logging: boolean; // default=false
-  includeSubqueryAsField: boolean; // default=true
-}
-
-export interface SoqlComposeConfig {
-  logging: boolean; // default=false
-  format: boolean; // default=false
-  formatOptions?: FormatOptions;
-  autoCompose: boolean; // default=true
-}
-
-export interface FormatOptions {
-  numIndent?: number; // default=1
-  fieldMaxLineLen?: number; // default=60
-  fieldSubqueryParensOnOwnLine?: boolean; // default=true
-  whereClauseOperatorsIndented?: boolean; // default=false
-  logging?: boolean; // default=false
-}
-```
-
 ## Utility Functions
 
 The following utility functions are available:
 
-1. `getComposedField(input: string | ComposeFieldInput)`
+1. `getField(input: string | ComposeFieldInput)`
    1. Convenience method to construct fields in the correct data format. See example usage in the Compose example.
 2. `isSubquery(query: Query | Subquery)`
    1. Returns true if the data passed in is a subquery
 3. `getFlattenedFields(query: Query)`
-   1. Flatten a Salesforce record based on the parsed SOQL Query. this is useful if you have relationships in your query and want to show the results in a table, using `.` dot notation for the relationship fields.
+   1. Flatten a Salesforce record based on the parsed SOQL Query. this is useful if you have relationships in your query and want to show the results in a table, using `.` dot notation for the relationship field headings.
    2. Refer to `tests/publicUtils.spec.ts` for usage examples.
 
 ## Data Models
-
-These are all available for import in your typescript projects
 
 ### Query
 
@@ -435,31 +381,72 @@ export type GroupSelector = 'ABOVE' | 'AT' | 'BELOW' | 'ABOVE_OR_BELOW';
 export type LogicalPrefix = 'NOT';
 export type ForClause = 'VIEW' | 'UPDATE' | 'REFERENCE';
 export type UpdateClause = 'TRACKING' | 'VIEWSTAT';
-export type LiteralType =
-  | 'STRING'
-  | 'INTEGER'
-  | 'DECIMAL'
-  | 'BOOLEAN'
-  | 'NULL'
-  | 'DATETIME'
-  | 'DATE'
-  | 'DATE_LITERAL'
-  | 'DATE_N_LITERAL';
+export type LiteralType = 'STRING' | 'INTEGER' | 'DECIMAL' | 'BOOLEAN' | 'NULL' | 'DATETIME' | 'DATE' | 'DATE_LITERAL' | 'DATE_N_LITERAL';
 export type FieldType = Field | FieldFunctionExpression | FieldRelationship | FieldSubquery | FieldTypeOf;
 export type OrderByCriterion = 'ASC' | 'DESC';
 export type NullsOrder = 'FIRST' | 'LAST';
 export type GroupByType = 'CUBE' | 'ROLLUP';
+export type DateLiteral =
+  | 'YESTERDAY'
+  | 'TODAY'
+  | 'TOMORROW'
+  | 'LAST_WEEK'
+  | 'THIS_WEEK'
+  | 'NEXT_WEEK'
+  | 'LAST_MONTH'
+  | 'THIS_MONTH'
+  | 'NEXT_MONTH'
+  | 'LAST_90_DAYS'
+  | 'NEXT_90_DAYS'
+  | 'THIS_QUARTER'
+  | 'LAST_QUARTER'
+  | 'NEXT_QUARTER'
+  | 'THIS_YEAR'
+  | 'LAST_YEAR'
+  | 'NEXT_YEAR'
+  | 'THIS_FISCAL_QUARTER'
+  | 'LAST_FISCAL_QUARTER'
+  | 'NEXT_FISCAL_QUARTER'
+  | 'THIS_FISCAL_YEAR'
+  | 'LAST_FISCAL_YEAR'
+  | 'NEXT_FISCAL_YEAR';
+
+export type DateNLiteral =
+  | 'YESTERDAY'
+  | 'NEXT_N_DAYS'
+  | 'LAST_N_DAYS'
+  | 'N_DAYS_AGO'
+  | 'NEXT_N_WEEKS'
+  | 'LAST_N_WEEKS'
+  | 'N_WEEKS_AGO'
+  | 'NEXT_N_MONTHS'
+  | 'LAST_N_MONTHS'
+  | 'N_MONTHS_AGO'
+  | 'NEXT_N_QUARTERS'
+  | 'LAST_N_QUARTERS'
+  | 'N_QUARTERS_AGO'
+  | 'NEXT_N_YEARS'
+  | 'LAST_N_YEARS'
+  | 'N_YEARS_AGO'
+  | 'NEXT_N_FISCAL_QUARTERS'
+  | 'LAST_N_FISCAL_QUARTERS'
+  | 'N_FISCAL_QUARTERS_AGO'
+  | 'NEXT_N_FISCAL_YEARS'
+  | 'LAST_N_FISCAL_YEARS'
+  | 'N_FISCAL_YEARS_AGO';
 
 export interface Field {
   type: 'Field';
   field: string;
   objectPrefix?: string; // required if object is aliased
+  rawValue?: string; // only included if objectPrefix is defined
+  alias?: string;
 }
 
 export interface FieldFunctionExpression {
   type: 'FieldFunctionExpression';
-  fn: string;
-  parameters?: string[] | FieldFunctionExpression[];
+  functionName: string;
+  parameters?: (string | FieldFunctionExpression)[];
   alias?: string;
   isAggregateFn?: boolean; // not required for compose, will be populated if SOQL is parsed
   rawValue?: string; // not required for compose, will be populated if SOQL is parsed with the raw value of the entire field
@@ -471,12 +458,12 @@ export interface FieldRelationship {
   relationships: string[];
   objectPrefix?: string; // required if object is aliased
   rawValue?: string; // not required for compose, will be populated if SOQL is parsed with the raw value of the entire field
+  alias?: string;
 }
 
 export interface FieldSubquery {
   type: 'FieldSubquery';
   subquery: Subquery;
-  from?: string; // not required for compose, will be populated if SOQL is parsed
 }
 
 export interface FieldTypeOf {
@@ -498,9 +485,9 @@ export interface QueryBase {
   limit?: number;
   offset?: number;
   groupBy?: GroupByClause;
-  having?: HavingClause;
   orderBy?: OrderByClause | OrderByClause[];
   withDataCategory?: WithDataCategoryClause;
+  withSecurityEnforced?: boolean;
   for?: ForClause;
   update?: UpdateClause;
 }
@@ -529,7 +516,7 @@ export interface Condition {
   operator: Operator;
   value?: string | string[];
   valueQuery?: Query;
-  literalType?: LiteralType; // If populated with STRING on compose, the value(s) will be wrapped in "'" if they are not already. - All other values ignored
+  literalType?: LiteralType | LiteralType[]; // If populated with STRING on compose, the value(s) will be wrapped in "'" if they are not already. - All other values ignored
   dateLiteralVariable?: number; // not required for compose, will be populated if SOQL is parsed
 }
 
@@ -541,8 +528,9 @@ export interface OrderByClause {
 }
 
 export interface GroupByClause {
-  field: string | string[];
-  type?: GroupByType;
+  field?: string | string[];
+  fn?: FunctionExp;
+  having?: HavingClause;
 }
 
 export interface HavingClause {
@@ -558,15 +546,15 @@ export interface HavingCondition {
   fn?: FunctionExp;
   operator: string;
   value: string | number;
+  literalType?: String;
 }
 
 export interface FunctionExp {
-  text?: string; // Should be formatted like this: Count(Id)
-  name?: string; // not used for compose, will be populated if SOQL is parsed
+  rawValue?: string; // Should be formatted like this: Count(Id)
+  functionName?: string; // not used for compose, will be populated if SOQL is parsed
   alias?: string;
-  parameter?: string | string[]; // not used for compose, will be populated if SOQL is parsed
+  parameters?: (string | FunctionExp)[]; // not used for compose, will be populated if SOQL is parsed
   isAggregateFn?: boolean; // not used for compose, will be populated if SOQL is parsed
-  fn?: FunctionExp; // used for nested functions FORMAT(MIN(CloseDate))
 }
 
 export interface WithDataCategoryClause {
@@ -604,81 +592,45 @@ parseGroupByClause(groupBy: GroupByClause): string
 parseHavingClause(having: HavingClause): string
 parseOrderBy(orderBy: OrderByClause | OrderByClause[]): string
 parseWithDataCategory(withDataCategory: WithDataCategoryClause): string
-
 ```
 
 ### Utils
 
 ```typescript
-export interface ComposeField {
+type ComposeFieldInput = ComposeField | ComposeFieldFunction | ComposeFieldRelationship | ComposeFieldSubquery | ComposeFieldTypeof;
+
+interface ComposeField {
   field: string;
   objectPrefix?: string;
 }
 
-export interface ComposeFieldFunction {
+interface ComposeFieldFunction {
   fn: string;
   parameters?: string | string[] | FieldFunctionExpression | FieldFunctionExpression[];
   alias?: string;
 }
 
-export interface ComposeFieldRelationship {
+interface ComposeFieldRelationship {
   field: string;
   relationships: string[];
   objectPrefix?: string;
 }
 
-export interface ComposeFieldSubquery {
+interface ComposeFieldSubquery {
   subquery?: Subquery;
 }
 
-export interface ComposeFieldTypeof {
+interface ComposeFieldTypeof {
   field: string;
   conditions: FieldTypeOfCondition[];
 }
 
-export type ComposeFieldInput =
-  | ComposeField
-  | ComposeFieldFunction
-  | ComposeFieldRelationship
-  | ComposeFieldSubquery
-  | ComposeFieldTypeof;
-```
-
-## CLI Usage
-
-The CLI can be used to parse a query or compose a previously parsed query back to SOQL.
-
-**Examples:**
-
-```shell
-$ npm install -g soql-parser-js
-$ soql --help
-$ soql --query "SELECT Id FROM Account"
-$ soql -query "SELECT Id FROM Account"
-$ soql -query "SELECT Id FROM Account" -output some-output-file.json
-$ soql -query "SELECT Id FROM Account" -json
-$ soql -query some-input-file.txt
-$ soql -compose some-input-file.json
-$ soql -compose some-input-file.json
-$ soql -compose some-input-file.json -output some-output-file.json
-```
-
-**Arguments:**
-
-```
-    --query,   -q       A SOQL query surrounded in quotes or a file path to a text file containing a SOQL query.
-    --compose, -c       An escaped and quoted parsed SOQL JSON string or a file path to a text file containing a parsed query JSON object.
-    --output,  -o       Filepath.
-    --json,    -j       Provide all output messages as JSON.
-    --debug,   -d       Print additional debug log messages.
-    --help,    -h       Show this help message.
+function isSubquery(query: Query | Subquery): query is Subquery;
+function getComposedField(input: string | ComposeFieldInput): SoqlModels.FieldType;
+function getField(input: string | ComposeFieldInput): SoqlModels.FieldType;
+function getFlattenedFields(query: SoqlModels.Query, isAggregateResult?: boolean): string[];
 ```
 
 ## Contributing
 
 All contributions are welcome on the project. Please read the [contribution guidelines](https://github.com/paustint/soql-parser-js/blob/master/CONTRIBUTING.md).
-
-## Special Thanks
-
-- This library is based on the ANTLR4 grammar file [produced by Mulesoft](https://github.com/mulesoft/salesforce-soql-parser/blob/antlr4/SOQL.g4).
-- The following repository also was a help to get things started: https://github.com/petermetz/antlr-4-ts-test

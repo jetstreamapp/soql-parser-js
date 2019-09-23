@@ -1,4 +1,5 @@
 lib/
+src/
 test/
 docs/
 .vscode/
@@ -12,11 +13,7 @@ tsconfig.json
 .env
 .git
 .release-it.json
-rollup-plugins
-.nyc_output
-.rpt2_cache
-SOQL.g4
 ISSUE_TEMPLATE
 CONTRIBUTING.md
 CHANGELOG.md
-rollup.config.js
+webpack.config.js

@@ -1,11 +1,15 @@
-import { FieldFunctionExpression, LiteralType, Query, Subquery } from './models/SoqlQuery.model';
-import {
-  ComposeField,
-  ComposeFieldFunction,
-  ComposeFieldRelationship,
-  ComposeFieldSubquery,
-  ComposeFieldTypeof,
-} from './publicUtils';
+import { IToken } from 'chevrotain';
+import { FieldFunctionExpression, LiteralType, Query, Subquery } from './api/api-models';
+import { ComposeField, ComposeFieldFunction, ComposeFieldRelationship, ComposeFieldSubquery, ComposeFieldTypeof } from './api/public-utils';
+
+export function isToken(val: any): val is IToken[] | IToken {
+  val = Array.isArray(val) ? val[0] : val;
+  return val.image && true;
+}
+
+export function isSubqueryFromFlag(val: any, isSubquery: boolean): val is Subquery {
+  return isSubquery;
+}
 
 export function isString(val: any): val is string {
   return typeof val === 'string';
@@ -91,7 +95,7 @@ export function isComposeField(input: any): input is ComposeField {
   return isString(input.field) && !Array.isArray(input.relationships) && !Array.isArray(input.conditions);
 }
 export function isComposeFieldFunction(input: any): input is ComposeFieldFunction {
-  return !isNil(input.fn);
+  return !isNil(input.functionName || input.fn);
 }
 export function isComposeFieldRelationship(input: any): input is ComposeFieldRelationship {
   return isString(input.field) && Array.isArray(input.relationships);
@@ -103,17 +107,39 @@ export function isComposeFieldTypeof(input: any): input is ComposeFieldTypeof {
   return isString(input.field) && Array.isArray(input.conditions);
 }
 
-export function getWhereValue(value: any | any[], literalType?: LiteralType): any {
+export function getWhereValue(value: any | any[], literalType?: LiteralType | LiteralType[]): any {
   if (isNil(literalType)) {
     return value;
   }
+  if (Array.isArray(literalType) && Array.isArray(value)) {
+    return value.map((val, i) => {
+      return whereValueHelper(val, literalType[i] as LiteralType);
+    });
+  } else {
+    // This path should never hit, but on the off chance that literal type is an array and value is a string
+    // then the first literal type is considered
+    if (Array.isArray(literalType)) {
+      literalType = literalType[0];
+    }
+    switch (literalType) {
+      case 'STRING': {
+        if (Array.isArray(value)) {
+          return value.map(val => ((val as string).startsWith("'") ? val : `'${val}'`));
+        } else {
+          return (value as string).startsWith("'") ? value : `'${value}'`;
+        }
+      }
+      default: {
+        return value;
+      }
+    }
+  }
+}
+
+function whereValueHelper(value: any, literalType?: LiteralType) {
   switch (literalType) {
     case 'STRING': {
-      if (Array.isArray(value)) {
-        return value.map(val => ((val as string).startsWith("'") ? val : `'${val}'`));
-      } else {
-        return (value as string).startsWith("'") ? value : `'${value}'`;
-      }
+      return (value as string).startsWith("'") ? value : `'${value}'`;
     }
     default: {
       return value;

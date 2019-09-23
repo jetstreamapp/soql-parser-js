@@ -1,4 +1,4 @@
-import * as SoqlModels from './models/SoqlQuery.model';
+import * as SoqlModels from './api-models';
 import {
   getParams,
   isComposeField,
@@ -8,7 +8,11 @@ import {
   isComposeFieldTypeof,
   isString,
   isSubquery,
-} from './utils';
+} from '../utils';
+
+export { isSubquery };
+
+export type ComposeFieldInput = ComposeField | ComposeFieldFunction | ComposeFieldRelationship | ComposeFieldSubquery | ComposeFieldTypeof;
 
 export interface ComposeField {
   field: string;
@@ -16,7 +20,9 @@ export interface ComposeField {
 }
 
 export interface ComposeFieldFunction {
-  fn: string;
+  // @Deprecated - will still be used if populated, but functionName is checked first and preferred
+  fn?: string;
+  functionName: string;
   parameters?: string | string[] | SoqlModels.FieldFunctionExpression | SoqlModels.FieldFunctionExpression[];
   alias?: string;
 }
@@ -36,22 +42,23 @@ export interface ComposeFieldTypeof {
   conditions: SoqlModels.FieldTypeOfCondition[];
 }
 
-export type ComposeFieldInput =
-  | ComposeField
-  | ComposeFieldFunction
-  | ComposeFieldRelationship
-  | ComposeFieldSubquery
-  | ComposeFieldTypeof;
-
-export { isSubquery };
-
 /**
+ * @deprecated - use `getField()` instead
  * Pass any a basic string or populate required properties on the ComposeField object
  * and a constructed field will be returned
  * @param input string | ComposeFieldInput
  * @returns FieldType
  */
 export function getComposedField(input: string | ComposeFieldInput): SoqlModels.FieldType {
+  return getField(input);
+}
+/**
+ * Pass any a basic string or populate required properties on the ComposeField object
+ * and a constructed field will be returned
+ * @param input string | ComposeFieldInput
+ * @returns FieldType
+ */
+export function getField(input: string | ComposeFieldInput): SoqlModels.FieldType {
   if (typeof input === 'string') {
     return {
       type: 'Field',
@@ -66,7 +73,7 @@ export function getComposedField(input: string | ComposeFieldInput): SoqlModels.
     }
     return {
       type: 'FieldFunctionExpression',
-      fn: input.fn,
+      functionName: input.functionName || input.fn,
       parameters,
       alias: input.alias,
     };
@@ -152,7 +159,7 @@ export function getFlattenedFields(query: SoqlModels.Query, isAggregateResult?: 
           if (params.length > 0) {
             return params.join('.');
           }
-          return field.fn;
+          return field.functionName;
         }
         case 'FieldRelationship': {
           const firstRelationship = field.relationships[0].toLowerCase();
@@ -165,12 +172,8 @@ export function getFlattenedFields(query: SoqlModels.Query, isAggregateResult?: 
           return field.relationships.concat([field.field]).join('.');
         }
         case 'FieldSubquery': {
-          return field.from || field.subquery.relationshipName;
+          return field.subquery.relationshipName;
         }
-        // TODO: see if support can be added for this, otherwise ignore
-        // case 'FieldTypeof': {
-        //   return this.parseTypeOfField(field);
-        // }
         default:
           break;
       }

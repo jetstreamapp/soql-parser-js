@@ -15,7 +15,7 @@ export default class ParseSoqlFormat extends React.Component<ParseSoqlFormatProp
   public setMaxFieldLen = (ev: React.SyntheticEvent<HTMLInputElement>) => {
     const formatOptions = {
       ...this.props.formatOptions,
-      fieldMaxLineLen: Math.max(0, Number((ev.target as HTMLInputElement).value)),
+      fieldMaxLineLength: Math.max(0, Number((ev.target as HTMLInputElement).value)),
     };
     this.props.onChange(formatOptions);
   };
@@ -52,13 +52,13 @@ export default class ParseSoqlFormat extends React.Component<ParseSoqlFormatProp
                   <span>
                     Number of characters before fields wrap -{' '}
                     <small>
-                      <code>fieldMaxLineLen</code>
+                      <code>fieldMaxLineLength</code>
                     </small>
                   </span>
                 ) as any
               }
               type="number"
-              value={String(this.props.formatOptions.fieldMaxLineLen)}
+              value={String(this.props.formatOptions.fieldMaxLineLength)}
               onChange={this.setMaxFieldLen}
               disabled={!this.props.enabled}
             />

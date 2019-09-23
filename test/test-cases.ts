@@ -1,5 +1,4 @@
-import { Query } from '../lib/models/SoqlQuery.model';
-
+import { Query } from '../src/api/api-models';
 // Queries obtained from SFDC examples
 // https://developer.salesforce.com/docs/atlas.en-us.soql_sosl.meta/soql_sosl/sforce_api_calls_soql_select_examples.htm
 export interface TestCase {
@@ -135,9 +134,10 @@ export const testCases: TestCase[] = [
       fields: [
         {
           type: 'FieldFunctionExpression',
-          fn: 'COUNT',
+          functionName: 'COUNT',
           rawValue: 'COUNT()',
           isAggregateFn: true,
+          parameters: [],
         },
       ],
       sObject: 'Contact',
@@ -154,7 +154,7 @@ export const testCases: TestCase[] = [
         },
         {
           type: 'FieldFunctionExpression',
-          fn: 'COUNT',
+          functionName: 'COUNT',
           rawValue: 'COUNT(Name)',
           isAggregateFn: true,
           parameters: ['Name'],
@@ -177,7 +177,7 @@ export const testCases: TestCase[] = [
         },
         {
           type: 'FieldFunctionExpression',
-          fn: 'COUNT',
+          functionName: 'COUNT',
           rawValue: 'COUNT(Id)',
           isAggregateFn: true,
           parameters: ['Id'],
@@ -186,15 +186,16 @@ export const testCases: TestCase[] = [
       sObject: 'Account',
       groupBy: {
         field: 'Name',
-      },
-      having: {
-        left: {
-          operator: '>',
-          value: '1',
-          fn: {
-            text: 'COUNT(Id)',
-            name: 'COUNT',
-            parameter: 'Id',
+        having: {
+          left: {
+            operator: '>',
+            value: '1',
+            literalType: 'INTEGER',
+            fn: {
+              rawValue: 'COUNT(Id)',
+              functionName: 'COUNT',
+              parameters: ['Id'],
+            },
           },
         },
       },
@@ -306,7 +307,6 @@ export const testCases: TestCase[] = [
         },
         {
           type: 'FieldSubquery',
-          from: 'Contacts',
           subquery: {
             fields: [
               {
@@ -334,7 +334,6 @@ export const testCases: TestCase[] = [
         },
         {
           type: 'FieldSubquery',
-          from: 'Contacts',
           subquery: {
             fields: [
               {
@@ -355,8 +354,7 @@ export const testCases: TestCase[] = [
   {
     testCase: 15,
     soql: "SELECT Name, (SELECT LastName FROM Contacts WHERE CreatedBy.Alias='x') FROM Account WHERE Industry='media'",
-    soqlComposed:
-      "SELECT Name, (SELECT LastName FROM Contacts WHERE CreatedBy.Alias = 'x') FROM Account WHERE Industry = 'media'",
+    soqlComposed: "SELECT Name, (SELECT LastName FROM Contacts WHERE CreatedBy.Alias = 'x') FROM Account WHERE Industry = 'media'",
     output: {
       fields: [
         {
@@ -365,7 +363,6 @@ export const testCases: TestCase[] = [
         },
         {
           type: 'FieldSubquery',
-          from: 'Contacts',
           subquery: {
             fields: [
               {
@@ -398,8 +395,7 @@ export const testCases: TestCase[] = [
   },
   {
     testCase: 16,
-    soql:
-      "SELECT Id, FirstName__c, Mother_of_Child__r.FirstName__c FROM Daughter__c WHERE Mother_of_Child__r.LastName__c LIKE 'C%'",
+    soql: "SELECT Id, FirstName__c, Mother_of_Child__r.FirstName__c FROM Daughter__c WHERE Mother_of_Child__r.LastName__c LIKE 'C%'",
     output: {
       fields: [
         {
@@ -439,7 +435,6 @@ export const testCases: TestCase[] = [
         },
         {
           type: 'FieldSubquery',
-          from: 'Line_Items__r',
           subquery: {
             fields: [
               {
@@ -582,7 +577,6 @@ export const testCases: TestCase[] = [
         },
         {
           type: 'FieldSubquery',
-          from: 'Notes',
           subquery: {
             fields: [
               {
@@ -619,7 +613,6 @@ export const testCases: TestCase[] = [
         },
         {
           type: 'FieldSubquery',
-          from: 'OpportunityLineItems',
           subquery: {
             fields: [
               {
@@ -678,7 +671,7 @@ export const testCases: TestCase[] = [
         },
         {
           type: 'FieldFunctionExpression',
-          fn: 'COUNT',
+          functionName: 'COUNT',
           rawValue: 'COUNT(Id)',
           isAggregateFn: true,
           parameters: ['Id'],
@@ -751,7 +744,7 @@ export const testCases: TestCase[] = [
         },
         {
           type: 'FieldFunctionExpression',
-          fn: 'AVG',
+          functionName: 'AVG',
           rawValue: 'AVG(Amount)',
           isAggregateFn: true,
           parameters: ['Amount'],
@@ -761,15 +754,16 @@ export const testCases: TestCase[] = [
       sObject: 'Opportunity',
       groupBy: {
         field: 'CampaignId',
-      },
-      having: {
-        left: {
-          operator: '>',
-          value: '1',
-          fn: {
-            text: 'COUNT(Id,Name)',
-            name: 'COUNT',
-            parameter: ['Id', 'Name'],
+        having: {
+          left: {
+            operator: '>',
+            value: '1',
+            literalType: 'INTEGER',
+            fn: {
+              rawValue: 'COUNT(Id, Name)',
+              functionName: 'COUNT',
+              parameters: ['Id', 'Name'],
+            },
           },
         },
       },
@@ -786,7 +780,7 @@ export const testCases: TestCase[] = [
         },
         {
           type: 'FieldFunctionExpression',
-          fn: 'COUNT',
+          functionName: 'COUNT',
           rawValue: 'COUNT(Name)',
           isAggregateFn: true,
           parameters: ['Name'],
@@ -795,8 +789,11 @@ export const testCases: TestCase[] = [
       ],
       sObject: 'Lead',
       groupBy: {
-        field: 'LeadSource',
-        type: 'ROLLUP',
+        fn: {
+          functionName: 'ROLLUP',
+          parameters: ['LeadSource'],
+          rawValue: 'ROLLUP(LeadSource)',
+        },
       },
     },
   },
@@ -815,7 +812,7 @@ export const testCases: TestCase[] = [
         },
         {
           type: 'FieldFunctionExpression',
-          fn: 'COUNT',
+          functionName: 'COUNT',
           rawValue: 'COUNT(Name)',
           isAggregateFn: true,
           parameters: ['Name'],
@@ -824,8 +821,11 @@ export const testCases: TestCase[] = [
       ],
       sObject: 'Lead',
       groupBy: {
-        field: ['Status', 'LeadSource'],
-        type: 'ROLLUP',
+        fn: {
+          functionName: 'ROLLUP',
+          parameters: ['Status', 'LeadSource'],
+          rawValue: 'ROLLUP(Status, LeadSource)',
+        },
       },
     },
   },
@@ -847,21 +847,21 @@ export const testCases: TestCase[] = [
         },
         {
           type: 'FieldFunctionExpression',
-          fn: 'GROUPING',
+          functionName: 'GROUPING',
           rawValue: 'GROUPING(Type)',
           parameters: ['Type'],
           alias: 'grpType',
         },
         {
           type: 'FieldFunctionExpression',
-          fn: 'GROUPING',
+          functionName: 'GROUPING',
           rawValue: 'GROUPING(BillingCountry)',
           parameters: ['BillingCountry'],
           alias: 'grpCty',
         },
         {
           type: 'FieldFunctionExpression',
-          fn: 'COUNT',
+          functionName: 'COUNT',
           rawValue: 'COUNT(id)',
           isAggregateFn: true,
           parameters: ['id'],
@@ -870,22 +870,25 @@ export const testCases: TestCase[] = [
       ],
       sObject: 'Account',
       groupBy: {
-        field: ['Type', 'BillingCountry'],
-        type: 'CUBE',
+        fn: {
+          rawValue: 'CUBE(Type, BillingCountry)',
+          parameters: ['Type', 'BillingCountry'],
+          functionName: 'CUBE',
+        },
       },
       orderBy: [
         {
           fn: {
-            text: 'GROUPING(Type)',
-            name: 'GROUPING',
-            parameter: 'Type',
+            rawValue: 'GROUPING(Type)',
+            functionName: 'GROUPING',
+            parameters: ['Type'],
           },
         },
         {
           fn: {
-            text: 'GROUPING(Id,BillingCountry)',
-            name: 'GROUPING',
-            parameter: ['Id', 'BillingCountry'],
+            rawValue: 'GROUPING(Id, BillingCountry)',
+            functionName: 'GROUPING',
+            parameters: ['Id', 'BillingCountry'],
           },
         },
         {
@@ -910,6 +913,7 @@ export const testCases: TestCase[] = [
           type: 'Field',
           field: 'Name',
           objectPrefix: 'c',
+          rawValue: 'c.Name',
         },
         {
           type: 'FieldRelationship',
@@ -990,8 +994,7 @@ export const testCases: TestCase[] = [
   },
   {
     testCase: 33,
-    soql:
-      "SELECT LeadSource, COUNT(Name) FROM Lead GROUP BY LeadSource HAVING COUNT(Name) > 100 and LeadSource > 'Phone'",
+    soql: "SELECT LeadSource, COUNT(Name) FROM Lead GROUP BY LeadSource HAVING COUNT(Name) > 100 AND LeadSource > 'Phone'",
     output: {
       fields: [
         {
@@ -1000,7 +1003,7 @@ export const testCases: TestCase[] = [
         },
         {
           type: 'FieldFunctionExpression',
-          fn: 'COUNT',
+          functionName: 'COUNT',
           rawValue: 'COUNT(Name)',
           isAggregateFn: true,
           parameters: ['Name'],
@@ -1009,23 +1012,25 @@ export const testCases: TestCase[] = [
       sObject: 'Lead',
       groupBy: {
         field: 'LeadSource',
-      },
-      having: {
-        left: {
-          operator: '>',
-          value: '100',
-          fn: {
-            text: 'COUNT(Name)',
-            name: 'COUNT',
-            parameter: 'Name',
-          },
-        },
-        operator: 'AND',
-        right: {
+        having: {
           left: {
             operator: '>',
-            value: "'Phone'",
-            field: 'LeadSource',
+            value: '100',
+            literalType: 'INTEGER',
+            fn: {
+              rawValue: 'COUNT(Name)',
+              functionName: 'COUNT',
+              parameters: ['Name'],
+            },
+          },
+          operator: 'AND',
+          right: {
+            left: {
+              field: 'LeadSource',
+              operator: '>',
+              value: "'Phone'",
+              literalType: 'STRING',
+            },
           },
         },
       },
@@ -1033,29 +1038,30 @@ export const testCases: TestCase[] = [
   },
   {
     testCase: 34,
-    soql:
-      'SELECT a.Id, a.Name, (SELECT a2.Id FROM ChildAccounts a2), (SELECT a1.Id FROM ChildAccounts1 a1) FROM Account a',
+    soql: 'SELECT a.Id, a.Name, (SELECT a2.Id FROM ChildAccounts a2), (SELECT a1.Id FROM ChildAccounts1 a1) FROM Account a',
     output: {
       fields: [
         {
           type: 'Field',
           field: 'Id',
           objectPrefix: 'a',
+          rawValue: 'a.Id',
         },
         {
           type: 'Field',
           field: 'Name',
           objectPrefix: 'a',
+          rawValue: 'a.Name',
         },
         {
           type: 'FieldSubquery',
-          from: 'ChildAccounts',
           subquery: {
             fields: [
               {
                 type: 'Field',
                 field: 'Id',
                 objectPrefix: 'a2',
+                rawValue: 'a2.Id',
               },
             ],
             relationshipName: 'ChildAccounts',
@@ -1064,13 +1070,13 @@ export const testCases: TestCase[] = [
         },
         {
           type: 'FieldSubquery',
-          from: 'ChildAccounts1',
           subquery: {
             fields: [
               {
                 type: 'Field',
                 field: 'Id',
                 objectPrefix: 'a1',
+                rawValue: 'a1.Id',
               },
             ],
             relationshipName: 'ChildAccounts1',
@@ -1084,8 +1090,7 @@ export const testCases: TestCase[] = [
   },
   {
     testCase: 35,
-    soql:
-      "SELECT Title FROM KnowledgeArticleVersion WHERE PublishStatus = 'online' WITH DATA CATEGORY Geography__c ABOVE usa__c",
+    soql: "SELECT Title FROM KnowledgeArticleVersion WHERE PublishStatus = 'online' WITH DATA CATEGORY Geography__c ABOVE usa__c",
     output: {
       fields: [
         {
@@ -1115,8 +1120,7 @@ export const testCases: TestCase[] = [
   },
   {
     testCase: 36,
-    soql:
-      'SELECT Title FROM Question WHERE LastReplyDate > 2005-10-08T01:02:03Z WITH DATA CATEGORY Geography__c AT (usa__c, uk__c)',
+    soql: 'SELECT Title FROM Question WHERE LastReplyDate > 2005-10-08T01:02:03Z WITH DATA CATEGORY Geography__c AT (usa__c, uk__c)',
     output: {
       fields: [
         {
@@ -1277,26 +1281,26 @@ export const testCases: TestCase[] = [
         },
         {
           type: 'FieldFunctionExpression',
-          fn: 'FORMAT',
+          functionName: 'FORMAT',
           rawValue: 'FORMAT(amount)',
           parameters: ['amount'],
           alias: 'Amt',
         },
         {
           type: 'FieldFunctionExpression',
-          fn: 'convertCurrency',
+          functionName: 'convertCurrency',
           rawValue: 'convertCurrency(amount)',
           parameters: ['amount'],
           alias: 'editDate',
         },
         {
           type: 'FieldFunctionExpression',
-          fn: 'FORMAT',
+          functionName: 'FORMAT',
           rawValue: 'FORMAT(convertCurrency(amount))',
           parameters: [
             {
               type: 'FieldFunctionExpression',
-              fn: 'convertCurrency',
+              functionName: 'convertCurrency',
               rawValue: 'convertCurrency(amount)',
               parameters: ['amount'],
             },
@@ -1322,12 +1326,12 @@ export const testCases: TestCase[] = [
       fields: [
         {
           type: 'FieldFunctionExpression',
-          fn: 'FORMAT',
+          functionName: 'FORMAT',
           rawValue: 'FORMAT(MIN(closedate))',
           parameters: [
             {
               type: 'FieldFunctionExpression',
-              fn: 'MIN',
+              functionName: 'MIN',
               rawValue: 'MIN(closedate)',
               isAggregateFn: true,
               parameters: ['closedate'],
@@ -1350,7 +1354,7 @@ export const testCases: TestCase[] = [
         },
         {
           type: 'FieldFunctionExpression',
-          fn: 'toLabel',
+          functionName: 'toLabel',
           rawValue: 'toLabel(Status)',
           parameters: ['Status'],
         },
@@ -1362,9 +1366,9 @@ export const testCases: TestCase[] = [
           value: "'le Draft'",
           literalType: 'STRING',
           fn: {
-            text: 'toLabel(Status)',
-            name: 'toLabel',
-            parameter: 'Status',
+            functionName: 'toLabel',
+            rawValue: 'toLabel(Status)',
+            parameters: ['Status'],
           },
         },
       },
@@ -1372,8 +1376,7 @@ export const testCases: TestCase[] = [
   },
   {
     testCase: 47,
-    soql:
-      "SELECT Id, Name FROM Account WHERE Id IN (SELECT AccountId FROM Opportunity WHERE StageName = 'Closed Lost')",
+    soql: "SELECT Id, Name FROM Account WHERE Id IN (SELECT AccountId FROM Opportunity WHERE StageName = 'Closed Lost')",
     output: {
       fields: [
         {
@@ -1413,7 +1416,7 @@ export const testCases: TestCase[] = [
   },
   {
     testCase: 48,
-    soql: 'SELECT Id FROM Account WHERE Id NOT IN (SELECT AccountId FROM Opportunity WHERE IsClosed = false)',
+    soql: 'SELECT Id FROM Account WHERE Id NOT IN (SELECT AccountId FROM Opportunity WHERE IsClosed = TRUE)',
     output: {
       fields: [
         {
@@ -1438,7 +1441,7 @@ export const testCases: TestCase[] = [
               left: {
                 field: 'IsClosed',
                 operator: '=',
-                value: 'false',
+                value: 'TRUE',
                 literalType: 'BOOLEAN',
               },
             },
@@ -1450,7 +1453,7 @@ export const testCases: TestCase[] = [
   {
     testCase: 49,
     soql:
-      "SELECT Id, Name FROM Account WHERE Id IN (SELECT AccountId FROM Contact WHERE LastName LIKE 'apple%') AND Id IN (SELECT AccountId FROM Opportunity WHERE isClosed = false)",
+      "SELECT Id, Name FROM Account WHERE Id IN (SELECT AccountId FROM Contact WHERE LastName LIKE 'apple%') AND Id IN (SELECT AccountId FROM Opportunity WHERE isClosed = FALSE)",
     output: {
       fields: [
         {
@@ -1502,7 +1505,7 @@ export const testCases: TestCase[] = [
                 left: {
                   field: 'isClosed',
                   operator: '=',
-                  value: 'false',
+                  value: 'FALSE',
                   literalType: 'BOOLEAN',
                 },
               },
@@ -1525,7 +1528,6 @@ export const testCases: TestCase[] = [
         },
         {
           type: 'FieldSubquery',
-          from: 'Bars',
           subquery: {
             fields: [
               {
@@ -1555,7 +1557,7 @@ export const testCases: TestCase[] = [
         },
         {
           type: 'FieldFunctionExpression',
-          fn: 'COUNT',
+          functionName: 'COUNT',
           rawValue: 'COUNT(Name)',
           isAggregateFn: true,
           parameters: ['Name'],
@@ -1593,8 +1595,7 @@ export const testCases: TestCase[] = [
   },
   {
     testCase: 53,
-    soql:
-      "SELECT Id FROM Account WHERE Foo IN ('1', '2', '3') OR Bar IN (1, 2, 3) OR Baz IN (101.00, 102.50) OR Bam IN ('FOO', null)",
+    soql: "SELECT Id FROM Account WHERE Foo IN ('1', '2', '3') OR Bar IN (1, 2, 3) OR Baz IN (101.00, 102.50) OR Bam IN ('FOO', null)",
     output: {
       fields: [
         {
@@ -1632,7 +1633,7 @@ export const testCases: TestCase[] = [
                 field: 'Bam',
                 operator: 'IN',
                 value: ["'FOO'", 'null'],
-                literalType: 'NULL',
+                literalType: ['STRING', 'NULL'],
               },
             },
           },
@@ -1787,7 +1788,6 @@ export const testCases: TestCase[] = [
       withSecurityEnforced: true,
     },
   },
-
   {
     testCase: 58,
     soql:
@@ -1866,6 +1866,71 @@ export const testCases: TestCase[] = [
                 },
               },
             },
+          },
+        },
+      },
+    },
+  },
+  {
+    testCase: 59,
+    soql: 'SELECT TYPEOF What WHEN Account THEN Phone, NumberOfEmployees WHEN Opportunity THEN Amount, CloseDate END FROM Event',
+    output: {
+      fields: [
+        {
+          type: 'FieldTypeof',
+          field: 'What',
+          conditions: [
+            {
+              type: 'WHEN',
+              objectType: 'Account',
+              fieldList: ['Phone', 'NumberOfEmployees'],
+            },
+            {
+              type: 'WHEN',
+              objectType: 'Opportunity',
+              fieldList: ['Amount', 'CloseDate'],
+            },
+          ],
+        },
+      ],
+      sObject: 'Event',
+    },
+  },
+  {
+    testCase: 60,
+    soql: 'SELECT Name FROM Account WHERE CreatedById IN (SELECT TYPEOF Owner WHEN User THEN Id WHEN Group THEN CreatedById END FROM CASE)',
+    output: {
+      fields: [
+        {
+          type: 'Field',
+          field: 'Name',
+        },
+      ],
+      sObject: 'Account',
+      where: {
+        left: {
+          field: 'CreatedById',
+          operator: 'IN',
+          valueQuery: {
+            fields: [
+              {
+                type: 'FieldTypeof',
+                field: 'Owner',
+                conditions: [
+                  {
+                    type: 'WHEN',
+                    objectType: 'User',
+                    fieldList: ['Id'],
+                  },
+                  {
+                    type: 'WHEN',
+                    objectType: 'Group',
+                    fieldList: ['CreatedById'],
+                  },
+                ],
+              },
+            ],
+            sObject: 'CASE',
           },
         },
       },

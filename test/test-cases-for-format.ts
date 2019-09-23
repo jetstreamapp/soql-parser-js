@@ -1,4 +1,4 @@
-import { FormatOptions } from '../lib/SoqlFormatter';
+import { FormatOptions } from '../src/formatter/formatter';
 export interface TestCaseForFormat {
   testCase: number;
   soql: string;
@@ -71,7 +71,7 @@ AND FOO = 'bar')))
   },
   {
     testCase: 6,
-    soql: `SELECT Id, Name FROM Account WHERE Id IN (SELECT AccountId FROM Contact WHERE LastName LIKE 'apple%' AND foo = 'bar') AND Id IN (SELECT AccountId FROM Opportunity WHERE isClosed = false)`,
+    soql: `SELECT Id, Name FROM Account WHERE Id IN (SELECT AccountId FROM Contact WHERE LastName LIKE 'apple%' AND foo = 'bar') AND Id IN (SELECT AccountId FROM Opportunity WHERE isClosed = TRUE)`,
     formattedSoql: `SELECT Id, Name
 FROM Account
 WHERE Id IN (
@@ -83,14 +83,14 @@ WHERE Id IN (
 AND Id IN (
 \tSELECT AccountId
 \tFROM Opportunity
-\tWHERE isClosed = false
+\tWHERE isClosed = TRUE
 )
 `.trim(),
   },
   {
     testCase: 7,
-    soql: `SELECT Id, Name, Foo, Bar, Baz, Bax, aaa, bbb, ccc, ddd, Id, Name, Foo, Bar, Baz, Bax, aaa, bbb, ccc, ddd, Id, Name, Foo, Bar, Baz, Bax, aaa, bbb, ccc, ddd, Account.Name, (SELECT Id, Name, Foo, Bar, Baz, Bax, aaa, bbb, ccc, ddd, Id, Name, Foo, Bar, Baz, Bax, aaa, bbb, ccc, ddd, Contact.LastName FROM Account.Contacts WHERE Id = '123' OR Id = '456' OR pimped = true), baz, (SELECT Id FROM account WHERE Boo.baz = 'bar'), bax, bar FROM Account WHERE Id IN (SELECT AccountId FROM Contact WHERE LastName LIKE 'apple%') AND Foo = 'bar' OR Baz = 'boom' AND Id IN (SELECT AccountId FROM Opportunity WHERE isClosed = false) ORDER BY GROUPING(Type), GROUPING(Id, BillingCountry), Name DESC NULLS FIRST, Id ASC NULLS LAST`,
-    formatOptions: { fieldMaxLineLen: 20, fieldSubqueryParensOnOwnLine: true, whereClauseOperatorsIndented: true },
+    soql: `SELECT Id, Name, Foo, Bar, Baz, Bax, aaa, bbb, ccc, ddd, Id, Name, Foo, Bar, Baz, Bax, aaa, bbb, ccc, ddd, Id, Name, Foo, Bar, Baz, Bax, aaa, bbb, ccc, ddd, Account.Name, (SELECT Id, Name, Foo, Bar, Baz, Bax, aaa, bbb, ccc, ddd, Id, Name, Foo, Bar, Baz, Bax, aaa, bbb, ccc, ddd, Contact.LastName FROM Account.Contacts WHERE Id = '123' OR Id = '456' OR pimped = TRUE), baz, (SELECT Id FROM account WHERE Boo.baz = 'bar'), bax, bar FROM Account WHERE Id IN (SELECT AccountId FROM Contact WHERE LastName LIKE 'apple%') AND Foo = 'bar' OR Baz = 'boom' AND Id IN (SELECT AccountId FROM Opportunity WHERE isClosed = TRUE) ORDER BY GROUPING(Type), GROUPING(Id, BillingCountry), Name DESC NULLS FIRST, Id ASC NULLS LAST`,
+    formatOptions: { fieldMaxLineLength: 20, fieldSubqueryParensOnOwnLine: true, whereClauseOperatorsIndented: true },
     formattedSoql: `SELECT Id, Name, Foo, Bar,
 \tBaz, Bax, aaa, bbb, ccc,
 \tddd, Id, Name, Foo, Bar,
@@ -107,7 +107,7 @@ AND Id IN (
 \t\tFROM Account.Contacts
 \t\tWHERE Id = '123'
 \t\t\tOR Id = '456'
-\t\t\tOR pimped = true
+\t\t\tOR pimped = TRUE
 \t),
 \tbaz,
 \t(
@@ -127,7 +127,7 @@ WHERE Id IN (
 \tAND Id IN (
 \t\tSELECT AccountId
 \t\tFROM Opportunity
-\t\tWHERE isClosed = false
+\t\tWHERE isClosed = TRUE
 \t)
 ORDER BY GROUPING(Type),
 \tGROUPING(Id, BillingCountry),
@@ -137,8 +137,8 @@ ORDER BY GROUPING(Type),
   },
   {
     testCase: 8,
-    soql: `SELECT Id, Name, Foo, Bar, Baz, Bax, aaa, bbb, ccc, ddd, Id, Name, Foo, Bar, Baz, Bax, aaa, bbb, ccc, ddd, Id, Name, Foo, Bar, Baz, Bax, aaa, bbb, ccc, ddd, Account.Name, (SELECT Id, Name, Foo, Bar, Baz, Bax, aaa, bbb, ccc, ddd, Id, Name, Foo, Bar, Baz, Bax, aaa, bbb, ccc, ddd, Contact.LastName FROM Account.Contacts WHERE Id = '123' OR Id = '456' OR pimped = true), baz, (SELECT Id FROM account WHERE Boo.baz = 'bar'), bax, bar FROM Account WHERE Id IN (SELECT AccountId FROM Contact WHERE LastName LIKE 'apple%') AND Foo = 'bar' OR Baz = 'boom' AND Id IN (SELECT AccountId FROM Opportunity WHERE isClosed = false) ORDER BY GROUPING(Type), GROUPING(Id, BillingCountry), Name DESC NULLS FIRST, Id ASC NULLS LAST`,
-    formatOptions: { fieldMaxLineLen: 20, fieldSubqueryParensOnOwnLine: true, whereClauseOperatorsIndented: false },
+    soql: `SELECT Id, Name, Foo, Bar, Baz, Bax, aaa, bbb, ccc, ddd, Id, Name, Foo, Bar, Baz, Bax, aaa, bbb, ccc, ddd, Id, Name, Foo, Bar, Baz, Bax, aaa, bbb, ccc, ddd, Account.Name, (SELECT Id, Name, Foo, Bar, Baz, Bax, aaa, bbb, ccc, ddd, Id, Name, Foo, Bar, Baz, Bax, aaa, bbb, ccc, ddd, Contact.LastName FROM Account.Contacts WHERE Id = '123' OR Id = '456' OR pimped = TRUE), baz, (SELECT Id FROM account WHERE Boo.baz = 'bar'), bax, bar FROM Account WHERE Id IN (SELECT AccountId FROM Contact WHERE LastName LIKE 'apple%') AND Foo = 'bar' OR Baz = 'boom' AND Id IN (SELECT AccountId FROM Opportunity WHERE isClosed = TRUE) ORDER BY GROUPING(Type), GROUPING(Id, BillingCountry), Name DESC NULLS FIRST, Id ASC NULLS LAST`,
+    formatOptions: { fieldMaxLineLength: 20, fieldSubqueryParensOnOwnLine: true, whereClauseOperatorsIndented: false },
     formattedSoql: `SELECT Id, Name, Foo, Bar,
 \tBaz, Bax, aaa, bbb, ccc,
 \tddd, Id, Name, Foo, Bar,
@@ -155,7 +155,7 @@ ORDER BY GROUPING(Type),
 \t\tFROM Account.Contacts
 \t\tWHERE Id = '123'
 \t\tOR Id = '456'
-\t\tOR pimped = true
+\t\tOR pimped = TRUE
 \t),
 \tbaz,
 \t(
@@ -175,7 +175,7 @@ OR Baz = 'boom'
 AND Id IN (
 \tSELECT AccountId
 \tFROM Opportunity
-\tWHERE isClosed = false
+\tWHERE isClosed = TRUE
 )
 ORDER BY GROUPING(Type),
 \tGROUPING(Id, BillingCountry),
@@ -185,8 +185,8 @@ ORDER BY GROUPING(Type),
   },
   {
     testCase: 9,
-    soql: `SELECT Id, Name, Foo, Bar, Baz, Bax, aaa, bbb, ccc, ddd, Id, Name, Foo, Bar, Baz, Bax, aaa, bbb, ccc, ddd, Id, Name, Foo, Bar, Baz, Bax, aaa, bbb, ccc, ddd, Account.Name, (SELECT Id, Name, Foo, Bar, Baz, Bax, aaa, bbb, ccc, ddd, Id, Name, Foo, Bar, Baz, Bax, aaa, bbb, ccc, ddd, Contact.LastName FROM Account.Contacts WHERE Id = '123' OR Id = '456' OR pimped = true), baz, (SELECT Id FROM account WHERE Boo.baz = 'bar'), bax, bar FROM Account WHERE Id IN (SELECT AccountId FROM Contact WHERE LastName LIKE 'apple%') AND Foo = 'bar' OR Baz = 'boom' AND Id IN (SELECT AccountId FROM Opportunity WHERE isClosed = false) ORDER BY GROUPING(Type), GROUPING(Id, BillingCountry), Name DESC NULLS FIRST, Id ASC NULLS LAST`,
-    formatOptions: { fieldMaxLineLen: 20, fieldSubqueryParensOnOwnLine: false, whereClauseOperatorsIndented: false },
+    soql: `SELECT Id, Name, Foo, Bar, Baz, Bax, aaa, bbb, ccc, ddd, Id, Name, Foo, Bar, Baz, Bax, aaa, bbb, ccc, ddd, Id, Name, Foo, Bar, Baz, Bax, aaa, bbb, ccc, ddd, Account.Name, (SELECT Id, Name, Foo, Bar, Baz, Bax, aaa, bbb, ccc, ddd, Id, Name, Foo, Bar, Baz, Bax, aaa, bbb, ccc, ddd, Contact.LastName FROM Account.Contacts WHERE Id = '123' OR Id = '456' OR pimped = TRUE), baz, (SELECT Id FROM account WHERE Boo.baz = 'bar'), bax, bar FROM Account WHERE Id IN (SELECT AccountId FROM Contact WHERE LastName LIKE 'apple%') AND Foo = 'bar' OR Baz = 'boom' AND Id IN (SELECT AccountId FROM Opportunity WHERE isClosed = TRUE) ORDER BY GROUPING(Type), GROUPING(Id, BillingCountry), Name DESC NULLS FIRST, Id ASC NULLS LAST`,
+    formatOptions: { fieldMaxLineLength: 20, fieldSubqueryParensOnOwnLine: false, whereClauseOperatorsIndented: false },
     formattedSoql: `SELECT Id, Name, Foo, Bar,
 \tBaz, Bax, aaa, bbb, ccc,
 \tddd, Id, Name, Foo, Bar,
@@ -202,7 +202,7 @@ ORDER BY GROUPING(Type),
 \tFROM Account.Contacts
 \tWHERE Id = '123'
 \tOR Id = '456'
-\tOR pimped = true),
+\tOR pimped = TRUE),
 \tbaz,
 \t(SELECT Id
 \tFROM account
@@ -216,7 +216,7 @@ AND Foo = 'bar'
 OR Baz = 'boom'
 AND Id IN (SELECT AccountId
 \tFROM Opportunity
-\tWHERE isClosed = false)
+\tWHERE isClosed = TRUE)
 ORDER BY GROUPING(Type),
 \tGROUPING(Id, BillingCountry),
 \tName DESC NULLS FIRST,
@@ -225,14 +225,14 @@ ORDER BY GROUPING(Type),
   },
   {
     testCase: 10,
-    soql: `SELECT Id, Name, Foo, Bar, Baz, Bax, aaa, bbb, ccc, ddd, Id, Name, Foo, Bar, Baz, Bax, aaa, bbb, ccc, ddd, Id, Name, Foo, Bar, Baz, Bax, aaa, bbb, ccc, ddd, Account.Name, (SELECT Id, Name, Foo, Bar, Baz, Bax, aaa, bbb, ccc, ddd, Id, Name, Foo, Bar, Baz, Bax, aaa, bbb, ccc, ddd, Contact.LastName FROM Account.Contacts WHERE Id = '123' OR Id = '456' OR pimped = true), baz, (SELECT Id FROM account WHERE Boo.baz = 'bar'), bax, bar FROM Account WHERE Id IN (SELECT AccountId FROM Contact WHERE LastName LIKE 'apple%') AND Foo = 'bar' OR Baz = 'boom' AND Id IN (SELECT AccountId FROM Opportunity WHERE isClosed = false) ORDER BY GROUPING(Type), GROUPING(Id, BillingCountry), Name DESC NULLS FIRST, Id ASC NULLS LAST`,
-    formatOptions: { fieldMaxLineLen: 170, fieldSubqueryParensOnOwnLine: false, whereClauseOperatorsIndented: false },
+    soql: `SELECT Id, Name, Foo, Bar, Baz, Bax, aaa, bbb, ccc, ddd, Id, Name, Foo, Bar, Baz, Bax, aaa, bbb, ccc, ddd, Id, Name, Foo, Bar, Baz, Bax, aaa, bbb, ccc, ddd, Account.Name, (SELECT Id, Name, Foo, Bar, Baz, Bax, aaa, bbb, ccc, ddd, Id, Name, Foo, Bar, Baz, Bax, aaa, bbb, ccc, ddd, Contact.LastName FROM Account.Contacts WHERE Id = '123' OR Id = '456' OR pimped = TRUE), baz, (SELECT Id FROM account WHERE Boo.baz = 'bar'), bax, bar FROM Account WHERE Id IN (SELECT AccountId FROM Contact WHERE LastName LIKE 'apple%') AND Foo = 'bar' OR Baz = 'boom' AND Id IN (SELECT AccountId FROM Opportunity WHERE isClosed = TRUE) ORDER BY GROUPING(Type), GROUPING(Id, BillingCountry), Name DESC NULLS FIRST, Id ASC NULLS LAST`,
+    formatOptions: { fieldMaxLineLength: 170, fieldSubqueryParensOnOwnLine: false, whereClauseOperatorsIndented: false },
     formattedSoql: `SELECT Id, Name, Foo, Bar, Baz, Bax, aaa, bbb, ccc, ddd, Id, Name, Foo, Bar, Baz, Bax, aaa, bbb, ccc, ddd, Id, Name, Foo, Bar, Baz, Bax, aaa, bbb, ccc, ddd, Account.Name,
 \t(SELECT Id, Name, Foo, Bar, Baz, Bax, aaa, bbb, ccc, ddd, Id, Name, Foo, Bar, Baz, Bax, aaa, bbb, ccc, ddd, Contact.LastName
 \tFROM Account.Contacts
 \tWHERE Id = '123'
 \tOR Id = '456'
-\tOR pimped = true),
+\tOR pimped = TRUE),
 \tbaz,
 \t(SELECT Id
 \tFROM account
@@ -246,14 +246,14 @@ AND Foo = 'bar'
 OR Baz = 'boom'
 AND Id IN (SELECT AccountId
 \tFROM Opportunity
-\tWHERE isClosed = false)
+\tWHERE isClosed = TRUE)
 ORDER BY GROUPING(Type), GROUPING(Id, BillingCountry), Name DESC NULLS FIRST, Id ASC NULLS LAST    
 `.trim(),
   },
   {
     testCase: 11,
     soql: `SELECT Id, Name, AccountNumber, AccountSource, AnnualRevenue, BillingAddress, BillingCity, BillingCountry, BillingGeocodeAccuracy, ShippingStreet, Sic, SicDesc, Site, SystemModstamp, TickerSymbol, Type, Website, (SELECT Id, Name, AccountId, Amount, CampaignId, CloseDate, CreatedById, Type FROM Opportunities), (SELECT Id, Name, AccountNumber, AccountSource, AnnualRevenue, BillingAddress, Website FROM ChildAccounts) FROM Account WHERE Name LIKE 'a%' OR Name LIKE 'b%' OR Name LIKE 'c%'`,
-    formatOptions: { fieldMaxLineLen: 0, fieldSubqueryParensOnOwnLine: true, whereClauseOperatorsIndented: false },
+    formatOptions: { fieldMaxLineLength: 0, fieldSubqueryParensOnOwnLine: true, whereClauseOperatorsIndented: false },
     formattedSoql: `SELECT 
 \tId,
 \tName,

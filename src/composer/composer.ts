@@ -10,10 +10,10 @@ import {
   FieldTypeOf,
   Subquery,
   FieldFunctionExpression,
-} from './models/SoqlQuery.model';
-import * as utils from './utils';
-import { FieldData, Formatter, FormatOptions } from './SoqlFormatter';
-import { parseQuery } from './SoqlParser';
+} from '../api/api-models';
+import * as utils from '../utils';
+import { FieldData, Formatter, FormatOptions } from '../formatter/formatter';
+import { parseQuery } from '../parser/visitor';
 
 export interface SoqlComposeConfig {
   logging: boolean; // default=false
@@ -150,9 +150,9 @@ export class Compose {
       output += this.formatter.formatClause('GROUP BY');
       output += ` ${this.parseGroupByClause(query.groupBy)}`;
       this.log(output);
-      if (query.having) {
+      if (query.groupBy.having) {
         output += this.formatter.formatClause('HAVING');
-        output += ` ${this.parseHavingClause(query.having)}`;
+        output += ` ${this.parseHavingClause(query.groupBy.having)}`;
         this.log(output);
       }
     }
@@ -223,7 +223,7 @@ export class Compose {
               params = this.parseFields(field.parameters as FieldFunctionExpression[]).join(',');
             }
           }
-          return `${field.fn}(${params})${field.alias ? ` ${field.alias}` : ''}`;
+          return `${field.functionName}(${params})${field.alias ? ` ${field.alias}` : ''}`;
         }
         case 'FieldRelationship': {
           return `${objPrefix}${field.relationships.join('.')}.${field.field}`;
@@ -263,7 +263,7 @@ export class Compose {
    * @returns fn
    */
   private parseFn(fn: FunctionExp): string {
-    return `${(fn.text || '').replace(/,/g, ', ')} ${fn.alias || ''}`.trim();
+    return `${fn.rawValue || ''} ${fn.alias || ''}`.trim();
   }
 
   /**
@@ -276,10 +276,7 @@ export class Compose {
   public parseWhereClause(where: WhereClause): string {
     let output = '';
     if (where.left) {
-      output +=
-        utils.isNumber(where.left.openParen) && where.left.openParen > 0
-          ? new Array(where.left.openParen).fill('(').join('')
-          : '';
+      output += utils.isNumber(where.left.openParen) && where.left.openParen > 0 ? new Array(where.left.openParen).fill('(').join('') : '';
       output += `${utils.get(where.left.logicalPrefix, ' ')}`;
       output += where.left.fn ? this.parseFn(where.left.fn) : where.left.field;
       output += ` ${where.left.operator} `;
@@ -287,15 +284,10 @@ export class Compose {
         ? this.formatter.formatSubquery(this.parseQuery(where.left.valueQuery), 1, true)
         : utils.getAsArrayStr(utils.getWhereValue(where.left.value, where.left.literalType));
       output +=
-        utils.isNumber(where.left.closeParen) && where.left.closeParen > 0
-          ? new Array(where.left.closeParen).fill(')').join('')
-          : '';
+        utils.isNumber(where.left.closeParen) && where.left.closeParen > 0 ? new Array(where.left.closeParen).fill(')').join('') : '';
     }
     if (where.right) {
-      const formattedData = this.formatter.formatWhereClauseOperators(
-        utils.get(where.operator),
-        this.parseWhereClause(where.right)
-      );
+      const formattedData = this.formatter.formatWhereClauseOperators(utils.get(where.operator), this.parseWhereClause(where.right));
       return `${output}${formattedData}`.trim();
     } else {
       return output.trim();
@@ -309,8 +301,8 @@ export class Compose {
    * @returns group by clause
    */
   public parseGroupByClause(groupBy: GroupByClause): string {
-    if (groupBy.type) {
-      return `${groupBy.type}${utils.getAsArrayStr(groupBy.field, true)}`;
+    if (groupBy.fn) {
+      return `${groupBy.fn.functionName}(${groupBy.fn.parameters.join(', ')})`;
     } else {
       return (Array.isArray(groupBy.field) ? groupBy.field : [groupBy.field]).join(', ');
     }
@@ -363,10 +355,7 @@ export class Compose {
   public parseWithDataCategory(withDataCategory: WithDataCategoryClause): string {
     return withDataCategory.conditions
       .map(condition => {
-        const params =
-          condition.parameters.length > 1
-            ? `(${condition.parameters.join(', ')})`
-            : `${condition.parameters.join(', ')}`;
+        const params = condition.parameters.length > 1 ? `(${condition.parameters.join(', ')})` : `${condition.parameters.join(', ')}`;
         return `${condition.groupName} ${condition.selector} ${params}`;
       })
       .join(' AND ');

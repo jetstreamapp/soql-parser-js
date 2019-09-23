@@ -4,9 +4,10 @@
 build/tests
 .rpt2_cache
 dist/
+dist_esm/
 .env
 debug/lib
-
+archive/
 .idea/
 
 # Created by https://www.gitignore.io/api/node

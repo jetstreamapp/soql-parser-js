@@ -1,4 +1,4 @@
-import { Query } from '../lib';
+import { Query } from '../src/api/api-models';
 
 interface FlattenedObjTestCase {
   testCase: number;
@@ -71,7 +71,7 @@ export const testCases: FlattenedObjTestCase[] = [
         },
         {
           type: 'FieldFunctionExpression',
-          fn: 'COUNT',
+          functionName: 'COUNT',
           isAggregateFn: true,
           parameters: ['Id'],
         },
@@ -97,23 +97,23 @@ export const testCases: FlattenedObjTestCase[] = [
         },
         {
           type: 'FieldFunctionExpression',
-          fn: 'FORMAT',
+          functionName: 'FORMAT',
           parameters: ['Amount'],
           alias: 'Amt',
         },
         {
           type: 'FieldFunctionExpression',
-          fn: 'convertCurrency',
+          functionName: 'convertCurrency',
           parameters: ['Amount'],
           alias: 'editDate',
         },
         {
           type: 'FieldFunctionExpression',
-          fn: 'FORMAT',
+          functionName: 'FORMAT',
           parameters: [
             {
               type: 'FieldFunctionExpression',
-              fn: 'convertCurrency',
+              functionName: 'convertCurrency',
               parameters: ['Amount'],
             },
           ],
@@ -136,23 +136,23 @@ export const testCases: FlattenedObjTestCase[] = [
       fields: [
         {
           type: 'FieldFunctionExpression',
-          fn: 'FORMAT',
+          functionName: 'FORMAT',
           parameters: ['Opportunity.amount'],
           alias: 'Amt',
         },
         {
           type: 'FieldFunctionExpression',
-          fn: 'convertCurrency',
+          functionName: 'convertCurrency',
           parameters: ['Opportunity.amount'],
           alias: 'editDate',
         },
         {
           type: 'FieldFunctionExpression',
-          fn: 'FORMAT',
+          functionName: 'FORMAT',
           parameters: [
             {
               type: 'FieldFunctionExpression',
-              fn: 'convertCurrency',
+              functionName: 'convertCurrency',
               parameters: ['oli.Opportunity.amount'],
             },
           ],
@@ -217,7 +217,6 @@ export const testCases: FlattenedObjTestCase[] = [
         },
         {
           type: 'FieldSubquery',
-          from: 'Contacts',
           subquery: {
             fields: [
               {

@@ -155,5 +155,15 @@ export const testCases: TestCaseForFormat[] = [
     soql: 'SELECT Id, Format FROM Account',
     isValid: true,
   },
+  {
+    testCase: 31,
+    soql: `SELECT Id, FirstName__c, Mother_of_Child__r.FirstName__c FROM Daughter__c WHERE Mother_of_Child__r.LastName__c LastName__c LIKE 'C%'`,
+    isValid: false,
+  },
+  {
+    testCase: 32,
+    soql: `SELECT Id FROM Contact WHERE Name LIKE 'A%' AND MailingCity = 'California' fds`,
+    isValid: false,
+  },
 ];
 export default testCases;

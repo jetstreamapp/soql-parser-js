@@ -1,7 +1,7 @@
-import * as utils from '../lib/publicUtils';
+import * as utils from '../src/api/public-utils';
 import { expect } from 'chai';
 import 'mocha';
-import { testCases } from './publicUtilsTestData';
+import { testCases } from './public-utils-test-data';
 const lodashGet = require('lodash.get');
 
 describe('getComposedField', () => {
@@ -19,49 +19,49 @@ describe('getComposedField', () => {
     });
   });
   it('Should compose FieldFunctionExpression', () => {
-    expect(utils.getComposedField({ fn: 'COUNT' })).to.deep.equal({
+    expect(utils.getComposedField({ functionName: 'COUNT' })).to.deep.equal({
       type: 'FieldFunctionExpression',
-      fn: 'COUNT',
+      functionName: 'COUNT',
       parameters: undefined,
       alias: undefined,
     });
-    expect(utils.getComposedField({ fn: 'FORMAT', parameters: ['Amount'] })).to.deep.equal({
+    expect(utils.getComposedField({ functionName: 'FORMAT', parameters: ['Amount'] })).to.deep.equal({
       type: 'FieldFunctionExpression',
-      fn: 'FORMAT',
+      functionName: 'FORMAT',
       parameters: ['Amount'],
       alias: undefined,
     });
-    expect(utils.getComposedField({ fn: 'FORMAT', parameters: 'Amount' })).to.deep.equal({
+    expect(utils.getComposedField({ functionName: 'FORMAT', parameters: 'Amount' })).to.deep.equal({
       type: 'FieldFunctionExpression',
-      fn: 'FORMAT',
+      functionName: 'FORMAT',
       parameters: ['Amount'],
       alias: undefined,
     });
-    expect(utils.getComposedField({ fn: 'FORMAT', parameters: ['Amount'], alias: 'amt' })).to.deep.equal({
+    expect(utils.getComposedField({ functionName: 'FORMAT', parameters: ['Amount'], alias: 'amt' })).to.deep.equal({
       type: 'FieldFunctionExpression',
-      fn: 'FORMAT',
+      functionName: 'FORMAT',
       parameters: ['Amount'],
       alias: 'amt',
     });
     expect(
       utils.getComposedField({
-        fn: 'FORMAT',
+        functionName: 'FORMAT',
         parameters: [
           {
             type: 'FieldFunctionExpression',
-            fn: 'convertCurrency',
+            functionName: 'convertCurrency',
             parameters: ['amount'],
           },
         ],
         alias: 'convertedCurrency',
-      })
+      }),
     ).to.deep.equal({
       type: 'FieldFunctionExpression',
-      fn: 'FORMAT',
+      functionName: 'FORMAT',
       parameters: [
         {
           type: 'FieldFunctionExpression',
-          fn: 'convertCurrency',
+          functionName: 'convertCurrency',
           parameters: ['amount'],
         },
       ],
@@ -69,21 +69,21 @@ describe('getComposedField', () => {
     });
     expect(
       utils.getComposedField({
-        fn: 'FORMAT',
+        functionName: 'FORMAT',
         parameters: {
           type: 'FieldFunctionExpression',
-          fn: 'convertCurrency',
+          functionName: 'convertCurrency',
           parameters: ['amount'],
         },
         alias: 'convertedCurrency',
-      })
+      }),
     ).to.deep.equal({
       type: 'FieldFunctionExpression',
-      fn: 'FORMAT',
+      functionName: 'FORMAT',
       parameters: [
         {
           type: 'FieldFunctionExpression',
-          fn: 'convertCurrency',
+          functionName: 'convertCurrency',
           parameters: ['amount'],
         },
       ],
@@ -97,9 +97,7 @@ describe('getComposedField', () => {
       relationships: ['Account', 'User'],
       objectPrefix: undefined,
     });
-    expect(
-      utils.getComposedField({ field: 'Id', objectPrefix: 'c', relationships: ['Account', 'User'] })
-    ).to.deep.equal({
+    expect(utils.getComposedField({ field: 'Id', objectPrefix: 'c', relationships: ['Account', 'User'] })).to.deep.equal({
       type: 'FieldRelationship',
       field: 'Id',
       relationships: ['Account', 'User'],
@@ -121,7 +119,7 @@ describe('getComposedField', () => {
           relationshipName: 'Bars',
           sObjectPrefix: ['Account', 'Contact', 'Foo'],
         },
-      })
+      }),
     ).to.deep.equal({
       type: 'FieldSubquery',
       subquery: {
@@ -159,7 +157,7 @@ describe('getComposedField', () => {
               fieldList: ['Name', 'Email'],
             },
           ],
-        })
+        }),
       ).to.deep.equal({
         type: 'FieldSubquery',
         subquery: {
@@ -201,7 +199,7 @@ describe('getComposedField', () => {
             fieldList: ['Phone', 'NumberOfEmployees'],
           },
         ],
-      } as any)
+      } as any),
     ).to.throw(TypeError);
   });
 });

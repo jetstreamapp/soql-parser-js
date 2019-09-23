@@ -1,4 +1,4 @@
-import { isNumber } from './utils';
+import { isNumber } from '../utils';
 
 export interface FieldData {
   fields: {
@@ -13,7 +13,7 @@ export interface FieldData {
 
 export interface FormatOptions {
   numIndent?: number;
-  fieldMaxLineLen?: number;
+  fieldMaxLineLength?: number;
   fieldSubqueryParensOnOwnLine?: boolean;
   whereClauseOperatorsIndented?: boolean;
   logging?: boolean;
@@ -33,7 +33,7 @@ export class Formatter {
     this.enabled = enabled;
     this.options = {
       numIndent: 1,
-      fieldMaxLineLen: 60,
+      fieldMaxLineLength: 60,
       fieldSubqueryParensOnOwnLine: true,
       whereClauseOperatorsIndented: false,
       logging: false,
@@ -89,11 +89,11 @@ export class Formatter {
           field.suffix = fieldData.fields.length - 1 === i ? '' : ', ';
           lineLen = 0;
           newLineAndIndentNext = true;
-        } else if (isNumber(this.options.fieldMaxLineLen)) {
+        } else if (isNumber(this.options.fieldMaxLineLength)) {
           // If max line length is specified, create a new line when needed
           // Add two to account for ", "
           lineLen += field.text.length + field.suffix.length;
-          if (lineLen > this.options.fieldMaxLineLen || newLineAndIndentNext) {
+          if (lineLen > this.options.fieldMaxLineLength || newLineAndIndentNext) {
             trimPrevSuffix(i);
             field.prefix += `\n${this.getIndent()}`;
             lineLen = 0;
@@ -144,7 +144,7 @@ export class Formatter {
       groupBy.forEach((token, i) => {
         const nextToken = groupBy[i + 1];
         currLen += token.length;
-        if (nextToken && currLen + nextToken.length > this.options.fieldMaxLineLen) {
+        if (nextToken && currLen + nextToken.length > this.options.fieldMaxLineLength) {
           output += `${token},\n\t`;
           currLen = 0;
         } else {
