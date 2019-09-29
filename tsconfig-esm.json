@@ -4,6 +4,7 @@
     "moduleResolution": "node",
     "module": "esnext",
     "target": "es5",
-    "outDir": "dist_esm"
+    "outDir": "dist_esm",
+    "declaration": false
   }
 }

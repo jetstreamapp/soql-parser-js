@@ -22,12 +22,12 @@
   "author": "Austin Turner <paustint@gmail.com>",
   "license": "MIT",
   "files": [
+    "dist/src/**/*.js",
+    "dist/src/**/*.d.ts",
+    "dist/index.js",
+    "dist/index.min.js",
+    "dist/main.licenses.txt",
     "dist_esm/**/*.js",
-    "lib/src/**/*.js",
-    "lib/src/**/*.d.ts",
-    "lib/index.js",
-    "lib/index.min.js",
-    "lib/main.licenses.txt",
     "README.md",
     "LICENSE.txt",
     "CHANGELOG.md"

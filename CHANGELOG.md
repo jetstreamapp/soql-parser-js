@@ -10,7 +10,7 @@ With this change, the data model was reviewed and analyzed, and there are some s
 
 #### Bundle Size
 
-`soql-parser-js` bundles all of the library code and two dependencies `chevrotain` and `regexp-to-ast` (required by chevrotain) into the javascript bundle. Previously, `antlr4` was not bundled and was required to be installed separately.
+`soql-parser-js` bundles all of the library code and three dependencies `chevrotain` (which relies on `regexp-to-ast`) and `lodash.get` (required by chevrotain) into the javascript bundle. Previously, `antlr4` was not bundled and was required to be installed separately.
 
 The following bundle size uses the default webpack configuration (e.x. `npx webpack`) with no webpack configuration explicitly defined.
 
