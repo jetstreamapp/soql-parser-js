@@ -34,7 +34,7 @@ export class ParseSoql extends React.Component<IParseSoqlProps, IParseSoqlState>
       soql: props.soql || '',
       format: true,
       formatOptions: {
-        fieldMaxLineLength: 60,
+        fieldMaxLineLen: 60,
         fieldSubqueryParensOnOwnLine: true,
         whereClauseOperatorsIndented: false,
       },

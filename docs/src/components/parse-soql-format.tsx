@@ -39,11 +39,7 @@ export default class ParseSoqlFormat extends React.Component<ParseSoqlFormatProp
   public render() {
     return (
       <div style={this.props.style}>
-        <Checkbox
-          label="Format Output"
-          checked={this.props.enabled}
-          onChange={() => this.props.toggleFormat(!this.props.enabled)}
-        />
+        <Checkbox label="Format Output" checked={this.props.enabled} onChange={() => this.props.toggleFormat(!this.props.enabled)} />
         <div style={{ margin: 5, paddingLeft: 10 }}>
           <div style={{ maxWidth: 400 }}>
             <TextField
