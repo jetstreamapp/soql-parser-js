@@ -56,6 +56,7 @@ import {
   WithClauseContext,
   WithDateCategoryContext,
   ExpressionOperatorContext,
+  ApexBindVariableExpressionContext,
 } from '../models';
 import { parse, SoqlParser } from './parser';
 import { isSubqueryFromFlag, isToken } from '../utils';
@@ -545,7 +546,10 @@ class SOQLToAstVisitor extends BaseSoqlVisitor {
     let value;
     let literalType: LiteralTypeWithSubquery;
     let dateLiteralVariable;
-    if (ctx.NumberIdentifier) {
+    if (ctx.apexBindVariableExpression) {
+      value = this.visit(ctx.apexBindVariableExpression);
+      literalType = 'APEX_BIND_VARIABLE';
+    } else if (ctx.NumberIdentifier) {
       value = ctx.NumberIdentifier[0].image;
       literalType = this.$_getLiteralTypeFromTokenType(ctx.NumberIdentifier[0].tokenType.name);
     } else if (ctx.UnsignedInteger) {
@@ -566,8 +570,8 @@ class SOQLToAstVisitor extends BaseSoqlVisitor {
     } else if (ctx.date) {
       value = ctx.DateToken[0].image;
       literalType = 'DATE';
-    } else if (ctx.Null) {
-      value = ctx.Null[0].image;
+    } else if (ctx.NULL) {
+      value = 'NULL';
       literalType = 'NULL';
     } else if (ctx.StringIdentifier) {
       value = ctx.StringIdentifier[0].image;
@@ -589,14 +593,10 @@ class SOQLToAstVisitor extends BaseSoqlVisitor {
     } else if (ctx.arrayExpression) {
       const arrayValues: ArrayExpressionWithType[] = this.visit(ctx.arrayExpression);
       value = arrayValues.map((item: any) => item.value);
-      const types = new Set(arrayValues.map((item: any) => item.type));
-      if (types.size === 1) {
+      if (new Set(arrayValues.map((item: any) => item.type)).size === 1) {
         literalType = this.$_getLiteralTypeFromTokenType(arrayValues[0].type);
       } else {
-        literalType = [];
-        types.forEach((type: string) => {
-          (literalType as LiteralType[]).push(this.$_getLiteralTypeFromTokenType(type));
-        });
+        literalType = arrayValues.map((item: any) => this.$_getLiteralTypeFromTokenType(item.type));
       }
       literalType = literalType || 'STRING';
     } else if (ctx.whereClauseSubqueryIdentifier) {
@@ -612,6 +612,9 @@ class SOQLToAstVisitor extends BaseSoqlVisitor {
     } else {
       return value;
     }
+  }
+  apexBindVariableExpression(ctx: ApexBindVariableExpressionContext): string {
+    return ctx.Identifier[0].image;
   }
   expressionWithAggregateFunction(ctx: ExpressionContext): HavingConditionWithDateLiteralVar {
     const { value, literalType, dateLiteralVariable, operator } = this.visit(ctx.operator, { returnLiteralType: true });

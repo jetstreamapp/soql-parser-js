@@ -8,5 +8,5 @@
     "sourceMap": true,
     "target": "es2015"
   },
-  "include": ["src/**/*.spec.ts"]
+  "include": ["./*.spec.ts"]
 }

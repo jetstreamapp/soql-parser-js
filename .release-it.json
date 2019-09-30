@@ -1,9 +1,10 @@
 {
-  "buildCommand": "npm run build",
   "github": {
     "release": true
   },
-  "dist": {
-    "afterReleaseCommand": "cd ../docs && npm install soql-parser-js@latest && npm run deploy"
+  "hooks": {
+    "before:init": ["npm test"],
+    "after:bump": "npm run build",
+    "after:release": "echo Successfully released ${name} v${version} to ${repo.repository}."
   }
 }

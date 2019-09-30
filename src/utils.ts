@@ -118,9 +118,11 @@ export function getWhereValue(value: any | any[], literalType?: LiteralType | Li
   } else {
     // This path should never hit, but on the off chance that literal type is an array and value is a string
     // then the first literal type is considered
+    // TODO: BUG
     if (Array.isArray(literalType)) {
       literalType = literalType[0];
     }
+
     switch (literalType) {
       case 'STRING': {
         if (Array.isArray(value)) {
@@ -128,6 +130,9 @@ export function getWhereValue(value: any | any[], literalType?: LiteralType | Li
         } else {
           return (value as string).startsWith("'") ? value : `'${value}'`;
         }
+      }
+      case 'APEX_BIND_VARIABLE': {
+        return `:${value}`;
       }
       default: {
         return value;

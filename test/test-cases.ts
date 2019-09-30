@@ -1936,5 +1936,198 @@ export const testCases: TestCase[] = [
       },
     },
   },
+  {
+    testCase: 61,
+    soql: 'SELECT Name FROM Account OFFSET 1',
+    output: {
+      fields: [
+        {
+          type: 'Field',
+          field: 'Name',
+        },
+      ],
+      sObject: 'Account',
+      offset: 1,
+    },
+  },
+  {
+    testCase: 63,
+    soql: 'SELECT Name FROM Account WHERE Id = :foo',
+    output: {
+      fields: [
+        {
+          type: 'Field',
+          field: 'Name',
+        },
+      ],
+      sObject: 'Account',
+      where: {
+        left: {
+          field: 'Id',
+          literalType: 'APEX_BIND_VARIABLE',
+          operator: '=',
+          value: 'foo',
+        },
+      },
+    },
+  },
+  {
+    testCase: 64,
+    soql: `SELECT Name FROM Account WHERE Industry IN ('media', null, 1, 'media', 2) LIMIT 125`,
+    output: {
+      fields: [
+        {
+          type: 'Field',
+          field: 'Name',
+        },
+      ],
+      sObject: 'Account',
+      where: {
+        left: {
+          field: 'Industry',
+          operator: 'IN',
+          value: ["'media'", 'null', '1', "'media'", '2'],
+          literalType: ['STRING', 'NULL', 'INTEGER', 'STRING', 'INTEGER'],
+        },
+      },
+      limit: 125,
+    },
+  },
+  {
+    testCase: 65,
+    soql: `SELECT Name FROM Account WHERE Foo = NULL`,
+    output: {
+      fields: [
+        {
+          type: 'Field',
+          field: 'Name',
+        },
+      ],
+      sObject: 'Account',
+      where: {
+        left: {
+          field: 'Foo',
+          literalType: 'NULL',
+          operator: '=',
+          value: 'NULL',
+        },
+      },
+    },
+  },
+  {
+    testCase: 66,
+    soql: `SELECT Name FROM Account WHERE Foo = TODAY`,
+    output: {
+      fields: [
+        {
+          type: 'Field',
+          field: 'Name',
+        },
+      ],
+      sObject: 'Account',
+      where: {
+        left: {
+          field: 'Foo',
+          literalType: 'DATE_LITERAL',
+          operator: '=',
+          value: 'TODAY',
+        },
+      },
+    },
+  },
+  {
+    testCase: 67,
+    soql: `SELECT Name FROM Account WHERE Foo = LAST_N_YEARS:1`,
+    output: {
+      fields: [
+        {
+          type: 'Field',
+          field: 'Name',
+        },
+      ],
+      sObject: 'Account',
+      where: {
+        left: {
+          field: 'Foo',
+          literalType: 'DATE_N_LITERAL',
+          operator: '=',
+          value: 'LAST_N_YEARS:1',
+          dateLiteralVariable: 1,
+        },
+      },
+    },
+  },
+  {
+    testCase: 68,
+    soql: `SELECT Name FROM Account WHERE Foo = 2010-09-20T22:16:30.000Z`,
+    output: {
+      fields: [
+        {
+          type: 'Field',
+          field: 'Name',
+        },
+      ],
+      sObject: 'Account',
+      where: {
+        left: {
+          field: 'Foo',
+          literalType: 'DATETIME',
+          operator: '=',
+          value: '2010-09-20T22:16:30.000Z',
+        },
+      },
+    },
+  },
+  {
+    testCase: 69,
+    soql: `SELECT Name FROM Account WHERE Foo = 1`,
+    output: {
+      fields: [
+        {
+          type: 'Field',
+          field: 'Name',
+        },
+      ],
+      sObject: 'Account',
+      where: {
+        left: {
+          field: 'Foo',
+          literalType: 'INTEGER',
+          operator: '=',
+          value: '1',
+        },
+      },
+    },
+  },
+  {
+    testCase: 70,
+    soql: `SELECT Name FROM Account WHERE Foo = TRUE AND bar = FALSE`,
+    output: {
+      fields: [
+        {
+          type: 'Field',
+          field: 'Name',
+        },
+      ],
+      sObject: 'Account',
+      where: {
+        left: {
+          field: 'Foo',
+          literalType: 'BOOLEAN',
+          operator: '=',
+          value: 'TRUE',
+        },
+        operator: 'AND',
+        right: {
+          left: {
+            field: 'bar',
+            literalType: 'BOOLEAN',
+            operator: '=',
+            value: 'FALSE',
+          },
+        },
+      },
+    },
+  },
 ];
 export default testCases;

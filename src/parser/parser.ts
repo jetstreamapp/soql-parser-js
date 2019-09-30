@@ -152,9 +152,7 @@ export class SoqlParser extends CstParser {
   private fromClause = this.RULE('fromClause', () => {
     this.CONSUME(lexer.From);
     this.CONSUME(lexer.Identifier);
-    this.OPTION(() => {
-      this.CONSUME1(lexer.Identifier, { LABEL: 'alias' });
-    });
+    this.OPTION(() => this.CONSUME1(lexer.Identifier, { LABEL: 'alias' }));
   });
 
   private whereClause = this.RULE('whereClause', () => {
@@ -162,7 +160,7 @@ export class SoqlParser extends CstParser {
     // Get paren count to ensure that we only parse balanced parens for this where clause
     // and do not parse any extra parens that might belong to subquery or might be invalid
     const parenCount = this.getParenCount();
-    this.MANY({
+    this.AT_LEAST_ONE({
       DEF: () => {
         this.SUBRULE(this.whereClauseExpression, { ARGS: [parenCount] });
       },
@@ -239,7 +237,7 @@ export class SoqlParser extends CstParser {
 
   private havingClause = this.RULE('havingClause', () => {
     this.CONSUME(lexer.Having);
-    this.MANY(() => {
+    this.AT_LEAST_ONE(() => {
       this.SUBRULE(this.havingClauseExpression);
     });
   });
@@ -418,17 +416,6 @@ export class SoqlParser extends CstParser {
       this.getAlt(() => this.SUBRULE(this.expressionWithSetOperator, { LABEL: 'operator' })),
     ]);
 
-    // // this.CONSUME(lexer.Identifier, { LABEL: 'lhs' });
-    // this.OPTION2(() => {
-    //   this.SUBRULE(this.relationalOperator);
-    //   this.SUBRULE(this.atomicExpression, { LABEL: 'rhs' });
-    // });
-
-    // this.OPTION3(() => {
-    //   this.SUBRULE(this.setOperator);
-    //   this.SUBRULE2(this.atomicExpression, { LABEL: 'rhs', ARGS: [true] });
-    // });
-
     this.OPTION4(() => {
       this.MANY1({
         GATE: () => (parenCount ? parenCount.left > parenCount.right : true),
@@ -453,10 +440,10 @@ export class SoqlParser extends CstParser {
   });
 
   private atomicExpression = this.RULE('atomicExpression', isArray => {
-    // TODO: see if we can save a reference to this (without losing isArray closure)
     this.OR(
       this.$_atomicExpression ||
         (this.$_atomicExpression = [
+          { ALT: () => this.SUBRULE(this.apexBindVariableExpression) },
           // SET / SUBQUERY
           { GATE: () => isArray, ALT: () => this.SUBRULE(this.arrayExpression) },
           { GATE: () => isArray, ALT: () => this.SUBRULE(this.whereClauseSubqueryIdentifier) },
@@ -468,9 +455,13 @@ export class SoqlParser extends CstParser {
           { GATE: () => !isArray, ALT: () => this.SUBRULE(this.dateLiteral) },
           { GATE: () => !isArray, ALT: () => this.SUBRULE(this.dateNLiteral) },
           { GATE: () => !isArray, ALT: () => this.CONSUME(lexer.StringIdentifier) },
-          { GATE: () => !isArray, ALT: () => this.CONSUME(lexer.IdentifierNotKeyword) },
         ]),
     );
+  });
+
+  private apexBindVariableExpression = this.RULE('apexBindVariableExpression', () => {
+    this.CONSUME(lexer.Colon);
+    this.CONSUME(lexer.Identifier);
   });
 
   private arrayExpression = this.RULE('arrayExpression', () => {
@@ -574,7 +565,6 @@ export class SoqlParser extends CstParser {
     ]);
   });
 
-  // TODO:
   private forViewOrReference = this.RULE('forViewOrReference', () => {
     this.CONSUME(lexer.For);
     this.OR([

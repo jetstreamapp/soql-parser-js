@@ -47,6 +47,7 @@ NEW PARSER AFTER OPTIMIZATION: ~2.25 seconds for 60K parses
   - **Exceptions**:
     - `toLabel`, `convertTimezone`, `convertCurrency` will always be in camelCase.
   - Added new available types for `DateLiteral` and `DateNLiteral`.
+- A new `LiteralType` value was added for `APEX_BIND_VARIABLE`.
 
 #### Compose Query
 

@@ -169,6 +169,10 @@ export interface ExpressionContext {
   R_PAREN?: IToken[];
 }
 
+export interface ApexBindVariableExpressionContext {
+  Identifier: IToken[];
+}
+
 export interface ExpressionOperatorContext {
   rhs: CstNode[];
   relationalOperator?: CstNode[];
@@ -184,6 +188,7 @@ export interface FunctionExpressionContext extends WithIdentifier {
 }
 
 export interface AtomicExpressionContext {
+  apexBindVariableExpression?: CstNode[];
   NumberIdentifier?: IToken[];
   UnsignedInteger?: IToken[];
   SignedInteger?: IToken[];
@@ -191,7 +196,7 @@ export interface AtomicExpressionContext {
   DateIdentifier?: IToken[];
   DateTime?: IToken[];
   date?: IToken[];
-  Null?: IToken[];
+  NULL?: IToken[];
   StringIdentifier?: IToken[];
   Identifier?: IToken[];
   booleanValue?: CstNode[];

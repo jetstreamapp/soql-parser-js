@@ -23,11 +23,13 @@
   "license": "MIT",
   "files": [
     "dist/src/**/*.js",
+    "dist/src/**/*.js.map",
     "dist/src/**/*.d.ts",
     "dist/index.js",
     "dist/index.min.js",
     "dist/main.licenses.txt",
     "dist_esm/**/*.js",
+    "dist/src/**/*.js.map",
     "README.md",
     "LICENSE.txt",
     "CHANGELOG.md"

@@ -165,5 +165,32 @@ export const testCases: TestCaseForFormat[] = [
     soql: `SELECT Id FROM Contact WHERE Name LIKE 'A%' AND MailingCity = 'California' fds`,
     isValid: false,
   },
+  {
+    testCase: 33,
+    soql: `SELECT Name, (SELECT LastName FROM Contacts WHERE CreatedBy.Alias='x') FROM Account WHERE Industry='media' AND Id = foo`,
+    isValid: false,
+  },
+  { testCase: 34, soql: `SELECT Name FROM Account WHERE Id = foo`, isValid: false }, // this parses incorrectly
+  { testCase: 35, soql: `SELECT Name FROM Account WHERE`, isValid: false }, // throws exception
+  { testCase: 36, soql: `SELECT Name FROM Account ORDER BY`, isValid: false },
+  { testCase: 37, soql: `SELECT Name FROM Account LIMIT`, isValid: false },
+  { testCase: 38, soql: `SELECT Name FROM Account LIMIT 'foo'`, isValid: false },
+  { testCase: 39, soql: `SELECT Name FROM Account OFFSET`, isValid: false },
+  { testCase: 40, soql: `SELECT Name FROM Account OFFSET 'foo'`, isValid: false },
+  { testCase: 41, soql: `SELECT Name FROM Account OFFSET 1`, isValid: true },
+  { testCase: 42, soql: `SELECT Name, COUNT(Id) FROM Account GROUP BY Name HAVING`, isValid: false }, // this throws exception
+  { testCase: 43, soql: `SELECT FROM Account WHERE Id = foo`, isValid: false },
+  { testCase: 44, soql: `SELECT Name FROM Account FROM Account WHERE Id = foo`, isValid: false },
+  { testCase: 45, soql: `SELECT Name FROM Account HAVING COUNT(Id) > 1`, isValid: false },
+  { testCase: 46, soql: `SELECT Name FROM Account WHERE`, isValid: false },
+  { testCase: 47, soql: `SELECT Name FROM Account WITH`, isValid: false },
+  { testCase: 48, soql: `SELECT Name FROM Account WITH SECURITY_ENFORCED`, isValid: true },
+  { testCase: 49, soql: `SELECT Name FROM Account GROUP BY`, isValid: false },
+  { testCase: 50, soql: `SELECT Name FROM Account ORDER BY`, isValid: false },
+  { testCase: 51, soql: `SELECT Name FROM Account LIMIT`, isValid: false },
+  { testCase: 52, soql: `SELECT Name FROM Account For`, isValid: false },
+  { testCase: 53, soql: `SELECT Name FROM Account For View`, isValid: true },
+  { testCase: 54, soql: `SELECT Name FROM Account For Reference`, isValid: true },
+  { testCase: 55, soql: `SELECT Name FROM Account For Update`, isValid: true },
 ];
 export default testCases;

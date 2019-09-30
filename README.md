@@ -381,7 +381,17 @@ export type GroupSelector = 'ABOVE' | 'AT' | 'BELOW' | 'ABOVE_OR_BELOW';
 export type LogicalPrefix = 'NOT';
 export type ForClause = 'VIEW' | 'UPDATE' | 'REFERENCE';
 export type UpdateClause = 'TRACKING' | 'VIEWSTAT';
-export type LiteralType = 'STRING' | 'INTEGER' | 'DECIMAL' | 'BOOLEAN' | 'NULL' | 'DATETIME' | 'DATE' | 'DATE_LITERAL' | 'DATE_N_LITERAL';
+export type LiteralType =
+  | 'STRING'
+  | 'INTEGER'
+  | 'DECIMAL'
+  | 'BOOLEAN'
+  | 'NULL'
+  | 'DATETIME'
+  | 'DATE'
+  | 'DATE_LITERAL'
+  | 'DATE_N_LITERAL'
+  | 'APEX_BIND_VARIABLE';
 export type FieldType = Field | FieldFunctionExpression | FieldRelationship | FieldSubquery | FieldTypeOf;
 export type OrderByCriterion = 'ASC' | 'DESC';
 export type NullsOrder = 'FIRST' | 'LAST';

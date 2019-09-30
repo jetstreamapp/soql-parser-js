@@ -20,7 +20,7 @@ describe('parse queries', () => {
 // Uncomment these to easily test one specific query - useful for troubleshooting/bugfixing
 
 // describe.only('parse queries', () => {
-//   const testCase = testCases.find(tc => tc.testCase === 3);
+//   const testCase = testCases.find(tc => tc.testCase === 65);
 
 //   it(`should correctly parse test case ${testCase.testCase} - ${testCase.soql}`, () => {
 //     const soqlQuery = parseQuery(testCase.soql);
@@ -30,13 +30,30 @@ describe('parse queries', () => {
 // });
 
 // describe.only('compose queries', () => {
-//   const testCase = testCases.find(tc => tc.testCase === 49);
+//   const testCase = testCases.find(tc => tc.testCase === 70);
 //   it(`should compose correctly - test case ${testCase.testCase} - ${testCase.soql}`, () => {
 //     const soqlQuery = composeQuery(removeComposeOnlyFields(parseQuery(testCase.soql)));
 //     let soql = testCase.soqlComposed || testCase.soql;
 //     replacements.forEach(replacement => (soql = soql.replace(replacement.matching, replacement.replace)));
 //     expect(soqlQuery).to.equal(soql);
 //   });
+// });
+
+// describe.only('Test valid queries', () => {
+//   testCasesForIsValid
+//     .filter(testCase => testCase.testCase === 41)
+//     .forEach(testCase => {
+//       it(`should identify validity of query - test case ${testCase.testCase} - ${testCase.soql}`, () => {
+//         // const soqlQuery = parseQuery(testCase.soql);
+//         const isValid = isQueryValid(testCase.soql);
+//         expect(isValid).equal(testCase.isValid);
+//       });
+//       // it(`should identify valid queries - test case ${testCase.testCase} - ${testCase.soql}`, () => {
+//       //   const isValid = isQueryValid(testCase.soql);
+//       //   expect(isValid).equal(testCase.isValid);
+//       //   expect(parseQuery(testCase.soql)).to.not.throw;
+//       // });
+//     });
 // });
 
 describe('compose queries', () => {

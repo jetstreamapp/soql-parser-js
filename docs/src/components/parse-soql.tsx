@@ -34,7 +34,7 @@ export class ParseSoql extends React.Component<IParseSoqlProps, IParseSoqlState>
       soql: props.soql || '',
       format: true,
       formatOptions: {
-        fieldMaxLineLen: 60,
+        fieldMaxLineLength: 60,
         fieldSubqueryParensOnOwnLine: true,
         whereClauseOperatorsIndented: false,
       },
@@ -46,7 +46,7 @@ export class ParseSoql extends React.Component<IParseSoqlProps, IParseSoqlState>
     this.setState({ soql: nextProps.soql });
   }
 
-  public onChange = (ev: React.SyntheticEvent<HTMLInputElement>) => {
+  public onChange = (ev: React.FormEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     this.setState({ soql: (ev.target as HTMLInputElement).value });
     setTimeout(() => {
       this.setState({ isValid: this.isValid((ev.target as HTMLInputElement).value) });
