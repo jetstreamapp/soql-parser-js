@@ -86,6 +86,7 @@ export interface FormatOptions {
   - `text` was renamed to `rawValue` to be more consistent with other places in the data model.
   - `name` was renamed to `functionName`.
   - `parameter` was renamed to `parameters` and the type was changed to `(string | FunctionExp)[]` to support nested functions. This will ALWAYS be an array now even if there is only one parameter.
+  - `fn` was removed, as nested functionParameters are always stored as an entry in the `parameters` array.
 
 ```diff
 export interface Field {
