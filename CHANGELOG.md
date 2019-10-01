@@ -10,9 +10,10 @@ With this change, the data model was reviewed and analyzed, and there are some s
 
 #### Bundle Size
 
-`soql-parser-js` bundles all of the library code and three dependencies `chevrotain` (which relies on `regexp-to-ast`) and `lodash.get` (required by chevrotain) into the javascript bundle. Previously, `antlr4` was not bundled and was required to be installed separately.
+To compare the bundle size, the following small program was written and then compiled using the default configuration of webpack, and the output bundle was compared.
 
-The following bundle size uses the default webpack configuration (e.x. `npx webpack`) with no webpack configuration explicitly defined.
+- Version 1.x: **545kb**
+- Version 2.0: **197kb**
 
 ```javascript
 var soqlParser = require('soql-parser-js');
@@ -23,16 +24,13 @@ const soql = soqlParser.composeQuery(query);
 console.log('soql', soql);
 ```
 
-- Version 1.x: **545kb**
-- Version 2.0: **197kb**
-
 #### Benchmarks
 
 Here is an example benchmark of parsing all the unit tests 1,000 times
 
 ```
 OLD PARSER: ~6.2 seconds for ~60K parses
-NEW PARSER AFTER OPTIMIZATION: ~2.25 seconds for 60K parses
+NEW PARSER: ~2.25 seconds for 60K parses
 ```
 
 ### Breaking Changes 🔥
@@ -48,6 +46,7 @@ NEW PARSER AFTER OPTIMIZATION: ~2.25 seconds for 60K parses
     - `toLabel`, `convertTimezone`, `convertCurrency` will always be in camelCase.
   - Added new available types for `DateLiteral` and `DateNLiteral`.
 - A new `LiteralType` value was added for `APEX_BIND_VARIABLE`.
+- When composing functions in a where clause or group by clause, the `rawValue` will be preferred (if exists) (no change here), but if rawValue is not provided, then the function will be composed using the `functionName` and `parameters`.
 
 #### Compose Query
 

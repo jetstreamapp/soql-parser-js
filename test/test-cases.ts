@@ -2129,5 +2129,80 @@ export const testCases: TestCase[] = [
       },
     },
   },
+  {
+    testCase: 71,
+    soql: `SELECT CALENDAR_YEAR(CreatedDate) calYear, SUM(Amount) mySum FROM Opportunity GROUP BY CALENDAR_YEAR(CreatedDate)`,
+    output: {
+      fields: [
+        {
+          type: 'FieldFunctionExpression',
+          functionName: 'CALENDAR_YEAR',
+          parameters: ['CreatedDate'],
+          rawValue: 'CALENDAR_YEAR(CreatedDate)',
+          alias: 'calYear',
+        },
+        {
+          type: 'FieldFunctionExpression',
+          functionName: 'SUM',
+          isAggregateFn: true,
+          parameters: ['Amount'],
+          rawValue: 'SUM(Amount)',
+          alias: 'mySum',
+        },
+      ],
+      sObject: 'Opportunity',
+      groupBy: {
+        fn: {
+          functionName: 'CALENDAR_YEAR',
+          parameters: ['CreatedDate'],
+          rawValue: 'CALENDAR_YEAR(CreatedDate)',
+        },
+      },
+    },
+  },
+  {
+    testCase: 72,
+    soql: `SELECT CALENDAR_YEAR(convertTimezone(CreatedDate)) calYear, SUM(Amount) mySum FROM Opportunity GROUP BY CALENDAR_YEAR(convertTimezone(CreatedDate))`,
+    output: {
+      fields: [
+        {
+          type: 'FieldFunctionExpression',
+          functionName: 'CALENDAR_YEAR',
+          parameters: [
+            {
+              functionName: 'convertTimezone',
+              type: 'FieldFunctionExpression',
+              parameters: ['CreatedDate'],
+              rawValue: 'convertTimezone(CreatedDate)',
+            },
+          ],
+          rawValue: 'CALENDAR_YEAR(convertTimezone(CreatedDate))',
+          alias: 'calYear',
+        },
+        {
+          type: 'FieldFunctionExpression',
+          functionName: 'SUM',
+          isAggregateFn: true,
+          parameters: ['Amount'],
+          rawValue: 'SUM(Amount)',
+          alias: 'mySum',
+        },
+      ],
+      sObject: 'Opportunity',
+      groupBy: {
+        fn: {
+          functionName: 'CALENDAR_YEAR',
+          parameters: [
+            {
+              functionName: 'convertTimezone',
+              parameters: ['CreatedDate'],
+              rawValue: 'convertTimezone(CreatedDate)',
+            },
+          ],
+          rawValue: 'CALENDAR_YEAR(convertTimezone(CreatedDate))',
+        },
+      },
+    },
+  },
 ];
 export default testCases;

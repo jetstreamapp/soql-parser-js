@@ -192,5 +192,17 @@ export const testCases: TestCaseForFormat[] = [
   { testCase: 53, soql: `SELECT Name FROM Account For View`, isValid: true },
   { testCase: 54, soql: `SELECT Name FROM Account For Reference`, isValid: true },
   { testCase: 55, soql: `SELECT Name FROM Account For Update`, isValid: true },
+  { testCase: 56, soql: `SELECT Name myAlias FROM Account`, isValid: false },
+  { testCase: 57, soql: `SELECT Count() myAlias FROM Account`, isValid: true },
+  {
+    testCase: 58,
+    soql: `SELECT CALENDAR_YEAR(CreatedDate), SUM(Amount) mySum FROM Opportunity GROUP BY CALENDAR_YEAR(CreatedDate)`,
+    isValid: true,
+  },
+  {
+    testCase: 59,
+    soql: `SELECT CALENDAR_YEAR(CreatedDate) calYear, SUM(Amount) mySum FROM Opportunity GROUP BY CALENDAR_YEAR(CreatedDate)`,
+    isValid: true,
+  },
 ];
 export default testCases;

@@ -4,47 +4,47 @@ import 'mocha';
 import { testCases } from './public-utils-test-data';
 const lodashGet = require('lodash.get');
 
-describe('getComposedField', () => {
+describe('getField', () => {
   it('Should compose Field', () => {
-    expect(utils.getComposedField('Id')).to.deep.equal({ type: 'Field', field: 'Id' });
-    expect(utils.getComposedField({ field: 'Id' })).to.deep.equal({
+    expect(utils.getField('Id')).to.deep.equal({ type: 'Field', field: 'Id' });
+    expect(utils.getField({ field: 'Id' })).to.deep.equal({
       type: 'Field',
       field: 'Id',
       objectPrefix: undefined,
     });
-    expect(utils.getComposedField({ field: 'Id', objectPrefix: 'a' })).to.deep.equal({
+    expect(utils.getField({ field: 'Id', objectPrefix: 'a' })).to.deep.equal({
       type: 'Field',
       field: 'Id',
       objectPrefix: 'a',
     });
   });
   it('Should compose FieldFunctionExpression', () => {
-    expect(utils.getComposedField({ functionName: 'COUNT' })).to.deep.equal({
+    expect(utils.getField({ functionName: 'COUNT' })).to.deep.equal({
       type: 'FieldFunctionExpression',
       functionName: 'COUNT',
       parameters: undefined,
       alias: undefined,
     });
-    expect(utils.getComposedField({ functionName: 'FORMAT', parameters: ['Amount'] })).to.deep.equal({
+    expect(utils.getField({ functionName: 'FORMAT', parameters: ['Amount'] })).to.deep.equal({
       type: 'FieldFunctionExpression',
       functionName: 'FORMAT',
       parameters: ['Amount'],
       alias: undefined,
     });
-    expect(utils.getComposedField({ functionName: 'FORMAT', parameters: 'Amount' })).to.deep.equal({
+    expect(utils.getField({ functionName: 'FORMAT', parameters: 'Amount' })).to.deep.equal({
       type: 'FieldFunctionExpression',
       functionName: 'FORMAT',
       parameters: ['Amount'],
       alias: undefined,
     });
-    expect(utils.getComposedField({ functionName: 'FORMAT', parameters: ['Amount'], alias: 'amt' })).to.deep.equal({
+    expect(utils.getField({ functionName: 'FORMAT', parameters: ['Amount'], alias: 'amt' })).to.deep.equal({
       type: 'FieldFunctionExpression',
       functionName: 'FORMAT',
       parameters: ['Amount'],
       alias: 'amt',
     });
     expect(
-      utils.getComposedField({
+      utils.getField({
         functionName: 'FORMAT',
         parameters: [
           {
@@ -68,7 +68,7 @@ describe('getComposedField', () => {
       alias: 'convertedCurrency',
     });
     expect(
-      utils.getComposedField({
+      utils.getField({
         functionName: 'FORMAT',
         parameters: {
           type: 'FieldFunctionExpression',
@@ -91,13 +91,13 @@ describe('getComposedField', () => {
     });
   });
   it('Should compose FieldRelationship', () => {
-    expect(utils.getComposedField({ field: 'Id', relationships: ['Account', 'User'] })).to.deep.equal({
+    expect(utils.getField({ field: 'Id', relationships: ['Account', 'User'] })).to.deep.equal({
       type: 'FieldRelationship',
       field: 'Id',
       relationships: ['Account', 'User'],
       objectPrefix: undefined,
     });
-    expect(utils.getComposedField({ field: 'Id', objectPrefix: 'c', relationships: ['Account', 'User'] })).to.deep.equal({
+    expect(utils.getField({ field: 'Id', objectPrefix: 'c', relationships: ['Account', 'User'] })).to.deep.equal({
       type: 'FieldRelationship',
       field: 'Id',
       relationships: ['Account', 'User'],
@@ -106,7 +106,7 @@ describe('getComposedField', () => {
   });
   it('Should compose FieldSubquery', () => {
     expect(
-      utils.getComposedField({
+      utils.getField({
         subquery: {
           fields: [
             {
@@ -139,7 +139,7 @@ describe('getComposedField', () => {
   it('Should compose FieldTypeof', () => {
     it('Should compose FieldSubquery', () => {
       expect(
-        utils.getComposedField({
+        utils.getField({
           field: 'What',
           conditions: [
             {
@@ -183,15 +183,15 @@ describe('getComposedField', () => {
     });
   });
   it('Should fail with invalid combination of data', () => {
-    expect(() => utils.getComposedField({})).to.throw();
-    expect(() => utils.getComposedField({ objectPrefix: 'foo' } as any)).to.throw(TypeError);
-    expect(() => utils.getComposedField({ parameters: 'foo' } as any)).to.throw(TypeError);
-    expect(() => utils.getComposedField({ parameters: ['foo'] } as any)).to.throw(TypeError);
-    expect(() => utils.getComposedField({ alias: 'foo' } as any)).to.throw(TypeError);
-    expect(() => utils.getComposedField({ relationships: ['foo'] } as any)).to.throw(TypeError);
-    expect(() => utils.getComposedField({ conditions: [] } as any)).to.throw(TypeError);
+    expect(() => utils.getField({})).to.throw();
+    expect(() => utils.getField({ objectPrefix: 'foo' } as any)).to.throw(TypeError);
+    expect(() => utils.getField({ parameters: 'foo' } as any)).to.throw(TypeError);
+    expect(() => utils.getField({ parameters: ['foo'] } as any)).to.throw(TypeError);
+    expect(() => utils.getField({ alias: 'foo' } as any)).to.throw(TypeError);
+    expect(() => utils.getField({ relationships: ['foo'] } as any)).to.throw(TypeError);
+    expect(() => utils.getField({ conditions: [] } as any)).to.throw(TypeError);
     expect(() =>
-      utils.getComposedField({
+      utils.getField({
         conditions: [
           {
             type: 'WHEN',

@@ -70,18 +70,10 @@ export class SoqlParser extends CstParser {
               this.getAlt(() => this.SUBRULE(this.selectClauseFunctionIdentifier, { LABEL: 'field' })),
               this.getAlt(() => this.SUBRULE(this.selectClauseSubqueryIdentifier, { LABEL: 'field' })),
               this.getAlt(() => this.SUBRULE(this.selectClauseTypeOf, { LABEL: 'field' })),
-              this.getAlt(() => this.SUBRULE(this.selectClauseFieldIdentifier, { LABEL: 'field' })),
+              this.getAlt(() => this.CONSUME(lexer.Identifier, { LABEL: 'field' })),
             ]),
         );
       },
-    });
-  });
-
-  private selectClauseFieldIdentifier = this.RULE('selectClauseFieldIdentifier', () => {
-    this.CONSUME(lexer.Identifier);
-    // Optional alias
-    this.OPTION(() => {
-      this.CONSUME1(lexer.Identifier, { LABEL: 'alias' });
     });
   });
 
@@ -90,15 +82,12 @@ export class SoqlParser extends CstParser {
       this.$_selectClauseFunctionIdentifier ||
         (this.$_selectClauseFunctionIdentifier = [
           this.getAlt(() => this.SUBRULE(this.dateFunction, { LABEL: 'fn' })),
-          this.getAlt(() => this.SUBRULE(this.aggregateFunction, { LABEL: 'fn' })),
+          this.getAlt(() => this.SUBRULE(this.aggregateFunction, { LABEL: 'fn', ARGS: [true] })),
           this.getAlt(() => this.SUBRULE(this.locationFunction, { LABEL: 'fn' })),
           this.getAlt(() => this.SUBRULE(this.otherFunction, { LABEL: 'fn' })),
         ]),
     );
-    // Optional alias
-    this.OPTION(() => {
-      this.CONSUME(lexer.Identifier, { LABEL: 'alias' });
-    });
+    this.OPTION(() => this.CONSUME(lexer.Identifier, { LABEL: 'alias' }));
   });
 
   private selectClauseSubqueryIdentifier = this.RULE('selectClauseSubqueryIdentifier', () => {
@@ -226,9 +215,10 @@ export class SoqlParser extends CstParser {
   private groupByClause = this.RULE('groupByClause', () => {
     this.CONSUME(lexer.GroupBy);
     this.OR([
-      this.getAlt(() => this.CONSUME1(lexer.Identifier)),
       this.getAlt(() => this.SUBRULE(this.cubeFunction, { LABEL: 'fn' })),
       this.getAlt(() => this.SUBRULE(this.rollupFunction, { LABEL: 'fn' })),
+      this.getAlt(() => this.SUBRULE(this.dateFunction, { LABEL: 'fn' })),
+      this.getAlt(() => this.CONSUME1(lexer.Identifier)),
     ]);
     this.OPTION(() => {
       this.SUBRULE(this.havingClause);
@@ -318,17 +308,10 @@ export class SoqlParser extends CstParser {
           this.getAlt(() => this.CONSUME(lexer.WeekInYear, { LABEL: 'fn' })),
         ]),
     );
-    this.CONSUME(lexer.LParen);
-    this.MANY_SEP({
-      SEP: lexer.Comma,
-      DEF: () => {
-        this.CONSUME(lexer.Identifier);
-      },
-    });
-    this.CONSUME(lexer.RParen);
+    this.SUBRULE(this.functionExpression);
   });
 
-  private aggregateFunction = this.RULE('aggregateFunction', () => {
+  private aggregateFunction = this.RULE('aggregateFunction', allowAlias => {
     this.OR(
       this.$_aggregateFunction ||
         (this.$_aggregateFunction = [

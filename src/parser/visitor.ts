@@ -206,34 +206,57 @@ class SOQLToAstVisitor extends BaseSoqlVisitor {
   }
 
   selectClause(ctx: SelectClauseContext): string[] {
-    return ctx.field ? ctx.field.map(item => this.visit(item)) : [];
+    if (ctx.field) {
+      return ctx.field.map(item => {
+        if (isToken(item)) {
+          const field: string = item.image;
+          let output: FieldType;
+          if (!field.includes('.')) {
+            output = {
+              type: 'Field',
+              field: field,
+              // objectPrefix: undefined, // TODO: we cannot add this until the very und when we see if the sobject is aliased
+            };
+          } else {
+            const splitFields = field.split('.');
+            output = {
+              type: 'FieldRelationship',
+              field: splitFields[splitFields.length - 1],
+              relationships: splitFields.slice(0, splitFields.length - 1),
+              // objectPrefix: undefined, // TODO: we cannot add this until the very und when we see if the sobject is aliased
+              rawValue: field,
+            };
+          }
+          return output;
+        } else {
+          return this.visit(item);
+        }
+      });
+    }
+    return [];
   }
 
-  selectClauseFieldIdentifier(ctx: SelectClauseFieldIdentifierContext): FieldType {
-    const alias = ctx.alias && ctx.alias.length > 0 ? ctx.alias[0].image : undefined;
-    const field: string = ctx.Identifier[0].image;
-    let output: FieldType;
-    if (!field.includes('.')) {
-      output = {
-        type: 'Field',
-        field: field,
-        // objectPrefix: undefined, // TODO: we cannot add this until the very und when we see if the sobject is aliased
-      };
-    } else {
-      const splitFields = field.split('.');
-      output = {
-        type: 'FieldRelationship',
-        field: splitFields[splitFields.length - 1],
-        relationships: splitFields.slice(0, splitFields.length - 1),
-        // objectPrefix: undefined, // TODO: we cannot add this until the very und when we see if the sobject is aliased
-        rawValue: field,
-      };
-    }
-    if (alias) {
-      output.alias = alias;
-    }
-    return output;
-  }
+  // selectClauseFieldIdentifier(ctx: SelectClauseFieldIdentifierContext): FieldType {
+  //   const field: string = ctx.Identifier[0].image;
+  //   let output: FieldType;
+  //   if (!field.includes('.')) {
+  //     output = {
+  //       type: 'Field',
+  //       field: field,
+  //       // objectPrefix: undefined, // TODO: we cannot add this until the very und when we see if the sobject is aliased
+  //     };
+  //   } else {
+  //     const splitFields = field.split('.');
+  //     output = {
+  //       type: 'FieldRelationship',
+  //       field: splitFields[splitFields.length - 1],
+  //       relationships: splitFields.slice(0, splitFields.length - 1),
+  //       // objectPrefix: undefined, // TODO: we cannot add this until the very und when we see if the sobject is aliased
+  //       rawValue: field,
+  //     };
+  //   }
+  //   return output;
+  // }
 
   selectClauseFunctionIdentifier(ctx: SelectClauseFunctionIdentifierContext): FieldRelationship {
     let output: FieldRelationship = {
@@ -362,7 +385,7 @@ class SOQLToAstVisitor extends BaseSoqlVisitor {
       output.field = field;
     }
     if (ctx.fn) {
-      output.fn = this.visit(ctx.fn);
+      output.fn = this.visit(ctx.fn, { includeType: false });
     }
     if (ctx.havingClause) {
       output.having = this.visit(ctx.havingClause);
@@ -446,7 +469,9 @@ class SOQLToAstVisitor extends BaseSoqlVisitor {
    * @param isAggregateFn
    */
   private $_getFieldFunction(ctx: FieldFunctionContext, isAggregateFn = false, includeType = true): FunctionExp | FieldFunctionExpression {
-    const args = ctx.functionExpression ? ctx.functionExpression.map((node: any) => this.visit(ctx.functionExpression)).flat() : [];
+    const args = ctx.functionExpression
+      ? ctx.functionExpression.map((node: any) => this.visit(ctx.functionExpression, { includeType })).flat()
+      : [];
     const output: any = {};
     if (includeType) {
       output.type = 'FieldFunctionExpression';
@@ -478,11 +503,11 @@ class SOQLToAstVisitor extends BaseSoqlVisitor {
   rollupFunction(ctx: FieldFunctionContext) {
     return this.$_getFieldFunction(ctx, false, false);
   }
-  functionExpression(ctx: FunctionExpressionContext): string[] {
+  functionExpression(ctx: FunctionExpressionContext, options: { includeType: boolean } = { includeType: true }): string[] {
     if (ctx.Identifier) {
       return ctx.Identifier.map((item: any) => item.image);
     } else if (ctx.fn) {
-      return ctx.fn.map((item: any) => this.visit(item));
+      return ctx.fn.map((item: any) => this.visit(item, options));
     }
     return [];
   }

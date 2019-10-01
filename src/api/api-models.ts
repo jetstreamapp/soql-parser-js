@@ -80,10 +80,10 @@ export interface Field {
 export interface FieldFunctionExpression {
   type: 'FieldFunctionExpression';
   functionName: string;
-  parameters?: (string | FieldFunctionExpression)[];
+  parameters: (string | FieldFunctionExpression)[];
   alias?: string;
   isAggregateFn?: boolean; // not required for compose, will be populated if SOQL is parsed
-  rawValue?: string; // not required for compose, will be populated if SOQL is parsed with the raw value of the entire field
+  rawValue?: string; // not required for compose, will be populated if SOQL is parsed
 }
 
 export interface FieldRelationship {
@@ -184,10 +184,10 @@ export interface HavingCondition {
 }
 
 export interface FunctionExp {
-  rawValue?: string; // Should be formatted like this: Count(Id)
-  functionName?: string; // not used for compose, will be populated if SOQL is parsed
+  rawValue?: string; // only used for compose fields if useRawValueForFn=true. Should be formatted like this: Count(Id)
+  functionName?: string; // only used for compose fields if useRawValueForFn=false, not used for compose, will be populated if SOQL is parsed
   alias?: string;
-  parameters?: (string | FunctionExp)[]; // not used for compose, will be populated if SOQL is parsed
+  parameters?: (string | FunctionExp)[]; // only used for compose fields if useRawValueForFn=false, not used for compose, will be populated if SOQL is parsed
   isAggregateFn?: boolean; // not used for compose, will be populated if SOQL is parsed
 }
 

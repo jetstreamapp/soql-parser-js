@@ -20,7 +20,7 @@ describe('parse queries', () => {
 // Uncomment these to easily test one specific query - useful for troubleshooting/bugfixing
 
 // describe.only('parse queries', () => {
-//   const testCase = testCases.find(tc => tc.testCase === 65);
+//   const testCase = testCases.find(tc => tc.testCase === 61);
 
 //   it(`should correctly parse test case ${testCase.testCase} - ${testCase.soql}`, () => {
 //     const soqlQuery = parseQuery(testCase.soql);
@@ -30,7 +30,7 @@ describe('parse queries', () => {
 // });
 
 // describe.only('compose queries', () => {
-//   const testCase = testCases.find(tc => tc.testCase === 70);
+//   const testCase = testCases.find(tc => tc.testCase === 72);
 //   it(`should compose correctly - test case ${testCase.testCase} - ${testCase.soql}`, () => {
 //     const soqlQuery = composeQuery(removeComposeOnlyFields(parseQuery(testCase.soql)));
 //     let soql = testCase.soqlComposed || testCase.soql;

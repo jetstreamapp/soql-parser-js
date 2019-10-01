@@ -23,7 +23,7 @@ export interface ComposeFieldFunction {
   // @Deprecated - will still be used if populated, but functionName is checked first and preferred
   fn?: string;
   functionName: string;
-  parameters?: string | string[] | SoqlModels.FieldFunctionExpression | SoqlModels.FieldFunctionExpression[];
+  parameters?: string | SoqlModels.FieldFunctionExpression | (string | SoqlModels.FieldFunctionExpression)[];
   alias?: string;
 }
 

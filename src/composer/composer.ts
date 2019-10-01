@@ -69,10 +69,10 @@ export class Compose {
   public formatter: Formatter;
 
   constructor(private soql: Query, config: Partial<SoqlComposeConfig> = {}) {
-    config = { autoCompose: true, ...config };
-    const { logging } = config;
+    config = { autoCompose: true ...config };
+    const { logging, format } = config;
     this.logging = logging;
-    this.format = config.format;
+    this.format = format;
     this.query = '';
 
     this.formatter = new Formatter(this.format, {
@@ -99,6 +99,29 @@ export class Compose {
     if (this.logging) {
       console.log('Current SOQL:', soql);
     }
+  }
+
+  /**
+   * Parses FunctionExp object
+   * Prefers functionName if populated, otherwise will fallback to rawValue
+   * @param fn
+   * @returns fn
+   */
+  private parseFn(fn: FunctionExp): string {
+    let output: string | undefined;
+
+    if (fn.rawValue) {
+      output = fn.rawValue;
+    } else {
+      output = fn.functionName
+      output += `(${(fn.parameters || []).map(param => (utils.isString(param) ? param : this.parseFn(param, false))).join(', ')})`;
+    }
+
+    if (fn.alias) {
+      output += ` ${fn.alias}`;
+    }
+
+    return output;
   }
 
   /**
@@ -217,11 +240,9 @@ export class Compose {
         case 'FieldFunctionExpression': {
           let params = '';
           if (field.parameters) {
-            if (utils.isString(field.parameters[0])) {
-              params = field.parameters.join(',');
-            } else {
-              params = this.parseFields(field.parameters as FieldFunctionExpression[]).join(',');
-            }
+            params = field.parameters
+              .map(param => (utils.isString(param) ? param : this.parseFields([param as FieldFunctionExpression])))
+              .join(',');
           }
           return `${field.functionName}(${params})${field.alias ? ` ${field.alias}` : ''}`;
         }
@@ -255,15 +276,6 @@ export class Compose {
       .join(' ');
     output += ` END`;
     return output;
-  }
-
-  /**
-   * Parses fn from a WHERE clause
-   * @param fn
-   * @returns fn
-   */
-  private parseFn(fn: FunctionExp): string {
-    return `${fn.rawValue || ''} ${fn.alias || ''}`.trim();
   }
 
   /**
@@ -302,7 +314,7 @@ export class Compose {
    */
   public parseGroupByClause(groupBy: GroupByClause): string {
     if (groupBy.fn) {
-      return `${groupBy.fn.functionName}(${groupBy.fn.parameters.join(', ')})`;
+      return this.parseFn(groupBy.fn);
     } else {
       return (Array.isArray(groupBy.field) ? groupBy.field : [groupBy.field]).join(', ');
     }

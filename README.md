@@ -44,12 +44,13 @@ isQueryValid('SELECT Id Foo FROM Baz'); // false
 
 **SoqlComposeConfig**
 
-| Property      | Type          | Description                                                                                                                                                                                                              | required | default |
-| ------------- | ------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | -------- | ------- |
-| format        | boolean       | Apply formatting the the composed query. This will result in a multi-line soql statement.                                                                                                                                | FALSE    | TRUE    |
-| formatOptions | FormatOptions | Options to apply to the formatter.                                                                                                                                                                                       | FALSE    |         |
-| autoCompose   | boolean       | If you need to compose just part of a query, you can create your own instance of the Compose class and set this to false, then call any methods that you need to just for what you would like to turn into a SOQL query. | FALSE    | TRUE    |
-| logging       | boolean       | Print out logging statements to the console about the format operation.                                                                                                                                                  | FALSE    | FALSE   |
+| Property         | Type          | Description                                                                                                                                                                                                              | required | default |
+| ---------------- | ------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | -------- | ------- |
+| format           | boolean       | Apply formatting the the composed query. This will result in a multi-line soql statement.                                                                                                                                | FALSE    | TRUE    |
+| formatOptions    | FormatOptions | Options to apply to the formatter.                                                                                                                                                                                       | FALSE    |         |
+| autoCompose      | boolean       | If you need to compose just part of a query, you can create your own instance of the Compose class and set this to false, then call any methods that you need to just for what you would like to turn into a SOQL query. | FALSE    | TRUE    |
+| useRawValueForFn | boolean       | When composing WHERE/GROUP BY functions, prefer the `rawValue` property instead of using `functionName` and `parameters` to compose the query.                                                                           | FALSE    | TRUE    |
+| logging          | boolean       | Print out logging statements to the console about the format operation.                                                                                                                                                  | FALSE    | FALSE   |
 
 **FormatOptions**
 

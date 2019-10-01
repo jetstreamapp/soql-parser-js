@@ -43,7 +43,7 @@ export interface SelectClauseIdentifierContext extends WithIdentifier {
 export interface SelectClauseFunctionIdentifierContext extends WithIdentifier {}
 
 export interface SelectClauseContext {
-  field: CstNode[];
+  field: (IToken | CstNode)[];
 }
 
 export interface SelectClauseFieldIdentifierContext extends WithIdentifier {
