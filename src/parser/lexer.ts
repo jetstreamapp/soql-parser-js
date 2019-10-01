@@ -252,9 +252,7 @@ export const DataCategory = createToken({
 });
 export const End = createToken({ name: 'END', pattern: /END/i, longer_alt: Identifier, categories: [Keyword, Identifier] });
 
-// FIXME: this is not actually a reserved keyword, but the parser was not correctly parsing the query if this was included right after SObject
-// https://github.com/paustint/soql-parser-js/issues/74
-export const Offset = createToken({ name: 'OFFSET', pattern: /OFFSET/i, longer_alt: Identifier, categories: [Keyword, ReservedKeyword] });
+export const Offset = createToken({ name: 'OFFSET', pattern: /OFFSET/i, longer_alt: Identifier, categories: [Keyword, Identifier] });
 
 export const Reference = createToken({
   name: 'REFERENCE',

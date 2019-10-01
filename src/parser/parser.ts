@@ -141,7 +141,10 @@ export class SoqlParser extends CstParser {
   private fromClause = this.RULE('fromClause', () => {
     this.CONSUME(lexer.From);
     this.CONSUME(lexer.Identifier);
-    this.OPTION(() => this.CONSUME1(lexer.Identifier, { LABEL: 'alias' }));
+    this.OPTION({
+      GATE: () => !(this.LA(1).tokenType === lexer.Offset && this.LA(2).tokenType === lexer.UnsignedInteger),
+      DEF: () => this.CONSUME1(lexer.Identifier, { LABEL: 'alias' }),
+    });
   });
 
   private whereClause = this.RULE('whereClause', () => {

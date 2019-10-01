@@ -175,7 +175,7 @@ export const testCases: TestCaseForFormat[] = [
   { testCase: 36, soql: `SELECT Name FROM Account ORDER BY`, isValid: false },
   { testCase: 37, soql: `SELECT Name FROM Account LIMIT`, isValid: false },
   { testCase: 38, soql: `SELECT Name FROM Account LIMIT 'foo'`, isValid: false },
-  { testCase: 39, soql: `SELECT Name FROM Account OFFSET`, isValid: false },
+  { testCase: 39, soql: `SELECT Name FROM Account OFFSET`, isValid: true },
   { testCase: 40, soql: `SELECT Name FROM Account OFFSET 'foo'`, isValid: false },
   { testCase: 41, soql: `SELECT Name FROM Account OFFSET 1`, isValid: true },
   { testCase: 42, soql: `SELECT Name, COUNT(Id) FROM Account GROUP BY Name HAVING`, isValid: false }, // this throws exception
