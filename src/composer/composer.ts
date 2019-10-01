@@ -69,7 +69,7 @@ export class Compose {
   public formatter: Formatter;
 
   constructor(private soql: Query, config: Partial<SoqlComposeConfig> = {}) {
-    config = { autoCompose: true ...config };
+    config = { autoCompose: true, ...config };
     const { logging, format } = config;
     this.logging = logging;
     this.format = format;
@@ -113,8 +113,8 @@ export class Compose {
     if (fn.rawValue) {
       output = fn.rawValue;
     } else {
-      output = fn.functionName
-      output += `(${(fn.parameters || []).map(param => (utils.isString(param) ? param : this.parseFn(param, false))).join(', ')})`;
+      output = fn.functionName;
+      output += `(${(fn.parameters || []).map(param => (utils.isString(param) ? param : this.parseFn(param))).join(', ')})`;
     }
 
     if (fn.alias) {
