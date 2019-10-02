@@ -18,13 +18,17 @@ interface IParseSoqlState {
   soql: string;
   format: boolean;
   formatOptions: FormatOptions;
+  parseDuration: number;
 }
 
 export class ParseSoql extends React.Component<IParseSoqlProps, IParseSoqlState> {
   constructor(props: IParseSoqlProps) {
     super(props);
-
-    const parsedSoql = props.soql ? parseQuery(props.soql) : undefined;
+    
+    const start = performance.now();
+    const parsedSoql = props.soql ? parseQuery(props.soql, {allowApexBindVariables: true}) : undefined;
+    const end = performance.now();
+    
     const composedQuery = parsedSoql ? composeQuery(parsedSoql) : '';
 
     this.state = {
@@ -38,6 +42,7 @@ export class ParseSoql extends React.Component<IParseSoqlProps, IParseSoqlState>
         fieldSubqueryParensOnOwnLine: true,
         whereClauseOperatorsIndented: false,
       },
+      parseDuration: parsedSoql ? end - start : -1,
     };
   }
 
@@ -54,7 +59,7 @@ export class ParseSoql extends React.Component<IParseSoqlProps, IParseSoqlState>
   };
 
   public isValid = (query: string) => {
-    return isQueryValid(query);
+    return isQueryValid(query, {allowApexBindVariables: true});
   };
 
   public getValidMessage = () => {
@@ -67,7 +72,11 @@ export class ParseSoql extends React.Component<IParseSoqlProps, IParseSoqlState>
 
   public parseQuery = (query?: string, format?: boolean, formatOptions?: FormatOptions) => {
     try {
-      const parsedSoql: Query = parseQuery(query || this.state.soql);
+
+      const start = performance.now();
+      const parsedSoql: Query = parseQuery(query || this.state.soql, {allowApexBindVariables: true});
+      const end = performance.now();
+
       const composedQuery: string = composeQuery(parsedSoql, {
         format: typeof format === 'boolean' ? format : this.state.format,
         formatOptions: formatOptions || this.state.formatOptions,
@@ -75,10 +84,12 @@ export class ParseSoql extends React.Component<IParseSoqlProps, IParseSoqlState>
       this.setState({
         parsedSoql: JSON.stringify(parsedSoql, null, 4),
         composedQuery,
+        parseDuration: end - start
       });
     } catch (ex) {
       this.setState({
         parsedSoql: ex.message,
+        parseDuration: -1,
       });
     }
   };
@@ -134,8 +145,9 @@ export class ParseSoql extends React.Component<IParseSoqlProps, IParseSoqlState>
               <span>
                 Parsed Query -
                 <small style={{ marginLeft: 5 }}>
-                  <code>parseQuery(soqlQuery);</code>
+                  <code>parseQuery(soqlQuery, {`{allowApexBindVariables: true}`});</code>
                 </small>
+                {this.state.parseDuration > 0 && (<div><small>Parsed in {this.state.parseDuration.toFixed(2)} milliseconds</small></div>)}
               </span>
             }
             lang="json"
