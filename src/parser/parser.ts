@@ -76,10 +76,10 @@ export class SoqlParser extends CstParser {
           this.$_selectClause ||
             (this.$_selectClause = [
               // selectClauseFunctionIdentifier must be first because the alias could also be an identifier
-              this.getAlt(() => this.SUBRULE(this.selectClauseFunctionIdentifier, { LABEL: 'field' })),
-              this.getAlt(() => this.SUBRULE(this.selectClauseSubqueryIdentifier, { LABEL: 'field' })),
-              this.getAlt(() => this.SUBRULE(this.selectClauseTypeOf, { LABEL: 'field' })),
-              this.getAlt(() => this.CONSUME(lexer.Identifier, { LABEL: 'field' })),
+              { ALT: () => this.SUBRULE(this.selectClauseFunctionIdentifier, { LABEL: 'field' }) },
+              { ALT: () => this.SUBRULE(this.selectClauseSubqueryIdentifier, { LABEL: 'field' }) },
+              { ALT: () => this.SUBRULE(this.selectClauseTypeOf, { LABEL: 'field' }) },
+              { ALT: () => this.CONSUME(lexer.Identifier, { LABEL: 'field' }) },
             ]),
         );
       },
@@ -90,10 +90,10 @@ export class SoqlParser extends CstParser {
     this.OR(
       this.$_selectClauseFunctionIdentifier ||
         (this.$_selectClauseFunctionIdentifier = [
-          this.getAlt(() => this.SUBRULE(this.dateFunction, { LABEL: 'fn' })),
-          this.getAlt(() => this.SUBRULE(this.aggregateFunction, { LABEL: 'fn', ARGS: [true] })),
-          this.getAlt(() => this.SUBRULE(this.locationFunction, { LABEL: 'fn' })),
-          this.getAlt(() => this.SUBRULE(this.otherFunction, { LABEL: 'fn' })),
+          { ALT: () => this.SUBRULE(this.dateFunction, { LABEL: 'fn' }) },
+          { ALT: () => this.SUBRULE(this.aggregateFunction, { LABEL: 'fn', ARGS: [true] }) },
+          { ALT: () => this.SUBRULE(this.locationFunction, { LABEL: 'fn' }) },
+          { ALT: () => this.SUBRULE(this.otherFunction, { LABEL: 'fn' }) },
         ]),
     );
     this.OPTION(() => this.CONSUME(lexer.Identifier, { LABEL: 'alias' }));
@@ -179,8 +179,8 @@ export class SoqlParser extends CstParser {
     parenCount = this.getParenCount(parenCount);
     this.OPTION(() => {
       this.OR([
-        this.getAlt(() => this.CONSUME(lexer.And, { LABEL: 'logicalOperator' })),
-        this.getAlt(() => this.CONSUME(lexer.Or, { LABEL: 'logicalOperator' })),
+        { ALT: () => this.CONSUME(lexer.And, { LABEL: 'logicalOperator' }) },
+        { ALT: () => this.CONSUME(lexer.Or, { LABEL: 'logicalOperator' }) },
       ]);
     });
     this.SUBRULE(this.expression, { ARGS: [parenCount] });
@@ -189,8 +189,8 @@ export class SoqlParser extends CstParser {
   private withClause = this.RULE('withClause', () => {
     this.CONSUME(lexer.With);
     this.OR([
-      this.getAlt(() => this.CONSUME(lexer.SecurityEnforced, { LABEL: 'withSecurityEnforced' })),
-      this.getAlt(() => this.SUBRULE(this.withDataCategory)),
+      { ALT: () => this.CONSUME(lexer.SecurityEnforced, { LABEL: 'withSecurityEnforced' }) },
+      { ALT: () => this.SUBRULE(this.withDataCategory) },
     ]);
   });
 
@@ -209,10 +209,10 @@ export class SoqlParser extends CstParser {
     this.OR(
       this.$_withDataCategoryArr ||
         (this.$_withDataCategoryArr = [
-          this.getAlt(() => this.CONSUME(lexer.At, { LABEL: 'filteringSelector' })),
-          this.getAlt(() => this.CONSUME(lexer.Above, { LABEL: 'filteringSelector' })),
-          this.getAlt(() => this.CONSUME(lexer.Below, { LABEL: 'filteringSelector' })),
-          this.getAlt(() => this.CONSUME(lexer.AboveOrBelow, { LABEL: 'filteringSelector' })),
+          { ALT: () => this.CONSUME(lexer.At, { LABEL: 'filteringSelector' }) },
+          { ALT: () => this.CONSUME(lexer.Above, { LABEL: 'filteringSelector' }) },
+          { ALT: () => this.CONSUME(lexer.Below, { LABEL: 'filteringSelector' }) },
+          { ALT: () => this.CONSUME(lexer.AboveOrBelow, { LABEL: 'filteringSelector' }) },
         ]),
     );
 
@@ -233,10 +233,10 @@ export class SoqlParser extends CstParser {
   private groupByClause = this.RULE('groupByClause', () => {
     this.CONSUME(lexer.GroupBy);
     this.OR([
-      this.getAlt(() => this.SUBRULE(this.cubeFunction, { LABEL: 'fn' })),
-      this.getAlt(() => this.SUBRULE(this.rollupFunction, { LABEL: 'fn' })),
-      this.getAlt(() => this.SUBRULE(this.dateFunction, { LABEL: 'fn' })),
-      this.getAlt(() => this.CONSUME1(lexer.Identifier)),
+      { ALT: () => this.SUBRULE(this.cubeFunction, { LABEL: 'fn' }) },
+      { ALT: () => this.SUBRULE(this.rollupFunction, { LABEL: 'fn' }) },
+      { ALT: () => this.SUBRULE(this.dateFunction, { LABEL: 'fn' }) },
+      { ALT: () => this.CONSUME1(lexer.Identifier) },
     ]);
     this.OPTION(() => {
       this.SUBRULE(this.havingClause);
@@ -253,8 +253,8 @@ export class SoqlParser extends CstParser {
   private havingClauseExpression = this.RULE('havingClauseExpression', () => {
     this.OPTION(() => {
       this.OR([
-        this.getAlt(() => this.CONSUME(lexer.And, { LABEL: 'logicalOperator' })),
-        this.getAlt(() => this.CONSUME(lexer.Or, { LABEL: 'logicalOperator' })),
+        { ALT: () => this.CONSUME(lexer.And, { LABEL: 'logicalOperator' }) },
+        { ALT: () => this.CONSUME(lexer.Or, { LABEL: 'logicalOperator' }) },
       ]);
     });
     this.SUBRULE(this.expressionWithAggregateFunction, { LABEL: 'having' });
@@ -266,8 +266,8 @@ export class SoqlParser extends CstParser {
       SEP: lexer.Comma,
       DEF: () => {
         this.OR([
-          this.getAlt(() => this.SUBRULE(this.orderByFunctionExpression, { LABEL: 'orderByExpressionOrFn' })),
-          this.getAlt(() => this.SUBRULE(this.orderByExpression, { LABEL: 'orderByExpressionOrFn' })),
+          { ALT: () => this.SUBRULE(this.orderByFunctionExpression, { LABEL: 'orderByExpressionOrFn' }) },
+          { ALT: () => this.SUBRULE(this.orderByExpression, { LABEL: 'orderByExpressionOrFn' }) },
         ]);
       },
     });
@@ -276,17 +276,11 @@ export class SoqlParser extends CstParser {
   private orderByExpression = this.RULE('orderByExpression', () => {
     this.CONSUME(lexer.Identifier);
     this.OPTION(() => {
-      this.OR([
-        this.getAlt(() => this.CONSUME(lexer.Asc, { LABEL: 'order' })),
-        this.getAlt(() => this.CONSUME(lexer.Desc, { LABEL: 'order' })),
-      ]);
+      this.OR([{ ALT: () => this.CONSUME(lexer.Asc, { LABEL: 'order' }) }, { ALT: () => this.CONSUME(lexer.Desc, { LABEL: 'order' }) }]);
     });
     this.OPTION1(() => {
       this.CONSUME(lexer.Nulls);
-      this.OR1([
-        this.getAlt(() => this.CONSUME(lexer.First, { LABEL: 'nulls' })),
-        this.getAlt(() => this.CONSUME(lexer.Last, { LABEL: 'nulls' })),
-      ]);
+      this.OR1([{ ALT: () => this.CONSUME(lexer.First, { LABEL: 'nulls' }) }, { ALT: () => this.CONSUME(lexer.Last, { LABEL: 'nulls' }) }]);
     });
   });
 
@@ -311,19 +305,19 @@ export class SoqlParser extends CstParser {
     this.OR(
       this.$_dateFunctionOr || // https://sap.github.io/chevrotain/docs/guide/performance.html#caching-arrays-of-alternatives
         (this.$_dateFunctionOr = [
-          this.getAlt(() => this.CONSUME(lexer.CalendarMonth, { LABEL: 'fn' })),
-          this.getAlt(() => this.CONSUME(lexer.CalendarQuarter, { LABEL: 'fn' })),
-          this.getAlt(() => this.CONSUME(lexer.CalendarYear, { LABEL: 'fn' })),
-          this.getAlt(() => this.CONSUME(lexer.DayInMonth, { LABEL: 'fn' })),
-          this.getAlt(() => this.CONSUME(lexer.DayInWeek, { LABEL: 'fn' })),
-          this.getAlt(() => this.CONSUME(lexer.DayInYear, { LABEL: 'fn' })),
-          this.getAlt(() => this.CONSUME(lexer.DayOnly, { LABEL: 'fn' })),
-          this.getAlt(() => this.CONSUME(lexer.FiscalMonth, { LABEL: 'fn' })),
-          this.getAlt(() => this.CONSUME(lexer.FiscalQuarter, { LABEL: 'fn' })),
-          this.getAlt(() => this.CONSUME(lexer.FiscalYear, { LABEL: 'fn' })),
-          this.getAlt(() => this.CONSUME(lexer.HourInDay, { LABEL: 'fn' })),
-          this.getAlt(() => this.CONSUME(lexer.WeekInMonth, { LABEL: 'fn' })),
-          this.getAlt(() => this.CONSUME(lexer.WeekInYear, { LABEL: 'fn' })),
+          { ALT: () => this.CONSUME(lexer.CalendarMonth, { LABEL: 'fn' }) },
+          { ALT: () => this.CONSUME(lexer.CalendarQuarter, { LABEL: 'fn' }) },
+          { ALT: () => this.CONSUME(lexer.CalendarYear, { LABEL: 'fn' }) },
+          { ALT: () => this.CONSUME(lexer.DayInMonth, { LABEL: 'fn' }) },
+          { ALT: () => this.CONSUME(lexer.DayInWeek, { LABEL: 'fn' }) },
+          { ALT: () => this.CONSUME(lexer.DayInYear, { LABEL: 'fn' }) },
+          { ALT: () => this.CONSUME(lexer.DayOnly, { LABEL: 'fn' }) },
+          { ALT: () => this.CONSUME(lexer.FiscalMonth, { LABEL: 'fn' }) },
+          { ALT: () => this.CONSUME(lexer.FiscalQuarter, { LABEL: 'fn' }) },
+          { ALT: () => this.CONSUME(lexer.FiscalYear, { LABEL: 'fn' }) },
+          { ALT: () => this.CONSUME(lexer.HourInDay, { LABEL: 'fn' }) },
+          { ALT: () => this.CONSUME(lexer.WeekInMonth, { LABEL: 'fn' }) },
+          { ALT: () => this.CONSUME(lexer.WeekInYear, { LABEL: 'fn' }) },
         ]),
     );
     this.SUBRULE(this.functionExpression);
@@ -333,19 +327,19 @@ export class SoqlParser extends CstParser {
     this.OR(
       this.$_aggregateFunction ||
         (this.$_aggregateFunction = [
-          this.getAlt(() => this.CONSUME(lexer.Avg, { LABEL: 'fn' })),
-          this.getAlt(() => this.CONSUME(lexer.Count, { LABEL: 'fn' })),
-          this.getAlt(() => this.CONSUME(lexer.CountDistinct, { LABEL: 'fn' })),
-          this.getAlt(() => this.CONSUME(lexer.Min, { LABEL: 'fn' })),
-          this.getAlt(() => this.CONSUME(lexer.Max, { LABEL: 'fn' })),
-          this.getAlt(() => this.CONSUME(lexer.Sum, { LABEL: 'fn' })),
+          { ALT: () => this.CONSUME(lexer.Avg, { LABEL: 'fn' }) },
+          { ALT: () => this.CONSUME(lexer.Count, { LABEL: 'fn' }) },
+          { ALT: () => this.CONSUME(lexer.CountDistinct, { LABEL: 'fn' }) },
+          { ALT: () => this.CONSUME(lexer.Min, { LABEL: 'fn' }) },
+          { ALT: () => this.CONSUME(lexer.Max, { LABEL: 'fn' }) },
+          { ALT: () => this.CONSUME(lexer.Sum, { LABEL: 'fn' }) },
         ]),
     );
     this.SUBRULE(this.functionExpression, { ARGS: [true] });
   });
 
   private locationFunction = this.RULE('locationFunction', () => {
-    this.OR([this.getAlt(() => this.CONSUME(lexer.Distance)), this.getAlt(() => this.CONSUME(lexer.Geolocation))]);
+    this.OR([{ ALT: () => this.CONSUME(lexer.Distance) }, { ALT: () => this.CONSUME(lexer.Geolocation) }]);
     this.SUBRULE(this.functionExpression);
   });
 
@@ -353,11 +347,11 @@ export class SoqlParser extends CstParser {
     this.OR(
       this.$_otherFunction ||
         (this.$_otherFunction = [
-          this.getAlt(() => this.CONSUME(lexer.Format, { LABEL: 'fn' })),
-          this.getAlt(() => this.CONSUME(lexer.Tolabel, { LABEL: 'fn' })),
-          this.getAlt(() => this.CONSUME(lexer.ConvertTimeZone, { LABEL: 'fn' })),
-          this.getAlt(() => this.CONSUME(lexer.ConvertCurrency, { LABEL: 'fn' })),
-          this.getAlt(() => this.CONSUME(lexer.Grouping, { LABEL: 'fn' })),
+          { ALT: () => this.CONSUME(lexer.Format, { LABEL: 'fn' }) },
+          { ALT: () => this.CONSUME(lexer.Tolabel, { LABEL: 'fn' }) },
+          { ALT: () => this.CONSUME(lexer.ConvertTimeZone, { LABEL: 'fn' }) },
+          { ALT: () => this.CONSUME(lexer.ConvertCurrency, { LABEL: 'fn' }) },
+          { ALT: () => this.CONSUME(lexer.Grouping, { LABEL: 'fn' }) },
         ]),
     );
     this.SUBRULE(this.functionExpression);
@@ -380,9 +374,9 @@ export class SoqlParser extends CstParser {
       DEF: () => {
         this.OR([
           { GATE: () => !skipAggregate, ALT: () => this.SUBRULE(this.aggregateFunction, { LABEL: 'fn' }) },
-          this.getAlt(() => this.SUBRULE(this.locationFunction, { LABEL: 'fn' })),
-          this.getAlt(() => this.SUBRULE(this.otherFunction, { LABEL: 'fn' })),
-          this.getAlt(() => this.CONSUME(lexer.Identifier)),
+          { ALT: () => this.SUBRULE(this.locationFunction, { LABEL: 'fn' }) },
+          { ALT: () => this.SUBRULE(this.otherFunction, { LABEL: 'fn' }) },
+          { ALT: () => this.CONSUME(lexer.Identifier) },
         ]);
       },
     });
@@ -408,13 +402,13 @@ export class SoqlParser extends CstParser {
     });
 
     this.OR1([
-      this.getAlt(() => this.SUBRULE(this.otherFunction, { LABEL: 'lhs' })),
-      this.getAlt(() => this.CONSUME(lexer.Identifier, { LABEL: 'lhs' })),
+      { ALT: () => this.SUBRULE(this.otherFunction, { LABEL: 'lhs' }) },
+      { ALT: () => this.CONSUME(lexer.Identifier, { LABEL: 'lhs' }) },
     ]);
 
     this.OR2([
-      this.getAlt(() => this.SUBRULE(this.expressionWithRelationalOperator, { LABEL: 'operator' })),
-      this.getAlt(() => this.SUBRULE(this.expressionWithSetOperator, { LABEL: 'operator' })),
+      { ALT: () => this.SUBRULE(this.expressionWithRelationalOperator, { LABEL: 'operator' }) },
+      { ALT: () => this.SUBRULE(this.expressionWithSetOperator, { LABEL: 'operator' }) },
     ]);
 
     this.OPTION4(() => {
@@ -475,14 +469,14 @@ export class SoqlParser extends CstParser {
         this.OR(
           this.$_arrayExpression ||
             (this.$_arrayExpression = [
-              this.getAlt(() => this.CONSUME(lexer.CurrencyPrefixedDecimal, { LABEL: 'value' })),
-              this.getAlt(() => this.CONSUME(lexer.CurrencyPrefixedInteger, { LABEL: 'value' })),
-              this.getAlt(() => this.CONSUME(lexer.NumberIdentifier, { LABEL: 'value' })),
-              this.getAlt(() => this.CONSUME(lexer.DateIdentifier, { LABEL: 'value' })),
-              this.getAlt(() => this.CONSUME(lexer.Null, { LABEL: 'value' })),
-              this.getAlt(() => this.CONSUME(lexer.True, { LABEL: 'value' })),
-              this.getAlt(() => this.CONSUME(lexer.False, { LABEL: 'value' })),
-              this.getAlt(() => this.CONSUME(lexer.StringIdentifier, { LABEL: 'value' })),
+              { ALT: () => this.CONSUME(lexer.CurrencyPrefixedDecimal, { LABEL: 'value' }) },
+              { ALT: () => this.CONSUME(lexer.CurrencyPrefixedInteger, { LABEL: 'value' }) },
+              { ALT: () => this.CONSUME(lexer.NumberIdentifier, { LABEL: 'value' }) },
+              { ALT: () => this.CONSUME(lexer.DateIdentifier, { LABEL: 'value' }) },
+              { ALT: () => this.CONSUME(lexer.Null, { LABEL: 'value' }) },
+              { ALT: () => this.CONSUME(lexer.True, { LABEL: 'value' }) },
+              { ALT: () => this.CONSUME(lexer.False, { LABEL: 'value' }) },
+              { ALT: () => this.CONSUME(lexer.StringIdentifier, { LABEL: 'value' }) },
             ]),
         );
       },
@@ -495,8 +489,8 @@ export class SoqlParser extends CstParser {
       this.CONSUME(lexer.LParen);
     });
     this.OR([
-      this.getAlt(() => this.SUBRULE(this.aggregateFunction, { LABEL: 'lhs' })),
-      this.getAlt(() => this.CONSUME(lexer.Identifier, { LABEL: 'lhs' })),
+      { ALT: () => this.SUBRULE(this.aggregateFunction, { LABEL: 'lhs' }) },
+      { ALT: () => this.CONSUME(lexer.Identifier, { LABEL: 'lhs' }) },
     ]);
     this.SUBRULE(this.expressionWithRelationalOperator, { LABEL: 'operator' });
 
@@ -509,30 +503,30 @@ export class SoqlParser extends CstParser {
     this.OR(
       this.$_relationalOperator ||
         (this.$_relationalOperator = [
-          this.getAlt(() => this.CONSUME(lexer.Equal, { LABEL: 'operator' })),
-          this.getAlt(() => this.CONSUME(lexer.NotEqual, { LABEL: 'operator' })),
-          this.getAlt(() => this.CONSUME(lexer.GreaterThan, { LABEL: 'operator' })),
-          this.getAlt(() => this.CONSUME(lexer.GreaterThanOrEqual, { LABEL: 'operator' })),
-          this.getAlt(() => this.CONSUME(lexer.LessThan, { LABEL: 'operator' })),
-          this.getAlt(() => this.CONSUME(lexer.LessThanOrEqual, { LABEL: 'operator' })),
-          this.getAlt(() => this.CONSUME(lexer.Like, { LABEL: 'operator' })),
+          { ALT: () => this.CONSUME(lexer.Equal, { LABEL: 'operator' }) },
+          { ALT: () => this.CONSUME(lexer.NotEqual, { LABEL: 'operator' }) },
+          { ALT: () => this.CONSUME(lexer.GreaterThan, { LABEL: 'operator' }) },
+          { ALT: () => this.CONSUME(lexer.GreaterThanOrEqual, { LABEL: 'operator' }) },
+          { ALT: () => this.CONSUME(lexer.LessThan, { LABEL: 'operator' }) },
+          { ALT: () => this.CONSUME(lexer.LessThanOrEqual, { LABEL: 'operator' }) },
+          { ALT: () => this.CONSUME(lexer.Like, { LABEL: 'operator' }) },
         ]),
     );
   });
 
   private setOperator = this.RULE('setOperator', () => {
     this.OR([
-      this.getAlt(() => this.CONSUME(lexer.In, { LABEL: 'operator' })),
-      this.getAlt(() => this.CONSUME(lexer.NotIn, { LABEL: 'operator' })),
-      this.getAlt(() => this.CONSUME(lexer.Includes, { LABEL: 'operator' })),
-      this.getAlt(() => this.CONSUME(lexer.Excludes, { LABEL: 'operator' })),
+      { ALT: () => this.CONSUME(lexer.In, { LABEL: 'operator' }) },
+      { ALT: () => this.CONSUME(lexer.NotIn, { LABEL: 'operator' }) },
+      { ALT: () => this.CONSUME(lexer.Includes, { LABEL: 'operator' }) },
+      { ALT: () => this.CONSUME(lexer.Excludes, { LABEL: 'operator' }) },
     ]);
   });
 
   private booleanValue = this.RULE('booleanValue', () => {
     this.OR([
-      this.getAlt(() => this.CONSUME(lexer.True, { LABEL: 'boolean' })),
-      this.getAlt(() => this.CONSUME(lexer.False, { LABEL: 'boolean' })),
+      { ALT: () => this.CONSUME(lexer.True, { LABEL: 'boolean' }) },
+      { ALT: () => this.CONSUME(lexer.False, { LABEL: 'boolean' }) },
     ]);
   });
 
@@ -540,31 +534,28 @@ export class SoqlParser extends CstParser {
     this.CONSUME(lexer.DateNLiteral, { LABEL: 'dateNLiteral' });
     this.CONSUME(lexer.Colon);
     this.OR1([
-      this.getAlt(() => this.CONSUME(lexer.UnsignedInteger, { LABEL: 'variable' })),
-      this.getAlt(() => this.CONSUME(lexer.SignedInteger, { LABEL: 'variable' })),
+      { ALT: () => this.CONSUME(lexer.UnsignedInteger, { LABEL: 'variable' }) },
+      { ALT: () => this.CONSUME(lexer.SignedInteger, { LABEL: 'variable' }) },
     ]);
   });
 
   private forViewOrReference = this.RULE('forViewOrReference', () => {
     this.CONSUME(lexer.For);
     this.OR([
-      this.getAlt(() => this.CONSUME(lexer.View, { LABEL: 'value' })),
-      this.getAlt(() => this.CONSUME(lexer.Reference, { LABEL: 'value' })),
-      this.getAlt(() => this.CONSUME(lexer.Update, { LABEL: 'value' })),
+      { ALT: () => this.CONSUME(lexer.View, { LABEL: 'value' }) },
+      { ALT: () => this.CONSUME(lexer.Reference, { LABEL: 'value' }) },
+      { ALT: () => this.CONSUME(lexer.Update, { LABEL: 'value' }) },
     ]);
   });
 
   private updateTrackingViewstat = this.RULE('updateTrackingViewstat', () => {
     this.CONSUME(lexer.Update);
     this.OR([
-      this.getAlt(() => this.CONSUME(lexer.Tracking, { LABEL: 'value' })),
-      this.getAlt(() => this.CONSUME(lexer.Viewstat, { LABEL: 'value' })),
+      { ALT: () => this.CONSUME(lexer.Tracking, { LABEL: 'value' }) },
+      { ALT: () => this.CONSUME(lexer.Viewstat, { LABEL: 'value' }) },
     ]);
   });
 
-  private getAlt(fn: () => IToken | CstNode): { ALT: () => IToken | CstNode } {
-    return { ALT: fn };
-  }
   private getParenCount(parenCount?: ParenCount): ParenCount {
     return parenCount || { right: 0, left: 0 };
   }

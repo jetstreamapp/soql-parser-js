@@ -687,23 +687,23 @@ export const NFiscalYearsAgo = createToken({
 });
 
 // RELATIONAL OPERATORS
-export const Equal = createToken({ name: 'EQUAL', pattern: /=/, categories: [RelationalOperator] });
+export const Equal = createToken({ name: 'EQUAL', pattern: '=', categories: [RelationalOperator] });
 export const NotEqual = createToken({ name: 'NOT_EQUAL', pattern: /!=|<>/, categories: [RelationalOperator] });
-export const LessThan = createToken({ name: 'LESS_THAN', pattern: /</, categories: [RelationalOperator] });
-export const LessThanOrEqual = createToken({ name: 'LESS_THAN_OR_EQUAL', pattern: /<=/, categories: [RelationalOperator] });
-export const GreaterThan = createToken({ name: 'GREATER_THAN', pattern: />/, categories: [RelationalOperator] });
-export const GreaterThanOrEqual = createToken({ name: 'GREATER_THAN_OR_EQUAL', pattern: />=/, categories: [RelationalOperator] });
+export const LessThan = createToken({ name: 'LESS_THAN', pattern: '<', categories: [RelationalOperator] });
+export const LessThanOrEqual = createToken({ name: 'LESS_THAN_OR_EQUAL', pattern: '<=', categories: [RelationalOperator] });
+export const GreaterThan = createToken({ name: 'GREATER_THAN', pattern: '>', categories: [RelationalOperator] });
+export const GreaterThanOrEqual = createToken({ name: 'GREATER_THAN_OR_EQUAL', pattern: '>=', categories: [RelationalOperator] });
 
 // SYMBOLS
-export const Decimal = createToken({ name: 'DECIMAL', pattern: /\./, categories: [SymbolIdentifier] });
-export const Colon = createToken({ name: 'COLON', pattern: /\:/, categories: [SymbolIdentifier] });
-export const Semicolon = createToken({ name: 'SEMICOLON', pattern: /;/, categories: [SymbolIdentifier] });
-export const Comma = createToken({ name: 'COMMA', pattern: /,/, categories: [SymbolIdentifier] });
-export const Asterisk = createToken({ name: 'ASTERISK', pattern: /\*/, categories: [SymbolIdentifier] });
-export const LParen = createToken({ name: 'L_PAREN', pattern: /\(/, categories: [SymbolIdentifier] });
-export const RParen = createToken({ name: 'R_PAREN', pattern: /\)/, categories: [SymbolIdentifier] });
-export const Plus = createToken({ name: 'PLUS', pattern: /\+/, categories: [SymbolIdentifier] });
-export const Minus = createToken({ name: 'MINUS', pattern: /\-/, categories: [SymbolIdentifier] });
+export const Decimal = createToken({ name: 'DECIMAL', pattern: '.', categories: [SymbolIdentifier] });
+export const Colon = createToken({ name: 'COLON', pattern: ':', categories: [SymbolIdentifier] });
+export const Semicolon = createToken({ name: 'SEMICOLON', pattern: ';', categories: [SymbolIdentifier] });
+export const Comma = createToken({ name: 'COMMA', pattern: ',', categories: [SymbolIdentifier] });
+export const Asterisk = createToken({ name: 'ASTERISK', pattern: '*', categories: [SymbolIdentifier] });
+export const LParen = createToken({ name: 'L_PAREN', pattern: '(', categories: [SymbolIdentifier] });
+export const RParen = createToken({ name: 'R_PAREN', pattern: ')', categories: [SymbolIdentifier] });
+export const Plus = createToken({ name: 'PLUS', pattern: '+', categories: [SymbolIdentifier] });
+export const Minus = createToken({ name: 'MINUS', pattern: '-', categories: [SymbolIdentifier] });
 
 export const DateTime = createToken({
   name: 'DATETIME',
