@@ -84,6 +84,11 @@ export const IdentifierNotKeyword = createToken({
   pattern: Lexer.NA,
 });
 
+export const UsingScopeEnumeration = createToken({
+  name: 'UsingScopeEnumeration',
+  pattern: Lexer.NA,
+});
+
 const identifierRegex = /[a-zA-Z][a-zA-Z0-9_.]*/y;
 
 /**
@@ -708,7 +713,12 @@ export const DateTime = createToken({
 
 export const DateToken = createToken({ name: 'DATE', pattern: /[0-9]{4}-[0-9]{2}-[0-9]{2}/, categories: [DateIdentifier] });
 
-// export const RealNumber = createToken({ name: 'REAL_NUMBER', pattern: /(\-|\+)?\d+(\.\d+)?/, categories: [NumberIdentifier] });
+export const CurrencyPrefixedDecimal = createToken({
+  name: 'CURRENCY_PREFIXED_DECIMAL',
+  pattern: /[a-zA-Z]{3}[0-9]+\.\d+/,
+  longer_alt: Identifier,
+  categories: [DecimalNumberIdentifier],
+});
 export const SignedDecimal = createToken({
   name: 'SIGNED_DECIMAL',
   pattern: /(\-|\+)[0-9]*\.\d+/,
@@ -719,6 +729,12 @@ export const UnsignedDecimal = createToken({
   pattern: /[0-9]*\.\d+/,
   categories: [NumberIdentifier, DecimalNumberIdentifier],
 });
+export const CurrencyPrefixedInteger = createToken({
+  name: 'CURRENCY_PREFIXED_INTEGER',
+  pattern: /[a-zA-Z]{3}[0-9]+/,
+  longer_alt: Identifier,
+  categories: [DecimalNumberIdentifier],
+});
 export const SignedInteger = createToken({
   name: 'SIGNED_INTEGER',
   pattern: /(\-|\+)[0-9]+/,
@@ -728,6 +744,73 @@ export const UnsignedInteger = createToken({
   name: 'UNSIGNED_INTEGER',
   pattern: /0|[1-9]\d*/,
   categories: [NumberIdentifier, IntegerNumberIdentifier],
+});
+
+// Using Scope enumeration values
+// https://developer.salesforce.com/docs/atlas.en-us.soql_sosl.meta/soql_sosl/sforce_api_calls_soql_select_using_scope.htm?search_text=format()
+// export const UsingScopeEnumeration = createToken({
+//   name: 'UsingScopeEnumeration',
+//   pattern: /DELEGATED|EVERYTHING|MINEANDMYGROUPS|MINE|MY_TERRITORY|MY_TEAM_TERRITORY|TEAM|ALLPRIVATE/i,
+//   longer_alt: Identifier,
+//   categories: [Identifier],
+//   start_chars_hint: ['A', 'D', 'E', 'M', 'T', 'a', 'd', 'e', 'm', 't'],
+// });
+
+export const Delegated = createToken({
+  name: 'Delegated',
+  pattern: /DELEGATED/i,
+  longer_alt: Identifier,
+  categories: [UsingScopeEnumeration, Identifier],
+  start_chars_hint: ['D', 'd'],
+});
+export const Everything = createToken({
+  name: 'Everything',
+  pattern: /EVERYTHING/i,
+  longer_alt: Identifier,
+  categories: [UsingScopeEnumeration, Identifier],
+  start_chars_hint: ['E', 'e'],
+});
+export const MineAndMyGroups = createToken({
+  name: 'MineAndMyGroups',
+  pattern: /MINEANDMYGROUPS/i,
+  longer_alt: Identifier,
+  categories: [UsingScopeEnumeration, Identifier],
+  start_chars_hint: ['M', 'm'],
+});
+export const Mine = createToken({
+  name: 'Mine',
+  pattern: /MINE/i,
+  longer_alt: Identifier,
+  categories: [UsingScopeEnumeration, Identifier],
+  start_chars_hint: ['M', 'm'],
+});
+export const MyTerritory = createToken({
+  name: 'MyTerritory',
+  pattern: /MY_TERRITORY/i,
+  longer_alt: Identifier,
+  categories: [UsingScopeEnumeration, Identifier],
+  start_chars_hint: ['M', 'm'],
+});
+export const MyTeamTerritory = createToken({
+  name: 'MyTeamTerritory',
+  pattern: /MY_TEAM_TERRITORY/i,
+  longer_alt: Identifier,
+  categories: [UsingScopeEnumeration, Identifier],
+  start_chars_hint: ['M', 'm'],
+});
+export const Team = createToken({
+  name: 'Team',
+  pattern: /TEAM/i,
+  longer_alt: Identifier,
+  categories: [UsingScopeEnumeration, Identifier],
+  start_chars_hint: ['T', 't'],
+});
+export const AllPrivate = createToken({
+  name: 'AllPrivate',
+  pattern: /ALLPRIVATE/i,
+  longer_alt: Identifier,
+  categories: [UsingScopeEnumeration, Identifier],
+  start_chars_hint: ['A', 'a'],
 });
 
 export const allTokens = [
@@ -763,6 +846,16 @@ export const allTokens = [
   With,
 
   Update,
+
+  // https://developer.salesforce.com/docs/atlas.en-us.soql_sosl.meta/soql_sosl/sforce_api_calls_soql_select_using_scope.htm?search_text=format()
+  Delegated,
+  Everything,
+  MineAndMyGroups,
+  Mine,
+  MyTerritory,
+  MyTeamTerritory,
+  Team,
+  AllPrivate, // https://help.salesforce.com/articleView?id=000334863&language=en_US&type=1&mode=1
 
   AboveOrBelow,
   Above,
@@ -858,6 +951,8 @@ export const allTokens = [
   Not,
 
   // The Identifier must appear after the keywords because all keywords are valid identifiers.
+  CurrencyPrefixedDecimal,
+  CurrencyPrefixedInteger,
   StringIdentifier,
   Identifier,
   DateTime,

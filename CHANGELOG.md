@@ -38,7 +38,7 @@ NEW PARSER: ~2.25 seconds for 60K parses
 #### General Changes
 
 - The CLI was removed.
-- The `parseQuery()` function no longer accepts `options` as a second parameter.
+- The `parseQuery()` `options` have changed. The only option allowed is `allowApexBindVariables` with will allow parsing queries with apex variables.
 - `rawValue` will always have a space between parameters `GROUPING(Id, BillingCountry)`
 - Some `literalType` values may have differing case from prior versions, regardless of the data input.
   - `TRUE`, `FALSE`, and all functions except those listed below will always be returned in uppercase, regardless of case of input.
@@ -47,6 +47,7 @@ NEW PARSER: ~2.25 seconds for 60K parses
   - Added new available types for `DateLiteral` and `DateNLiteral`.
 - A new `LiteralType` value was added for `APEX_BIND_VARIABLE`.
 - When composing functions in a where clause or group by clause, the `rawValue` will be preferred (if exists) (no change here), but if rawValue is not provided, then the function will be composed using the `functionName` and `parameters`.
+- A new `LiteralType` value was added for `INTEGER_WITH_CURRENCY_PREFIX` and `DECIMAL_WITH_CURRENCY_PREFIX`. e.x. `USD500.01`
 
 #### Compose Query
 
@@ -55,6 +56,7 @@ NEW PARSER: ~2.25 seconds for 60K parses
   1.  `fn` property is has been deprecated (but still exists), you should now use `functionName` instead.
   2.  The `from` property has been removed for subqueries. The `relationshipName` is required to be populated to compose a subquery.
 - On the FormatOptions interface `fieldMaxLineLen` was renamed to `fieldMaxLineLength`.
+- Added support for `usingScope` - https://developer.salesforce.com/docs/atlas.en-us.soql_sosl.meta/soql_sosl/sforce_api_calls_soql_select_using_scope.htm?search_text=format()
 
 ```diff
 export interface FormatOptions {
@@ -86,6 +88,7 @@ export interface FormatOptions {
   - `name` was renamed to `functionName`.
   - `parameter` was renamed to `parameters` and the type was changed to `(string | FunctionExp)[]` to support nested functions. This will ALWAYS be an array now even if there is only one parameter.
   - `fn` was removed, as nested functionParameters are always stored as an entry in the `parameters` array.
+  - Added support for `usingScope` - https://developer.salesforce.com/docs/atlas.en-us.soql_sosl.meta/soql_sosl/sforce_api_calls_soql_select_using_scope.htm?search_text=format()
 
 ```diff
 export interface Field {
@@ -125,6 +128,7 @@ export interface FieldSubquery {
 export interface QueryBase {
   fields: FieldType[];
   sObjectAlias?: string;
++ usingScope?: string;
   where?: WhereClause;
   limit?: number;
   offset?: number;
@@ -148,7 +152,7 @@ export interface Condition {
   valueQuery?: Query;
 - literalType?: LiteralType;
 + literalType?: LiteralType | LiteralType[];
-  dateLiteralVariable?: number;parsed
+  dateLiteralVariable?: number;
 }
 
 export interface GroupByClause {

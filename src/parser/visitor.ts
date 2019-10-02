@@ -57,8 +57,9 @@ import {
   WithDateCategoryContext,
   ExpressionOperatorContext,
   ApexBindVariableExpressionContext,
+  usingScopeClauseContext,
 } from '../models';
-import { parse, SoqlParser } from './parser';
+import { parse, SoqlParser, ParseQueryConfig } from './parser';
 import { isSubqueryFromFlag, isToken } from '../utils';
 
 const parser = new SoqlParser();
@@ -162,6 +163,10 @@ class SOQLToAstVisitor extends BaseSoqlVisitor {
       });
     }
 
+    if (ctx.usingScopeClause) {
+      output.usingScope = this.visit(ctx.usingScopeClause);
+    }
+
     if (ctx.whereClause) {
       output.where = this.visit(ctx.whereClause);
     }
@@ -236,28 +241,6 @@ class SOQLToAstVisitor extends BaseSoqlVisitor {
     return [];
   }
 
-  // selectClauseFieldIdentifier(ctx: SelectClauseFieldIdentifierContext): FieldType {
-  //   const field: string = ctx.Identifier[0].image;
-  //   let output: FieldType;
-  //   if (!field.includes('.')) {
-  //     output = {
-  //       type: 'Field',
-  //       field: field,
-  //       // objectPrefix: undefined, // TODO: we cannot add this until the very und when we see if the sobject is aliased
-  //     };
-  //   } else {
-  //     const splitFields = field.split('.');
-  //     output = {
-  //       type: 'FieldRelationship',
-  //       field: splitFields[splitFields.length - 1],
-  //       relationships: splitFields.slice(0, splitFields.length - 1),
-  //       // objectPrefix: undefined, // TODO: we cannot add this until the very und when we see if the sobject is aliased
-  //       rawValue: field,
-  //     };
-  //   }
-  //   return output;
-  // }
-
   selectClauseFunctionIdentifier(ctx: SelectClauseFunctionIdentifierContext): FieldRelationship {
     let output: FieldRelationship = {
       ...this.visit(ctx.fn),
@@ -318,6 +301,10 @@ class SOQLToAstVisitor extends BaseSoqlVisitor {
       output.alias = ctx.alias[0].image;
     }
     return output;
+  }
+
+  usingScopeClause(ctx: usingScopeClauseContext) {
+    return ctx.UsingScopeEnumeration[0].image;
   }
 
   whereClauseSubqueryIdentifier(ctx: WhereClauseSubqueryContext) {
@@ -589,6 +576,12 @@ class SOQLToAstVisitor extends BaseSoqlVisitor {
     } else if (ctx.DateIdentifier) {
       value = ctx.DateIdentifier[0].image;
       literalType = this.$_getLiteralTypeFromTokenType(ctx.DateIdentifier[0].tokenType.name);
+    } else if (ctx.CurrencyPrefixedInteger) {
+      value = ctx.CurrencyPrefixedInteger[0].image;
+      literalType = 'INTEGER_WITH_CURRENCY_PREFIX';
+    } else if (ctx.CurrencyPrefixedDecimal) {
+      value = ctx.CurrencyPrefixedDecimal[0].image;
+      literalType = 'DECIMAL_WITH_CURRENCY_PREFIX';
     } else if (ctx.DateTime) {
       value = ctx.DateTime[0].image;
       literalType = 'DATETIME';
@@ -607,8 +600,8 @@ class SOQLToAstVisitor extends BaseSoqlVisitor {
     } else if (ctx.booleanValue) {
       value = this.visit(ctx.booleanValue);
       literalType = 'BOOLEAN';
-    } else if (ctx.dateLiteral) {
-      value = this.visit(ctx.dateLiteral);
+    } else if (ctx.DateLiteral) {
+      value = ctx.DateLiteral[0].image;
       literalType = 'DATE_LITERAL';
     } else if (ctx.dateNLiteral) {
       const valueAndVariable = this.visit(ctx.dateNLiteral);
@@ -685,9 +678,6 @@ class SOQLToAstVisitor extends BaseSoqlVisitor {
   booleanValue(ctx: BooleanContext) {
     return ctx.boolean[0].tokenType.name;
   }
-  dateLiteral(ctx: DateLiteralContext) {
-    return ctx.dateLiteral[0].tokenType.name;
-  }
   dateNLiteral(ctx: DateNLiteralContext) {
     return {
       value: `${ctx.dateNLiteral[0].image}:${ctx.variable[0].image}`,
@@ -704,6 +694,10 @@ class SOQLToAstVisitor extends BaseSoqlVisitor {
   private $_getLiteralTypeFromTokenType(tokenTypeName: string | DateLiteral | DateNLiteral): LiteralType {
     if (tokenTypeName === 'REAL_NUMBER') {
       return 'DECIMAL';
+    } else if (tokenTypeName === 'CURRENCY_PREFIXED_DECIMAL') {
+      return 'DECIMAL_WITH_CURRENCY_PREFIX';
+    } else if (tokenTypeName === 'CURRENCY_PREFIXED_INTEGER') {
+      return 'INTEGER_WITH_CURRENCY_PREFIX';
     } else if (tokenTypeName === 'SIGNED_DECIMAL') {
       return 'DECIMAL';
     } else if (tokenTypeName === 'UNSIGNED_DECIMAL') {
@@ -741,8 +735,8 @@ const astVisitor = new SOQLToAstVisitor();
  * Parse query and process results
  * @param soql
  */
-export function parseQuery(soql: string): Query {
-  const { cst, lexErrors, parseErrors } = parse(soql);
+export function parseQuery(soql: string, options?: ParseQueryConfig): Query {
+  const { cst, lexErrors, parseErrors } = parse(soql, options);
   if (lexErrors.length > 0) {
     throw lexErrors[0];
   }
@@ -759,7 +753,7 @@ export function parseQuery(soql: string): Query {
  * to determine if query is valid
  * @param soql
  */
-export function isQueryValid(soql: string): boolean {
-  const { cst, lexErrors, parseErrors } = parse(soql);
+export function isQueryValid(soql: string, options?: ParseQueryConfig): boolean {
+  const { cst, lexErrors, parseErrors } = parse(soql, options);
   return lexErrors.length === 0 && parseErrors.length === 0;
 }

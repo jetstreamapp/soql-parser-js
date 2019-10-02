@@ -163,6 +163,12 @@ export class Compose {
     }
     this.log(output);
 
+    if (query.usingScope) {
+      output += this.formatter.formatClause('USING SCOPE');
+      output += ` ${query.usingScope}`;
+      this.log(output);
+    }
+
     if (query.where) {
       output += this.formatter.formatClause('WHERE');
       output += ` ${this.parseWhereClause(query.where)}`;

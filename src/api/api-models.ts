@@ -9,6 +9,8 @@ export type LiteralType =
   | 'STRING'
   | 'INTEGER'
   | 'DECIMAL'
+  | 'INTEGER_WITH_CURRENCY_PREFIX'
+  | 'DECIMAL_WITH_CURRENCY_PREFIX'
   | 'BOOLEAN'
   | 'NULL'
   | 'DATETIME'
@@ -115,6 +117,7 @@ export interface FieldTypeOfCondition {
 export interface QueryBase {
   fields: FieldType[];
   sObjectAlias?: string;
+  usingScope?: string;
   where?: WhereClause;
   limit?: number;
   offset?: number;

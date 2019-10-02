@@ -37,10 +37,16 @@ isQueryValid('SELECT Id Foo FROM Baz'); // false
 
 | Function     | Description                                            | Arguments                                  |
 | ------------ | ------------------------------------------------------ | ------------------------------------------ |
-| parseQuery   | Parse a SOQL query string into a Query data structure. | soql: Query                                |
-| isQueryValid | Returns true if the query was able to be parsed.       | soql: Query                                |
+| parseQuery   | Parse a SOQL query string into a Query data structure. | soql: Query<br> config?: ParseQueryConfig  |
+| isQueryValid | Returns true if the query was able to be parsed.       | soql: Query<br> config?: ParseQueryConfig  |
 | composeQuery | Turn a Query object back into a SOQL statement         | soql: Query<br> config?: SoqlComposeConfig |
 | formatQuery  | Format a SOQL query string.                            | soql: Query<br> config?: FormatOptions     |
+
+**ParseQueryConfig**
+
+| Property               | Type    | Description                                                                                   | required | default |
+| ---------------------- | ------- | --------------------------------------------------------------------------------------------- | -------- | ------- |
+| allowApexBindVariables | boolean | Determines if apex variables are allowed in parsed query. Example: `WHERE Id IN :accountIds`. | FALSE    | FALSE   |
 
 **SoqlComposeConfig**
 
@@ -386,6 +392,8 @@ export type LiteralType =
   | 'STRING'
   | 'INTEGER'
   | 'DECIMAL'
+  | 'INTEGER_WITH_CURRENCY_PREFIX'
+  | 'DECIMAL_WITH_CURRENCY_PREFIX'
   | 'BOOLEAN'
   | 'NULL'
   | 'DATETIME'
@@ -492,6 +500,7 @@ export interface FieldTypeOfCondition {
 export interface QueryBase {
   fields: FieldType[];
   sObjectAlias?: string;
+  usingScope?: string;
   where?: WhereClause;
   limit?: number;
   offset?: number;

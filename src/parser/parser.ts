@@ -1,6 +1,10 @@
 import { CstParser, IToken, CstNode } from 'chevrotain';
 import * as lexer from './lexer';
 
+export interface ParseQueryConfig {
+  allowApexBindVariables: boolean;
+}
+
 export class SoqlParser extends CstParser {
   // Cache larger OR expressions
   // https://sap.github.io/chevrotain/docs/guide/performance.html#caching-arrays-of-alternatives
@@ -10,10 +14,12 @@ export class SoqlParser extends CstParser {
   private $_atomicExpression: any = undefined;
   private $_arrayExpression: any = undefined;
   private $_relationalOperator: any = undefined;
-  private $_dateNLiteral: any = undefined;
   private $_selectClause: any = undefined;
   private $_selectClauseFunctionIdentifier: any = undefined;
   private $_withDataCategoryArr: any = undefined;
+
+  // Set to true to allow apex bind variables, such as "WHERE Id IN :accountIds"
+  public allowApexBindVariables = false;
 
   constructor() {
     super(lexer.allTokens, {
@@ -29,31 +35,34 @@ export class SoqlParser extends CstParser {
     this.SUBRULE(this.selectClause);
     this.SUBRULE(this.fromClause);
     this.OPTION(() => {
-      this.SUBRULE(this.whereClause);
+      this.SUBRULE(this.usingScopeClause);
     });
     this.OPTION1(() => {
+      this.SUBRULE(this.whereClause);
+    });
+    this.OPTION2(() => {
       this.MANY({
         DEF: () => {
           this.SUBRULE(this.withClause);
         },
       });
     });
-    this.OPTION2(() => {
+    this.OPTION3(() => {
       this.SUBRULE(this.groupByClause);
     });
-    this.OPTION3(() => {
+    this.OPTION4(() => {
       this.SUBRULE(this.orderByClause);
     });
-    this.OPTION4(() => {
+    this.OPTION5(() => {
       this.SUBRULE(this.limitClause);
     });
-    this.OPTION5(() => {
+    this.OPTION6(() => {
       this.SUBRULE(this.offsetClause);
     });
-    this.OPTION6(() => {
+    this.OPTION7(() => {
       this.SUBRULE(this.forViewOrReference);
     });
-    this.OPTION7(() => {
+    this.OPTION8(() => {
       this.SUBRULE(this.updateTrackingViewstat);
     });
   });
@@ -132,12 +141,6 @@ export class SoqlParser extends CstParser {
     });
   });
 
-  private whereClauseSubqueryIdentifier = this.RULE('whereClauseSubqueryIdentifier', () => {
-    this.CONSUME(lexer.LParen);
-    this.SUBRULE(this.selectStatement);
-    this.CONSUME(lexer.RParen);
-  });
-
   private fromClause = this.RULE('fromClause', () => {
     this.CONSUME(lexer.From);
     this.CONSUME(lexer.Identifier);
@@ -145,6 +148,12 @@ export class SoqlParser extends CstParser {
       GATE: () => !(this.LA(1).tokenType === lexer.Offset && this.LA(2).tokenType === lexer.UnsignedInteger),
       DEF: () => this.CONSUME1(lexer.Identifier, { LABEL: 'alias' }),
     });
+  });
+
+  private usingScopeClause = this.RULE('usingScopeClause', () => {
+    this.CONSUME(lexer.Using);
+    this.CONSUME(lexer.Scope);
+    this.CONSUME(lexer.UsingScopeEnumeration);
   });
 
   private whereClause = this.RULE('whereClause', () => {
@@ -159,8 +168,14 @@ export class SoqlParser extends CstParser {
     });
   });
 
+  private whereClauseSubqueryIdentifier = this.RULE('whereClauseSubqueryIdentifier', () => {
+    this.CONSUME(lexer.LParen);
+    this.SUBRULE(this.selectStatement);
+    this.CONSUME(lexer.RParen);
+  });
+
   private whereClauseExpression = this.RULE('whereClauseExpression', parenCount => {
-    // argument is undefined on self-analysis, need to initialize to avoid exception
+    // argument is undefined during self-analysis, need to initialize to avoid exception
     parenCount = this.getParenCount(parenCount);
     this.OPTION(() => {
       this.OR([
@@ -429,16 +444,18 @@ export class SoqlParser extends CstParser {
     this.OR(
       this.$_atomicExpression ||
         (this.$_atomicExpression = [
-          { ALT: () => this.SUBRULE(this.apexBindVariableExpression) },
+          { GATE: () => this.allowApexBindVariables, ALT: () => this.SUBRULE(this.apexBindVariableExpression) },
           // SET / SUBQUERY
           { GATE: () => isArray, ALT: () => this.SUBRULE(this.arrayExpression) },
           { GATE: () => isArray, ALT: () => this.SUBRULE(this.whereClauseSubqueryIdentifier) },
           // NON-SET
           { GATE: () => !isArray, ALT: () => this.CONSUME(lexer.DateIdentifier) },
+          { GATE: () => !isArray, ALT: () => this.CONSUME(lexer.CurrencyPrefixedDecimal, { LABEL: 'CurrencyPrefixedDecimal' }) },
+          { GATE: () => !isArray, ALT: () => this.CONSUME(lexer.CurrencyPrefixedInteger, { LABEL: 'CurrencyPrefixedInteger' }) },
           { GATE: () => !isArray, ALT: () => this.CONSUME(lexer.NumberIdentifier) },
           { GATE: () => !isArray, ALT: () => this.CONSUME(lexer.Null) },
           { GATE: () => !isArray, ALT: () => this.SUBRULE(this.booleanValue) },
-          { GATE: () => !isArray, ALT: () => this.SUBRULE(this.dateLiteral) },
+          { GATE: () => !isArray, ALT: () => this.CONSUME(lexer.DateLiteral) },
           { GATE: () => !isArray, ALT: () => this.SUBRULE(this.dateNLiteral) },
           { GATE: () => !isArray, ALT: () => this.CONSUME(lexer.StringIdentifier) },
         ]),
@@ -458,6 +475,8 @@ export class SoqlParser extends CstParser {
         this.OR(
           this.$_arrayExpression ||
             (this.$_arrayExpression = [
+              this.getAlt(() => this.CONSUME(lexer.CurrencyPrefixedDecimal, { LABEL: 'value' })),
+              this.getAlt(() => this.CONSUME(lexer.CurrencyPrefixedInteger, { LABEL: 'value' })),
               this.getAlt(() => this.CONSUME(lexer.NumberIdentifier, { LABEL: 'value' })),
               this.getAlt(() => this.CONSUME(lexer.DateIdentifier, { LABEL: 'value' })),
               this.getAlt(() => this.CONSUME(lexer.Null, { LABEL: 'value' })),
@@ -480,8 +499,7 @@ export class SoqlParser extends CstParser {
       this.getAlt(() => this.CONSUME(lexer.Identifier, { LABEL: 'lhs' })),
     ]);
     this.SUBRULE(this.expressionWithRelationalOperator, { LABEL: 'operator' });
-    // this.SUBRULE(this.relationalOperator);
-    // this.SUBRULE1(this.atomicExpression, { LABEL: 'rhs' });
+
     this.MANY1(() => {
       this.CONSUME(lexer.RParen);
     });
@@ -518,32 +536,8 @@ export class SoqlParser extends CstParser {
     ]);
   });
 
-  private dateLiteral = this.RULE('dateLiteral', () => {
-    this.CONSUME(lexer.DateLiteralNotIdentifier, { LABEL: 'dateLiteral' });
-  });
-
   private dateNLiteral = this.RULE('dateNLiteral', () => {
-    this.OR(
-      this.$_dateNLiteral ||
-        (this.$_dateNLiteral = [
-          this.getAlt(() => this.CONSUME(lexer.NextNDays, { LABEL: 'dateNLiteral' })),
-          this.getAlt(() => this.CONSUME(lexer.LastNDays, { LABEL: 'dateNLiteral' })),
-          this.getAlt(() => this.CONSUME(lexer.NDaysAgo, { LABEL: 'dateNLiteral' })),
-          this.getAlt(() => this.CONSUME(lexer.NextNWeeks, { LABEL: 'dateNLiteral' })),
-          this.getAlt(() => this.CONSUME(lexer.LastNWeeks, { LABEL: 'dateNLiteral' })),
-          this.getAlt(() => this.CONSUME(lexer.NWeeksAgo, { LABEL: 'dateNLiteral' })),
-          this.getAlt(() => this.CONSUME(lexer.NextNMonths, { LABEL: 'dateNLiteral' })),
-          this.getAlt(() => this.CONSUME(lexer.LastNMonths, { LABEL: 'dateNLiteral' })),
-          this.getAlt(() => this.CONSUME(lexer.NMonthsAgo, { LABEL: 'dateNLiteral' })),
-          this.getAlt(() => this.CONSUME(lexer.NextNQuarters, { LABEL: 'dateNLiteral' })),
-          this.getAlt(() => this.CONSUME(lexer.LastNQuarters, { LABEL: 'dateNLiteral' })),
-          this.getAlt(() => this.CONSUME(lexer.NQuartersAgo, { LABEL: 'dateNLiteral' })),
-          this.getAlt(() => this.CONSUME(lexer.NextNYears, { LABEL: 'dateNLiteral' })),
-          this.getAlt(() => this.CONSUME(lexer.LastNYears, { LABEL: 'dateNLiteral' })),
-          this.getAlt(() => this.CONSUME(lexer.NYearsAgo, { LABEL: 'dateNLiteral' })),
-          this.getAlt(() => this.CONSUME(lexer.NextNFiscalQuarters, { LABEL: 'dateNLiteral' })),
-        ]),
-    );
+    this.CONSUME(lexer.DateNLiteral, { LABEL: 'dateNLiteral' });
     this.CONSUME(lexer.Colon);
     this.OR1([
       this.getAlt(() => this.CONSUME(lexer.UnsignedInteger, { LABEL: 'variable' })),
@@ -583,7 +577,8 @@ interface ParenCount {
 
 const parser = new SoqlParser();
 
-export function parse(soql: string) {
+export function parse(soql: string, options?: ParseQueryConfig) {
+  options = options || { allowApexBindVariables: false };
   const lexResult = lexer.lex(soql);
   const lexErrors = lexResult.errors;
 
@@ -591,6 +586,8 @@ export function parse(soql: string) {
   parser.input = lexResult.tokens;
 
   // any top level rule may be used as an entry point
+  parser.allowApexBindVariables = options.allowApexBindVariables || false;
+
   const cst = parser.selectStatement();
   const parseErrors = parser.errors;
 

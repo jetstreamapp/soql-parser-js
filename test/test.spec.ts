@@ -11,7 +11,7 @@ const replacements = [{ matching: / last /i, replace: ' LAST ' }];
 describe('parse queries', () => {
   testCases.forEach(testCase => {
     it(`should correctly parse test case ${testCase.testCase} - ${testCase.soql}`, () => {
-      const soqlQuery = parseQuery(testCase.soql);
+      const soqlQuery = parseQuery(testCase.soql, testCase.options);
       expect(testCase.output).to.deep.equal(soqlQuery);
     });
   });
@@ -20,19 +20,19 @@ describe('parse queries', () => {
 // Uncomment these to easily test one specific query - useful for troubleshooting/bugfixing
 
 // describe.only('parse queries', () => {
-//   const testCase = testCases.find(tc => tc.testCase === 61);
+//   const testCase = testCases.find(tc => tc.testCase === 84);
 
 //   it(`should correctly parse test case ${testCase.testCase} - ${testCase.soql}`, () => {
-//     const soqlQuery = parseQuery(testCase.soql);
+//     const soqlQuery = parseQuery(testCase.soql, testCase.options);
 //     const soqlQueryWithoutUndefinedProps = JSON.parse(JSON.stringify(soqlQuery));
 //     expect(testCase.output).to.deep.equal(soqlQueryWithoutUndefinedProps);
 //   });
 // });
 
 // describe.only('compose queries', () => {
-//   const testCase = testCases.find(tc => tc.testCase === 72);
+//   const testCase = testCases.find(tc => tc.testCase === 53);
 //   it(`should compose correctly - test case ${testCase.testCase} - ${testCase.soql}`, () => {
-//     const soqlQuery = composeQuery(removeComposeOnlyFields(parseQuery(testCase.soql)));
+//     const soqlQuery = composeQuery(removeComposeOnlyFields(parseQuery(testCase.soql, testCase.options)));
 //     let soql = testCase.soqlComposed || testCase.soql;
 //     replacements.forEach(replacement => (soql = soql.replace(replacement.matching, replacement.replace)));
 //     expect(soqlQuery).to.equal(soql);
@@ -41,17 +41,17 @@ describe('parse queries', () => {
 
 // describe.only('Test valid queries', () => {
 //   testCasesForIsValid
-//     .filter(testCase => testCase.testCase === 41)
+//     .filter(testCase => testCase.testCase === 122)
 //     .forEach(testCase => {
 //       it(`should identify validity of query - test case ${testCase.testCase} - ${testCase.soql}`, () => {
-//         // const soqlQuery = parseQuery(testCase.soql);
+//         const soqlQuery = parseQuery(testCase.soql, testCase.options);
 //         const isValid = isQueryValid(testCase.soql);
 //         expect(isValid).equal(testCase.isValid);
 //       });
 //       // it(`should identify valid queries - test case ${testCase.testCase} - ${testCase.soql}`, () => {
 //       //   const isValid = isQueryValid(testCase.soql);
 //       //   expect(isValid).equal(testCase.isValid);
-//       //   expect(parseQuery(testCase.soql)).to.not.throw;
+//       //   expect(parseQuery(testCase.soql, testCase.options)).to.not.throw;
 //       // });
 //     });
 // });
@@ -59,14 +59,14 @@ describe('parse queries', () => {
 describe('compose queries', () => {
   testCases.forEach(testCase => {
     it(`should compose correctly - test case ${testCase.testCase} - ${testCase.soql}`, () => {
-      const soqlQuery = composeQuery(removeComposeOnlyFields(parseQuery(testCase.soql)));
+      const soqlQuery = composeQuery(removeComposeOnlyFields(parseQuery(testCase.soql, testCase.options)));
       let soql = testCase.soqlComposed || testCase.soql;
       replacements.forEach(replacement => (soql = soql.replace(replacement.matching, replacement.replace)));
       expect(soqlQuery).to.equal(soql);
     });
     it(`should have valid composed queries - test case ${testCase.testCase} - ${testCase.soql}`, () => {
-      const soqlQuery = composeQuery(removeComposeOnlyFields(parseQuery(testCase.soql)));
-      expect(isQueryValid(soqlQuery)).equal(true);
+      const soqlQuery = composeQuery(removeComposeOnlyFields(parseQuery(testCase.soql, testCase.options)));
+      expect(isQueryValid(soqlQuery, testCase.options)).equal(true);
     });
   });
   it('Should add single quotes to WHERE clause if not already exists', () => {
@@ -115,13 +115,9 @@ describe('validate queries', () => {
     .filter(testCase => testCase.isValid)
     .forEach(testCase => {
       it(`should identify valid queries - test case ${testCase.testCase} - ${testCase.soql}`, () => {
-        const isValid = isQueryValid(testCase.soql);
+        const isValid = isQueryValid(testCase.soql, testCase.options);
+        expect(parseQuery(testCase.soql, testCase.options)).to.not.throw;
         expect(isValid).equal(testCase.isValid);
-      });
-      it(`should identify valid queries - test case ${testCase.testCase} - ${testCase.soql}`, () => {
-        const isValid = isQueryValid(testCase.soql);
-        expect(isValid).equal(testCase.isValid);
-        expect(parseQuery(testCase.soql)).to.not.throw;
       });
     });
 
@@ -129,7 +125,7 @@ describe('validate queries', () => {
     .filter(testCase => !testCase.isValid)
     .forEach(testCase => {
       it(`should identify invalid queries - test case ${testCase.testCase} - ${testCase.soql}`, () => {
-        const isValid = isQueryValid(testCase.soql);
+        const isValid = isQueryValid(testCase.soql, testCase.options);
         expect(isValid).equal(testCase.isValid);
       });
     });

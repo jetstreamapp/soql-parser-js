@@ -26,6 +26,7 @@ interface WithIdentifier {
 export interface SelectStatementContext {
   selectClause: CstNode[];
   fromClause: CstNode[];
+  usingScopeClause?: CstNode[];
   whereClause?: CstNode[];
   withClause?: CstNode[];
   groupByClause?: CstNode[];
@@ -73,6 +74,10 @@ export interface SelectClauseTypeOfThenContext extends WithIdentifier {
 
 export interface SelectClauseTypeOfElseContext extends WithIdentifier {
   field: IToken[];
+}
+
+export interface usingScopeClauseContext {
+  UsingScopeEnumeration: IToken[];
 }
 
 export interface WhereClauseContext {
@@ -193,6 +198,8 @@ export interface AtomicExpressionContext {
   UnsignedInteger?: IToken[];
   SignedInteger?: IToken[];
   RealNumber?: IToken[];
+  CurrencyPrefixedDecimal?: IToken[];
+  CurrencyPrefixedInteger?: IToken[];
   DateIdentifier?: IToken[];
   DateTime?: IToken[];
   date?: IToken[];
@@ -200,7 +207,7 @@ export interface AtomicExpressionContext {
   StringIdentifier?: IToken[];
   Identifier?: IToken[];
   booleanValue?: CstNode[];
-  dateLiteral?: CstNode[];
+  DateLiteral?: IToken[];
   dateNLiteral?: CstNode[];
   arrayExpression?: CstNode[];
   whereClauseSubqueryIdentifier?: CstNode[];

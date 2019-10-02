@@ -1,7 +1,10 @@
+import { ParseQueryConfig } from '../src/parser/parser';
+
 export interface TestCaseForFormat {
   testCase: number;
   soql: string;
   isValid: boolean;
+  options?: ParseQueryConfig;
 }
 
 export const testCases: TestCaseForFormat[] = [
@@ -202,6 +205,85 @@ export const testCases: TestCaseForFormat[] = [
   {
     testCase: 59,
     soql: `SELECT CALENDAR_YEAR(CreatedDate) calYear, SUM(Amount) mySum FROM Opportunity GROUP BY CALENDAR_YEAR(CreatedDate)`,
+    isValid: true,
+  },
+  { testCase: 60, soql: `select count() myalias from account`, isValid: true },
+  { testCase: 61, soql: `SELECT COUNT() MYALIAS FROM ACCOUNT`, isValid: true },
+  { testCase: 63, soql: `SeLEct CouNt() myAlias frOM Account`, isValid: true },
+  { testCase: 64, soql: `SELECT Id FROM Account WHERE CreatedDate = YESTERDAY`, isValid: true },
+  { testCase: 65, soql: `SELECT Id FROM Account WHERE CreatedDate > TODAY`, isValid: true },
+  { testCase: 66, soql: `SELECT Id FROM Opportunity WHERE CloseDate = TOMORROW`, isValid: true },
+  { testCase: 67, soql: `SELECT Id FROM Account WHERE CreatedDate > LAST_WEEK`, isValid: true },
+  { testCase: 68, soql: `SELECT Id FROM Account WHERE CreatedDate < THIS_WEEK`, isValid: true },
+  { testCase: 69, soql: `SELECT Id FROM Opportunity WHERE CloseDate = NEXT_WEEK`, isValid: true },
+  { testCase: 70, soql: `SELECT Id FROM Opportunity WHERE CloseDate > LAST_MONTH`, isValid: true },
+  { testCase: 71, soql: `SELECT Id FROM Account WHERE CreatedDate < THIS_MONTH`, isValid: true },
+  { testCase: 73, soql: `SELECT Id FROM Opportunity WHERE CloseDate = NEXT_MONTH`, isValid: true },
+  { testCase: 74, soql: `SELECT Id FROM Account WHERE CreatedDate = LAST_90_DAYS`, isValid: true },
+  { testCase: 75, soql: `SELECT Id FROM Opportunity WHERE CloseDate > NEXT_90_DAYS`, isValid: true },
+  { testCase: 76, soql: `SELECT Id FROM Account WHERE CreatedDate = LAST_N_DAYS:365`, isValid: true },
+  { testCase: 77, soql: `SELECT Id FROM Opportunity WHERE CloseDate > NEXT_N_DAYS:15`, isValid: true },
+  { testCase: 78, soql: `SELECT Id FROM Opportunity WHERE CloseDate > NEXT_N_WEEKS:4`, isValid: true },
+  { testCase: 79, soql: `SELECT Id FROM Account WHERE CreatedDate = LAST_N_WEEKS:52`, isValid: true },
+  { testCase: 80, soql: `SELECT Id FROM Opportunity WHERE CloseDate > NEXT_N_MONTHS:2`, isValid: true },
+  { testCase: 81, soql: `SELECT Id FROM Account WHERE CreatedDate = LAST_N_MONTHS:12`, isValid: true },
+  { testCase: 83, soql: `SELECT Id FROM Account WHERE CreatedDate = THIS_QUARTER`, isValid: true },
+  { testCase: 84, soql: `SELECT Id FROM Account WHERE CreatedDate > LAST_QUARTER`, isValid: true },
+  { testCase: 85, soql: `SELECT Id FROM Account WHERE CreatedDate < NEXT_QUARTER`, isValid: true },
+  { testCase: 86, soql: `SELECT Id FROM Account WHERE CreatedDate < NEXT_N_QUARTERS:2`, isValid: true },
+  { testCase: 87, soql: `SELECT Id FROM Account WHERE CreatedDate > LAST_N_QUARTERS:2`, isValid: true },
+  { testCase: 88, soql: `SELECT Id FROM Opportunity WHERE CloseDate = THIS_YEAR`, isValid: true },
+  { testCase: 89, soql: `SELECT Id FROM Opportunity WHERE CloseDate > LAST_YEAR`, isValid: true },
+  { testCase: 90, soql: `SELECT Id FROM Opportunity WHERE CloseDate < NEXT_YEAR`, isValid: true },
+  { testCase: 91, soql: `SELECT Id FROM Opportunity WHERE CloseDate < NEXT_N_YEARS:5`, isValid: true },
+  { testCase: 93, soql: `SELECT Id FROM Opportunity WHERE CloseDate > LAST_N_YEARS:5`, isValid: true },
+  { testCase: 94, soql: `SELECT Id FROM Account WHERE CreatedDate = THIS_FISCAL_QUARTER`, isValid: true },
+  { testCase: 95, soql: `SELECT Id FROM Account WHERE CreatedDate > LAST_FISCAL_QUARTER`, isValid: true },
+  { testCase: 96, soql: `SELECT Id FROM Account WHERE CreatedDate < NEXT_FISCAL_QUARTER`, isValid: true },
+  { testCase: 97, soql: `SELECT Id FROM Account WHERE CreatedDate < NEXT_N_FISCAL_QUARTERS:6`, isValid: true },
+  { testCase: 98, soql: `SELECT Id FROM Account WHERE CreatedDate > LAST_N_FISCAL_QUARTERS:6`, isValid: true },
+  { testCase: 99, soql: `SELECT Id FROM Opportunity WHERE CloseDate = THIS_FISCAL_YEAR`, isValid: true },
+  { testCase: 100, soql: `SELECT Id FROM Opportunity WHERE CloseDate > LAST_FISCAL_YEAR`, isValid: true },
+  { testCase: 101, soql: `SELECT Id FROM Opportunity WHERE CloseDate < NEXT_FISCAL_YEAR`, isValid: true },
+  { testCase: 102, soql: `SELECT Id FROM Opportunity WHERE CloseDate < NEXT_N_FISCAL_YEARS:3`, isValid: true },
+  { testCase: 103, soql: `SELECT Id FROM Opportunity WHERE CloseDate > LAST_N_FISCAL_YEARS:3`, isValid: true },
+  { testCase: 104, soql: `SELECT Name FROM Account WHERE Id = :foo`, isValid: false },
+  { testCase: 105, soql: `SELECT Name FROM Account WHERE Id = :foo`, isValid: true, options: { allowApexBindVariables: true } },
+  { testCase: 106, soql: `SELECT Id, Title FROM Dashboard USING SCOPE allPrivate WHERE Type != 'SpecifiedUser'`, isValid: true },
+  { testCase: 107, soql: `SELECT Id, Title FROM Dashboard USING SCOPE Delegated WHERE Type != 'SpecifiedUser'`, isValid: true },
+  { testCase: 108, soql: `SELECT Id, Title FROM Dashboard USING SCOPE Mine WHERE Type != 'SpecifiedUser'`, isValid: true },
+  { testCase: 109, soql: `SELECT Id, Title FROM Dashboard USING SCOPE Everything WHERE Type != 'SpecifiedUser'`, isValid: true },
+  { testCase: 110, soql: `SELECT Id, Title FROM Dashboard USING SCOPE MineAndMyGroups WHERE Type != 'SpecifiedUser'`, isValid: true },
+  { testCase: 111, soql: `SELECT Id, Title FROM Dashboard USING SCOPE My_Territory WHERE Type != 'SpecifiedUser'`, isValid: true },
+  { testCase: 112, soql: `SELECT Id, Title FROM Dashboard USING SCOPE My_Team_Territory WHERE Type != 'SpecifiedUser'`, isValid: true },
+  { testCase: 113, soql: `SELECT Id, Title FROM Dashboard USING SCOPE Team WHERE Type != 'SpecifiedUser'`, isValid: true },
+  { testCase: 114, soql: `SELECT Name, Id FROM Merchandise__c ORDER BY Name LIMIT 100 OFFSET 0`, isValid: true },
+  { testCase: 115, soql: `SELECT Name, Id FROM Merchandise__c ORDER BY Name LIMIT 100 OFFSET -10`, isValid: false },
+  { testCase: 116, soql: `SELECT Name, Id FROM Merchandise__c ORDER BY Name LIMIT -10 OFFSET 10`, isValid: false },
+  {
+    testCase: 117,
+    soql: `SELECT Title FROM Question WHERE LastReplyDate < 2005-10-08T01:02:03Z WITH DATA CATEGORY Product__c AT mobile_phones__c`,
+    isValid: true,
+  },
+  {
+    testCase: 118,
+    soql: `SELECT Title, Summary FROM KnowledgeArticleVersion WHERE PublishStatus='Online' AND Language = 'en_US' WITH DATA CATEGORY Geography__c ABOVE_OR_BELOW europe__c AND Product__c BELOW All__c`,
+    isValid: true,
+  },
+  {
+    testCase: 119,
+    soql: `SELECT Id, Title FROM Offer__kav WHERE PublishStatus='Draft' AND Language = 'en_US' WITH DATA CATEGORY Geography__c AT (france__c,usa__c) AND Product__c ABOVE dsl__c`,
+    isValid: true,
+  },
+  { testCase: 120, soql: `SELECT FORMAT(MIN(closedate)) Amt FROM opportunity`, isValid: true },
+  {
+    testCase: 121,
+    soql: `SELECT amount, FORMAT(amount) Amt, convertCurrency(amount) editDate, FORMAT(convertCurrency(amount)) convertedCurrency FROM Opportunity where id = '12345'`,
+    isValid: true,
+  },
+  {
+    testCase: 122,
+    soql: `SELECT Id, Name FROM Opportunity WHERE Amount > USD5000`,
     isValid: true,
   },
 ];
