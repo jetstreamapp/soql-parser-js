@@ -166,6 +166,17 @@ export class SoqlParser extends CstParser {
         this.SUBRULE(this.whereClauseExpression, { ARGS: [parenCount] });
       },
     });
+
+    // TODO: this is a hack and the paren expressions should be re-worked, but it is a significant amount of work and difficult to handle in the visitor
+    // If There are more open parens than closing parens, force parsing error - RParenMismatch is not a valid token and does not have a pattern
+    // Because we are not actually doing any calculations with results, our strategy for calculating parens within an expression is semi-ok
+    // but should be considered for a refactor at some point
+    this.ACTION(() => {
+      const parenMatch = parenCount.left - parenCount.right;
+      if (parenMatch !== 0) {
+        this.CONSUME(lexer.RParenMismatch);
+      }
+    });
   });
 
   private whereClauseSubqueryIdentifier = this.RULE('whereClauseSubqueryIdentifier', () => {

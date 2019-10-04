@@ -286,5 +286,60 @@ export const testCases: TestCaseForFormat[] = [
     soql: `SELECT Id, Name FROM Opportunity WHERE Amount > USD5000`,
     isValid: true,
   },
+  {
+    testCase: 123,
+    soql: `SELECT Id, Name FROM Opportunity WHERE (((((Amount > USD5000`,
+    isValid: false,
+  },
+  {
+    testCase: 124,
+    soql: `SELECT Id, Name FROM Opportunity WHERE (((((Amount > USD5000))))`,
+    isValid: false,
+  },
+  {
+    testCase: 125,
+    soql: `SELECT Id, Name FROM Opportunity WHERE (((((Amount > USD5000)))))`,
+    isValid: true,
+  },
+  {
+    testCase: 126,
+    soql: `SELECT Id FROM Account WHERE (((Name = '1' OR Name = '2') AND Name = '3')) AND (((Description = '4') OR (Id = '5' AND Id = '6'))) AND Id = '7'`,
+    isValid: true,
+  },
+  {
+    testCase: 127,
+    soql: `SELECT Id FROM Account WHERE ((Name = '1' OR Name = '2') AND Name = '3')) AND (((Description = '4') OR (Id = '5' AND Id = '6'))) AND Id = '7'`,
+    isValid: false,
+  },
+  {
+    testCase: 128,
+    soql: `SELECT Id FROM Account WHERE (((Name = '1' OR Name = '2' AND Name = '3')) AND (((Description = '4') OR (Id = '5' AND Id = '6'))) AND Id = '7'`,
+    isValid: false,
+  },
+  {
+    testCase: 129,
+    soql: `SELECT Id FROM Account WHERE (((Name = '1' OR Name = '2') AND Name = '3') AND (((Description = '4') OR (Id = '5' AND Id = '6'))) AND Id = '7'`,
+    isValid: false,
+  },
+  {
+    testCase: 130,
+    soql: `SELECT Id FROM Account WHERE (((Name = '1' OR Name = '2') AND Name = '3') AND (((Description = '4') OR (Id = '5' AND Id = '6')) AND Id = '7'`,
+    isValid: false,
+  },
+  {
+    testCase: 131,
+    soql: `SELECT Id FROM Account WHERE (((Name = '1' OR Name = '2') AND Name = '3')) AND ((Description = '4') OR (Id = '5' AND Id = '6'))) AND Id = '7'`,
+    isValid: false,
+  },
+  {
+    testCase: 132,
+    soql: `SELECT Id FROM Account WHERE (((Name = '1' OR Name = '2') AND Name = '3')) AND (((Description = '4' OR (Id = '5' AND Id = '6'))) AND Id = '7'`,
+    isValid: false,
+  },
+  {
+    testCase: 133,
+    soql: `SELECT Id FROM Account WHERE (((Name = '1' OR Name = '2') AND Name = '3')) AND (((Description = '4') OR Id = '5' AND Id = '6'))) AND Id = '7'`,
+    isValid: false,
+  },
 ];
 export default testCases;

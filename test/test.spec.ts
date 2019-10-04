@@ -40,10 +40,10 @@ describe('parse queries', () => {
 
 // describe.only('Test valid queries', () => {
 //   testCasesForIsValid
-//     .filter(testCase => testCase.testCase === 122)
+//     .filter(testCase => testCase.testCase === 123)
 //     .forEach(testCase => {
 //       it(`should identify validity of query - test case ${testCase.testCase} - ${testCase.soql}`, () => {
-//         const soqlQuery = parseQuery(testCase.soql, testCase.options);
+//         // const soqlQuery = parseQuery(testCase.soql, testCase.options);
 //         const isValid = isQueryValid(testCase.soql);
 //         expect(isValid).equal(testCase.isValid);
 //       });

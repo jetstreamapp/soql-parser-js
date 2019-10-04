@@ -89,6 +89,12 @@ export const UsingScopeEnumeration = createToken({
   pattern: Lexer.NA,
 });
 
+// This is a token that will be invoked to force a parsing error if there is a paren mismatch
+export const RParenMismatch = createToken({
+  name: 'RParenMismatch',
+  pattern: Lexer.NA,
+});
+
 const identifierRegex = /[a-zA-Z][a-zA-Z0-9_.]*/y;
 
 /**
