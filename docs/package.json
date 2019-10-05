@@ -19,7 +19,7 @@
     "react-dom": "^16.10.1",
     "react-scripts": "3.1.2",
     "react-syntax-highlighter": "^9.0.0",
-    "soql-parser-js": "^2.0.0-rc.5",
+    "soql-parser-js": "^2.0.0-rc.6",
     "typescript": "3.6.3"
   },
   "scripts": {
