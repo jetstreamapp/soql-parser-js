@@ -1,5 +1,6 @@
 import {
   Condition,
+  ValueQuery,
   DateLiteral,
   DateNLiteral,
   FieldFunctionExpression,
@@ -22,45 +23,41 @@ import {
   WithDataCategoryCondition,
 } from '../api/api-models';
 import {
+  ApexBindVariableExpressionContext,
   ArrayExpressionWithType,
   AtomicExpressionContext,
   BooleanContext,
-  DateLiteralContext,
+  ConditionExpressionContext,
   DateNLiteralContext,
   ExpressionContext,
+  ExpressionOperatorContext,
   ExpressionTree,
   FieldFunctionContext,
   FromClauseContext,
   FunctionExpressionContext,
   GroupByClauseContext,
   HavingClauseContext,
-  HavingClauseExpressionContext,
-  HavingConditionWithDateLiteralVar,
   LiteralTypeWithSubquery,
   OperatorContext,
   OrderByClauseContext,
   OrderByExpressionContext,
   OrderByFunctionExpressionContext,
   SelectClauseContext,
-  SelectClauseFieldIdentifierContext,
   SelectClauseFunctionIdentifierContext,
   SelectClauseSubqueryIdentifierContext,
   SelectClauseTypeOfContext,
   SelectClauseTypeOfElseContext,
   SelectClauseTypeOfThenContext,
   SelectStatementContext,
+  usingScopeClauseContext,
   ValueContext,
   WhereClauseContext,
-  WhereClauseExpressionContext,
   WhereClauseSubqueryContext,
   WithClauseContext,
   WithDateCategoryContext,
-  ExpressionOperatorContext,
-  ApexBindVariableExpressionContext,
-  usingScopeClauseContext,
 } from '../models';
-import { parse, SoqlParser, ParseQueryConfig } from './parser';
 import { isSubqueryFromFlag, isToken } from '../utils';
+import { parse, ParseQueryConfig, SoqlParser } from './parser';
 
 const parser = new SoqlParser();
 
@@ -312,7 +309,7 @@ class SOQLToAstVisitor extends BaseSoqlVisitor {
   }
 
   whereClause(ctx: WhereClauseContext): WhereClause {
-    const where = ctx.whereClauseExpression.reduce(
+    const where = ctx.conditionExpression.reduce(
       (expressions: ExpressionTree<WhereClause>, currExpression: any) => {
         if (!expressions.expressionTree) {
           expressions.expressionTree = this.visit(currExpression);
@@ -328,7 +325,7 @@ class SOQLToAstVisitor extends BaseSoqlVisitor {
     return where.expressionTree;
   }
 
-  whereClauseExpression(ctx: WhereClauseExpressionContext, options?: { prevExpression?: any }) {
+  conditionExpression(ctx: ConditionExpressionContext, options?: { prevExpression?: any }) {
     options = options || {};
     if (options.prevExpression && ctx.logicalOperator) {
       options.prevExpression.operator = ctx.logicalOperator[0].tokenType.name;
@@ -382,7 +379,7 @@ class SOQLToAstVisitor extends BaseSoqlVisitor {
 
   havingClause(ctx: HavingClauseContext): HavingClause {
     // expressionWithAggregateFunction
-    const having = ctx.havingClauseExpression.reduce(
+    const having = ctx.conditionExpression.reduce(
       (expressions: ExpressionTree<HavingClause>, currExpression: any) => {
         if (!expressions.expressionTree) {
           expressions.expressionTree = this.visit(currExpression);
@@ -396,16 +393,6 @@ class SOQLToAstVisitor extends BaseSoqlVisitor {
       { prevExpression: undefined, expressionTree: undefined },
     );
     return having.expressionTree;
-  }
-
-  havingClauseExpression(ctx: HavingClauseExpressionContext, options?: { prevExpression?: any }) {
-    options = options || {};
-    if (options.prevExpression && ctx.logicalOperator) {
-      options.prevExpression.operator = ctx.logicalOperator[0].tokenType.name;
-    }
-    return {
-      left: this.visit(ctx.having),
-    };
   }
 
   orderByClause(ctx: OrderByClauseContext): OrderByClause | OrderByClause[] {
@@ -499,11 +486,11 @@ class SOQLToAstVisitor extends BaseSoqlVisitor {
     return [];
   }
 
-  expression(ctx: ExpressionContext): Condition {
+  expression(ctx: ExpressionContext): Condition & ValueQuery {
     // const { value, literalType, dateLiteralVariable } = this.visit(ctx.rhs, { returnLiteralType: true });
     const { value, literalType, dateLiteralVariable, operator } = this.visit(ctx.operator, { returnLiteralType: true });
 
-    const output: Partial<Condition> = {};
+    const output: Partial<Condition & ValueQuery> = {};
 
     if (ctx.logicalPrefix) {
       output.logicalPrefix = ctx.logicalPrefix[0].image as LogicalPrefix;
@@ -634,35 +621,7 @@ class SOQLToAstVisitor extends BaseSoqlVisitor {
   apexBindVariableExpression(ctx: ApexBindVariableExpressionContext): string {
     return ctx.Identifier[0].image;
   }
-  expressionWithAggregateFunction(ctx: ExpressionContext): HavingConditionWithDateLiteralVar {
-    const { value, literalType, dateLiteralVariable, operator } = this.visit(ctx.operator, { returnLiteralType: true });
-    const output: Partial<HavingConditionWithDateLiteralVar> = {
-      operator,
-      value,
-    };
 
-    if (isToken(ctx.lhs)) {
-      output.field = ctx.lhs[0].image;
-    } else {
-      output.fn = this.visit(ctx.lhs, { includeType: false });
-    }
-
-    output.value = value;
-    output.literalType = literalType;
-
-    if (dateLiteralVariable) {
-      output.dateLiteralVariable = dateLiteralVariable;
-    }
-
-    if (ctx.L_PAREN) {
-      output.openParen = ctx.L_PAREN.length;
-    }
-    if (ctx.R_PAREN) {
-      output.closeParen = ctx.R_PAREN.length;
-    }
-
-    return output as HavingConditionWithDateLiteralVar;
-  }
   arrayExpression(ctx: ValueContext): ArrayExpressionWithType[] {
     return ctx.value.map((item: any) => ({
       type: item.tokenType.name,

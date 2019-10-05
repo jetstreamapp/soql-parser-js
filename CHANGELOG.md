@@ -57,6 +57,7 @@ NEW PARSER: ~2.25 seconds for 60K parses
   2.  The `from` property has been removed for subqueries. The `relationshipName` is required to be populated to compose a subquery.
 - On the FormatOptions interface `fieldMaxLineLen` was renamed to `fieldMaxLineLength`.
 - Added support for `usingScope` - https://developer.salesforce.com/docs/atlas.en-us.soql_sosl.meta/soql_sosl/sforce_api_calls_soql_select_using_scope.htm?search_text=format()
+- The `having` clause condition (e.x. `left`) now uses the `Condition` interface instead of having it's own structure.
 
 ```diff
 export interface FormatOptions {
@@ -81,8 +82,9 @@ export interface FormatOptions {
 - The `GroupByClause` has the following modifications:
   - `field` is now optional, and will be populated only if the grouping is on a single field.
   - `type` has been renamed to `fn` and will be populated when `CUBE` and `ROLLUP` are used.
-  - The `having` clause has been moved as a top-level property to the `GroupByClause` and will be populated only if a `having` clause is present.
-- The `HavingCondition` now has a `literalType` that will be populated with the type of the `value` property.
+  - The `having` clause has been added as a top-level property to the `GroupByClause` and will be populated only if a `having` clause is present.
+- The `HavingCondition` interface has been removed and now uses the same `Condition` interface that the `WhereClause` uses, but without `valueQuery`.
+  - The parser uses the same code to process both of these, so the `having` clause now supports the exact same capability as a `where` clause.
 - `FunctionExp` has the following modifications
   - `text` was renamed to `rawValue` to be more consistent with other places in the data model.
   - `name` was renamed to `functionName`.
@@ -141,6 +143,18 @@ export interface QueryBase {
   update?: UpdateClause;
 }
 
+export interface WhereClause {
+- left: Condition;
++ left: Condition & ValueQuery;
+  right?: WhereClause;
+  operator?: LogicalOperator;
+}
+
+
++ export interface ValueQuery {
++   valueQuery?: Query;
++ }
+
 export interface Condition {
   openParen?: number;
   closeParen?: number;
@@ -149,7 +163,7 @@ export interface Condition {
   fn?: FunctionExp;
   operator: Operator;
   value?: string | string[];
-  valueQuery?: Query;
+- valueQuery?: Query;
 - literalType?: LiteralType;
 + literalType?: LiteralType | LiteralType[];
   dateLiteralVariable?: number;
@@ -163,15 +177,20 @@ export interface GroupByClause {
 + having?: HavingClause;
 }
 
-export interface HavingCondition {
-  openParen?: number;
-  closeParen?: number;
-  field?: string;
-  fn?: FunctionExp;
-  operator: string;
-  value: string | number;
-+ literalType?: String;
+export interface HavingClause {
++ left: Condition;
+  right?: HavingClause;
+  operator?: LogicalOperator;
 }
+
+- export interface HavingCondition {
+-   openParen?: number;
+-   closeParen?: number;
+-   field?: string;
+-   fn?: FunctionExp;
+-   operator: string;
+-   value: string | number;
+- }
 
 export interface FunctionExp {
 - text?: string;

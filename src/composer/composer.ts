@@ -171,7 +171,7 @@ export class Compose {
 
     if (query.where) {
       output += this.formatter.formatClause('WHERE');
-      output += ` ${this.parseWhereClause(query.where)}`;
+      output += ` ${this.parseWhereOrHavingClause(query.where)}`;
       this.log(output);
     }
 
@@ -181,7 +181,7 @@ export class Compose {
       this.log(output);
       if (query.groupBy.having) {
         output += this.formatter.formatClause('HAVING');
-        output += ` ${this.parseHavingClause(query.groupBy.having)}`;
+        output += ` ${this.parseWhereOrHavingClause(query.groupBy.having)}`;
         this.log(output);
       }
     }
@@ -291,21 +291,33 @@ export class Compose {
    * @param where
    * @returns where clause
    */
-  public parseWhereClause(where: WhereClause): string {
+  public parseWhereOrHavingClause(whereOrHaving: WhereClause | HavingClause): string {
     let output = '';
-    if (where.left) {
-      output += utils.isNumber(where.left.openParen) && where.left.openParen > 0 ? new Array(where.left.openParen).fill('(').join('') : '';
-      output += `${utils.get(where.left.logicalPrefix, ' ')}`;
-      output += where.left.fn ? this.parseFn(where.left.fn) : where.left.field;
-      output += ` ${where.left.operator} `;
-      output += where.left.valueQuery
-        ? this.formatter.formatSubquery(this.parseQuery(where.left.valueQuery), 1, true)
-        : utils.getAsArrayStr(utils.getWhereValue(where.left.value, where.left.literalType));
+    if (whereOrHaving.left) {
       output +=
-        utils.isNumber(where.left.closeParen) && where.left.closeParen > 0 ? new Array(where.left.closeParen).fill(')').join('') : '';
+        utils.isNumber(whereOrHaving.left.openParen) && whereOrHaving.left.openParen > 0
+          ? new Array(whereOrHaving.left.openParen).fill('(').join('')
+          : '';
+      output += `${utils.get(whereOrHaving.left.logicalPrefix, ' ')}`;
+      output += whereOrHaving.left.fn ? this.parseFn(whereOrHaving.left.fn) : whereOrHaving.left.field;
+      output += ` ${whereOrHaving.left.operator} `;
+
+      if (utils.isConditionWithValueQuery(whereOrHaving.left) && whereOrHaving.left.valueQuery) {
+        output += this.formatter.formatSubquery(this.parseQuery(whereOrHaving.left.valueQuery), 1, true);
+      } else {
+        output += utils.getAsArrayStr(utils.getWhereValue(whereOrHaving.left.value, whereOrHaving.left.literalType));
+      }
+
+      output +=
+        utils.isNumber(whereOrHaving.left.closeParen) && whereOrHaving.left.closeParen > 0
+          ? new Array(whereOrHaving.left.closeParen).fill(')').join('')
+          : '';
     }
-    if (where.right) {
-      const formattedData = this.formatter.formatWhereClauseOperators(utils.get(where.operator), this.parseWhereClause(where.right));
+    if (whereOrHaving.right) {
+      const formattedData = this.formatter.formatWhereClauseOperators(
+        utils.get(whereOrHaving.operator),
+        this.parseWhereOrHavingClause(whereOrHaving.right),
+      );
       return `${output}${formattedData}`.trim();
     } else {
       return output.trim();
@@ -323,27 +335,6 @@ export class Compose {
       return this.parseFn(groupBy.fn);
     } else {
       return (Array.isArray(groupBy.field) ? groupBy.field : [groupBy.field]).join(', ');
-    }
-  }
-
-  /**
-   * Parses having clause
-   * e.x.: HAVING COUNT(Name) > 100 and LeadSource > 'Phone'
-   * @param having
-   * @returns having clause
-   */
-  public parseHavingClause(having: HavingClause): string {
-    let output = '';
-    if (having.left) {
-      output += new Array(having.left.openParen || 0).fill('(').join('');
-      output += having.left.fn ? this.parseFn(having.left.fn) : having.left.field;
-      output += ` ${having.left.operator} ${having.left.value}`;
-      output += new Array(having.left.closeParen || 0).fill(')').join('');
-    }
-    if (having.right) {
-      return `${output} ${utils.get(having.operator)} ${this.parseHavingClause(having.right)}`;
-    } else {
-      return output.trim();
     }
   }
 

@@ -465,10 +465,10 @@ export interface Field {
 export interface FieldFunctionExpression {
   type: 'FieldFunctionExpression';
   functionName: string;
-  parameters?: (string | FieldFunctionExpression)[];
+  parameters: (string | FieldFunctionExpression)[];
   alias?: string;
   isAggregateFn?: boolean; // not required for compose, will be populated if SOQL is parsed
-  rawValue?: string; // not required for compose, will be populated if SOQL is parsed with the raw value of the entire field
+  rawValue?: string; // not required for compose, will be populated if SOQL is parsed
 }
 
 export interface FieldRelationship {
@@ -522,9 +522,13 @@ export interface Subquery extends QueryBase {
 }
 
 export interface WhereClause {
-  left: Condition;
+  left: Condition & ValueQuery;
   right?: WhereClause;
   operator?: LogicalOperator;
+}
+
+export interface ValueQuery {
+  valueQuery?: Query;
 }
 
 export interface Condition {
@@ -535,7 +539,6 @@ export interface Condition {
   fn?: FunctionExp;
   operator: Operator;
   value?: string | string[];
-  valueQuery?: Query;
   literalType?: LiteralType | LiteralType[]; // If populated with STRING on compose, the value(s) will be wrapped in "'" if they are not already. - All other values ignored
   dateLiteralVariable?: number; // not required for compose, will be populated if SOQL is parsed
 }
@@ -554,26 +557,16 @@ export interface GroupByClause {
 }
 
 export interface HavingClause {
-  left: HavingCondition;
+  left: Condition;
   right?: HavingClause;
   operator?: LogicalOperator;
 }
 
-export interface HavingCondition {
-  openParen?: number;
-  closeParen?: number;
-  field?: string;
-  fn?: FunctionExp;
-  operator: string;
-  value: string | number;
-  literalType?: String;
-}
-
 export interface FunctionExp {
-  rawValue?: string; // Should be formatted like this: Count(Id)
-  functionName?: string; // not used for compose, will be populated if SOQL is parsed
+  rawValue?: string; // only used for compose fields if useRawValueForFn=true. Should be formatted like this: Count(Id)
+  functionName?: string; // only used for compose fields if useRawValueForFn=false, not used for compose, will be populated if SOQL is parsed
   alias?: string;
-  parameters?: (string | FunctionExp)[]; // not used for compose, will be populated if SOQL is parsed
+  parameters?: (string | FunctionExp)[]; // only used for compose fields if useRawValueForFn=false, not used for compose, will be populated if SOQL is parsed
   isAggregateFn?: boolean; // not used for compose, will be populated if SOQL is parsed
 }
 
@@ -586,69 +579,6 @@ export interface WithDataCategoryCondition {
   selector: GroupSelector;
   parameters: string[];
 }
-```
-
-### Compose Class
-
-You only need to interact with the compose class if you want to compose part of a SOQL query
-
-```typescript
-// Instance Properties
-logging: boolean; // default to false
-format: boolean; // default to false
-query: string;
-formatter: Formatter;
-
-// Instance Methods:
-constructor(private soql: Query, config?: Partial<SoqlComposeConfig>)
-start(): void
-// Pass in part of the parsed query to get the string representation for a given segment of a query
-parseQuery(query: Query | Subquery): string
-parseFields(fields: FieldType[]): string[]
-parseTypeOfField(typeOfField: FieldTypeOf): string
-parseFn(fn: FunctionExp): string
-parseWhereClause(where: WhereClause): string
-parseGroupByClause(groupBy: GroupByClause): string
-parseHavingClause(having: HavingClause): string
-parseOrderBy(orderBy: OrderByClause | OrderByClause[]): string
-parseWithDataCategory(withDataCategory: WithDataCategoryClause): string
-```
-
-### Utils
-
-```typescript
-type ComposeFieldInput = ComposeField | ComposeFieldFunction | ComposeFieldRelationship | ComposeFieldSubquery | ComposeFieldTypeof;
-
-interface ComposeField {
-  field: string;
-  objectPrefix?: string;
-}
-
-interface ComposeFieldFunction {
-  fn: string;
-  parameters?: string | string[] | FieldFunctionExpression | FieldFunctionExpression[];
-  alias?: string;
-}
-
-interface ComposeFieldRelationship {
-  field: string;
-  relationships: string[];
-  objectPrefix?: string;
-}
-
-interface ComposeFieldSubquery {
-  subquery?: Subquery;
-}
-
-interface ComposeFieldTypeof {
-  field: string;
-  conditions: FieldTypeOfCondition[];
-}
-
-function isSubquery(query: Query | Subquery): query is Subquery;
-function getComposedField(input: string | ComposeFieldInput): SoqlModels.FieldType;
-function getField(input: string | ComposeFieldInput): SoqlModels.FieldType;
-function getFlattenedFields(query: SoqlModels.Query, isAggregateResult?: boolean): string[];
 ```
 
 ## Contributing

@@ -1,4 +1,4 @@
-import { CstParser, IToken, CstNode } from 'chevrotain';
+import { CstParser } from 'chevrotain';
 import * as lexer from './lexer';
 
 export interface ParseQueryConfig {
@@ -163,7 +163,7 @@ export class SoqlParser extends CstParser {
     const parenCount = this.getParenCount();
     this.AT_LEAST_ONE({
       DEF: () => {
-        this.SUBRULE(this.whereClauseExpression, { ARGS: [parenCount] });
+        this.SUBRULE(this.conditionExpression, { ARGS: [parenCount, false, true] });
       },
     });
 
@@ -174,7 +174,7 @@ export class SoqlParser extends CstParser {
     this.ACTION(() => {
       const parenMatch = parenCount.left - parenCount.right;
       if (parenMatch !== 0) {
-        this.CONSUME(lexer.RParenMismatch);
+        this.CONSUME(lexer.RParenMismatch, { ERR_MSG: `Expecting a token type of --> RParen <-- but found --> '' <--` });
       }
     });
   });
@@ -185,17 +185,20 @@ export class SoqlParser extends CstParser {
     this.CONSUME(lexer.RParen);
   });
 
-  private whereClauseExpression = this.RULE('whereClauseExpression', parenCount => {
-    // argument is undefined during self-analysis, need to initialize to avoid exception
-    parenCount = this.getParenCount(parenCount);
-    this.OPTION(() => {
-      this.OR([
-        { ALT: () => this.CONSUME(lexer.And, { LABEL: 'logicalOperator' }) },
-        { ALT: () => this.CONSUME(lexer.Or, { LABEL: 'logicalOperator' }) },
-      ]);
-    });
-    this.SUBRULE(this.expression, { ARGS: [parenCount] });
-  });
+  private conditionExpression = this.RULE(
+    'conditionExpression',
+    (parenCount?: ParenCount, allowSubquery?: boolean, alowAggregateFn?: boolean) => {
+      // argument is undefined during self-analysis, need to initialize to avoid exception
+      parenCount = this.getParenCount(parenCount);
+      this.OPTION(() => {
+        this.OR([
+          { ALT: () => this.CONSUME(lexer.And, { LABEL: 'logicalOperator' }) },
+          { ALT: () => this.CONSUME(lexer.Or, { LABEL: 'logicalOperator' }) },
+        ]);
+      });
+      this.SUBRULE(this.expression, { ARGS: [parenCount, allowSubquery, alowAggregateFn] });
+    },
+  );
 
   private withClause = this.RULE('withClause', () => {
     this.CONSUME(lexer.With);
@@ -256,19 +259,13 @@ export class SoqlParser extends CstParser {
 
   private havingClause = this.RULE('havingClause', () => {
     this.CONSUME(lexer.Having);
-    this.AT_LEAST_ONE(() => {
-      this.SUBRULE(this.havingClauseExpression);
-    });
-  });
 
-  private havingClauseExpression = this.RULE('havingClauseExpression', () => {
-    this.OPTION(() => {
-      this.OR([
-        { ALT: () => this.CONSUME(lexer.And, { LABEL: 'logicalOperator' }) },
-        { ALT: () => this.CONSUME(lexer.Or, { LABEL: 'logicalOperator' }) },
-      ]);
+    const parenCount = this.getParenCount();
+    this.AT_LEAST_ONE({
+      DEF: () => {
+        this.SUBRULE(this.conditionExpression, { ARGS: [parenCount, true] });
+      },
     });
-    this.SUBRULE(this.expressionWithAggregateFunction, { LABEL: 'having' });
   });
 
   private orderByClause = this.RULE('orderByClause', () => {
@@ -398,7 +395,7 @@ export class SoqlParser extends CstParser {
    * The "rhs" and "lhs" (Right/Left Hand Side) labels will provide easy to use names during CST Visitor.
    * parenCount is undefined during the analysis phases, so we have to handle the undefined case
    */
-  private expression = this.RULE('expression', (parenCount?: ParenCount) => {
+  private expression = this.RULE('expression', (parenCount?: ParenCount, allowSubquery?: boolean, alowAggregateFn?: boolean) => {
     this.OPTION(() => {
       this.MANY(() => {
         this.CONSUME(lexer.LParen);
@@ -413,13 +410,14 @@ export class SoqlParser extends CstParser {
     });
 
     this.OR1([
+      { GATE: () => alowAggregateFn, ALT: () => this.SUBRULE(this.aggregateFunction, { LABEL: 'lhs' }) },
       { ALT: () => this.SUBRULE(this.otherFunction, { LABEL: 'lhs' }) },
       { ALT: () => this.CONSUME(lexer.Identifier, { LABEL: 'lhs' }) },
     ]);
 
     this.OR2([
       { ALT: () => this.SUBRULE(this.expressionWithRelationalOperator, { LABEL: 'operator' }) },
-      { ALT: () => this.SUBRULE(this.expressionWithSetOperator, { LABEL: 'operator' }) },
+      { ALT: () => this.SUBRULE(this.expressionWithSetOperator, { LABEL: 'operator', ARGS: [allowSubquery] }) },
     ]);
 
     this.OPTION4(() => {
@@ -440,19 +438,19 @@ export class SoqlParser extends CstParser {
     this.SUBRULE(this.atomicExpression, { LABEL: 'rhs' });
   });
 
-  private expressionWithSetOperator = this.RULE('expressionWithSetOperator', () => {
+  private expressionWithSetOperator = this.RULE('expressionWithSetOperator', (allowSubquery?: boolean) => {
     this.SUBRULE(this.setOperator);
-    this.SUBRULE2(this.atomicExpression, { LABEL: 'rhs', ARGS: [true] });
+    this.SUBRULE2(this.atomicExpression, { LABEL: 'rhs', ARGS: [true, allowSubquery] });
   });
 
-  private atomicExpression = this.RULE('atomicExpression', isArray => {
+  private atomicExpression = this.RULE('atomicExpression', (isArray, allowSubquery?: boolean) => {
     this.OR(
       this.$_atomicExpression ||
         (this.$_atomicExpression = [
           { GATE: () => this.allowApexBindVariables, ALT: () => this.SUBRULE(this.apexBindVariableExpression) },
           // SET / SUBQUERY
           { GATE: () => isArray, ALT: () => this.SUBRULE(this.arrayExpression) },
-          { GATE: () => isArray, ALT: () => this.SUBRULE(this.whereClauseSubqueryIdentifier) },
+          { GATE: () => isArray && allowSubquery, ALT: () => this.SUBRULE(this.whereClauseSubqueryIdentifier) },
           // NON-SET
           { GATE: () => !isArray, ALT: () => this.CONSUME(lexer.DateIdentifier) },
           { GATE: () => !isArray, ALT: () => this.CONSUME(lexer.CurrencyPrefixedDecimal, { LABEL: 'CurrencyPrefixedDecimal' }) },
@@ -493,21 +491,6 @@ export class SoqlParser extends CstParser {
       },
     });
     this.CONSUME(lexer.RParen);
-  });
-
-  private expressionWithAggregateFunction = this.RULE('expressionWithAggregateFunction', () => {
-    this.MANY(() => {
-      this.CONSUME(lexer.LParen);
-    });
-    this.OR([
-      { ALT: () => this.SUBRULE(this.aggregateFunction, { LABEL: 'lhs' }) },
-      { ALT: () => this.CONSUME(lexer.Identifier, { LABEL: 'lhs' }) },
-    ]);
-    this.SUBRULE(this.expressionWithRelationalOperator, { LABEL: 'operator' });
-
-    this.MANY1(() => {
-      this.CONSUME(lexer.RParen);
-    });
   });
 
   private relationalOperator = this.RULE('relationalOperator', () => {

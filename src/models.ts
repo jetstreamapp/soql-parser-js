@@ -1,9 +1,9 @@
-import { LiteralType, HavingCondition } from './api/api-models';
-import { IToken, CstNode } from 'chevrotain';
+import { CstNode, IToken } from 'chevrotain';
+import { LiteralType } from './api/api-models';
 
 export type LiteralTypeWithSubquery = (LiteralType | 'SUBQUERY') | LiteralType[];
 
-export type HavingConditionWithDateLiteralVar = HavingCondition & { dateLiteralVariable: string };
+// export type HavingConditionWithDateLiteralVar = HavingCondition & { dateLiteralVariable: string };
 
 export interface ArrayExpressionWithType {
   type: string;
@@ -81,14 +81,14 @@ export interface usingScopeClauseContext {
 }
 
 export interface WhereClauseContext {
-  whereClauseExpression: CstNode[];
+  conditionExpression: CstNode[];
 }
 
 export interface WhereClauseSubqueryContext {
   selectStatement: CstNode[];
 }
 
-export interface WhereClauseExpressionContext {
+export interface ConditionExpressionContext {
   logicalOperator?: IToken[];
   expression: CstNode[];
 }
@@ -114,12 +114,7 @@ export interface GroupByClauseContext extends WithIdentifier {
 }
 
 export interface HavingClauseContext {
-  havingClauseExpression: CstNode[];
-}
-
-export interface HavingClauseExpressionContext {
-  logicalOperator?: IToken[];
-  having: CstNode[];
+  conditionExpression: CstNode[];
 }
 
 export interface OrderByClauseContext {

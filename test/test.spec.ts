@@ -8,19 +8,10 @@ import testCasesForIsValid from './test-cases-for-is-valid';
 
 const replacements = [{ matching: / last /i, replace: ' LAST ' }];
 
-describe('parse queries', () => {
-  testCases.forEach(testCase => {
-    it(`should correctly parse test case ${testCase.testCase} - ${testCase.soql}`, () => {
-      const soqlQuery = parseQuery(testCase.soql, testCase.options);
-      expect(testCase.output).to.deep.equal(soqlQuery);
-    });
-  });
-});
-
 // Uncomment these to easily test one specific query - useful for troubleshooting/bugfixing
 
 // describe.only('parse queries', () => {
-//   const testCase = testCases.find(tc => tc.testCase === 58);
+//   const testCase = testCases.find(tc => tc.testCase === 8);
 //   it(`should correctly parse test case ${testCase.testCase} - ${testCase.soql}`, () => {
 //     const soqlQuery = parseQuery(testCase.soql, testCase.options);
 //     const soqlQueryWithoutUndefinedProps = JSON.parse(JSON.stringify(soqlQuery));
@@ -29,7 +20,7 @@ describe('parse queries', () => {
 // });
 
 // describe.only('compose queries', () => {
-//   const testCase = testCases.find(tc => tc.testCase === 53);
+//   const testCase = testCases.find(tc => tc.testCase === 47);
 //   it(`should compose correctly - test case ${testCase.testCase} - ${testCase.soql}`, () => {
 //     const soqlQuery = composeQuery(removeComposeOnlyFields(parseQuery(testCase.soql, testCase.options)));
 //     let soql = testCase.soqlComposed || testCase.soql;
@@ -54,6 +45,15 @@ describe('parse queries', () => {
 //       // });
 //     });
 // });
+
+describe('parse queries', () => {
+  testCases.forEach(testCase => {
+    it(`should correctly parse test case ${testCase.testCase} - ${testCase.soql}`, () => {
+      const soqlQuery = parseQuery(testCase.soql, testCase.options);
+      expect(testCase.output).to.deep.equal(soqlQuery);
+    });
+  });
+});
 
 describe('compose queries', () => {
   testCases.forEach(testCase => {
@@ -137,14 +137,14 @@ describe('calls individual compose methods', () => {
     const soql = `SELECT Id FROM Account WHERE Name = 'Foo'`;
     const parsedQuery = parseQuery(soql);
     const composer = new Compose(parsedQuery, { autoCompose: false });
-    const whereClause = composer.parseWhereClause(parsedQuery.where);
+    const whereClause = composer.parseWhereOrHavingClause(parsedQuery.where);
     expect(whereClause).to.equal(`Name = 'Foo'`);
   });
   it(`Should compose the where clause properly with semi-join`, () => {
     const soql = `SELECT Id FROM Account WHERE Id IN (SELECT AccountId FROM Contact WHERE Name LIKE '%foo%')`;
     const parsedQuery = parseQuery(soql);
     const composer = new Compose(parsedQuery, { autoCompose: false });
-    const whereClause = composer.parseWhereClause(parsedQuery.where);
+    const whereClause = composer.parseWhereOrHavingClause(parsedQuery.where);
     expect(whereClause).to.equal(`Id IN (SELECT AccountId FROM Contact WHERE Name LIKE '%foo%')`);
   });
 });

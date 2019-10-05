@@ -139,9 +139,13 @@ export interface Subquery extends QueryBase {
 }
 
 export interface WhereClause {
-  left: Condition;
+  left: Condition & ValueQuery;
   right?: WhereClause;
   operator?: LogicalOperator;
+}
+
+export interface ValueQuery {
+  valueQuery?: Query;
 }
 
 export interface Condition {
@@ -152,7 +156,6 @@ export interface Condition {
   fn?: FunctionExp;
   operator: Operator;
   value?: string | string[];
-  valueQuery?: Query;
   literalType?: LiteralType | LiteralType[]; // If populated with STRING on compose, the value(s) will be wrapped in "'" if they are not already. - All other values ignored
   dateLiteralVariable?: number; // not required for compose, will be populated if SOQL is parsed
 }
@@ -171,19 +174,9 @@ export interface GroupByClause {
 }
 
 export interface HavingClause {
-  left: HavingCondition;
+  left: Condition;
   right?: HavingClause;
   operator?: LogicalOperator;
-}
-
-export interface HavingCondition {
-  openParen?: number;
-  closeParen?: number;
-  field?: string;
-  fn?: FunctionExp;
-  operator: string;
-  value: string | number;
-  literalType?: String;
 }
 
 export interface FunctionExp {

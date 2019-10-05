@@ -1,6 +1,7 @@
 import { IToken } from 'chevrotain';
-import { FieldFunctionExpression, LiteralType, Query, Subquery } from './api/api-models';
+import { FieldFunctionExpression, LiteralType, Query, Subquery, WhereClause, ValueQuery, Condition } from './api/api-models';
 import { ComposeField, ComposeFieldFunction, ComposeFieldRelationship, ComposeFieldSubquery, ComposeFieldTypeof } from './api/public-utils';
+import { isUndefined } from 'util';
 
 export function isToken(val: any): val is IToken[] | IToken {
   val = Array.isArray(val) ? val[0] : val;
@@ -105,6 +106,10 @@ export function isComposeFieldSubquery(input: any): input is ComposeFieldSubquer
 }
 export function isComposeFieldTypeof(input: any): input is ComposeFieldTypeof {
   return isString(input.field) && Array.isArray(input.conditions);
+}
+
+export function isConditionWithValueQuery(input: any): input is Condition & ValueQuery {
+  return isUndefined(input.valueQuery) ? false : true;
 }
 
 export function getWhereValue(value: any | any[], literalType?: LiteralType | LiteralType[]): any {

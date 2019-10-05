@@ -1427,6 +1427,115 @@ export const testCases: TestCase[] = [
       },
     },
   },
+  {
+    testCase: 85,
+    soql: `SELECT Name, COUNT(Id) FROM Account GROUP BY Name HAVING COUNT(Id) > 0 AND (Name LIKE '%testing%' OR Name LIKE '%123%')`,
+    output: {
+      fields: [
+        { type: 'Field', field: 'Name' },
+        { type: 'FieldFunctionExpression', functionName: 'COUNT', rawValue: 'COUNT(Id)', isAggregateFn: true, parameters: ['Id'] },
+      ],
+      sObject: 'Account',
+      groupBy: {
+        field: 'Name',
+        having: {
+          left: {
+            operator: '>',
+            value: '0',
+            literalType: 'INTEGER',
+            fn: { rawValue: 'COUNT(Id)', functionName: 'COUNT', parameters: ['Id'] },
+          },
+          operator: 'AND',
+          right: {
+            left: {
+              openParen: 1,
+              field: 'Name',
+              operator: 'LIKE',
+              value: `'%testing%'`,
+              literalType: 'STRING',
+            },
+            operator: 'OR',
+            right: {
+              left: {
+                closeParen: 1,
+                field: 'Name',
+                operator: 'LIKE',
+                value: `'%123%'`,
+                literalType: 'STRING',
+              },
+            },
+          },
+        },
+      },
+    },
+  },
+  {
+    testCase: 86,
+    soql: `SELECT Name, COUNT(Id) FROM Account GROUP BY Name HAVING COUNT(Id) > 0 AND (Name IN ('4/30 testing account', 'amendment quote doc testing', null))`,
+    output: {
+      fields: [
+        { type: 'Field', field: 'Name' },
+        { type: 'FieldFunctionExpression', functionName: 'COUNT', rawValue: 'COUNT(Id)', isAggregateFn: true, parameters: ['Id'] },
+      ],
+      sObject: 'Account',
+      groupBy: {
+        field: 'Name',
+        having: {
+          left: {
+            operator: '>',
+            value: '0',
+            literalType: 'INTEGER',
+            fn: { rawValue: 'COUNT(Id)', functionName: 'COUNT', parameters: ['Id'] },
+          },
+          operator: 'AND',
+          right: {
+            left: {
+              openParen: 1,
+              closeParen: 1,
+              field: 'Name',
+              operator: 'IN',
+              value: [`'4/30 testing account'`, `'amendment quote doc testing'`, 'null'],
+              literalType: ['STRING', 'STRING', 'NULL'],
+            },
+          },
+        },
+      },
+    },
+  },
+  {
+    testCase: 87,
+    soql: `SELECT Name, COUNT(Id) FROM Account GROUP BY Name HAVING COUNT(Id) > 0 AND (NOT Name IN ('4/30 testing account', 'amendment quote doc testing'))`,
+    output: {
+      fields: [
+        { type: 'Field', field: 'Name' },
+        { type: 'FieldFunctionExpression', functionName: 'COUNT', rawValue: 'COUNT(Id)', isAggregateFn: true, parameters: ['Id'] },
+      ],
+      sObject: 'Account',
+      groupBy: {
+        field: 'Name',
+        having: {
+          left: {
+            operator: '>',
+            value: '0',
+            literalType: 'INTEGER',
+            fn: { rawValue: 'COUNT(Id)', functionName: 'COUNT', parameters: ['Id'] },
+          },
+          operator: 'AND',
+          right: {
+            left: {
+              openParen: 1,
+              closeParen: 1,
+              logicalPrefix: 'NOT',
+              field: 'Name',
+              operator: 'IN',
+              value: [`'4/30 testing account'`, `'amendment quote doc testing'`],
+              literalType: 'STRING',
+            },
+          },
+        },
+      },
+    },
+  },
 ];
 
 export default testCases;
