@@ -181,9 +181,9 @@ export interface HavingClause {
 
 export interface FunctionExp {
   rawValue?: string; // only used for compose fields if useRawValueForFn=true. Should be formatted like this: Count(Id)
-  functionName?: string; // only used for compose fields if useRawValueForFn=false, not used for compose, will be populated if SOQL is parsed
+  functionName?: string; // only used for compose fields if useRawValueForFn=false, will be populated if SOQL is parsed
   alias?: string;
-  parameters?: (string | FunctionExp)[]; // only used for compose fields if useRawValueForFn=false, not used for compose, will be populated if SOQL is parsed
+  parameters?: (string | FunctionExp)[]; // only used for compose fields if useRawValueForFn=false, will be populated if SOQL is parsed
   isAggregateFn?: boolean; // not used for compose, will be populated if SOQL is parsed
 }
 

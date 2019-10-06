@@ -1,8 +1,28 @@
-import { CstParser } from 'chevrotain';
+import { CstParser, IRecognitionException, ILexingError } from 'chevrotain';
 import * as lexer from './lexer';
 
 export interface ParseQueryConfig {
-  allowApexBindVariables: boolean;
+  allowApexBindVariables?: boolean;
+  logErrors?: boolean;
+}
+
+interface ParenCount {
+  right: number;
+  left: number;
+}
+
+class LexingError extends Error {
+  constructor(lexingError: ILexingError) {
+    super(`${lexingError.message} (${lexingError.line}:${lexingError.column})`);
+    this.name = 'LexingError';
+  }
+}
+
+class ParsingError extends Error {
+  constructor(parsingError: IRecognitionException) {
+    super(parsingError.message);
+    this.name = parsingError.name;
+  }
 }
 
 export class SoqlParser extends CstParser {
@@ -66,6 +86,24 @@ export class SoqlParser extends CstParser {
       this.SUBRULE(this.updateTrackingViewstat);
     });
   });
+
+  // TODO: this is a hack and the paren expressions should be re-worked, but it is a significant amount of work and difficult to handle in the visitor
+  // If There are more open parens than closing parens, force parsing error - RParenMismatch is not a valid token and does not have a pattern
+  // Because we are not actually doing any calculations with results, our strategy for calculating parens within an expression is semi-ok
+  // but should be considered for a refactor at some point
+
+  /**
+   * Will throw a parsing error if there is a paren mismatch
+   * @param parenCount
+   */
+  private $_checkBalancedParens(parenCount: ParenCount) {
+    if (!this.RECORDING_PHASE && parenCount) {
+      const parenMatch = parenCount.left - parenCount.right;
+      if (parenMatch !== 0) {
+        this.CONSUME(lexer.RParenMismatch, { ERR_MSG: `Expecting a token type of --> RParen <-- but found --> '' <--` });
+      }
+    }
+  }
 
   private selectClause = this.RULE('selectClause', () => {
     this.CONSUME(lexer.Select);
@@ -171,12 +209,7 @@ export class SoqlParser extends CstParser {
     // If There are more open parens than closing parens, force parsing error - RParenMismatch is not a valid token and does not have a pattern
     // Because we are not actually doing any calculations with results, our strategy for calculating parens within an expression is semi-ok
     // but should be considered for a refactor at some point
-    this.ACTION(() => {
-      const parenMatch = parenCount.left - parenCount.right;
-      if (parenMatch !== 0) {
-        this.CONSUME(lexer.RParenMismatch, { ERR_MSG: `Expecting a token type of --> RParen <-- but found --> '' <--` });
-      }
-    });
+    this.$_checkBalancedParens(parenCount);
   });
 
   private whereClauseSubqueryIdentifier = this.RULE('whereClauseSubqueryIdentifier', () => {
@@ -266,6 +299,12 @@ export class SoqlParser extends CstParser {
         this.SUBRULE(this.conditionExpression, { ARGS: [parenCount, true] });
       },
     });
+
+    // TODO: this is a hack and the paren expressions should be re-worked, but it is a significant amount of work and difficult to handle in the visitor
+    // If There are more open parens than closing parens, force parsing error - RParenMismatch is not a valid token and does not have a pattern
+    // Because we are not actually doing any calculations with results, our strategy for calculating parens within an expression is semi-ok
+    // but should be considered for a refactor at some point
+    this.$_checkBalancedParens(parenCount);
   });
 
   private orderByClause = this.RULE('orderByClause', () => {
@@ -391,10 +430,6 @@ export class SoqlParser extends CstParser {
     this.CONSUME(lexer.RParen);
   });
 
-  /**
-   * The "rhs" and "lhs" (Right/Left Hand Side) labels will provide easy to use names during CST Visitor.
-   * parenCount is undefined during the analysis phases, so we have to handle the undefined case
-   */
   private expression = this.RULE('expression', (parenCount?: ParenCount, allowSubquery?: boolean, alowAggregateFn?: boolean) => {
     this.OPTION(() => {
       this.MANY(() => {
@@ -555,31 +590,36 @@ export class SoqlParser extends CstParser {
   }
 }
 
-interface ParenCount {
-  right: number;
-  left: number;
-}
-
 const parser = new SoqlParser();
 
 export function parse(soql: string, options?: ParseQueryConfig) {
-  options = options || { allowApexBindVariables: false };
+  options = options || { allowApexBindVariables: false, logErrors: false };
+
   const lexResult = lexer.lex(soql);
-  const lexErrors = lexResult.errors;
+
+  if (lexResult.errors.length > 0) {
+    if (options.logErrors) {
+      console.log('Lexing Errors:');
+      console.log(lexResult.errors);
+    }
+    throw new LexingError(lexResult.errors[0]);
+  }
 
   // setting a new input will RESET the parser instance's state.
   parser.input = lexResult.tokens;
 
-  // any top level rule may be used as an entry point
+  // If true, allows WHERE foo = :bar
   parser.allowApexBindVariables = options.allowApexBindVariables || false;
 
   const cst = parser.selectStatement();
-  const parseErrors = parser.errors;
 
-  return {
-    // This is a pure grammar, the value will be undefined until we add embedded actions or enable automatic CST creation.
-    cst: cst,
-    lexErrors,
-    parseErrors,
-  };
+  if (parser.errors.length > 0) {
+    if (options.logErrors) {
+      console.log('Parsing Errors:');
+      console.log(parser.errors);
+    }
+    throw new ParsingError(parser.errors[0]);
+  }
+
+  return cst;
 }

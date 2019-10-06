@@ -351,5 +351,10 @@ export const testCases: TestCaseForFormat[] = [
     soql: `SELECT Name, Count(Id) FROM Account GROUP BY Name HAVING Count(Id) > 0 AND (Name LIKE '%testing%' OR Name LIKE '%123%')`,
     isValid: true,
   },
+  {
+    testCase: 136,
+    soql: `SELECT Name, Count(Id) FROM Account GROUP BY Name HAVING Count(Id) > 0 AND (Name LIKE '%testing%' OR Name LIKE '%123%'`,
+    isValid: false,
+  },
 ];
 export default testCases;

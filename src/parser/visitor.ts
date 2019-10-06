@@ -114,22 +114,23 @@ const DATE_N_LITERALS: DateNLiteral[] = [
   'N_FISCAL_YEARS_AGO',
 ];
 
-class SOQLToAstVisitor extends BaseSoqlVisitor {
+class SOQLVisitor extends BaseSoqlVisitor {
   constructor() {
     super();
     this.validateVisitor();
   }
 
+  /**
+   * This is the only public entry point for the parser
+   * @param ctx
+   * @param options
+   */
   selectStatement(ctx: SelectStatementContext, options?: { isSubquery: boolean }): Query | Subquery {
     const { isSubquery } = options || { isSubquery: false };
     const output: Partial<Query | Subquery> = {};
 
-    // "this.visit" can be used to visit none-terminals and will invoke the correct visit method for the CstNode passed.
     output.fields = this.visit(ctx.selectClause);
 
-    //  "this.visit" can work on either a CstNode or an Array of CstNodes.
-    //  If an array is passed (ctx.fromClause is an array) it is equivalent
-    //  to passing the first element of that array
     if (isSubqueryFromFlag(output, isSubquery)) {
       const { sObject, alias, sObjectPrefix } = this.visit(ctx.fromClause);
       output.relationshipName = sObject;
@@ -462,21 +463,27 @@ class SOQLToAstVisitor extends BaseSoqlVisitor {
   dateFunction(ctx: FieldFunctionContext, options: { includeType: boolean } = { includeType: true }) {
     return this.$_getFieldFunction(ctx, false, options.includeType);
   }
+
   aggregateFunction(ctx: FieldFunctionContext, options: { includeType: boolean } = { includeType: true }) {
     return this.$_getFieldFunction(ctx, true, options.includeType);
   }
+
   locationFunction(ctx: FieldFunctionContext, options: { includeType: boolean } = { includeType: true }) {
     return this.$_getFieldFunction(ctx, false, options.includeType);
   }
+
   otherFunction(ctx: FieldFunctionContext, options: { includeType: boolean } = { includeType: true }) {
     return this.$_getFieldFunction(ctx, false, options.includeType);
   }
+
   cubeFunction(ctx: FieldFunctionContext) {
     return this.$_getFieldFunction(ctx, false, false);
   }
+
   rollupFunction(ctx: FieldFunctionContext) {
     return this.$_getFieldFunction(ctx, false, false);
   }
+
   functionExpression(ctx: FunctionExpressionContext, options: { includeType: boolean } = { includeType: true }): string[] {
     if (ctx.Identifier) {
       return ctx.Identifier.map((item: any) => item.image);
@@ -618,6 +625,7 @@ class SOQLToAstVisitor extends BaseSoqlVisitor {
       return value;
     }
   }
+
   apexBindVariableExpression(ctx: ApexBindVariableExpressionContext): string {
     return ctx.Identifier[0].image;
   }
@@ -628,24 +636,30 @@ class SOQLToAstVisitor extends BaseSoqlVisitor {
       value: item.image,
     }));
   }
+
   relationalOperator(ctx: OperatorContext) {
     return ctx.operator[0].image;
   }
+
   setOperator(ctx: OperatorContext) {
     return ctx.operator[0].tokenType.name.replace('_', ' ');
   }
+
   booleanValue(ctx: BooleanContext) {
     return ctx.boolean[0].tokenType.name;
   }
+
   dateNLiteral(ctx: DateNLiteralContext) {
     return {
       value: `${ctx.dateNLiteral[0].image}:${ctx.variable[0].image}`,
       variable: Number(ctx.variable[0].image),
     };
   }
+
   forViewOrReference(ctx: ValueContext) {
     return ctx.value[0].tokenType.name;
   }
+
   updateTrackingViewstat(ctx: ValueContext) {
     return ctx.value[0].tokenType.name;
   }
@@ -688,23 +702,15 @@ class SOQLToAstVisitor extends BaseSoqlVisitor {
 }
 
 // Our visitor has no state, so a single instance is sufficient.
-const astVisitor = new SOQLToAstVisitor();
+const visitor = new SOQLVisitor();
 
 /**
  * Parse query and process results
  * @param soql
  */
 export function parseQuery(soql: string, options?: ParseQueryConfig): Query {
-  const { cst, lexErrors, parseErrors } = parse(soql, options);
-  if (lexErrors.length > 0) {
-    throw lexErrors[0];
-  }
-  if (parseErrors.length > 0) {
-    throw parseErrors[0];
-  }
-  const ast: Query = astVisitor.visit(cst);
-
-  return ast;
+  const query: Query = visitor.visit(parse(soql, options));
+  return query;
 }
 
 /**
@@ -713,6 +719,10 @@ export function parseQuery(soql: string, options?: ParseQueryConfig): Query {
  * @param soql
  */
 export function isQueryValid(soql: string, options?: ParseQueryConfig): boolean {
-  const { cst, lexErrors, parseErrors } = parse(soql, options);
-  return lexErrors.length === 0 && parseErrors.length === 0;
+  try {
+    parse(soql, options);
+    return true;
+  } catch (ex) {
+    return false;
+  }
 }

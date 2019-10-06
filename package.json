@@ -17,6 +17,7 @@
     "bundle:min": "webpack --config webpack-min.config.js",
     "tsc": "./node_modules/.bin/tsc",
     "release": "release-it",
+    "copy-tc-to-docs": "ts-node ./tasks/copy-test-cases-to-docs.ts",
     "test": "TS_NODE_PROJECT=\"test/tsconfig.json\" mocha --timeout 10000 -r ts-node/register test/**/*.spec.ts -P test/tsconfig.json"
   },
   "author": "Austin Turner <paustint@gmail.com>",
@@ -40,11 +41,13 @@
   },
   "devDependencies": {
     "@types/chai": "^4.2.3",
+    "@types/fs-extra": "^8.0.0",
     "@types/lodash.get": "^4.4.6",
     "@types/mocha": "^5.2.7",
     "@types/node": "^12.7.5",
     "chai": "^4.1.2",
     "chalk": "^2.4.2",
+    "fs-extra": "^8.1.0",
     "jsonfile": "^5.0.0",
     "license-webpack-plugin": "^2.1.2",
     "mocha": "^5.2.0",

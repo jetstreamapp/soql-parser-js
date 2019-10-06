@@ -82,5 +82,8 @@
   "SELECT HOUR_IN_DAY(convertTimezone(CreatedDate)), SUM(Amount) FROM Opportunity GROUP BY HOUR_IN_DAY(convertTimezone(CreatedDate))",
   "SELECT Id FROM Opportunity WHERE Amount > USD5000",
   "SELECT Id FROM Opportunity WHERE Amount > USD5000.01",
-  "SELECT Id, Amount FROM Opportunity WHERE Amount IN (usd500.01, usd600)"
+  "SELECT Id, Amount FROM Opportunity WHERE Amount IN (usd500.01, usd600)",
+  "SELECT Name, COUNT(Id) FROM Account GROUP BY Name HAVING COUNT(Id) > 0 AND (Name LIKE '%testing%' OR Name LIKE '%123%')",
+  "SELECT Name, COUNT(Id) FROM Account GROUP BY Name HAVING COUNT(Id) > 0 AND (Name IN ('4/30 testing account', 'amendment quote doc testing', null))",
+  "SELECT Name, COUNT(Id) FROM Account GROUP BY Name HAVING COUNT(Id) > 0 AND (NOT Name IN ('4/30 testing account', 'amendment quote doc testing'))"
 ]
