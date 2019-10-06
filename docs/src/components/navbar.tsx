@@ -10,7 +10,7 @@ export function Navbar(props: any) {
       </div>
       <div className="logos">
         <a href="https://github.com/paustint/soql-parser-js" target="_blank">
-          <img src={ghImage} />
+          <img src={ghImage.default} />
         </a>
       </div>
     </div>

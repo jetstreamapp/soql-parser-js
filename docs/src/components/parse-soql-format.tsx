@@ -12,10 +12,10 @@ export interface ParseSoqlFormatProps {
 }
 
 export default class ParseSoqlFormat extends React.Component<ParseSoqlFormatProps, any> {
-  public setMaxFieldLen = (ev: React.SyntheticEvent<HTMLInputElement>) => {
+  public setMaxFieldLength = (ev: React.FormEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const formatOptions = {
       ...this.props.formatOptions,
-      fieldMaxLineLen: Math.max(0, Number((ev.target as HTMLInputElement).value)),
+      fieldMaxLineLength: Math.max(0, Number((ev.target as HTMLInputElement).value)),
     };
     this.props.onChange(formatOptions);
   };
@@ -39,11 +39,7 @@ export default class ParseSoqlFormat extends React.Component<ParseSoqlFormatProp
   public render() {
     return (
       <div style={this.props.style}>
-        <Checkbox
-          label="Format Output"
-          checked={this.props.enabled}
-          onChange={() => this.props.toggleFormat(!this.props.enabled)}
-        />
+        <Checkbox label="Format Output" checked={this.props.enabled} onChange={() => this.props.toggleFormat(!this.props.enabled)} />
         <div style={{ margin: 5, paddingLeft: 10 }}>
           <div style={{ maxWidth: 400 }}>
             <TextField
@@ -52,14 +48,14 @@ export default class ParseSoqlFormat extends React.Component<ParseSoqlFormatProp
                   <span>
                     Number of characters before fields wrap -{' '}
                     <small>
-                      <code>fieldMaxLineLen</code>
+                      <code>fieldMaxLineLength</code>
                     </small>
                   </span>
                 ) as any
               }
               type="number"
-              value={String(this.props.formatOptions.fieldMaxLineLen)}
-              onChange={this.setMaxFieldLen}
+              value={String(this.props.formatOptions.fieldMaxLineLength)}
+              onChange={this.setMaxFieldLength}
               disabled={!this.props.enabled}
             />
           </div>

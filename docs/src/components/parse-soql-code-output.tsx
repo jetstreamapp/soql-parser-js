@@ -1,5 +1,5 @@
 import SyntaxHighlighter from 'react-syntax-highlighter/prism';
-import * as CopyToClipboard from 'react-copy-to-clipboard';
+import CopyToClipboard from 'react-copy-to-clipboard';
 import { xonokai } from 'react-syntax-highlighter/styles/prism';
 
 import * as React from 'react';
