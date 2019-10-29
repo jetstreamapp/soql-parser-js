@@ -8,6 +8,7 @@ import {
   isComposeFieldTypeof,
   isString,
   isSubquery,
+  isFieldSubquery,
 } from '../utils';
 
 export { isSubquery };
@@ -113,11 +114,14 @@ export function getField(input: string | ComposeFieldInput): SoqlModels.FieldTyp
  * @param [isAggregateResult] pass in true to force expr0...1 for all non-aliased functions even if field is not explicitly an aggregate expression
  * @returns flattened fields
  */
-export function getFlattenedFields(query: SoqlModels.Query, isAggregateResult?: boolean): string[] {
+export function getFlattenedFields(
+  query: SoqlModels.Query | SoqlModels.Subquery | SoqlModels.FieldSubquery,
+  isAggregateResult?: boolean,
+): string[] {
+  query = isFieldSubquery(query) ? query.subquery : query;
   const fields = query.fields;
   let currUnAliasedAggExp = -1;
-
-  let sObject = (query.sObject || '').toLowerCase();
+  let sObject = (isSubquery(query) ? query.relationshipName : query.sObject || '').toLowerCase();
   let sObjectAlias = (query.sObjectAlias || '').toLowerCase();
 
   const parsedFields = fields

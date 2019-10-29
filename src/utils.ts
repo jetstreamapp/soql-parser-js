@@ -1,5 +1,5 @@
 import { IToken } from 'chevrotain';
-import { FieldFunctionExpression, LiteralType, Query, Subquery, WhereClause, ValueQuery, Condition } from './api/api-models';
+import { FieldFunctionExpression, LiteralType, Query, Subquery, WhereClause, ValueQuery, Condition, FieldSubquery } from './api/api-models';
 import { ComposeField, ComposeFieldFunction, ComposeFieldRelationship, ComposeFieldSubquery, ComposeFieldTypeof } from './api/public-utils';
 import { isUndefined } from 'util';
 
@@ -74,6 +74,10 @@ export function pad(val: string, len: number, left: number = 0): string {
 
 export function isSubquery(query: Query | Subquery): query is Subquery {
   return isString((query as any).relationshipName);
+}
+
+export function isFieldSubquery(value: any): value is FieldSubquery {
+  return value && value.type && value.type === 'FieldSubquery';
 }
 
 /**

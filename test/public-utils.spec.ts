@@ -2,6 +2,7 @@ import * as utils from '../src/api/public-utils';
 import { expect } from 'chai';
 import 'mocha';
 import { testCases } from './public-utils-test-data';
+import { FieldSubquery, Query } from '../src';
 const lodashGet = require('lodash.get');
 
 describe('getField', () => {
@@ -213,5 +214,23 @@ describe('getFlattenedFields', () => {
         expect(lodashGet(testCase.sfdcObj, field)).to.not.be.undefined;
       });
     });
+  });
+
+  it(`Should allow a FieldSubquery to be passed in`, () => {
+    const fieldSubquery: FieldSubquery = {
+      type: 'FieldSubquery',
+      subquery: { fields: [{ type: 'Field', field: 'LastName' }], relationshipName: 'Contacts' },
+    };
+    const fields = utils.getFlattenedFields(fieldSubquery);
+    expect(fields).to.deep.equal(['LastName']);
+  });
+
+  it(`Should allow a Subquery to be passed in`, () => {
+    const fieldSubquery: FieldSubquery = {
+      type: 'FieldSubquery',
+      subquery: { fields: [{ type: 'Field', field: 'LastName' }], relationshipName: 'Contacts' },
+    };
+    const fields = utils.getFlattenedFields(fieldSubquery.subquery);
+    expect(fields).to.deep.equal(['LastName']);
   });
 });

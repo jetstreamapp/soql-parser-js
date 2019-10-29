@@ -259,4 +259,24 @@ export const testCases: FlattenedObjTestCase[] = [
       },
     },
   },
+  {
+    testCase: 8,
+    expectedFields: ['Id', 'Contacts'],
+    query: {
+      fields: [
+        {
+          type: 'Field',
+          field: 'Id',
+        },
+        { type: 'FieldSubquery', subquery: { fields: [{ type: 'Field', field: 'LastName' }], relationshipName: 'Contacts' } },
+      ],
+      sObject: 'Account',
+    },
+    sfdcObj: {
+      Id: '0011800000ahbs3AAA',
+      Name: 'Amendment Demo',
+      BillingCity: 'Missoula',
+      Contacts: {},
+    },
+  },
 ];

@@ -46,11 +46,12 @@ isQueryValid('SELECT Id Foo FROM Baz'); // false
 
 ## Utility Functions
 
-| Function           | Description                                                                                                                                                               | Arguments                                  |
-| ------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------ |
-| getField           | Convenience method to construct fields in the correct format when using `composeQuery()`. Look in the data models section below for the structure of `ComposeFieldInput`. | input: `string | ComposeFieldInput`        |
-| isSubquery         | Returns `true` if the data passed in is a subquery.                                                                                                                       | query: `Query | Subquery`                  |
-| getFlattenedFields | Flatten a Salesforce record based on the parsed SOQL Query.                                                                                                               | soql: Query<br> config?: SoqlComposeConfig |
+| Function           | Description                                                                                                                                                               | Arguments                                                                 |
+| ------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------- |
+| getField           | Convenience method to construct fields in the correct format when using `composeQuery()`. Look in the data models section below for the structure of `ComposeFieldInput`. | input: `string | ComposeFieldInput`                                       |
+| isSubquery         | Returns `true` if the data passed in is a subquery.                                                                                                                       | query: `Query | Subquery`                                                 |
+| isFieldSubquery    | Returns `true` if the data passed in is a FieldSubquery.                                                                                                                  | value: `any`                                                              |
+| getFlattenedFields | Flatten a Salesforce record based on the parsed SOQL Query.                                                                                                               | soql: `Query | Subquery | FieldSubquery`<br> config?: `SoqlComposeConfig` |
 
 **ParseQueryConfig**
 
@@ -382,7 +383,7 @@ The following utility functions are available:
    2. returns one of the following data structures: `SoqlModels.FieldFunctionExpression | SoqlModels.Field | SoqlModels.FieldRelationship | SoqlModels.FieldSubquery | SoqlModels.FieldTypeOf`.
 2. `isSubquery(query: Query | Subquery)`
    1. Returns `true` if the data passed in is a subquery
-3. `getFlattenedFields(query: Query)`
+3. `getFlattenedFields(query: Query | Subquery | FieldSubquery)`
    1. Flatten a Salesforce record based on the parsed SOQL Query. this is useful if you have relationships in your query and want to show the results in a table, using `.` dot notation for the relationship field headings.
    2. Returns an array of strings.
    3. Refer to `tests/publicUtils.spec.ts` for usage examples.
