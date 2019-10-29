@@ -1,5 +1,10 @@
 # Changelog
 
+## 2.1.0
+
+1. The method signature for `getFlattenedFields` has changed to allow `Query | Subquery | FieldSubquery` to be passed in. this is not being considered a breaking change because it is fully backwards compatible.
+2. A new helper method `isFieldSubquery(value: any)` was added to allow determining if a Field is a FieldSubquery. This is used internally for `getFlattenedFields()`.
+
 ## 2.0.0
 
 ### Summary
