@@ -1536,6 +1536,105 @@ export const testCases: TestCase[] = [
       },
     },
   },
+  {
+    testCase: 88,
+    soql: `SELECT Name, Location__c FROM Warehouse__c WHERE DISTANCE(Location__c, GEOLOCATION(37.775, -122.418), 'mi') < 20`,
+    output: {
+      fields: [{ type: 'Field', field: 'Name' }, { type: 'Field', field: 'Location__c' }],
+      sObject: 'Warehouse__c',
+      where: {
+        left: {
+          fn: {
+            rawValue: `DISTANCE(Location__c, GEOLOCATION(37.775, -122.418), 'mi')`,
+            functionName: 'DISTANCE',
+            parameters: [
+              'Location__c',
+              {
+                rawValue: 'GEOLOCATION(37.775, -122.418)',
+                functionName: 'GEOLOCATION',
+                parameters: ['37.775', '-122.418'],
+              },
+              `'mi'`,
+            ],
+          },
+          operator: '<',
+          value: '20',
+          literalType: 'INTEGER',
+        },
+      },
+    },
+  },
+  {
+    testCase: 89,
+    soql: `SELECT Name, StreetAddress__c FROM Warehouse__c WHERE DISTANCE(Location__c, GEOLOCATION(37.775, -122.418), 'mi') < 20 ORDER BY DISTANCE(Location__c, GEOLOCATION(37.775, -122.418), 'mi') LIMIT 10`,
+    output: {
+      fields: [{ type: 'Field', field: 'Name' }, { type: 'Field', field: 'StreetAddress__c' }],
+      sObject: 'Warehouse__c',
+      where: {
+        left: {
+          fn: {
+            rawValue: `DISTANCE(Location__c, GEOLOCATION(37.775, -122.418), 'mi')`,
+            functionName: 'DISTANCE',
+            parameters: [
+              'Location__c',
+              {
+                rawValue: 'GEOLOCATION(37.775, -122.418)',
+                functionName: 'GEOLOCATION',
+                parameters: ['37.775', '-122.418'],
+              },
+              `'mi'`,
+            ],
+          },
+          operator: '<',
+          value: '20',
+          literalType: 'INTEGER',
+        },
+      },
+      orderBy: {
+        fn: {
+          rawValue: `DISTANCE(Location__c, GEOLOCATION(37.775, -122.418), 'mi')`,
+          functionName: 'DISTANCE',
+          parameters: [
+            'Location__c',
+            {
+              rawValue: 'GEOLOCATION(37.775, -122.418)',
+              functionName: 'GEOLOCATION',
+              parameters: ['37.775', '-122.418'],
+            },
+            `'mi'`,
+          ],
+        },
+      },
+      limit: 10,
+    },
+  },
+  {
+    testCase: 90,
+    soql: `SELECT Id, Name, Location, DISTANCE(Location, GEOLOCATION(10, 10), 'mi') FROM CONTACT`,
+    output: {
+      fields: [
+        { type: 'Field', field: 'Id' },
+        { type: 'Field', field: 'Name' },
+        { type: 'Field', field: 'Location' },
+        {
+          type: 'FieldFunctionExpression',
+          functionName: 'DISTANCE',
+          rawValue: `DISTANCE(Location, GEOLOCATION(10, 10), 'mi')`,
+          parameters: [
+            'Location',
+            {
+              type: 'FieldFunctionExpression',
+              functionName: 'GEOLOCATION',
+              parameters: ['10', '10'],
+              rawValue: 'GEOLOCATION(10, 10)',
+            },
+            `'mi'`,
+          ],
+        },
+      ],
+      sObject: 'CONTACT',
+    },
+  },
 ];
 
 export default testCases;

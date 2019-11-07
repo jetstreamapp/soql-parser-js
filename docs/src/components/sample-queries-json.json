@@ -85,5 +85,8 @@
   "SELECT Id, Amount FROM Opportunity WHERE Amount IN (usd500.01, usd600)",
   "SELECT Name, COUNT(Id) FROM Account GROUP BY Name HAVING COUNT(Id) > 0 AND (Name LIKE '%testing%' OR Name LIKE '%123%')",
   "SELECT Name, COUNT(Id) FROM Account GROUP BY Name HAVING COUNT(Id) > 0 AND (Name IN ('4/30 testing account', 'amendment quote doc testing', null))",
-  "SELECT Name, COUNT(Id) FROM Account GROUP BY Name HAVING COUNT(Id) > 0 AND (NOT Name IN ('4/30 testing account', 'amendment quote doc testing'))"
+  "SELECT Name, COUNT(Id) FROM Account GROUP BY Name HAVING COUNT(Id) > 0 AND (NOT Name IN ('4/30 testing account', 'amendment quote doc testing'))",
+  "SELECT Name, Location__c FROM Warehouse__c WHERE DISTANCE(Location__c, GEOLOCATION(37.775, -122.418), 'mi') < 20",
+  "SELECT Name, StreetAddress__c FROM Warehouse__c WHERE DISTANCE(Location__c, GEOLOCATION(37.775, -122.418), 'mi') < 20 ORDER BY DISTANCE(Location__c, GEOLOCATION(37.775, -122.418), 'mi') LIMIT 10",
+  "SELECT Id, Name, Location, DISTANCE(Location, GEOLOCATION(10, 10), 'mi') FROM CONTACT"
 ]

@@ -201,7 +201,7 @@ export class SoqlParser extends CstParser {
     const parenCount = this.getParenCount();
     this.AT_LEAST_ONE({
       DEF: () => {
-        this.SUBRULE(this.conditionExpression, { ARGS: [parenCount, false, true] });
+        this.SUBRULE(this.conditionExpression, { ARGS: [parenCount, false, true, true] });
       },
     });
 
@@ -220,7 +220,7 @@ export class SoqlParser extends CstParser {
 
   private conditionExpression = this.RULE(
     'conditionExpression',
-    (parenCount?: ParenCount, allowSubquery?: boolean, alowAggregateFn?: boolean) => {
+    (parenCount?: ParenCount, allowSubquery?: boolean, alowAggregateFn?: boolean, allowLocationFn?: boolean) => {
       // argument is undefined during self-analysis, need to initialize to avoid exception
       parenCount = this.getParenCount(parenCount);
       this.OPTION(() => {
@@ -229,7 +229,7 @@ export class SoqlParser extends CstParser {
           { ALT: () => this.CONSUME(lexer.Or, { LABEL: 'logicalOperator' }) },
         ]);
       });
-      this.SUBRULE(this.expression, { ARGS: [parenCount, allowSubquery, alowAggregateFn] });
+      this.SUBRULE(this.expression, { ARGS: [parenCount, allowSubquery, alowAggregateFn, allowLocationFn] });
     },
   );
 
@@ -314,6 +314,7 @@ export class SoqlParser extends CstParser {
       DEF: () => {
         this.OR([
           { ALT: () => this.SUBRULE(this.orderByFunctionExpression, { LABEL: 'orderByExpressionOrFn' }) },
+          { ALT: () => this.SUBRULE(this.orderByLocationExpression, { LABEL: 'orderByExpressionOrFn' }) },
           { ALT: () => this.SUBRULE(this.orderByExpression, { LABEL: 'orderByExpressionOrFn' }) },
         ]);
       },
@@ -334,6 +335,17 @@ export class SoqlParser extends CstParser {
   private orderByFunctionExpression = this.RULE('orderByFunctionExpression', () => {
     this.CONSUME(lexer.Grouping, { LABEL: 'fn' });
     this.SUBRULE(this.functionExpression);
+  });
+
+  private orderByLocationExpression = this.RULE('orderByLocationExpression', () => {
+    this.SUBRULE(this.locationFunction);
+    this.OPTION(() => {
+      this.OR([{ ALT: () => this.CONSUME(lexer.Asc, { LABEL: 'order' }) }, { ALT: () => this.CONSUME(lexer.Desc, { LABEL: 'order' }) }]);
+    });
+    this.OPTION1(() => {
+      this.CONSUME(lexer.Nulls);
+      this.OR1([{ ALT: () => this.CONSUME(lexer.First, { LABEL: 'nulls' }) }, { ALT: () => this.CONSUME(lexer.Last, { LABEL: 'nulls' }) }]);
+    });
   });
 
   private limitClause = this.RULE('limitClause', () => {
@@ -385,11 +397,6 @@ export class SoqlParser extends CstParser {
     this.SUBRULE(this.functionExpression, { ARGS: [true] });
   });
 
-  private locationFunction = this.RULE('locationFunction', () => {
-    this.OR([{ ALT: () => this.CONSUME(lexer.Distance) }, { ALT: () => this.CONSUME(lexer.Geolocation) }]);
-    this.SUBRULE(this.functionExpression);
-  });
-
   private otherFunction = this.RULE('otherFunction', () => {
     this.OR(
       this.$_otherFunction ||
@@ -420,53 +427,81 @@ export class SoqlParser extends CstParser {
       SEP: lexer.Comma,
       DEF: () => {
         this.OR([
-          { GATE: () => !skipAggregate, ALT: () => this.SUBRULE(this.aggregateFunction, { LABEL: 'fn' }) },
-          { ALT: () => this.SUBRULE(this.locationFunction, { LABEL: 'fn' }) },
-          { ALT: () => this.SUBRULE(this.otherFunction, { LABEL: 'fn' }) },
-          { ALT: () => this.CONSUME(lexer.Identifier) },
+          { GATE: () => !skipAggregate, ALT: () => this.SUBRULE(this.aggregateFunction, { LABEL: 'params' }) },
+          { ALT: () => this.SUBRULE(this.otherFunction, { LABEL: 'params' }) },
+          { ALT: () => this.CONSUME(lexer.StringIdentifier, { LABEL: 'params' }) },
+          { ALT: () => this.CONSUME(lexer.NumberIdentifier, { LABEL: 'params' }) },
+          { ALT: () => this.CONSUME(lexer.Identifier, { LABEL: 'params' }) },
         ]);
       },
     });
     this.CONSUME(lexer.RParen);
   });
 
-  private expression = this.RULE('expression', (parenCount?: ParenCount, allowSubquery?: boolean, alowAggregateFn?: boolean) => {
-    this.OPTION(() => {
-      this.MANY(() => {
-        this.CONSUME(lexer.LParen);
-        if (parenCount) {
-          parenCount.left++;
-        }
-      });
-    });
-
-    this.OPTION1(() => {
-      this.CONSUME(lexer.Not, { LABEL: 'logicalPrefix' });
-    });
-
-    this.OR1([
-      { GATE: () => alowAggregateFn, ALT: () => this.SUBRULE(this.aggregateFunction, { LABEL: 'lhs' }) },
-      { ALT: () => this.SUBRULE(this.otherFunction, { LABEL: 'lhs' }) },
-      { ALT: () => this.CONSUME(lexer.Identifier, { LABEL: 'lhs' }) },
+  private locationFunction = this.RULE('locationFunction', () => {
+    this.CONSUME(lexer.Distance);
+    this.CONSUME(lexer.LParen);
+    this.CONSUME(lexer.Identifier, { LABEL: 'location1' });
+    this.CONSUME(lexer.Comma);
+    this.OR([
+      { ALT: () => this.SUBRULE(this.geolocationFunction, { LABEL: 'location2' }) },
+      { ALT: () => this.CONSUME1(lexer.Identifier, { LABEL: 'location2' }) },
     ]);
-
-    this.OR2([
-      { ALT: () => this.SUBRULE(this.expressionWithRelationalOperator, { LABEL: 'operator' }) },
-      { ALT: () => this.SUBRULE(this.expressionWithSetOperator, { LABEL: 'operator', ARGS: [allowSubquery] }) },
-    ]);
-
-    this.OPTION4(() => {
-      this.MANY1({
-        GATE: () => (parenCount ? parenCount.left > parenCount.right : true),
-        DEF: () => {
-          this.CONSUME(lexer.RParen);
-          if (parenCount) {
-            parenCount.right++;
-          }
-        },
-      });
-    });
+    this.CONSUME1(lexer.Comma);
+    this.CONSUME(lexer.GeolocationUnit, { LABEL: 'unit' });
+    this.CONSUME(lexer.RParen);
   });
+
+  private geolocationFunction = this.RULE('geolocationFunction', () => {
+    this.CONSUME(lexer.Geolocation);
+    this.CONSUME(lexer.LParen);
+    this.CONSUME(lexer.NumberIdentifier, { LABEL: 'latitude' });
+    this.CONSUME(lexer.Comma);
+    this.CONSUME1(lexer.NumberIdentifier, { LABEL: 'longitude' });
+    this.CONSUME(lexer.RParen);
+  });
+
+  private expression = this.RULE(
+    'expression',
+    (parenCount?: ParenCount, allowSubquery?: boolean, alowAggregateFn?: boolean, allowLocationFn?: boolean) => {
+      this.OPTION(() => {
+        this.MANY(() => {
+          this.CONSUME(lexer.LParen);
+          if (parenCount) {
+            parenCount.left++;
+          }
+        });
+      });
+
+      this.OPTION1(() => {
+        this.CONSUME(lexer.Not, { LABEL: 'logicalPrefix' });
+      });
+
+      this.OR1([
+        { GATE: () => alowAggregateFn, ALT: () => this.SUBRULE(this.aggregateFunction, { LABEL: 'lhs' }) },
+        { GATE: () => allowLocationFn, ALT: () => this.SUBRULE(this.locationFunction, { LABEL: 'lhs' }) },
+        { ALT: () => this.SUBRULE(this.otherFunction, { LABEL: 'lhs' }) },
+        { ALT: () => this.CONSUME(lexer.Identifier, { LABEL: 'lhs' }) },
+      ]);
+
+      this.OR2([
+        { ALT: () => this.SUBRULE(this.expressionWithRelationalOperator, { LABEL: 'operator' }) },
+        { ALT: () => this.SUBRULE(this.expressionWithSetOperator, { LABEL: 'operator', ARGS: [allowSubquery] }) },
+      ]);
+
+      this.OPTION4(() => {
+        this.MANY1({
+          GATE: () => (parenCount ? parenCount.left > parenCount.right : true),
+          DEF: () => {
+            this.CONSUME(lexer.RParen);
+            if (parenCount) {
+              parenCount.right++;
+            }
+          },
+        });
+      });
+    },
+  );
 
   private expressionWithRelationalOperator = this.RULE('expressionWithRelationalOperator', () => {
     this.SUBRULE(this.relationalOperator);

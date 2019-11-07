@@ -248,7 +248,7 @@ export class Compose {
           if (field.parameters) {
             params = field.parameters
               .map(param => (utils.isString(param) ? param : this.parseFields([param as FieldFunctionExpression])))
-              .join(',');
+              .join(', ');
           }
           return `${field.functionName}(${params})${field.alias ? ` ${field.alias}` : ''}`;
         }
