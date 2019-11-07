@@ -356,5 +356,55 @@ export const testCases: TestCaseForFormat[] = [
     soql: `SELECT Name, Count(Id) FROM Account GROUP BY Name HAVING Count(Id) > 0 AND (Name LIKE '%testing%' OR Name LIKE '%123%'`,
     isValid: false,
   },
+  {
+    testCase: 137,
+    soql: `SELECT Name, StreetAddress__c FROM Warehouse__c WHERE GEOLOCATION(Location__c, DISTANCE(37.775, -122.418), 'mi') < 20`,
+    isValid: false,
+  },
+  {
+    testCase: 138,
+    soql: `SELECT Name, StreetAddress__c FROM Warehouse__c WHERE GEOLOCATION(37.775, -122.418) < 20`,
+    isValid: false,
+  },
+  {
+    testCase: 139,
+    soql: `SELECT Name, GEOLOCATION(37.775, -122.418) FROM Warehouse__c`,
+    isValid: false,
+  },
+  {
+    testCase: 140,
+    soql: `SELECT Name, DISTANCE(37.775, -122.418) FROM Warehouse__c`,
+    isValid: false,
+  },
+  {
+    testCase: 141,
+    soql: `SELECT Id, Name, Location, DISTANCE(Location, GEOLOCATION(10, 10), 'mi') FROM CONTACT`,
+    isValid: true,
+  },
+  {
+    testCase: 142,
+    soql: `SELECT Id, Name, Location, DISTANCE(Location, GEOLOCATION(10, 10), 'km') FROM CONTACT`,
+    isValid: true,
+  },
+  {
+    testCase: 143,
+    soql: `SELECT Id, Name, Location, DISTANCE(Location, GEOLOCATION(-10, -10), 'km') FROM CONTACT`,
+    isValid: true,
+  },
+  {
+    testCase: 144,
+    soql: `SELECT Id, Name, Location, DISTANCE(Location, GEOLOCATION(-10.775, -10.775), 'mi') FROM CONTACT`,
+    isValid: true,
+  },
+  {
+    testCase: 145,
+    soql: `SELECT Id, Name, Location, DISTANCE(Location, GEOLOCATION(10, 10), 'm') FROM CONTACT`,
+    isValid: false,
+  },
+  {
+    testCase: 146,
+    soql: `SELECT Id, Name, Location, DISTANCE(GEOLOCATION(37.775,-122.418), warehouse_location__c, 'km') FROM CONTACT`,
+    isValid: false,
+  },
 ];
 export default testCases;

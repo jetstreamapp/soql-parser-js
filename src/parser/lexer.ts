@@ -385,6 +385,7 @@ export const Distance = createToken({
   longer_alt: Identifier,
   categories: [LocationFunction, Identifier],
 });
+
 export const Geolocation = createToken({
   name: 'GEOLOCATION',
   pattern: /GEOLOCATION/i,
@@ -746,6 +747,13 @@ export const SignedInteger = createToken({
   pattern: /(\-|\+)[0-9]+/,
   categories: [NumberIdentifier, IntegerNumberIdentifier],
 });
+export const GeolocationUnit = createToken({
+  name: 'GEOLOCATION_UNIT',
+  pattern: /'(mi|km)'/,
+  longer_alt: Identifier,
+  categories: [Identifier],
+});
+
 export const UnsignedInteger = createToken({
   name: 'UNSIGNED_INTEGER',
   pattern: /0|[1-9]\d*/,
@@ -948,6 +956,8 @@ export const allTokens = [
   NextNFiscalYears,
   LastNFiscalYears,
   NFiscalYearsAgo,
+
+  GeolocationUnit,
 
   In,
   NotIn,

@@ -55,9 +55,13 @@ import {
   WhereClauseSubqueryContext,
   WithClauseContext,
   WithDateCategoryContext,
+  LocationFunctionContext,
+  GeoLocationFunctionContext,
+  OrderByLocationExpressionContext,
 } from '../models';
 import { isSubqueryFromFlag, isToken } from '../utils';
 import { parse, ParseQueryConfig, SoqlParser } from './parser';
+import { isString } from 'util';
 
 const parser = new SoqlParser();
 
@@ -429,6 +433,19 @@ class SOQLVisitor extends BaseSoqlVisitor {
     return orderByClause;
   }
 
+  orderByLocationExpression(ctx: OrderByLocationExpressionContext): OrderByClause {
+    const orderByClause: OrderByClause = {
+      fn: this.visit(ctx.locationFunction, { includeType: false }),
+    };
+    if (ctx.order && ctx.order[0]) {
+      orderByClause.order = ctx.order[0].tokenType.name as OrderByCriterion;
+    }
+    if (ctx.nulls && ctx.nulls[0]) {
+      orderByClause.nulls = ctx.nulls[0].tokenType.name as NullsOrder;
+    }
+    return orderByClause;
+  }
+
   limitClause(ctx: ValueContext) {
     return ctx.value[0].image;
   }
@@ -468,10 +485,6 @@ class SOQLVisitor extends BaseSoqlVisitor {
     return this.$_getFieldFunction(ctx, true, options.includeType);
   }
 
-  locationFunction(ctx: FieldFunctionContext, options: { includeType: boolean } = { includeType: true }) {
-    return this.$_getFieldFunction(ctx, false, options.includeType);
-  }
-
   otherFunction(ctx: FieldFunctionContext, options: { includeType: boolean } = { includeType: true }) {
     return this.$_getFieldFunction(ctx, false, options.includeType);
   }
@@ -484,11 +497,53 @@ class SOQLVisitor extends BaseSoqlVisitor {
     return this.$_getFieldFunction(ctx, false, false);
   }
 
+  locationFunction(ctx: LocationFunctionContext, options: { includeType: boolean } = { includeType: true }) {
+    let output: any = {};
+    if (options.includeType) {
+      output.type = 'FieldFunctionExpression';
+    }
+    output = {
+      ...output,
+      ...{
+        functionName: 'DISTANCE',
+        parameters: [
+          ctx.location1[0].image,
+          isToken(ctx.location2) ? ctx.location2[0].image : this.visit(ctx.location2, options),
+          ctx.unit[0].image,
+        ],
+      },
+    };
+
+    output.rawValue = `DISTANCE(${output.parameters[0]}, ${
+      isString(output.parameters[1]) ? output.parameters[1] : output.parameters[1].rawValue
+    }, ${output.parameters[2]})`;
+    return output;
+  }
+
+  geolocationFunction(ctx: GeoLocationFunctionContext, options: { includeType: boolean } = { includeType: true }) {
+    let output: any = {};
+    if (options.includeType) {
+      output.type = 'FieldFunctionExpression';
+    }
+    output = {
+      ...output,
+      ...{
+        functionName: 'GEOLOCATION',
+        parameters: [ctx.latitude[0].image, ctx.longitude[0].image],
+        rawValue: `GEOLOCATION(${ctx.latitude[0].image}, ${ctx.longitude[0].image})`,
+      },
+    };
+    return output;
+  }
+
   functionExpression(ctx: FunctionExpressionContext, options: { includeType: boolean } = { includeType: true }): string[] {
-    if (ctx.Identifier) {
-      return ctx.Identifier.map((item: any) => item.image);
-    } else if (ctx.fn) {
-      return ctx.fn.map((item: any) => this.visit(item, options));
+    if (ctx.params) {
+      return ctx.params.map((item: any) => {
+        if (item.image) {
+          return item.image;
+        }
+        return this.visit(item, options);
+      });
     }
     return [];
   }

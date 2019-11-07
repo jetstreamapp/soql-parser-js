@@ -1,11 +1,21 @@
 # Changelog
 
+## 2.2.0
+
+Nov 6, 2019
+
+1. `DISTANCE` and `GEOLOCATION` functions failed to parse when used in a `WHERE` clauses and `ORDER BY` clauses.
+
 ## 2.1.0
+
+Oct 28, 2019
 
 1. The method signature for `getFlattenedFields` has changed to allow `Query | Subquery | FieldSubquery` to be passed in. this is not being considered a breaking change because it is fully backwards compatible.
 2. A new helper method `isFieldSubquery(value: any)` was added to allow determining if a Field is a FieldSubquery. This is used internally for `getFlattenedFields()`.
 
 ## 2.0.0
+
+Oct 6, 2019
 
 ### Summary
 

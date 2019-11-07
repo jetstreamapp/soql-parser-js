@@ -129,7 +129,12 @@ export interface OrderByExpressionContext extends WithIdentifier {
 
 export interface OrderByFunctionExpressionContext extends WithIdentifier {
   fn: IToken[];
-  alias?: IToken[];
+  order?: IToken[];
+  nulls?: IToken[];
+}
+
+export interface OrderByLocationExpressionContext {
+  locationFunction: CstNode[];
   order?: IToken[];
   nulls?: IToken[];
 }
@@ -161,6 +166,17 @@ export interface FieldFunctionContext {
   fn: IToken[];
 }
 
+export interface LocationFunctionContext {
+  location1: IToken[];
+  location2: IToken[] | CstNode[];
+  unit: IToken[];
+}
+
+export interface GeoLocationFunctionContext {
+  latitude: IToken[];
+  longitude: IToken[];
+}
+
 export interface ExpressionContext {
   logicalPrefix?: IToken[];
   lhs: IToken[] | CstNode[];
@@ -183,8 +199,8 @@ export interface FromClauseContext extends WithIdentifier {
   alias?: IToken[];
 }
 
-export interface FunctionExpressionContext extends WithIdentifier {
-  fn?: CstNode[];
+export interface FunctionExpressionContext {
+  params?: (CstNode | IToken)[];
 }
 
 export interface AtomicExpressionContext {
