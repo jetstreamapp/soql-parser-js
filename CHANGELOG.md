@@ -1,5 +1,11 @@
 # Changelog
 
+## 2.2.1
+
+Nov 17, 2019
+
+1. `GROUP BY` did not allow multiple fields to be listed, for example: `SELECT BillingState, BillingStreet, COUNT(Id) FROM Account GROUP BY BillingState, BillingStreet` would fail to parse.
+
 ## 2.2.0
 
 Nov 6, 2019

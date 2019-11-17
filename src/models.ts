@@ -3,8 +3,6 @@ import { LiteralType } from './api/api-models';
 
 export type LiteralTypeWithSubquery = (LiteralType | 'SUBQUERY') | LiteralType[];
 
-// export type HavingConditionWithDateLiteralVar = HavingCondition & { dateLiteralVariable: string };
-
 export interface ArrayExpressionWithType {
   type: string;
   value: string;
@@ -108,9 +106,14 @@ export interface WithDateCategoryConditionContext {
   dataCategoryName: IToken[];
 }
 
-export interface GroupByClauseContext extends WithIdentifier {
+export interface GroupByClauseContext {
+  groupByFieldList?: CstNode[];
   fn: CstNode[];
   havingClause: CstNode[];
+}
+
+export interface GroupByFieldListContext {
+  field: IToken[];
 }
 
 export interface HavingClauseContext {
@@ -232,5 +235,3 @@ export interface ExpressionWithAggregateFunctionContext {
   relationalOperator?: CstNode[];
   setOperator?: CstNode[];
 }
-
-// CstNode | CstNode[]

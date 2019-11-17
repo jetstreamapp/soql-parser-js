@@ -58,6 +58,7 @@ import {
   LocationFunctionContext,
   GeoLocationFunctionContext,
   OrderByLocationExpressionContext,
+  GroupByFieldListContext,
 } from '../models';
 import { isSubqueryFromFlag, isToken } from '../utils';
 import { parse, ParseQueryConfig, SoqlParser } from './parser';
@@ -365,7 +366,7 @@ class SOQLVisitor extends BaseSoqlVisitor {
   }
 
   groupByClause(ctx: GroupByClauseContext): GroupByClause {
-    let field = ctx.Identifier ? ctx.Identifier.map((item: any) => item.image) : undefined;
+    let field = ctx.groupByFieldList ? ctx.groupByFieldList.map((item: any) => this.visit(item)) : undefined;
     if (field && field.length === 1) {
       field = field[0];
     }
@@ -380,6 +381,14 @@ class SOQLVisitor extends BaseSoqlVisitor {
       output.having = this.visit(ctx.havingClause);
     }
     return output;
+  }
+
+  groupByFieldList(ctx: GroupByFieldListContext): string | string[] {
+    if (ctx.field.length > 1) {
+      return ctx.field.map((item: any) => item.image);
+    } else {
+      return ctx.field[0].image;
+    }
   }
 
   havingClause(ctx: HavingClauseContext): HavingClause {

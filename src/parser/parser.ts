@@ -283,10 +283,19 @@ export class SoqlParser extends CstParser {
       { ALT: () => this.SUBRULE(this.cubeFunction, { LABEL: 'fn' }) },
       { ALT: () => this.SUBRULE(this.rollupFunction, { LABEL: 'fn' }) },
       { ALT: () => this.SUBRULE(this.dateFunction, { LABEL: 'fn' }) },
-      { ALT: () => this.CONSUME1(lexer.Identifier) },
+      { ALT: () => this.SUBRULE(this.groupByFieldList) },
     ]);
     this.OPTION(() => {
       this.SUBRULE(this.havingClause);
+    });
+  });
+
+  private groupByFieldList = this.RULE('groupByFieldList', () => {
+    this.AT_LEAST_ONE_SEP({
+      SEP: lexer.Comma,
+      DEF: () => {
+        this.CONSUME(lexer.Identifier, { LABEL: 'field' });
+      },
     });
   });
 
