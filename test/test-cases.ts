@@ -15,7 +15,11 @@ export const testCases: TestCase[] = [
     testCase: 1,
     soql: 'SELECT Id, Name, BillingCity FROM Account',
     output: {
-      fields: [{ type: 'Field', field: 'Id' }, { type: 'Field', field: 'Name' }, { type: 'Field', field: 'BillingCity' }],
+      fields: [
+        { type: 'Field', field: 'Id' },
+        { type: 'Field', field: 'Name' },
+        { type: 'Field', field: 'BillingCity' },
+      ],
       sObject: 'Account',
     },
   },
@@ -114,7 +118,10 @@ export const testCases: TestCase[] = [
     testCase: 9,
     soql: 'SELECT Name, Id FROM Merchandise__c ORDER BY Name OFFSET 100',
     output: {
-      fields: [{ type: 'Field', field: 'Name' }, { type: 'Field', field: 'Id' }],
+      fields: [
+        { type: 'Field', field: 'Name' },
+        { type: 'Field', field: 'Id' },
+      ],
       sObject: 'Merchandise__c',
       orderBy: { field: 'Name' },
       offset: 100,
@@ -124,7 +131,10 @@ export const testCases: TestCase[] = [
     testCase: 10,
     soql: 'SELECT Name, Id FROM Merchandise__c ORDER BY Name LIMIT 20 OFFSET 100',
     output: {
-      fields: [{ type: 'Field', field: 'Name' }, { type: 'Field', field: 'Id' }],
+      fields: [
+        { type: 'Field', field: 'Name' },
+        { type: 'Field', field: 'Id' },
+      ],
       sObject: 'Merchandise__c',
       orderBy: { field: 'Name' },
       limit: 20,
@@ -339,7 +349,13 @@ export const testCases: TestCase[] = [
   {
     testCase: 24,
     soql: 'SELECT UserId, LoginTime FROM LoginHistory',
-    output: { fields: [{ type: 'Field', field: 'UserId' }, { type: 'Field', field: 'LoginTime' }], sObject: 'LoginHistory' },
+    output: {
+      fields: [
+        { type: 'Field', field: 'UserId' },
+        { type: 'Field', field: 'LoginTime' },
+      ],
+      sObject: 'LoginHistory',
+    },
   },
   {
     testCase: 25,
@@ -742,7 +758,10 @@ export const testCases: TestCase[] = [
     testCase: 47,
     soql: "SELECT Id, Name FROM Account WHERE Id IN (SELECT AccountId FROM Opportunity WHERE StageName = 'Closed Lost')",
     output: {
-      fields: [{ type: 'Field', field: 'Id' }, { type: 'Field', field: 'Name' }],
+      fields: [
+        { type: 'Field', field: 'Id' },
+        { type: 'Field', field: 'Name' },
+      ],
       sObject: 'Account',
       where: {
         left: {
@@ -781,7 +800,10 @@ export const testCases: TestCase[] = [
     soql:
       "SELECT Id, Name FROM Account WHERE Id IN (SELECT AccountId FROM Contact WHERE LastName LIKE 'apple%') AND Id IN (SELECT AccountId FROM Opportunity WHERE isClosed = FALSE)",
     output: {
-      fields: [{ type: 'Field', field: 'Id' }, { type: 'Field', field: 'Name' }],
+      fields: [
+        { type: 'Field', field: 'Id' },
+        { type: 'Field', field: 'Name' },
+      ],
       sObject: 'Account',
       where: {
         left: {
@@ -850,7 +872,10 @@ export const testCases: TestCase[] = [
     soql: "SELECT Id, Name FROM Account WHERE Name != 'foo'",
     soqlComposed: "SELECT Id, Name FROM Account WHERE Name != 'foo'",
     output: {
-      fields: [{ type: 'Field', field: 'Id' }, { type: 'Field', field: 'Name' }],
+      fields: [
+        { type: 'Field', field: 'Id' },
+        { type: 'Field', field: 'Name' },
+      ],
       sObject: 'Account',
       where: { left: { field: 'Name', operator: '!=', value: "'foo'", literalType: 'STRING' } },
     },
@@ -880,7 +905,10 @@ export const testCases: TestCase[] = [
     testCase: 54,
     soql: 'SELECT Id, Name FROM Account WHERE CreatedDate > LAST_N_YEARS:1 AND LastModifiedDate > LAST_MONTH',
     output: {
-      fields: [{ type: 'Field', field: 'Id' }, { type: 'Field', field: 'Name' }],
+      fields: [
+        { type: 'Field', field: 'Id' },
+        { type: 'Field', field: 'Name' },
+      ],
       sObject: 'Account',
       where: {
         left: {
@@ -921,7 +949,11 @@ export const testCases: TestCase[] = [
     testCase: 56,
     soql: 'SELECT Id, Name, BillingCity FROM Account WITH SECURITY_ENFORCED',
     output: {
-      fields: [{ type: 'Field', field: 'Id' }, { type: 'Field', field: 'Name' }, { type: 'Field', field: 'BillingCity' }],
+      fields: [
+        { type: 'Field', field: 'Id' },
+        { type: 'Field', field: 'Name' },
+        { type: 'Field', field: 'BillingCity' },
+      ],
       sObject: 'Account',
       withSecurityEnforced: true,
     },
@@ -1216,7 +1248,10 @@ export const testCases: TestCase[] = [
     testCase: 74,
     soql: "SELECT Id, MSP1__c FROM CustObj__c WHERE MSP1__c INCLUDES ('AAA;BBB', 'CCC')",
     output: {
-      fields: [{ type: 'Field', field: 'Id' }, { type: 'Field', field: 'MSP1__c' }],
+      fields: [
+        { type: 'Field', field: 'Id' },
+        { type: 'Field', field: 'MSP1__c' },
+      ],
       sObject: 'CustObj__c',
       where: { left: { field: 'MSP1__c', literalType: 'STRING', operator: 'INCLUDES', value: ["'AAA;BBB'", "'CCC'"] } },
     },
@@ -1276,7 +1311,10 @@ export const testCases: TestCase[] = [
     testCase: 78,
     soql: "SELECT Id, Title FROM Dashboard USING SCOPE allPrivate WHERE Type != 'SpecifiedUser'",
     output: {
-      fields: [{ type: 'Field', field: 'Id' }, { type: 'Field', field: 'Title' }],
+      fields: [
+        { type: 'Field', field: 'Id' },
+        { type: 'Field', field: 'Title' },
+      ],
       sObject: 'Dashboard',
       usingScope: 'allPrivate',
       where: { left: { field: 'Type', literalType: 'STRING', operator: '!=', value: "'SpecifiedUser'" } },
@@ -1415,7 +1453,10 @@ export const testCases: TestCase[] = [
     testCase: 84,
     soql: 'SELECT Id, Amount FROM Opportunity WHERE Amount IN (usd500.01, usd600)',
     output: {
-      fields: [{ type: 'Field', field: 'Id' }, { type: 'Field', field: 'Amount' }],
+      fields: [
+        { type: 'Field', field: 'Id' },
+        { type: 'Field', field: 'Amount' },
+      ],
       sObject: 'Opportunity',
       where: {
         left: {
@@ -1540,7 +1581,10 @@ export const testCases: TestCase[] = [
     testCase: 88,
     soql: `SELECT Name, Location__c FROM Warehouse__c WHERE DISTANCE(Location__c, GEOLOCATION(37.775, -122.418), 'mi') < 20`,
     output: {
-      fields: [{ type: 'Field', field: 'Name' }, { type: 'Field', field: 'Location__c' }],
+      fields: [
+        { type: 'Field', field: 'Name' },
+        { type: 'Field', field: 'Location__c' },
+      ],
       sObject: 'Warehouse__c',
       where: {
         left: {
@@ -1568,7 +1612,10 @@ export const testCases: TestCase[] = [
     testCase: 89,
     soql: `SELECT Name, StreetAddress__c FROM Warehouse__c WHERE DISTANCE(Location__c, GEOLOCATION(37.775, -122.418), 'mi') < 20 ORDER BY DISTANCE(Location__c, GEOLOCATION(37.775, -122.418), 'mi') LIMIT 10`,
     output: {
-      fields: [{ type: 'Field', field: 'Name' }, { type: 'Field', field: 'StreetAddress__c' }],
+      fields: [
+        { type: 'Field', field: 'Name' },
+        { type: 'Field', field: 'StreetAddress__c' },
+      ],
       sObject: 'Warehouse__c',
       where: {
         left: {
@@ -1633,6 +1680,25 @@ export const testCases: TestCase[] = [
         },
       ],
       sObject: 'CONTACT',
+    },
+  },
+  {
+    testCase: 91,
+    soql: 'SELECT BillingState, BillingStreet, COUNT(Id) FROM Account GROUP BY BillingState, BillingStreet',
+    output: {
+      fields: [
+        { type: 'Field', field: 'BillingState' },
+        { type: 'Field', field: 'BillingStreet' },
+        {
+          type: 'FieldFunctionExpression',
+          functionName: 'COUNT',
+          rawValue: 'COUNT(Id)',
+          isAggregateFn: true,
+          parameters: ['Id'],
+        },
+      ],
+      sObject: 'Account',
+      groupBy: { field: ['BillingState', 'BillingStreet'] },
     },
   },
 ];
