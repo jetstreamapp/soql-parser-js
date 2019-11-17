@@ -5,6 +5,6 @@
   "hooks": {
     "before:init": ["npm test"],
     "after:bump": "npm run build",
-    "after:release": "npm run copy-tc-to-docs && cd docs && npm install soql-parser-js@${version} && git add package*.json && git commit -m \"Updated docs version\" && git push && npm run deploy"
+    "after:release": "npm run copy-tc-to-docs && cd docs && npm install soql-parser-js@${version} && git add package*.json && git add src/components/sample-queries-json.json && git commit -m \"Updated docs version\" && git push && npm run deploy"
   }
 }
