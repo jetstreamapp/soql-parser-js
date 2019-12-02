@@ -1,5 +1,11 @@
 # Changelog
 
+## 2.2.2
+
+Dec 2, 2019
+
+1. When composing a query, if an empty OrderBy array was provided, the composed query would still include the `ORDER BY` clause in the composed query.
+
 ## 2.2.1
 
 Nov 17, 2019
