@@ -14,6 +14,7 @@ import {
 import * as utils from '../utils';
 import { FieldData, Formatter, FormatOptions } from '../formatter/formatter';
 import { parseQuery } from '../parser/visitor';
+import { isArray } from 'util';
 
 export interface SoqlComposeConfig {
   logging: boolean; // default=false
@@ -186,7 +187,7 @@ export class Compose {
       }
     }
 
-    if (query.orderBy) {
+    if (query.orderBy && (!isArray(query.orderBy) || query.orderBy.length > 0)) {
       output += this.formatter.formatClause('ORDER BY');
       output += ` ${this.parseOrderBy(query.orderBy)}`;
       this.log(output);

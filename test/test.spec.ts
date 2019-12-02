@@ -98,6 +98,20 @@ describe('compose queries', () => {
     const soqlQuery = composeQuery(query);
     expect(soqlQuery).to.equal(`SELECT Id FROM Account WHERE Foo IN ('1', '2', '3') OR Bar = 'foo'`);
   });
+  it('Should not add extraneous order by clauses', () => {
+    const query: Query = {
+      fields: [
+        {
+          type: 'Field',
+          field: 'Id',
+        },
+      ],
+      sObject: 'Account',
+      orderBy: [],
+    };
+    const soqlQuery = composeQuery(query);
+    expect(soqlQuery).to.equal(`SELECT Id FROM Account`);
+  });
 });
 
 describe('format queries', () => {
