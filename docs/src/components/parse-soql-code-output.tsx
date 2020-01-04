@@ -16,10 +16,6 @@ export interface CodeOutputProps {
 }
 
 export default class CodeOutput extends React.Component<CodeOutputProps, any> {
-  constructor(props: CodeOutputProps) {
-    super(props);
-  }
-
   public render() {
     return (
       <div className="ms-Grid-row">

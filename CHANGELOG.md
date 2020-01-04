@@ -1,5 +1,11 @@
 # Changelog
 
+## 2.2.3
+
+Jan 4, 2020
+
+1. Added logo to README and updated docs.
+
 ## 2.2.2
 
 Dec 2, 2019
