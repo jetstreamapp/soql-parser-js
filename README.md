@@ -1,4 +1,4 @@
-# SOQL Parser JS
+<img src="./assets/soql-parser-js-logo.svg">
 
 [![build](https://api.travis-ci.com/paustint/soql-parser-js.png?branch=master)](https://travis-ci.com/paustint/soql-parser-js)
 [![npm version](https://badge.fury.io/js/soql-parser-js.svg)](https://badge.fury.io/js/soql-parser-js)

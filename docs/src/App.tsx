@@ -8,19 +8,23 @@ import SampleQueries from './components/sample-queries';
 
 initializeIcons();
 
-interface IAppstate {
-  soql: string;
-}
+class App extends React.Component<any, any> {
+  parseSoqlRef: React.RefObject<ParseSoql>;
 
-class App extends React.Component<any, IAppstate> {
   constructor(props: any) {
     super(props);
+
+    this.parseSoqlRef = React.createRef<ParseSoql>();
+
     this.state = {
       soql: 'SELECT Id, Name FROM Account',
     };
   }
+
   public onQuerySelected = (soql: string) => {
-    this.setState({ soql });
+    if (this.parseSoqlRef.current) {
+      this.parseSoqlRef.current.soqlQueryExternalChange(soql);
+    }
   };
 
   public render() {
@@ -33,7 +37,7 @@ class App extends React.Component<any, IAppstate> {
         <div className="ms-Grid">
           <div className="ms-Grid-row">
             <div className="ms-Grid-col ms-sm6">
-              <ParseSoql soql={this.state.soql} />
+              <ParseSoql ref={this.parseSoqlRef} />
             </div>
             <div className="ms-Grid-col ms-sm6 queries-col">
               <SampleQueries onQuerySelected={this.onQuerySelected} />

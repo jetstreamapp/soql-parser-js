@@ -1,14 +1,12 @@
-import { DefaultButton } from 'office-ui-fabric-react/lib/Button';
 import { TextField } from 'office-ui-fabric-react/lib/TextField';
 import * as React from 'react';
-import { parseQuery, Query, composeQuery, isQueryValid, FormatOptions } from 'soql-parser-js';
-
-import './parse-soql.css';
-import ParseSoqlFormat from './parse-soql-format';
+import { composeQuery, FormatOptions, isQueryValid, parseQuery, Query } from 'soql-parser-js';
 import CodeOutput from './parse-soql-code-output';
+import ParseSoqlFormat from './parse-soql-format';
+import './parse-soql.css';
 
 interface IParseSoqlProps {
-  soql: string;
+  // soql: string;
 }
 
 interface IParseSoqlState {
@@ -24,42 +22,44 @@ interface IParseSoqlState {
 export class ParseSoql extends React.Component<IParseSoqlProps, IParseSoqlState> {
   constructor(props: IParseSoqlProps) {
     super(props);
-    
-    const start = performance.now();
-    const parsedSoql = props.soql ? parseQuery(props.soql, {allowApexBindVariables: true}) : undefined;
-    const end = performance.now();
-    
-    const composedQuery = parsedSoql ? composeQuery(parsedSoql) : '';
+
+    // const start = performance.now();
+    // const parsedSoql = props.soql ? parseQuery(props.soql, { allowApexBindVariables: true }) : undefined;
+    // const end = performance.now();
+
+    // const composedQuery = parsedSoql ? composeQuery(parsedSoql) : '';
 
     this.state = {
       isValid: true,
-      parsedSoql: JSON.stringify(parsedSoql || '', null, 4),
-      composedQuery,
-      soql: props.soql || '',
+      parsedSoql: '', // JSON.stringify(parsedSoql || '', null, 4),
+      // composedQuery,
+      soql: '',
       format: true,
       formatOptions: {
         fieldMaxLineLength: 60,
         fieldSubqueryParensOnOwnLine: true,
         whereClauseOperatorsIndented: false,
       },
-      parseDuration: parsedSoql ? end - start : -1,
+      parseDuration: 0, // parsedSoql ? end - start : -1,
     };
   }
 
-  public componentWillReceiveProps(nextProps: IParseSoqlProps) {
-    this.parseQuery(nextProps.soql);
-    this.setState({ soql: nextProps.soql });
+  soqlQueryExternalChange(soql: string) {
+    this.parseQuery(soql);
+    this.setState({ soql });
   }
 
   public onChange = (ev: React.FormEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    this.setState({ soql: (ev.target as HTMLInputElement).value });
+    const soql: string = (ev.target as HTMLInputElement).value;
+    this.setState({ soql });
+    this.parseQuery(soql);
     setTimeout(() => {
-      this.setState({ isValid: this.isValid((ev.target as HTMLInputElement).value) });
+      this.setState({ isValid: this.isValid(soql) });
     });
   };
 
   public isValid = (query: string) => {
-    return isQueryValid(query, {allowApexBindVariables: true});
+    return isQueryValid(query, { allowApexBindVariables: true });
   };
 
   public getValidMessage = () => {
@@ -72,9 +72,8 @@ export class ParseSoql extends React.Component<IParseSoqlProps, IParseSoqlState>
 
   public parseQuery = (query?: string, format?: boolean, formatOptions?: FormatOptions) => {
     try {
-
       const start = performance.now();
-      const parsedSoql: Query = parseQuery(query || this.state.soql, {allowApexBindVariables: true});
+      const parsedSoql: Query = parseQuery(query || this.state.soql, { allowApexBindVariables: true });
       const end = performance.now();
 
       const composedQuery: string = composeQuery(parsedSoql, {
@@ -84,7 +83,7 @@ export class ParseSoql extends React.Component<IParseSoqlProps, IParseSoqlState>
       this.setState({
         parsedSoql: JSON.stringify(parsedSoql, null, 4),
         composedQuery,
-        parseDuration: end - start
+        parseDuration: end - start,
       });
     } catch (ex) {
       this.setState({
@@ -128,7 +127,7 @@ export class ParseSoql extends React.Component<IParseSoqlProps, IParseSoqlState>
                   onKeyDown={this.onKeyDown}
                 />
               </div>
-              <div className="parse-row">
+              {/* <div className="parse-row">
                 <div className="">
                   <DefaultButton
                     primary={true}
@@ -137,7 +136,7 @@ export class ParseSoql extends React.Component<IParseSoqlProps, IParseSoqlState>
                     onClick={() => this.parseQuery()}
                   />
                 </div>
-              </div>
+              </div> */}
             </div>
           </div>
           <CodeOutput
@@ -147,7 +146,11 @@ export class ParseSoql extends React.Component<IParseSoqlProps, IParseSoqlState>
                 <small style={{ marginLeft: 5 }}>
                   <code>parseQuery(soqlQuery, {`{allowApexBindVariables: true}`});</code>
                 </small>
-                {this.state.parseDuration > 0 && (<div><small>Parsed in {this.state.parseDuration.toFixed(2)} milliseconds</small></div>)}
+                {this.state.parseDuration > 0 && (
+                  <div>
+                    <small>Parsed in {this.state.parseDuration.toFixed(2)} milliseconds</small>
+                  </div>
+                )}
               </span>
             }
             lang="json"

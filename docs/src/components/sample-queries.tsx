@@ -8,6 +8,7 @@ import {
 } from 'office-ui-fabric-react/lib/DetailsList';
 import * as React from 'react';
 import queries from './sample-queries-json.json';
+import './sample-queries.css';
 
 interface Item {
   key: number;
@@ -35,24 +36,32 @@ export default class SampleQueries extends React.Component<ISampleQueriesProps, 
     };
   }
 
+  componentDidMount() {
+    this.props.onQuerySelected(this.state.items[0].soql);
+  }
+
   public getColumns = (): IColumn[] => {
     return [
       {
         key: 'column1',
         fieldName: 'num',
         name: '#',
-        minWidth: 50,
-        maxWidth: 50,
-        isResizable: true,
+        minWidth: 25,
+        maxWidth: 25,
+        isResizable: false,
         ariaLabel: '#',
+        className: 'query-cell',
       },
       {
         key: 'column2',
         name: 'Query',
         fieldName: 'soql',
         minWidth: 1000,
-        isResizable: true,
+        isResizable: false,
         ariaLabel: 'SOQL Query',
+        className: 'query-cell',
+        maxWidth: 700,
+        isMultiline: true,
       },
     ];
   };
@@ -80,6 +89,8 @@ export default class SampleQueries extends React.Component<ISampleQueriesProps, 
           items={this.state.items}
           columns={this.state.columns}
           setKey="set"
+          compact={true}
+          initialFocusedIndex={0}
           layoutMode={DetailsListLayoutMode.fixedColumns}
           selectionMode={SelectionMode.single}
           onItemInvoked={this.onItemInvoked}

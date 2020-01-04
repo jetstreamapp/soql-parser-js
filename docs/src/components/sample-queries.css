@@ -1,0 +1,6 @@
+.query-cell {
+  cursor: pointer;
+  border-bottom-style: solid;
+  border-bottom-color: #d3d3d36b;
+  border-bottom-width: thin;
+}
