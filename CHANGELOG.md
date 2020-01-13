@@ -1,5 +1,16 @@
 # Changelog
 
+## 2.3.0
+
+Jan 13, 2020
+
+1. The `DESC` operator in the `ORDER BY` clause was treated as a case-sensitive field.
+2. The following fields we treated as case-sensitive:
+   1. `NEXT_N_FISCAL_QUARTERS`, `LAST_N_FISCAL_QUARTERS`, `N_FISCAL_QUARTERS_AGO`, `NEXT_N_FISCAL_YEARS`, `LAST_N_FISCAL_YEARS`,
+   2. `mi`, `km` on `GEOLOCATION` functions
+3. Updated the `DISTANCE` function to properly be tagged as `isAggregateFn=true` if used as a field
+   1. This fixed an issue where `getFlattenedFields()` would throw an exception
+
 ## 2.2.3
 
 Jan 4, 2020

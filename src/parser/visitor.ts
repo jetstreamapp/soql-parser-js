@@ -523,6 +523,10 @@ class SOQLVisitor extends BaseSoqlVisitor {
       },
     };
 
+    if (options.includeType) {
+      output.isAggregateFn = true;
+    }
+
     output.rawValue = `DISTANCE(${output.parameters[0]}, ${
       isString(output.parameters[1]) ? output.parameters[1] : output.parameters[1].rawValue
     }, ${output.parameters[2]})`;

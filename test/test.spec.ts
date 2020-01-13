@@ -31,7 +31,7 @@ const replacements = [{ matching: / last /i, replace: ' LAST ' }];
 
 // describe.only('Test valid queries', () => {
 //   testCasesForIsValid
-//     .filter(testCase => testCase.testCase === 137)
+//     .filter(testCase => testCase.testCase === 147)
 //     .forEach(testCase => {
 //       it(`should identify validity of query - test case ${testCase.testCase} - ${testCase.soql}`, () => {
 //         const soqlQuery = parseQuery(testCase.soql, { logErrors: true, ...testCase.options });

@@ -196,7 +196,7 @@ export const WhiteSpace = createToken({
 export const And = createToken({ name: 'AND', pattern: /AND/i, longer_alt: Identifier, categories: [Keyword, ReservedKeyword] });
 export const As = createToken({ name: 'AS', pattern: /AS/i, longer_alt: Identifier, categories: [Keyword, ReservedKeyword] });
 
-export const Desc = createToken({ name: 'DESC', pattern: /DESC/, longer_alt: Identifier, categories: [Keyword, ReservedKeyword] });
+export const Desc = createToken({ name: 'DESC', pattern: /DESC/i, longer_alt: Identifier, categories: [Keyword, ReservedKeyword] });
 export const Asc = createToken({ name: 'ASC', pattern: /ASC/i, longer_alt: Identifier, categories: [Keyword, ReservedKeyword] });
 
 // FIXME: split into two tokens, BY is a reserved keyword, order is not
@@ -658,37 +658,37 @@ export const NYearsAgo = createToken({
 });
 export const NextNFiscalQuarters = createToken({
   name: 'NEXT_N_FISCAL_QUARTERS',
-  pattern: /NEXT_N_FISCAL_QUARTERS/,
+  pattern: /NEXT_N_FISCAL_QUARTERS/i,
   longer_alt: Identifier,
   categories: [DateNLiteral, Identifier],
 });
 export const LastNFiscalQuarters = createToken({
   name: 'LAST_N_FISCAL_QUARTERS',
-  pattern: /LAST_N_FISCAL_QUARTERS/,
+  pattern: /LAST_N_FISCAL_QUARTERS/i,
   longer_alt: Identifier,
   categories: [DateNLiteral, Identifier],
 });
 export const NFiscalQuartersAgo = createToken({
   name: 'N_FISCAL_QUARTERS_AGO',
-  pattern: /N_FISCAL_QUARTERS_AGO/,
+  pattern: /N_FISCAL_QUARTERS_AGO/i,
   longer_alt: Identifier,
   categories: [DateNLiteral, Identifier],
 });
 export const NextNFiscalYears = createToken({
   name: 'NEXT_N_FISCAL_YEARS',
-  pattern: /NEXT_N_FISCAL_YEARS/,
+  pattern: /NEXT_N_FISCAL_YEARS/i,
   longer_alt: Identifier,
   categories: [DateNLiteral, Identifier],
 });
 export const LastNFiscalYears = createToken({
   name: 'LAST_N_FISCAL_YEARS',
-  pattern: /LAST_N_FISCAL_YEARS/,
+  pattern: /LAST_N_FISCAL_YEARS/i,
   longer_alt: Identifier,
   categories: [DateNLiteral, Identifier],
 });
 export const NFiscalYearsAgo = createToken({
   name: 'N_FISCAL_YEARS_AGO',
-  pattern: /N_FISCAL_YEARS_AGO/,
+  pattern: /N_FISCAL_YEARS_AGO/i,
   longer_alt: Identifier,
   categories: [DateNLiteral, Identifier],
 });
@@ -749,7 +749,7 @@ export const SignedInteger = createToken({
 });
 export const GeolocationUnit = createToken({
   name: 'GEOLOCATION_UNIT',
-  pattern: /'(mi|km)'/,
+  pattern: /'(mi|km)'/i,
   longer_alt: Identifier,
   categories: [Identifier],
 });

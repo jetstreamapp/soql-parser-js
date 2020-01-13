@@ -1666,6 +1666,7 @@ export const testCases: TestCase[] = [
         {
           type: 'FieldFunctionExpression',
           functionName: 'DISTANCE',
+          isAggregateFn: true,
           rawValue: `DISTANCE(Location, GEOLOCATION(10, 10), 'mi')`,
           parameters: [
             'Location',
@@ -1699,6 +1700,34 @@ export const testCases: TestCase[] = [
       ],
       sObject: 'Account',
       groupBy: { field: ['BillingState', 'BillingStreet'] },
+    },
+  },
+  {
+    testCase: 92,
+    soql: `SELECT Id, Name, Location__c, DISTANCE(Location__c, GEOLOCATION(-10.775, -10.775), 'MI') FROM CONTACT`,
+    output: {
+      fields: [
+        { type: 'Field', field: 'Id' },
+        { type: 'Field', field: 'Name' },
+        { type: 'Field', field: 'Location__c' },
+        {
+          type: 'FieldFunctionExpression',
+          functionName: 'DISTANCE',
+          isAggregateFn: true,
+          rawValue: `DISTANCE(Location__c, GEOLOCATION(-10.775, -10.775), 'MI')`,
+          parameters: [
+            'Location__c',
+            {
+              type: 'FieldFunctionExpression',
+              functionName: 'GEOLOCATION',
+              parameters: ['-10.775', '-10.775'],
+              rawValue: 'GEOLOCATION(-10.775, -10.775)',
+            },
+            `'MI'`,
+          ],
+        },
+      ],
+      sObject: 'CONTACT',
     },
   },
 ];
