@@ -279,4 +279,38 @@ export const testCases: FlattenedObjTestCase[] = [
       Contacts: {},
     },
   },
+  {
+    testCase: 9,
+    expectedFields: ['Id', 'Name', 'Location__c', `expr0`],
+    query: {
+      fields: [
+        { type: 'Field', field: 'Id' },
+        { type: 'Field', field: 'Name' },
+        { type: 'Field', field: 'Location__c' },
+        {
+          type: 'FieldFunctionExpression',
+          functionName: 'DISTANCE',
+          isAggregateFn: true,
+          rawValue: `DISTANCE(Location__c, GEOLOCATION(-10.775, -10.775), 'MI')`,
+          parameters: [
+            'Location__c',
+            {
+              type: 'FieldFunctionExpression',
+              functionName: 'GEOLOCATION',
+              parameters: ['-10.775', '-10.775'],
+              rawValue: 'GEOLOCATION(-10.775, -10.775)',
+            },
+            `'MI'`,
+          ],
+        },
+      ],
+      sObject: 'CONTACT',
+    },
+    sfdcObj: {
+      Id: '0011800000ahbs3AAA',
+      Name: 'Amendment Demo',
+      Location__c: 'Location__c',
+      expr0: {},
+    },
+  },
 ];

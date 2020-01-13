@@ -406,5 +406,25 @@ export const testCases: TestCaseForFormat[] = [
     soql: `SELECT Id, Name, Location, DISTANCE(GEOLOCATION(37.775,-122.418), warehouse_location__c, 'km') FROM CONTACT`,
     isValid: false,
   },
+  {
+    testCase: 147,
+    soql: `SELECT Id, Name FROM Account ORDER BY CreatedDate Desc`,
+    isValid: true,
+  },
+  {
+    testCase: 148,
+    soql: `SELECT Id, Name FROM Account ORDER BY CreatedDate desc`,
+    isValid: true,
+  },
+  {
+    testCase: 149,
+    soql: `SELECT Id, Name FROM Account ORDER BY CreatedDate Asc`,
+    isValid: true,
+  },
+  {
+    testCase: 150,
+    soql: `SELECT Id, Name FROM Account ORDER BY CreatedDate asc`,
+    isValid: true,
+  },
 ];
 export default testCases;

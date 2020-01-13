@@ -205,7 +205,7 @@ describe('getField', () => {
   });
 });
 
-describe('getFlattenedFields', () => {
+describe.only('getFlattenedFields', () => {
   testCases.forEach(testCase => {
     it(`Should create fields from query - Test Case: ${testCase.testCase}`, () => {
       const fields = utils.getFlattenedFields(testCase.query);

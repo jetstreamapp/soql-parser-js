@@ -20,7 +20,7 @@ export function isStringArray(val: any[]): val is string[] {
   if (!val) {
     return false;
   }
-  return val.length > 0 && isString(val[0]);
+  return val.every(item => isString(item));
 }
 
 export function isNumber(val: any): val is number {
@@ -92,6 +92,9 @@ export function getParams(functionFieldExp: FieldFunctionExpression): string[] {
   }
   if (isStringArray(functionFieldExp.parameters)) {
     return functionFieldExp.parameters;
+  }
+  if (isString(functionFieldExp.parameters[0])) {
+    return [functionFieldExp.parameters[0]];
   }
   return getParams(functionFieldExp.parameters[0] as FieldFunctionExpression);
 }
