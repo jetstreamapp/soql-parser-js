@@ -90,5 +90,10 @@
   "SELECT Name, StreetAddress__c FROM Warehouse__c WHERE DISTANCE(Location__c, GEOLOCATION(37.775, -122.418), 'mi') < 20 ORDER BY DISTANCE(Location__c, GEOLOCATION(37.775, -122.418), 'mi') LIMIT 10",
   "SELECT Id, Name, Location, DISTANCE(Location, GEOLOCATION(10, 10), 'mi') FROM CONTACT",
   "SELECT BillingState, BillingStreet, COUNT(Id) FROM Account GROUP BY BillingState, BillingStreet",
-  "SELECT Id, Name, Location__c, DISTANCE(Location__c, GEOLOCATION(-10.775, -10.775), 'MI') FROM CONTACT"
+  "SELECT Id, Name, Location__c, DISTANCE(Location__c, GEOLOCATION(-10.775, -10.775), 'MI') FROM CONTACT",
+  "SELECT Id FROM Account WHERE CreatedDate IN (TODAY)",
+  "SELECT Id FROM Account WHERE CreatedDate IN (TODAY)",
+  "SELECT Id FROM Account WHERE CreatedDate IN (TODAY, LAST_N_DAYS:4)",
+  "SELECT Id FROM Account WHERE CreatedDate IN (LAST_N_DAYS:2)",
+  "SELECT Id FROM Account WHERE CreatedDate IN (LAST_N_DAYS:4, LAST_N_DAYS:7)"
 ]
