@@ -62,7 +62,8 @@ import {
 } from '../models';
 import { isSubqueryFromFlag, isToken } from '../utils';
 import { parse, ParseQueryConfig, SoqlParser } from './parser';
-import { isString } from 'util';
+import { isString, isNull } from 'util';
+import { IToken } from 'chevrotain';
 
 const parser = new SoqlParser();
 
@@ -673,10 +674,15 @@ class SOQLVisitor extends BaseSoqlVisitor {
     } else if (ctx.arrayExpression) {
       const arrayValues: ArrayExpressionWithType[] = this.visit(ctx.arrayExpression);
       value = arrayValues.map((item: any) => item.value);
+      const dateLiteralTemp = arrayValues.map((item: any) => item.variable || null);
+      const hasDateLiterals = dateLiteralTemp.some(item => !isNull(item));
       if (new Set(arrayValues.map((item: any) => item.type)).size === 1) {
         literalType = this.$_getLiteralTypeFromTokenType(arrayValues[0].type);
       } else {
         literalType = arrayValues.map((item: any) => this.$_getLiteralTypeFromTokenType(item.type));
+      }
+      if (hasDateLiterals) {
+        dateLiteralVariable = dateLiteralTemp;
       }
       literalType = literalType || 'STRING';
     } else if (ctx.whereClauseSubqueryIdentifier) {
@@ -699,10 +705,16 @@ class SOQLVisitor extends BaseSoqlVisitor {
   }
 
   arrayExpression(ctx: ValueContext): ArrayExpressionWithType[] {
-    return ctx.value.map((item: any) => ({
-      type: item.tokenType.name,
-      value: item.image,
-    }));
+    return ctx.value.map((item: any) => {
+      if (isToken(item)) {
+        return {
+          type: (item as IToken).tokenType.name,
+          value: (item as IToken).image,
+        };
+      } else {
+        return this.visit(item, { includeType: true });
+      }
+    });
   }
 
   relationalOperator(ctx: OperatorContext) {
@@ -717,11 +729,15 @@ class SOQLVisitor extends BaseSoqlVisitor {
     return ctx.boolean[0].tokenType.name;
   }
 
-  dateNLiteral(ctx: DateNLiteralContext) {
-    return {
+  dateNLiteral(ctx: DateNLiteralContext, options?: { includeType: true }) {
+    const output: any = {
       value: `${ctx.dateNLiteral[0].image}:${ctx.variable[0].image}`,
       variable: Number(ctx.variable[0].image),
     };
+    if (options && options.includeType) {
+      output.type = ctx.dateNLiteral[0].tokenType.name;
+    }
+    return output;
   }
 
   forViewOrReference(ctx: ValueContext) {

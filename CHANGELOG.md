@@ -1,5 +1,12 @@
 # Changelog
 
+## 2.4
+
+Feb 25, 2020
+
+1. Date literals were not properly parsed if they were included as part of a SET within a WHERE clause, such as `WHERE IN (TODAY, LAST_N_DAYS:5)`.
+   1. As part of this change, the `dateLiteralVariable` property in the `Condition` will be an array if a variable date literal is included in a SET where clause. Refer to test cases `93` through `98` for examples
+
 ## 2.3.0
 
 Jan 13, 2020
