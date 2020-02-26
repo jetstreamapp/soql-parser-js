@@ -564,6 +564,8 @@ export class SoqlParser extends CstParser {
               { ALT: () => this.CONSUME(lexer.Null, { LABEL: 'value' }) },
               { ALT: () => this.CONSUME(lexer.True, { LABEL: 'value' }) },
               { ALT: () => this.CONSUME(lexer.False, { LABEL: 'value' }) },
+              { ALT: () => this.CONSUME(lexer.DateLiteral, { LABEL: 'value' }) },
+              { ALT: () => this.SUBRULE(this.dateNLiteral, { LABEL: 'value' }) },
               { ALT: () => this.CONSUME(lexer.StringIdentifier, { LABEL: 'value' }) },
             ]),
         );

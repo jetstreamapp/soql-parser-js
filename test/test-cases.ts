@@ -1730,6 +1730,89 @@ export const testCases: TestCase[] = [
       sObject: 'CONTACT',
     },
   },
+  {
+    testCase: 93,
+    soql: `SELECT Id FROM Account WHERE CreatedDate IN (TODAY)`,
+    output: {
+      fields: [{ type: 'Field', field: 'Id' }],
+      sObject: 'Account',
+      where: {
+        left: {
+          field: 'CreatedDate',
+          literalType: 'DATE_LITERAL',
+          operator: 'IN',
+          value: ['TODAY'],
+        },
+      },
+    },
+  },
+  {
+    testCase: 94,
+    soql: `SELECT Id FROM Account WHERE CreatedDate IN (TODAY)`,
+    output: {
+      fields: [{ type: 'Field', field: 'Id' }],
+      sObject: 'Account',
+      where: {
+        left: {
+          field: 'CreatedDate',
+          literalType: 'DATE_LITERAL',
+          operator: 'IN',
+          value: ['TODAY'],
+        },
+      },
+    },
+  },
+  {
+    testCase: 95,
+    soql: `SELECT Id FROM Account WHERE CreatedDate IN (TODAY, LAST_N_DAYS:4)`,
+    output: {
+      fields: [{ type: 'Field', field: 'Id' }],
+      sObject: 'Account',
+      where: {
+        left: {
+          field: 'CreatedDate',
+          literalType: ['DATE_LITERAL', 'DATE_N_LITERAL'],
+          operator: 'IN',
+          value: ['TODAY', 'LAST_N_DAYS:4'],
+          dateLiteralVariable: [null, 4],
+        },
+      },
+    },
+  },
+  {
+    testCase: 96,
+    soql: `SELECT Id FROM Account WHERE CreatedDate IN (LAST_N_DAYS:2)`,
+    output: {
+      fields: [{ type: 'Field', field: 'Id' }],
+      sObject: 'Account',
+      where: {
+        left: {
+          field: 'CreatedDate',
+          literalType: 'DATE_N_LITERAL',
+          operator: 'IN',
+          value: ['LAST_N_DAYS:2'],
+          dateLiteralVariable: [2],
+        },
+      },
+    },
+  },
+  {
+    testCase: 98,
+    soql: `SELECT Id FROM Account WHERE CreatedDate IN (LAST_N_DAYS:4, LAST_N_DAYS:7)`,
+    output: {
+      fields: [{ type: 'Field', field: 'Id' }],
+      sObject: 'Account',
+      where: {
+        left: {
+          field: 'CreatedDate',
+          literalType: 'DATE_N_LITERAL',
+          operator: 'IN',
+          value: ['LAST_N_DAYS:4', 'LAST_N_DAYS:7'],
+          dateLiteralVariable: [4, 7],
+        },
+      },
+    },
+  },
 ];
 
 export default testCases;

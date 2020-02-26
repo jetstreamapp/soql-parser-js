@@ -157,7 +157,7 @@ export interface Condition {
   operator: Operator;
   value?: string | string[];
   literalType?: LiteralType | LiteralType[]; // If populated with STRING on compose, the value(s) will be wrapped in "'" if they are not already. - All other values ignored
-  dateLiteralVariable?: number; // not required for compose, will be populated if SOQL is parsed
+  dateLiteralVariable?: number | number[]; // not required for compose, will be populated if SOQL is parsed
 }
 
 export interface OrderByClause {
