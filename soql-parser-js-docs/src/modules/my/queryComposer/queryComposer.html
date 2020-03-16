@@ -1,0 +1,21 @@
+<template>
+  <div>
+    <div class="ml-2">
+      <ui-checkbox name="formatOutput" value={formatOutput} label="Format Output" onchange={handleChange}></ui-checkbox>
+    </div>
+    <div class="ml-2 p-2 border">
+      <ui-checkbox name="fieldSubqueryParensOnOwnLine" value={fieldSubqueryParensOnOwnLine} disabled={formDisabled} onchange={handleChange}>
+        Subquery parenthesis on own line - <code class="font-semibold">fieldSubqueryParensOnOwnLine</code>
+      </ui-checkbox>
+      <ui-checkbox name="whereClauseOperatorsIndented" value={whereClauseOperatorsIndented} disabled={formDisabled} onchange={handleChange}>
+        Indent items in WHERE clause - <code class="font-semibold">whereClauseOperatorsIndented</code>
+      </ui-checkbox>
+      <ui-input name="fieldMaxLineLength" value={fieldMaxLineLength} disabled={formDisabled} onchange={handleChange}>
+        Number of characters before fields wrap - <code class="font-semibold">fieldMaxLineLength</code>
+      </ui-input>
+    </div>
+  </div>
+  <div class="h-64 overflow-auto">
+    <pre><code class="language-sql" lwc:dom="manual"></code></pre>
+  </div>
+</template>

@@ -1,0 +1,36 @@
+<template>
+  <div class="h-screen overflow-hidden">
+    <nav class="bg-gray-800">
+      <div class="max-w-7xl mx-auto px-8">
+        <div class="flex items-center justify-between h-16">
+          <div class="flex items-center">
+            <div class="flex-shrink-0 -my-2">
+              <img class="logo" src="/resources/soql-parser-js-logo.svg" alt="logo" />
+            </div>
+          </div>
+        </div>
+      </div>
+    </nav>
+    <main class="h-full">
+      <div class="flex flex-row mx-auto py-6 sm:px-6 lg:px-8 h-full">
+        <div class="w-1/2">
+          <!-- Replace with your content -->
+          <div class="px-2 h-full overflow-scroll">
+            <my-query-list onselect={handleQueryExampleSelected}></my-query-list>
+          </div>
+          <!-- /End replace -->
+        </div>
+        <div class="w-1/2 px-2">
+          <my-soql-query-textarea
+            query={selectedQuery}
+            has-query-error={hasQueryError}
+            onchanged={handleSoqlChanged}
+          ></my-soql-query-textarea>
+          <div class="mt-4">
+            <my-query-parser query={soqlText} onqueryerror={handleOnQueryError}></my-query-parser>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+</template>
