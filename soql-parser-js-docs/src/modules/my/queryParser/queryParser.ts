@@ -3,6 +3,7 @@ import * as hljs from 'highlight.js/lib/highlight.js';
 import { api, LightningElement, track } from 'lwc';
 import { parseQuery, Query } from 'soql-parser-js';
 
+hljs.registerLanguage('javascript', require('highlight.js/lib/languages/javascript'));
 hljs.registerLanguage('json', require('highlight.js/lib/languages/json'));
 
 export default class QueryParser extends LightningElement {
@@ -21,6 +22,17 @@ export default class QueryParser extends LightningElement {
   @track parsedQueryJson: string;
   @track composedQuery: string;
   hasError = false;
+  hasRendered = false;
+
+  renderedCallback() {
+    if (!this.hasRendered) {
+      // @ts-ignore type-mismatch
+      const element = this.template.querySelector('code.javascript');
+      element.innerText = `// parseQuery(soqlQuery);`;
+      hljs.highlightBlock(element);
+      this.hasRendered = true;
+    }
+  }
 
   parseQuery() {
     try {
@@ -36,7 +48,8 @@ export default class QueryParser extends LightningElement {
   }
 
   highlight() {
-    const element = this.template.querySelector('code');
+    // @ts-ignore type-mismatch
+    const element = this.template.querySelector('code.json');
     if (element) {
       element.innerText = this.parsedQueryJson;
       hljs.highlightBlock(element);

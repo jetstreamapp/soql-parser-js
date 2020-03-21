@@ -18,9 +18,11 @@ export default class soqlQueryTextbox extends LightningElement {
   @api hasQueryError = false;
 
   get className() {
-    let className = 'form-input block w-full sm:text-sm sm:leading-5';
+    let className = 'form-input block font-mono border-4 w-full sm:text-sm sm:leading-5 focus:border-transparent';
     if (this.hasQueryError) {
-      className += ` border-red-300 text-red-900 placeholder-red-300 focus:border-red-300 focus:shadow-outline-red`;
+      className += ` border-red-300 text-red-900 placeholder-red-300 focus:border-red-300`;
+    } else {
+      className += ` border-transparent`;
     }
     return className;
   }
@@ -31,6 +33,7 @@ export default class soqlQueryTextbox extends LightningElement {
   }
 
   setValue(value: string) {
+    // @ts-ignore type-mismatch
     this.template.querySelector('textarea').value = value;
     this.emitValueChanged();
   }

@@ -10,12 +10,25 @@
       <ui-checkbox name="whereClauseOperatorsIndented" value={whereClauseOperatorsIndented} disabled={formDisabled} onchange={handleChange}>
         Indent items in WHERE clause - <code class="font-semibold">whereClauseOperatorsIndented</code>
       </ui-checkbox>
-      <ui-input name="fieldMaxLineLength" value={fieldMaxLineLength} disabled={formDisabled} onchange={handleChange}>
+      <ui-input
+        name="fieldMaxLineLength"
+        transform-fn={fieldMaxLineLengthTransformFn}
+        value={fieldMaxLineLength}
+        disabled={formDisabled}
+        onchange={handleChange}
+      >
         Number of characters before fields wrap - <code class="font-semibold">fieldMaxLineLength</code>
       </ui-input>
     </div>
   </div>
-  <div class="h-64 overflow-auto">
+  <div class="mb-1">
+    <pre><code class="javascript" lwc:dom="manual"></code></pre>
+  </div>
+  <h4 class="flex justify-between text-md font-bold leading-7 text-gray-100 sm:truncate">
+    COMPOSED QUERY
+    <ui-copy-to-clipboard value={composedQuery}></ui-copy-to-clipboard>
+  </h4>
+  <div class="overflow-auto">
     <pre><code class="language-sql" lwc:dom="manual"></code></pre>
   </div>
 </template>
