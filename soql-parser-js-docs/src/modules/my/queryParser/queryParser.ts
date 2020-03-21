@@ -1,7 +1,7 @@
-import { LightningElement, track, api } from 'lwc';
-import { parseQuery, Query, composeQuery } from 'soql-parser-js';
 // import * as Prism from 'prismjs';
 import * as hljs from 'highlight.js/lib/highlight.js';
+import { api, LightningElement, track } from 'lwc';
+import { parseQuery, Query } from 'soql-parser-js';
 
 hljs.registerLanguage('json', require('highlight.js/lib/languages/json'));
 

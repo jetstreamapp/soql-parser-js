@@ -16,6 +16,7 @@
   "devDependencies": {
     "@types/jest": "^25.1.4",
     "@types/prismjs": "^1.16.0",
+    "css-loader": "^3.4.2",
     "eslint": "^6.8.0",
     "husky": "^4.2.3",
     "lint-staged": "^10.0.8",
@@ -52,7 +53,6 @@
     "lint": "eslint ./src/**/*.ts",
     "prettier": "prettier --write \"**/*.{css,html,js,json,md,ts,yaml,yml}\"",
     "prettier:verify": "prettier --list-different \"**/*.{css,html,js,json,md,ts,yaml,yml}\"",
-    "serve": "node scripts/server.js",
     "test:unit": "lwc-services test:unit",
     "test:unit:coverage": "lwc-services test:unit --coverage",
     "test:unit:debug": "lwc-services test:unit --debug",

@@ -1,14 +1,16 @@
 <template>
-  <h4 class="text-xl font-bold leading-7 text-gray-700 sm:truncate">
-    Parsed query
-  </h4>
-  <div class="h-64 overflow-auto">
-    <pre><code class="json" lwc:dom="manual"></code></pre>
-  </div>
-  <div class="mt-6 border-t">
-    <h4 class="text-xl font-bold leading-7 text-gray-700 sm:truncate">
-      Compose query from parsed output
+  <div class="flex flex-col">
+    <h4 class="text-md font-bold leading-7 text-gray-100 sm:truncate">
+      PARSED QUERY
     </h4>
-    <my-query-composer parsed-query={parsedQuery}></my-query-composer>
+    <div class="flex-grow overflow-auto parsed-code">
+      <pre><code class="json" lwc:dom="manual"></code></pre>
+    </div>
+    <div class="mt-6 border-t">
+      <h4 class="text-md font-bold leading-7 text-gray-100 sm:truncate">
+        COMPOSE QUERY FROM PARSED OUTPUT
+      </h4>
+      <my-query-composer parsed-query={parsedQuery}></my-query-composer>
+    </div>
   </div>
 </template>
