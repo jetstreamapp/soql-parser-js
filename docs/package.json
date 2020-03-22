@@ -51,10 +51,10 @@
   "scripts": {
     "clean": "rm -rf ./dist/*",
     "prebuild": "npm run clean",
+    "build": "npm run css && lwc-services build -m production -w webpack.config.js",
+    "build:development": "lwc-services build -w webpack.config.js",
     "predeploy": "npm run build",
     "deploy": "gh-pages -d dist",
-    "build": "npm run css && lwc-services build -m production",
-    "build:development": "lwc-services build",
     "lint": "eslint ./src/**/*.ts",
     "prettier": "prettier --write \"**/*.{css,html,js,json,md,ts,yaml,yml}\"",
     "start": "lwc-services watch",
