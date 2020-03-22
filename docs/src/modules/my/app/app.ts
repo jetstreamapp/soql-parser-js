@@ -15,7 +15,6 @@ export default class App extends LightningElement {
   }
 
   handleQueryExampleSelected(event) {
-    console.log('Event handleQueryExampleSelected()', event.detail);
     this.selectedQuery = event.detail;
   }
 
