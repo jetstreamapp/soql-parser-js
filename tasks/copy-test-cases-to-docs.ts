@@ -2,8 +2,12 @@ import { testCases, TestCase } from '../test/test-cases';
 import { writeJSONSync } from 'fs-extra';
 import { join } from 'path';
 
-const outputPath = join(__dirname, '../docs/src/components/sample-queries-json.json');
+const outputPath = join(__dirname, '../docs/src/resources/sample-queries-json.json');
 
 console.log('copying test-cases to docs');
 
-writeJSONSync(outputPath, testCases.map((tc: TestCase) => tc.soql), { spaces: 2 });
+writeJSONSync(
+  outputPath,
+  testCases.map((tc: TestCase) => tc.soql),
+  { spaces: 2 },
+);
