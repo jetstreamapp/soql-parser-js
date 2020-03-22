@@ -1,0 +1,34 @@
+<template>
+  <div>
+    <div class="ml-2">
+      <ui-checkbox name="formatOutput" value={formatOutput} label="Format Output" onchange={handleChange}></ui-checkbox>
+    </div>
+    <div class="ml-2 p-2 border">
+      <ui-checkbox name="fieldSubqueryParensOnOwnLine" value={fieldSubqueryParensOnOwnLine} disabled={formDisabled} onchange={handleChange}>
+        Subquery parenthesis on own line - <code class="font-semibold">fieldSubqueryParensOnOwnLine</code>
+      </ui-checkbox>
+      <ui-checkbox name="whereClauseOperatorsIndented" value={whereClauseOperatorsIndented} disabled={formDisabled} onchange={handleChange}>
+        Indent items in WHERE clause - <code class="font-semibold">whereClauseOperatorsIndented</code>
+      </ui-checkbox>
+      <ui-input
+        name="fieldMaxLineLength"
+        transform-fn={fieldMaxLineLengthTransformFn}
+        value={fieldMaxLineLength}
+        disabled={formDisabled}
+        onchange={handleChange}
+      >
+        Number of characters before fields wrap - <code class="font-semibold">fieldMaxLineLength</code>
+      </ui-input>
+    </div>
+  </div>
+  <div class="mb-1">
+    <pre><code class="javascript" lwc:dom="manual"></code></pre>
+  </div>
+  <h4 class="flex justify-between text-md font-bold leading-7 text-gray-100 sm:truncate">
+    COMPOSED QUERY
+    <ui-copy-to-clipboard value={composedQuery}></ui-copy-to-clipboard>
+  </h4>
+  <div class="overflow-auto">
+    <pre><code class="language-sql" lwc:dom="manual"></code></pre>
+  </div>
+</template>

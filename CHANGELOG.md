@@ -1,5 +1,11 @@
 # Changelog
 
+## 2.4.1
+
+Mar 22, 2020
+
+1. Updated dependencies to resolve known security vulnerabilities.
+
 ## 2.4
 
 Feb 25, 2020

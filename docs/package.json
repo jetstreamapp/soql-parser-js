@@ -1,51 +1,63 @@
 {
   "name": "soql-parser-js-docs",
-  "version": "0.1.0",
-  "private": true,
-  "homepage": "http://paustint.github.io/soql-parser-js",
+  "description": "My amazing LWC app",
+  "version": "0.0.1",
+  "author": "Austin Turner",
+  "bugs": "https://github.com/Austin Turner/soql-parser-js-docs/issues",
   "dependencies": {
-    "@types/jest": "24.0.18",
-    "@types/lodash": "^4.14.149",
-    "@types/node": "12.7.8",
-    "@types/react": "16.9.3",
-    "@types/react-copy-to-clipboard": "^4.3.0",
-    "@types/react-dom": "16.9.1",
-    "@types/react-syntax-highlighter": "0.0.7",
-    "gh-pages": "^2.0.1",
-    "lodash": "^4.17.14",
-    "office-ui-fabric-react": "^6.211.0",
-    "react": "^16.12.0",
-    "react-copy-to-clipboard": "^5.0.2",
-    "react-dom": "^16.12.0",
-    "react-scripts": "3.1.2",
-    "react-syntax-highlighter": "^9.0.0",
+    "@lwc/synthetic-shadow": "^1.3.2",
+    "@tailwindcss/ui": "^0.1.3",
+    "@types/highlight.js": "^9.12.3",
+    "gh-pages": "^2.2.0",
+    "highlight.js": "^9.18.1",
+    "prismjs": "^1.19.0",
     "soql-parser-js": "^2.4.0",
-    "typescript": "3.6.3"
+    "tailwindcss": "^1.2.0"
   },
-  "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject",
-    "predeploy": "npm run build",
-    "deploy": "gh-pages -d build",
-    "gh-pages": "gh-pages --help",
-    "update": "// FOO npm install soql-parser-js@latest && git add package*.json && git commit -m \"Updated docs version\" && git push && npm run deploy"
+  "devDependencies": {
+    "@types/jest": "^25.1.4",
+    "@types/prismjs": "^1.16.0",
+    "css-loader": "^3.4.2",
+    "eslint": "^6.8.0",
+    "husky": "^4.2.3",
+    "lint-staged": "^10.0.8",
+    "lwc-services": "^2.0.0",
+    "prettier": "^1.19.1"
   },
-  "devDependencies": {},
-  "eslintConfig": {
-    "extends": "react-app"
+  "engines": {
+    "node": ">=10.13.0",
+    "npm": ">=6.4.1",
+    "yarn": ">=1.9.4"
   },
-  "browserslist": {
-    "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
+  "homepage": "https://github.com/Austin Turner/soql-parser-js-docs",
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+  "keywords": [
+    "lwc"
+  ],
+  "license": "MIT",
+  "lint-staged": {
+    "**/*.{css,html,js,json,md,ts,yaml,yml}": [
+      "prettier --write"
     ],
-    "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
+    "./src/**/*.ts": [
+      "eslint"
     ]
+  },
+  "repository": "Austin Turner/soql-parser-js-docs",
+  "scripts": {
+    "clean": "rm -rf ./dist/*",
+    "prebuild": "npm run clean",
+    "build": "npm run css && lwc-services build -m production -w webpack.config.js",
+    "build:development": "lwc-services build -w webpack.config.js",
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d dist",
+    "lint": "eslint ./src/**/*.ts",
+    "prettier": "prettier --write \"**/*.{css,html,js,json,md,ts,yaml,yml}\"",
+    "start": "lwc-services watch",
+    "css": "tailwindcss build tailwind.css -o ./src/resources/output.css"
   }
 }
