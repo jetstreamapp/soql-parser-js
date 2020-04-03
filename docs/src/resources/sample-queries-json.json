@@ -95,5 +95,6 @@
   "SELECT Id FROM Account WHERE CreatedDate IN (TODAY)",
   "SELECT Id FROM Account WHERE CreatedDate IN (TODAY, LAST_N_DAYS:4)",
   "SELECT Id FROM Account WHERE CreatedDate IN (LAST_N_DAYS:2)",
-  "SELECT Id FROM Account WHERE CreatedDate IN (LAST_N_DAYS:4, LAST_N_DAYS:7)"
+  "SELECT Id FROM Account WHERE CreatedDate IN (LAST_N_DAYS:4, LAST_N_DAYS:7)",
+  "SELECT SBQQ__Product__r.Name foo, SBQQ__Quote__c foo1 FROM SBQQ__Quoteline__c GROUP BY SBQQ__Quote__c, SBQQ__Product__r.Name"
 ]
