@@ -117,7 +117,7 @@ export class SoqlParser extends CstParser {
               { ALT: () => this.SUBRULE(this.selectClauseFunctionIdentifier, { LABEL: 'field' }) },
               { ALT: () => this.SUBRULE(this.selectClauseSubqueryIdentifier, { LABEL: 'field' }) },
               { ALT: () => this.SUBRULE(this.selectClauseTypeOf, { LABEL: 'field' }) },
-              { ALT: () => this.CONSUME(lexer.Identifier, { LABEL: 'field' }) },
+              { ALT: () => this.SUBRULE(this.selectClauseIdentifier, { LABEL: 'field' }) },
             ]),
         );
       },
@@ -155,6 +155,11 @@ export class SoqlParser extends CstParser {
       this.SUBRULE(this.selectClauseTypeOfElse);
     });
     this.CONSUME(lexer.End);
+  });
+
+  private selectClauseIdentifier = this.RULE('selectClauseIdentifier', () => {
+    this.CONSUME(lexer.Identifier, { LABEL: 'field' });
+    this.OPTION(() => this.CONSUME1(lexer.Identifier, { LABEL: 'alias' }));
   });
 
   private selectClauseTypeOfThen = this.RULE('selectClauseTypeOfThen', () => {

@@ -1813,6 +1813,30 @@ export const testCases: TestCase[] = [
       },
     },
   },
+  {
+    testCase: 99,
+    soql: `SELECT SBQQ__Product__r.Name foo, SBQQ__Quote__c foo1 FROM SBQQ__Quoteline__c GROUP BY SBQQ__Quote__c, SBQQ__Product__r.Name`,
+    output: {
+      fields: [
+        {
+          type: 'FieldRelationship',
+          field: 'Name',
+          relationships: ['SBQQ__Product__r'],
+          rawValue: 'SBQQ__Product__r.Name',
+          alias: 'foo',
+        },
+        {
+          type: 'Field',
+          field: 'SBQQ__Quote__c',
+          alias: 'foo1',
+        },
+      ],
+      sObject: 'SBQQ__Quoteline__c',
+      groupBy: {
+        field: ['SBQQ__Quote__c', 'SBQQ__Product__r.Name'],
+      },
+    },
+  },
 ];
 
 export default testCases;

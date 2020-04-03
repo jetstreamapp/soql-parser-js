@@ -65,6 +65,11 @@ export interface SelectClauseTypeOfContext extends WithIdentifier {
   selectClauseTypeOfElse?: CstNode[];
 }
 
+export interface SelectClauseIdentifierContext extends WithIdentifier {
+  field: IToken[];
+  alias?: IToken[];
+}
+
 export interface SelectClauseTypeOfThenContext extends WithIdentifier {
   typeOfField: IToken[];
   field: IToken[];
