@@ -1,5 +1,13 @@
 # Changelog
 
+## 2.5.0
+
+April 3, 2020
+
+1. Passing in null or undefined to compose query no longer throws an exception, but instead returns an empty string. (#95)
+2. Regular fields in a select clause now allow aliases because this is allowed if the field is used as part of a group by clause. (#97)
+3. `getFlattenedFields()` now considers if a relationship field was used as part of a group by, and if so it returns just the field name instead of the entire field path, as this is how Salesforce will return the records. (#98)
+
 ## 2.4.1
 
 Mar 22, 2020

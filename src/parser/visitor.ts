@@ -21,6 +21,7 @@ import {
   Subquery,
   WhereClause,
   WithDataCategoryCondition,
+  Field,
 } from '../api/api-models';
 import {
   ApexBindVariableExpressionContext,
@@ -59,6 +60,7 @@ import {
   GeoLocationFunctionContext,
   OrderByLocationExpressionContext,
   GroupByFieldListContext,
+  SelectClauseIdentifierContext,
 } from '../models';
 import { isSubqueryFromFlag, isToken } from '../utils';
 import { parse, ParseQueryConfig, SoqlParser } from './parser';
@@ -273,6 +275,34 @@ class SOQLVisitor extends BaseSoqlVisitor {
       conditions,
     };
   }
+
+  selectClauseIdentifier(ctx: SelectClauseIdentifierContext): Field | FieldRelationship {
+    const item = ctx.field[0];
+    const alias = !!ctx.alias ? ctx.alias[0].image : undefined;
+    const field: string = item.image;
+    let output: FieldType;
+    if (!field.includes('.')) {
+      output = {
+        type: 'Field',
+        field: field,
+        // objectPrefix: undefined, // TODO: we cannot add this until the very und when we see if the sobject is aliased
+      };
+    } else {
+      const splitFields = field.split('.');
+      output = {
+        type: 'FieldRelationship',
+        field: splitFields[splitFields.length - 1],
+        relationships: splitFields.slice(0, splitFields.length - 1),
+        // objectPrefix: undefined, // TODO: we cannot add this until the very und when we see if the sobject is aliased
+        rawValue: field,
+      };
+    }
+    if (alias) {
+      output.alias = alias;
+    }
+    return output;
+  }
+
   selectClauseTypeOfThen(ctx: SelectClauseTypeOfThenContext): FieldTypeOfCondition {
     return {
       type: 'WHEN',

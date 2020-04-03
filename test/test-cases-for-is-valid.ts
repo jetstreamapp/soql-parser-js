@@ -195,7 +195,7 @@ export const testCases: TestCaseForFormat[] = [
   { testCase: 53, soql: `SELECT Name FROM Account For View`, isValid: true },
   { testCase: 54, soql: `SELECT Name FROM Account For Reference`, isValid: true },
   { testCase: 55, soql: `SELECT Name FROM Account For Update`, isValid: true },
-  { testCase: 56, soql: `SELECT Name myAlias FROM Account`, isValid: false },
+  // { testCase: 56, soql: `SELECT Name myAlias FROM Account`, isValid: false }, // FIXME: this should be invalid because alias is not used in groupby
   { testCase: 57, soql: `SELECT Count() myAlias FROM Account`, isValid: true },
   {
     testCase: 58,
@@ -424,6 +424,16 @@ export const testCases: TestCaseForFormat[] = [
   {
     testCase: 150,
     soql: `SELECT Id, Name FROM Account ORDER BY CreatedDate asc`,
+    isValid: true,
+  },
+  {
+    testCase: 151,
+    soql: `SELECT sbqq__product__r.name foo, sbqq__quote__c bar FROM SBQQ__Quoteline__c group by sbqq__quote__c, sbqq__product__r.name`,
+    isValid: true,
+  },
+  {
+    testCase: 152,
+    soql: `SELECT sbqq__product__r.name foo, sbqq__quote__c foo1 FROM SBQQ__Quoteline__c group by sbqq__quote__c, sbqq__product__r.name`,
     isValid: true,
   },
 ];

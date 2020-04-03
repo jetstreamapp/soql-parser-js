@@ -118,8 +118,19 @@ export function getFlattenedFields(
   query: SoqlModels.Query | SoqlModels.Subquery | SoqlModels.FieldSubquery,
   isAggregateResult?: boolean,
 ): string[] {
+  if (!query) {
+    return [];
+  }
   query = isFieldSubquery(query) ? query.subquery : query;
   const fields = query.fields;
+  // if a relationship field is used in a group by, then Salesforce removes the relationship portion of the field in the returned records
+  const groupByFields: { [field: string]: string } = {};
+  if (!!query.groupBy && Array.isArray(query.groupBy.field)) {
+    query.groupBy.field.reduce((output, field) => {
+      output[field.toLocaleLowerCase()] = field;
+      return output;
+    }, groupByFields);
+  }
   let currUnAliasedAggExp = -1;
   let sObject = (isSubquery(query) ? query.relationshipName : query.sObject || '').toLowerCase();
   let sObjectAlias = (query.sObjectAlias || '').toLowerCase();
@@ -167,11 +178,16 @@ export function getFlattenedFields(
         }
         case 'FieldRelationship': {
           const firstRelationship = field.relationships[0].toLowerCase();
+          if (field.alias) {
+            return field.alias;
+          }
+          // If relationship field is used in groupby, then return field instead of full path
+          if (field.rawValue && groupByFields[field.rawValue.toLocaleLowerCase()]) {
+            return field.field;
+          }
+          // If first object is the same object queried, remove the object
           if (firstRelationship === sObjectAlias || firstRelationship === sObject) {
-            return field.relationships
-              .concat([field.field])
-              .slice(1)
-              .join('.');
+            return field.relationships.concat([field.field]).slice(1).join('.');
           }
           return field.relationships.concat([field.field]).join('.');
         }

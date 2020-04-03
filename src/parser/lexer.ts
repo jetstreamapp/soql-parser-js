@@ -740,7 +740,7 @@ export const CurrencyPrefixedInteger = createToken({
   name: 'CURRENCY_PREFIXED_INTEGER',
   pattern: /[a-zA-Z]{3}[0-9]+/,
   longer_alt: Identifier,
-  categories: [DecimalNumberIdentifier],
+  categories: [DecimalNumberIdentifier, Identifier],
 });
 export const SignedInteger = createToken({
   name: 'SIGNED_INTEGER',

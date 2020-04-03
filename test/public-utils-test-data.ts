@@ -313,4 +313,38 @@ export const testCases: FlattenedObjTestCase[] = [
       expr0: {},
     },
   },
+  {
+    testCase: 10,
+    expectedFields: ['expr0', 'Name', `SBQQ__Quote__c`],
+    query: {
+      fields: [
+        {
+          type: 'FieldFunctionExpression',
+          functionName: 'COUNT',
+          parameters: ['Id'],
+          isAggregateFn: true,
+          rawValue: 'Count(Id)',
+        },
+        {
+          type: 'FieldRelationship',
+          field: 'Name',
+          relationships: ['SBQQ__Product__r'],
+          rawValue: 'SBQQ__Product__r.name',
+        },
+        {
+          type: 'Field',
+          field: 'SBQQ__Quote__c',
+        },
+      ],
+      sObject: 'SBQQ__Quoteline__c',
+      groupBy: {
+        field: ['SBQQ__Quote__c', 'SBQQ__Product__r.name'],
+      },
+    },
+    sfdcObj: {
+      expr0: 1,
+      Name: 'CPQ SaaS Admin License',
+      SBQQ__Quote__c: 'a1j50000004BBOmAAO',
+    },
+  },
 ];

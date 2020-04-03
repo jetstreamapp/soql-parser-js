@@ -42,6 +42,10 @@ export function formatQuery(soql: string, formatOptions?: FormatOptions) {
  * @returns query
  */
 export function composeQuery(soql: Query, config: Partial<SoqlComposeConfig> = {}): string {
+  if (!soql) {
+    return '';
+  }
+  config = config || {};
   config.format = config.format ? true : false;
   if (config.logging) {
     console.time('composer');
@@ -242,7 +246,7 @@ export class Compose {
       const objPrefix = (field as any).objectPrefix ? `${(field as any).objectPrefix}.` : '';
       switch (field.type) {
         case 'Field': {
-          return `${objPrefix}${field.field}`;
+          return `${objPrefix}${field.field}${field.alias ? ` ${field.alias}` : ''}`;
         }
         case 'FieldFunctionExpression': {
           let params = '';
@@ -254,7 +258,7 @@ export class Compose {
           return `${field.functionName}(${params})${field.alias ? ` ${field.alias}` : ''}`;
         }
         case 'FieldRelationship': {
-          return `${objPrefix}${field.relationships.join('.')}.${field.field}`;
+          return `${objPrefix}${field.relationships.join('.')}.${field.field}${field.alias ? ` ${field.alias}` : ''}`;
         }
         case 'FieldSubquery': {
           return this.formatter.formatSubquery(this.parseQuery(field.subquery));
