@@ -494,6 +494,7 @@ export class SoqlParser extends CstParser {
       this.OR1([
         { GATE: () => alowAggregateFn, ALT: () => this.SUBRULE(this.aggregateFunction, { LABEL: 'lhs' }) },
         { GATE: () => allowLocationFn, ALT: () => this.SUBRULE(this.locationFunction, { LABEL: 'lhs' }) },
+        { ALT: () => this.SUBRULE(this.dateFunction, { LABEL: 'lhs' }) },
         { ALT: () => this.SUBRULE(this.otherFunction, { LABEL: 'lhs' }) },
         { ALT: () => this.CONSUME(lexer.Identifier, { LABEL: 'lhs' }) },
       ]);
