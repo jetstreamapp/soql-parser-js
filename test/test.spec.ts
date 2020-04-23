@@ -11,7 +11,7 @@ const replacements = [{ matching: / last /i, replace: ' LAST ' }];
 // Uncomment these to easily test one specific query - useful for troubleshooting/bugfixing
 
 // describe.only('parse queries', () => {
-//   const testCase = testCases.find(tc => tc.testCase === 99);
+//   const testCase = testCases.find(tc => tc.testCase === 100);
 //   it(`should correctly parse test case ${testCase.testCase} - ${testCase.soql}`, () => {
 //     const soqlQuery = parseQuery(testCase.soql, testCase.options);
 //     const soqlQueryWithoutUndefinedProps = JSON.parse(JSON.stringify(soqlQuery));

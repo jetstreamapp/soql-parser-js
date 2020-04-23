@@ -1,5 +1,11 @@
 # Changelog
 
+## 2.5.1
+
+April 23, 2020
+
+1. Queries with date functions in a WHERE clause would throw an error when parsing. (#100)
+
 ## 2.5.0
 
 April 3, 2020

@@ -1837,6 +1837,43 @@ export const testCases: TestCase[] = [
       },
     },
   },
+  {
+    testCase: 100,
+    soql: `SELECT Id, convertCurrency(Amount) FROM Opportunity WHERE Amount > 0 AND CALENDAR_YEAR(CloseDate) = 2020`,
+    output: {
+      fields: [
+        { type: 'Field', field: 'Id' },
+        {
+          type: 'FieldFunctionExpression',
+          functionName: 'convertCurrency',
+          rawValue: 'convertCurrency(Amount)',
+          parameters: ['Amount'],
+        },
+      ],
+      sObject: 'Opportunity',
+      where: {
+        left: {
+          field: 'Amount',
+          literalType: 'INTEGER',
+          operator: '>',
+          value: '0',
+        },
+        operator: 'AND',
+        right: {
+          left: {
+            operator: '=',
+            value: '2020',
+            literalType: 'INTEGER',
+            fn: {
+              functionName: 'CALENDAR_YEAR',
+              parameters: ['CloseDate'],
+              rawValue: 'CALENDAR_YEAR(CloseDate)',
+            },
+          },
+        },
+      },
+    },
+  },
 ];
 
 export default testCases;
