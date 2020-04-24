@@ -58,7 +58,7 @@ import {
   WithDateCategoryContext,
   LocationFunctionContext,
   GeoLocationFunctionContext,
-  OrderByLocationExpressionContext,
+  orderByAggregateOrLocationExpressionContext,
   GroupByFieldListContext,
   SelectClauseIdentifierContext,
 } from '../models';
@@ -473,10 +473,13 @@ class SOQLVisitor extends BaseSoqlVisitor {
     return orderByClause;
   }
 
-  orderByLocationExpression(ctx: OrderByLocationExpressionContext): OrderByClause {
-    const orderByClause: OrderByClause = {
-      fn: this.visit(ctx.locationFunction, { includeType: false }),
-    };
+  orderByAggregateOrLocationExpression(ctx: orderByAggregateOrLocationExpressionContext): OrderByClause {
+    const orderByClause: OrderByClause = {};
+    if (ctx.locationFunction) {
+      orderByClause.fn = this.visit(ctx.locationFunction, { includeType: false });
+    } else {
+      orderByClause.fn = this.visit(ctx.aggregateFunction, { includeType: false });
+    }
     if (ctx.order && ctx.order[0]) {
       orderByClause.order = ctx.order[0].tokenType.name as OrderByCriterion;
     }

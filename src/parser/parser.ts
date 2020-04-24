@@ -328,7 +328,7 @@ export class SoqlParser extends CstParser {
       DEF: () => {
         this.OR([
           { ALT: () => this.SUBRULE(this.orderByFunctionExpression, { LABEL: 'orderByExpressionOrFn' }) },
-          { ALT: () => this.SUBRULE(this.orderByLocationExpression, { LABEL: 'orderByExpressionOrFn' }) },
+          { ALT: () => this.SUBRULE(this.orderByAggregateOrLocationExpression, { LABEL: 'orderByExpressionOrFn' }) },
           { ALT: () => this.SUBRULE(this.orderByExpression, { LABEL: 'orderByExpressionOrFn' }) },
         ]);
       },
@@ -351,14 +351,14 @@ export class SoqlParser extends CstParser {
     this.SUBRULE(this.functionExpression);
   });
 
-  private orderByLocationExpression = this.RULE('orderByLocationExpression', () => {
-    this.SUBRULE(this.locationFunction);
+  private orderByAggregateOrLocationExpression = this.RULE('orderByAggregateOrLocationExpression', () => {
+    this.OR([{ ALT: () => this.SUBRULE(this.locationFunction) }, { ALT: () => this.SUBRULE(this.aggregateFunction) }]);
     this.OPTION(() => {
-      this.OR([{ ALT: () => this.CONSUME(lexer.Asc, { LABEL: 'order' }) }, { ALT: () => this.CONSUME(lexer.Desc, { LABEL: 'order' }) }]);
+      this.OR1([{ ALT: () => this.CONSUME(lexer.Asc, { LABEL: 'order' }) }, { ALT: () => this.CONSUME(lexer.Desc, { LABEL: 'order' }) }]);
     });
     this.OPTION1(() => {
       this.CONSUME(lexer.Nulls);
-      this.OR1([{ ALT: () => this.CONSUME(lexer.First, { LABEL: 'nulls' }) }, { ALT: () => this.CONSUME(lexer.Last, { LABEL: 'nulls' }) }]);
+      this.OR2([{ ALT: () => this.CONSUME(lexer.First, { LABEL: 'nulls' }) }, { ALT: () => this.CONSUME(lexer.Last, { LABEL: 'nulls' }) }]);
     });
   });
 

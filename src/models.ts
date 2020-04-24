@@ -141,8 +141,9 @@ export interface OrderByFunctionExpressionContext extends WithIdentifier {
   nulls?: IToken[];
 }
 
-export interface OrderByLocationExpressionContext {
-  locationFunction: CstNode[];
+export interface orderByAggregateOrLocationExpressionContext {
+  locationFunction?: CstNode[];
+  aggregateFunction?: CstNode[];
   order?: IToken[];
   nulls?: IToken[];
 }

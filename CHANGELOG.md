@@ -1,5 +1,13 @@
 # Changelog
 
+## 2.5.2
+
+April 23, 2020
+
+1. Added support for dates formatted with nanoseconds, such as `2020-04-15T02:40:03.000+0000`. (#102)
+2. Added support for aggregate function in the `ORDER BY` clause (#103)
+3. Queries would not be properly composed if an order by had a function and also specified ASC or DESC (#104)
+
 ## 2.5.1
 
 April 23, 2020
