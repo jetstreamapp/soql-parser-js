@@ -1,5 +1,11 @@
 # Changelog
 
+## 2.5.3
+
+April 24, 2020
+
+1. Fixed nanoseconds on date (#102)
+
 ## 2.5.2
 
 April 23, 2020
