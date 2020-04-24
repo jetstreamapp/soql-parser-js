@@ -1877,12 +1877,18 @@ export const testCases: TestCase[] = [
   },
   {
     testCase: 101,
-    soql: 'SELECT Id FROM LoginHistory WHERE LoginTime > 2019-04-15T02:40:03.000+0000 AND LoginTime < 2020-04-15T02:40:03.000+0000',
+    soql:
+      'SELECT Id FROM LoginHistory WHERE LoginTime > 2020-04-23T09:00:00.00000000000000000000000000000000+00:00 AND LoginTime < 2020-04-15T02:40:03.000+0000',
     output: {
       fields: [{ type: 'Field', field: 'Id' }],
       sObject: 'LoginHistory',
       where: {
-        left: { field: 'LoginTime', operator: '>', value: '2019-04-15T02:40:03.000+0000', literalType: 'DATETIME' },
+        left: {
+          field: 'LoginTime',
+          operator: '>',
+          value: '2020-04-23T09:00:00.00000000000000000000000000000000+00:00',
+          literalType: 'DATETIME',
+        },
         operator: 'AND',
         right: { left: { field: 'LoginTime', operator: '<', value: '2020-04-15T02:40:03.000+0000', literalType: 'DATETIME' } },
       },
