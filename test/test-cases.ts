@@ -1610,7 +1610,7 @@ export const testCases: TestCase[] = [
   },
   {
     testCase: 89,
-    soql: `SELECT Name, StreetAddress__c FROM Warehouse__c WHERE DISTANCE(Location__c, GEOLOCATION(37.775, -122.418), 'mi') < 20 ORDER BY DISTANCE(Location__c, GEOLOCATION(37.775, -122.418), 'mi') LIMIT 10`,
+    soql: `SELECT Name, StreetAddress__c FROM Warehouse__c WHERE DISTANCE(Location__c, GEOLOCATION(37.775, -122.418), 'mi') < 20 ORDER BY DISTANCE(Location__c, GEOLOCATION(37.775, -122.418), 'mi') DESC LIMIT 10`,
     output: {
       fields: [
         { type: 'Field', field: 'Name' },
@@ -1638,6 +1638,7 @@ export const testCases: TestCase[] = [
         },
       },
       orderBy: {
+        order: 'DESC',
         fn: {
           rawValue: `DISTANCE(Location__c, GEOLOCATION(37.775, -122.418), 'mi')`,
           functionName: 'DISTANCE',
@@ -1871,6 +1872,42 @@ export const testCases: TestCase[] = [
             },
           },
         },
+      },
+    },
+  },
+  {
+    testCase: 101,
+    soql: 'SELECT Id FROM LoginHistory WHERE LoginTime > 2019-04-15T02:40:03.000+0000 AND LoginTime < 2020-04-15T02:40:03.000+0000',
+    output: {
+      fields: [{ type: 'Field', field: 'Id' }],
+      sObject: 'LoginHistory',
+      where: {
+        left: { field: 'LoginTime', operator: '>', value: '2019-04-15T02:40:03.000+0000', literalType: 'DATETIME' },
+        operator: 'AND',
+        right: { left: { field: 'LoginTime', operator: '<', value: '2020-04-15T02:40:03.000+0000', literalType: 'DATETIME' } },
+      },
+    },
+  },
+  {
+    testCase: 102,
+    soql: 'SELECT ProductCode FROM Product2 GROUP BY ProductCode HAVING COUNT(Id) > 1 ORDER BY COUNT(Id) DESC',
+    output: {
+      fields: [{ type: 'Field', field: 'ProductCode' }],
+      sObject: 'Product2',
+      groupBy: {
+        field: 'ProductCode',
+        having: {
+          left: {
+            operator: '>',
+            value: '1',
+            literalType: 'INTEGER',
+            fn: { rawValue: 'COUNT(Id)', functionName: 'COUNT', parameters: ['Id'] },
+          },
+        },
+      },
+      orderBy: {
+        fn: { rawValue: 'COUNT(Id)', functionName: 'COUNT', parameters: ['Id'] },
+        order: 'DESC',
       },
     },
   },

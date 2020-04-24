@@ -354,7 +354,7 @@ export class Compose {
       return this.formatter.formatOrderByArray(orderBy.map(ob => this.parseOrderBy(ob)));
     } else {
       let output = `${utils.get(orderBy.field, ' ')}`;
-      output += orderBy.fn ? this.parseFn(orderBy.fn) : '';
+      output += orderBy.fn ? `${this.parseFn(orderBy.fn)} ` : '';
       output += `${utils.get(orderBy.order, ' ')}${utils.get(orderBy.nulls, '', 'NULLS ')}`;
       return output.trim();
     }
