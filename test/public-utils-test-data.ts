@@ -347,4 +347,39 @@ export const testCases: FlattenedObjTestCase[] = [
       SBQQ__Quote__c: 'a1j50000004BBOmAAO',
     },
   },
+  {
+    testCase: 11,
+    expectedFields: ['Name','expr0'],
+    query: {
+      fields: [
+        {
+          type: "FieldRelationship",
+          field: "Name",
+          relationships: [
+            "Account"
+          ],
+          rawValue: "Account.Name"
+        },
+        {
+          type: "FieldFunctionExpression",
+          functionName: "AVG",
+          parameters: [
+            "Amount"
+          ],
+          isAggregateFn: true,
+          rawValue: "AVG(Amount)"
+        }
+      ],
+      sObject: "Opportunity",
+      groupBy: {
+        field: "Account.Name"
+      },
+      limit: 5
+    },
+    sfdcObj: {
+      expr0: 1,
+      Name: 'Test',
+      SBQQ__Quote__c: 'a1j50000004BBOmAAO',
+    },
+  },
 ];
