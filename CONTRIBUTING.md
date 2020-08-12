@@ -8,7 +8,7 @@ Any feature that is part of the core project and does not deviate from what the 
 
 # Making Changes
 
-- For the repository
+- Fork the repository
 - Create a new branch from master (usually) and with a meaningful name for your changes
 - Make you changes
 - Commit and push your change
