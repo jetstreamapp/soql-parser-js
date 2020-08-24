@@ -349,37 +349,69 @@ export const testCases: FlattenedObjTestCase[] = [
   },
   {
     testCase: 11,
-    expectedFields: ['Name','expr0'],
+    expectedFields: ['Name', 'expr0'],
     query: {
       fields: [
         {
-          type: "FieldRelationship",
-          field: "Name",
-          relationships: [
-            "Account"
-          ],
-          rawValue: "Account.Name"
+          type: 'FieldRelationship',
+          field: 'Name',
+          relationships: ['Account'],
+          rawValue: 'Account.Name',
         },
         {
-          type: "FieldFunctionExpression",
-          functionName: "AVG",
-          parameters: [
-            "Amount"
-          ],
+          type: 'FieldFunctionExpression',
+          functionName: 'AVG',
+          parameters: ['Amount'],
           isAggregateFn: true,
-          rawValue: "AVG(Amount)"
-        }
+          rawValue: 'AVG(Amount)',
+        },
       ],
-      sObject: "Opportunity",
+      sObject: 'Opportunity',
       groupBy: {
-        field: "Account.Name"
+        field: 'Account.Name',
       },
-      limit: 5
+      limit: 5,
     },
     sfdcObj: {
       expr0: 1,
       Name: 'Test',
       SBQQ__Quote__c: 'a1j50000004BBOmAAO',
+    },
+  },
+  {
+    testCase: 12,
+    expectedFields: ['Id', 'What.Id', 'What.Phone', 'What.Name'],
+    query: {
+      fields: [
+        {
+          type: 'Field',
+          field: 'Id',
+        },
+        {
+          type: 'FieldTypeof',
+          field: 'What',
+          conditions: [
+            {
+              type: 'WHEN',
+              objectType: 'Account',
+              fieldList: ['Id', 'Phone'],
+            },
+            {
+              type: 'ELSE',
+              fieldList: ['Id', 'Name'],
+            },
+          ],
+        },
+      ],
+      sObject: 'Event',
+    },
+    sfdcObj: {
+      Id: '00U6g000008goSXEAY',
+      What: {
+        Id: '5006g00000Bt97JAAR',
+        Phone: '(312) 596-1000',
+        Name: '00001016',
+      },
     },
   },
 ];
