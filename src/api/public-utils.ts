@@ -125,8 +125,8 @@ export function getFlattenedFields(
   const fields = query.fields;
   // if a relationship field is used in a group by, then Salesforce removes the relationship portion of the field in the returned records
   let groupByFields: { [field: string]: string } = {};
-  if(!!query.groupBy && query.groupBy.field) {
-    if(!Array.isArray(query.groupBy.field)) {
+  if (!!query.groupBy && query.groupBy.field) {
+    if (!Array.isArray(query.groupBy.field)) {
       query.groupBy.field = [query.groupBy.field];
     }
     groupByFields = query.groupBy.field.reduce((output: { [field: string]: string }, field) => {
@@ -139,7 +139,7 @@ export function getFlattenedFields(
   let sObjectAlias = (query.sObjectAlias || '').toLowerCase();
 
   const parsedFields = fields
-    .map(field => {
+    .flatMap(field => {
       switch (field.type) {
         case 'Field': {
           return field.field;
@@ -196,6 +196,21 @@ export function getFlattenedFields(
         }
         case 'FieldSubquery': {
           return field.subquery.relationshipName;
+        }
+        case 'FieldTypeof': {
+          // keep track of fields to avoid adding duplicates
+          const priorFields = new Set<string>();
+          const fields: string[] = [];
+          // Add all unique fields across all conditions
+          field.conditions.forEach(condition => {
+            condition.fieldList.forEach(currField => {
+              if (!priorFields.has(currField)) {
+                priorFields.add(currField);
+                fields.push(`${field.field}.${currField}`);
+              }
+            });
+          });
+          return fields;
         }
         default:
           break;

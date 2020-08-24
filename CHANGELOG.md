@@ -1,5 +1,17 @@
 # Changelog
 
+## 2.5.5
+
+Aug 23, 2020
+
+1. `getFlattenedFields` ignores `typeof` clauses in query. (#115)
+
+## 2.5.4
+
+April 12, 2020
+
+1. `getFlattenedFields` returns incorrect results if relationship field is grouped and you are grouping for only one field (#113)
+
 ## 2.5.3
 
 April 24, 2020
