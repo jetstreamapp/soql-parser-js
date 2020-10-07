@@ -1917,6 +1917,63 @@ export const testCases: TestCase[] = [
       },
     },
   },
+  {
+    testCase: 103,
+    soql: 'SELECT AnnualRevenue FROM Account WHERE NOT (AnnualRevenue > 0 AND AnnualRevenue < 200000)',
+    output: {
+      fields: [{ type: 'Field', field: 'AnnualRevenue' }],
+      sObject: 'Account',
+      where: {
+        left: {
+          field: 'AnnualRevenue',
+          logicalPrefix: 'NOT',
+          openParen: 1,
+          operator: '>',
+          value: '0',
+          literalType: 'INTEGER',
+        },
+        operator: 'AND',
+        right: {
+          left: {
+            field: 'AnnualRevenue',
+            closeParen: 1,
+            operator: '<',
+            value: '200000',
+            literalType: 'INTEGER',
+          },
+        },
+      },
+    },
+  },
+  {
+    testCase: 104,
+    soql: 'SELECT AnnualRevenue FROM Account WHERE ((NOT AnnualRevenue > 0) AND AnnualRevenue < 200000)',
+    output: {
+      fields: [{ type: 'Field', field: 'AnnualRevenue' }],
+      sObject: 'Account',
+      where: {
+        left: {
+          field: 'AnnualRevenue',
+          logicalPrefix: 'NOT',
+          openParen: 2,
+          closeParen: 1,
+          operator: '>',
+          value: '0',
+          literalType: 'INTEGER',
+        },
+        operator: 'AND',
+        right: {
+          left: {
+            field: 'AnnualRevenue',
+            closeParen: 1,
+            operator: '<',
+            value: '200000',
+            literalType: 'INTEGER',
+          },
+        },
+      },
+    },
+  },
 ];
 
 export default testCases;

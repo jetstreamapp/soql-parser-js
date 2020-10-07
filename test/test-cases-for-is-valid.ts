@@ -436,5 +436,15 @@ export const testCases: TestCaseForFormat[] = [
     soql: `SELECT sbqq__product__r.name foo, sbqq__quote__c foo1 FROM SBQQ__Quoteline__c group by sbqq__quote__c, sbqq__product__r.name`,
     isValid: true,
   },
+  {
+    testCase: 153,
+    soql: `SELECT AnnualRevenue FROM Account WHERE NOT (AnnualRevenue > 0 AND AnnualRevenue < 200000)`,
+    isValid: true,
+  },
+  {
+    testCase: 154,
+    soql: `SELECT AnnualRevenue FROM Account WHERE ((NOT AnnualRevenue > 0) AND AnnualRevenue < 200000) LIMIT 1`,
+    isValid: true,
+  },
 ];
 export default testCases;

@@ -11,27 +11,28 @@ const replacements = [{ matching: / last /i, replace: ' LAST ' }];
 // Uncomment these to easily test one specific query - useful for troubleshooting/bugfixing
 
 // describe.only('parse queries', () => {
-//   const testCase = testCases.find(tc => tc.testCase === 102);
+//   const testCase = testCases.find(tc => tc.testCase === 103);
 //   it(`should correctly parse test case ${testCase.testCase} - ${testCase.soql}`, () => {
 //     const soqlQuery = parseQuery(testCase.soql, testCase.options);
+//     console.log(soqlQuery);
 //     const soqlQueryWithoutUndefinedProps = JSON.parse(JSON.stringify(soqlQuery));
 //     expect(testCase.output).to.deep.equal(soqlQueryWithoutUndefinedProps);
 //   });
 // });
 
-// describe.only('compose queries', () => {
-//   const testCase = testCases.find(tc => tc.testCase === 99);
-//   it(`should compose correctly - test case ${testCase.testCase} - ${testCase.soql}`, () => {
-//     const soqlQuery = composeQuery(removeComposeOnlyFields(parseQuery(testCase.soql, testCase.options)));
-//     let soql = testCase.soqlComposed || testCase.soql;
-//     replacements.forEach(replacement => (soql = soql.replace(replacement.matching, replacement.replace)));
-//     expect(soqlQuery).to.equal(soql);
-//   });
-// });
+describe.only('compose queries', () => {
+  const testCase = testCases.find(tc => tc.testCase === 103 || tc.testCase === 104);
+  it(`should compose correctly - test case ${testCase.testCase} - ${testCase.soql}`, () => {
+    const soqlQuery = composeQuery(removeComposeOnlyFields(parseQuery(testCase.soql, testCase.options)));
+    let soql = testCase.soqlComposed || testCase.soql;
+    replacements.forEach(replacement => (soql = soql.replace(replacement.matching, replacement.replace)));
+    expect(soqlQuery).to.equal(soql);
+  });
+});
 
 // describe.only('Test valid queries', () => {
 //   testCasesForIsValid
-//     .filter(testCase => testCase.testCase === 152)
+//     .filter(testCase => testCase.testCase === 154)
 //     .forEach(testCase => {
 //       it(`should identify validity of query - test case ${testCase.testCase} - ${testCase.soql}`, () => {
 //         const soqlQuery = parseQuery(testCase.soql, { logErrors: true, ...testCase.options });
