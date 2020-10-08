@@ -20,32 +20,36 @@ const replacements = [{ matching: / last /i, replace: ' LAST ' }];
 //   });
 // });
 
-describe.only('compose queries', () => {
-  const testCase = testCases.find(tc => tc.testCase === 103 || tc.testCase === 104);
-  it(`should compose correctly - test case ${testCase.testCase} - ${testCase.soql}`, () => {
-    const soqlQuery = composeQuery(removeComposeOnlyFields(parseQuery(testCase.soql, testCase.options)));
-    let soql = testCase.soqlComposed || testCase.soql;
-    replacements.forEach(replacement => (soql = soql.replace(replacement.matching, replacement.replace)));
-    expect(soqlQuery).to.equal(soql);
-  });
-});
-
-// describe.only('Test valid queries', () => {
-//   testCasesForIsValid
-//     .filter(testCase => testCase.testCase === 154)
-//     .forEach(testCase => {
-//       it(`should identify validity of query - test case ${testCase.testCase} - ${testCase.soql}`, () => {
-//         const soqlQuery = parseQuery(testCase.soql, { logErrors: true, ...testCase.options });
-//         const isValid = isQueryValid(testCase.soql);
-//         expect(isValid).equal(testCase.isValid);
-//       });
-//       // it(`should identify valid queries - test case ${testCase.testCase} - ${testCase.soql}`, () => {
-//       //   const isValid = isQueryValid(testCase.soql);
-//       //   expect(isValid).equal(testCase.isValid);
-//       //   expect(parseQuery(testCase.soql, testCase.options)).to.not.throw;
-//       // });
-//     });
+// describe.only('compose queries', () => {
+//   const testCase = testCases.find(tc => tc.testCase === 103 || tc.testCase === 104);
+//   it(`should compose correctly - test case ${testCase.testCase} - ${testCase.soql}`, () => {
+//     const soqlQuery = composeQuery(removeComposeOnlyFields(parseQuery(testCase.soql, testCase.options)));
+//     let soql = testCase.soqlComposed || testCase.soql;
+//     replacements.forEach(replacement => (soql = soql.replace(replacement.matching, replacement.replace)));
+//     expect(soqlQuery).to.equal(soql);
+//   });
 // });
+
+describe.only('Test valid queries', () => {
+  testCasesForIsValid
+    .filter(testCase => testCase.isValid)
+    .forEach(testCase => {
+      it(`should identify valid queries - test case ${testCase.testCase} - ${testCase.soql}`, () => {
+        const isValid = isQueryValid(testCase.soql, testCase.options);
+        expect(parseQuery(testCase.soql, testCase.options)).to.not.throw;
+        expect(isValid).equal(testCase.isValid);
+      });
+    });
+
+  testCasesForIsValid
+    .filter(testCase => !testCase.isValid)
+    .forEach(testCase => {
+      it(`should identify invalid queries - test case ${testCase.testCase} - ${testCase.soql}`, () => {
+        const isValid = isQueryValid(testCase.soql, testCase.options);
+        expect(isValid).equal(testCase.isValid);
+      });
+    });
+});
 
 describe('parse queries', () => {
   testCases.forEach(testCase => {

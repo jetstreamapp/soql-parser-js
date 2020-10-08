@@ -446,5 +446,25 @@ export const testCases: TestCaseForFormat[] = [
     soql: `SELECT AnnualRevenue FROM Account WHERE ((NOT AnnualRevenue > 0) AND AnnualRevenue < 200000) LIMIT 1`,
     isValid: true,
   },
+  {
+    testCase: 155,
+    soql: `SELECT Id FROM Account WHERE ((NOT (Name = '2' OR Name = '3')))`,
+    isValid: true,
+  },
+  {
+    testCase: 156,
+    soql: `SELECT Id FROM Account WHERE NOT (Name = '2' OR Name = '3')`,
+    isValid: true,
+  },
+  {
+    testCase: 157,
+    soql: `SELECT Id FROM Account WHERE NOT (Name = '2')`,
+    isValid: true,
+  },
+  {
+    testCase: 158,
+    soql: `SELECT Id FROM Account WHERE NOT Name = '2'`,
+    isValid: true,
+  },
 ];
 export default testCases;

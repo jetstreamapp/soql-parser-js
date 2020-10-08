@@ -232,6 +232,7 @@ export class SoqlParser extends CstParser {
         this.OR([
           { ALT: () => this.CONSUME(lexer.And, { LABEL: 'logicalOperator' }) },
           { ALT: () => this.CONSUME(lexer.Or, { LABEL: 'logicalOperator' }) },
+          { ALT: () => this.CONSUME(lexer.Not, { LABEL: 'logicalPrefix' }) },
         ]);
       });
       this.SUBRULE(this.expression, { ARGS: [parenCount, allowSubquery, alowAggregateFn, allowLocationFn] });
@@ -479,7 +480,7 @@ export class SoqlParser extends CstParser {
     'expression',
     (parenCount?: ParenCount, allowSubquery?: boolean, alowAggregateFn?: boolean, allowLocationFn?: boolean) => {
       this.OPTION(() => {
-        this.CONSUME1(lexer.Not, { LABEL: 'logicalPrefix' });
+        this.CONSUME(lexer.Not, { LABEL: 'logicalPrefix' });
       });
 
       this.OPTION1(() => {
@@ -492,7 +493,7 @@ export class SoqlParser extends CstParser {
       });
 
       this.OPTION2(() => {
-        this.CONSUME(lexer.Not, { LABEL: 'logicalPrefix' });
+        this.CONSUME1(lexer.Not, { LABEL: 'logicalPrefix' });
       });
 
       this.OR1([
