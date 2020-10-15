@@ -349,11 +349,13 @@ class SOQLVisitor extends BaseSoqlVisitor {
     const where = ctx.conditionExpression.reduce(
       (expressions: ExpressionTree<WhereClause>, currExpression: any) => {
         if (!expressions.expressionTree) {
-          expressions.expressionTree = this.visit(currExpression);
-          expressions.prevExpression = expressions.expressionTree;
+          const tempExpression: WhereClause = this.visit(currExpression);
+          expressions.expressionTree = tempExpression;
+          expressions.prevExpression = tempExpression.right ? tempExpression.right : tempExpression;
         } else {
-          expressions.prevExpression.right = this.visit(currExpression, { prevExpression: expressions.prevExpression });
-          expressions.prevExpression = expressions.prevExpression.right;
+          const tempExpression: WhereClause = this.visit(currExpression, { prevExpression: expressions.prevExpression });
+          expressions.prevExpression.right = tempExpression;
+          expressions.prevExpression = tempExpression.right ? tempExpression.right : tempExpression;
         }
         return expressions;
       },
@@ -367,9 +369,16 @@ class SOQLVisitor extends BaseSoqlVisitor {
     if (options.prevExpression && ctx.logicalOperator) {
       options.prevExpression.operator = ctx.logicalOperator[0].tokenType.name;
     }
-    return {
-      left: this.visit(ctx.expression),
-    };
+    let baseExpression: Partial<WhereClause> = {};
+    let currExpression: Partial<WhereClause> = baseExpression;
+
+    if (Array.isArray(ctx.expressionNegation)) {
+      baseExpression = this.visit(ctx.expressionNegation);
+      currExpression = baseExpression.right;
+    }
+
+    currExpression.left = this.visit(ctx.expression);
+    return baseExpression;
   }
   withClause(ctx: WithClauseContext) {
     if (ctx.withSecurityEnforced) {
@@ -633,6 +642,17 @@ class SOQLVisitor extends BaseSoqlVisitor {
     }
 
     return output as Condition;
+  }
+
+  expressionPartWithNegation(ctx: any) {
+    const output: Partial<WhereClause> = {
+      left: ctx.L_PAREN ? { openParen: ctx.L_PAREN.length } : null,
+      operator: 'NOT',
+      right: {
+        left: {},
+      },
+    };
+    return output;
   }
 
   expressionWithRelationalOperator(ctx: ExpressionOperatorContext): Condition {

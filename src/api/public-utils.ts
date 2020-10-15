@@ -1,17 +1,50 @@
-import * as SoqlModels from './api-models';
 import {
   getParams,
+  hasAlias,
   isComposeField,
   isComposeFieldFunction,
   isComposeFieldRelationship,
   isComposeFieldSubquery,
   isComposeFieldTypeof,
+  isFieldSubquery,
+  isGroupByField,
+  isGroupByFn,
+  isHavingClauseWithRightCondition,
+  isNegationCondition,
+  isOrderByField,
+  isOrderByFn,
   isString,
   isSubquery,
-  isFieldSubquery,
+  isValueCondition,
+  isValueFunctionCondition,
+  isValueQueryCondition,
+  isValueWithDateLiteralCondition,
+  isValueWithDateNLiteralCondition,
+  isWhereClauseWithRightCondition,
+  isWhereOrHavingClauseWithRightCondition,
 } from '../utils';
+import * as SoqlModels from './api-models';
 
-export { isSubquery };
+// re-exported utils available as public API
+export {
+  hasAlias,
+  isFieldSubquery,
+  isGroupByField,
+  isGroupByFn,
+  isHavingClauseWithRightCondition,
+  isNegationCondition,
+  isOrderByField,
+  isOrderByFn,
+  isString,
+  isSubquery,
+  isValueCondition,
+  isValueFunctionCondition,
+  isValueQueryCondition,
+  isValueWithDateLiteralCondition,
+  isValueWithDateNLiteralCondition,
+  isWhereClauseWithRightCondition,
+  isWhereOrHavingClauseWithRightCondition,
+};
 
 export type ComposeFieldInput = ComposeField | ComposeFieldFunction | ComposeFieldRelationship | ComposeFieldSubquery | ComposeFieldTypeof;
 
@@ -125,7 +158,7 @@ export function getFlattenedFields(
   const fields = query.fields;
   // if a relationship field is used in a group by, then Salesforce removes the relationship portion of the field in the returned records
   let groupByFields: { [field: string]: string } = {};
-  if (!!query.groupBy && query.groupBy.field) {
+  if (!!query.groupBy && isGroupByField(query.groupBy)) {
     if (!Array.isArray(query.groupBy.field)) {
       query.groupBy.field = [query.groupBy.field];
     }
@@ -181,7 +214,7 @@ export function getFlattenedFields(
         }
         case 'FieldRelationship': {
           const firstRelationship = field.relationships[0].toLowerCase();
-          if (field.alias) {
+          if (hasAlias(field)) {
             return field.alias;
           }
           // If relationship field is used in groupby, then return field instead of full path

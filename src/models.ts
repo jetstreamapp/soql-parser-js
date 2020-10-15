@@ -93,6 +93,7 @@ export interface WhereClauseSubqueryContext {
 
 export interface ConditionExpressionContext {
   logicalOperator?: IToken[];
+  expressionNegation?: CstNode[];
   expression: CstNode[];
 }
 

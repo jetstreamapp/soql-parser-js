@@ -1,7 +1,27 @@
 import { IToken } from 'chevrotain';
-import { FieldFunctionExpression, LiteralType, Query, Subquery, WhereClause, ValueQuery, Condition, FieldSubquery } from './api/api-models';
+import {
+  FieldFunctionExpression,
+  FieldRelationship,
+  FieldRelationshipWithAlias,
+  FieldSubquery,
+  FieldWithAlias,
+  GroupByFieldClause,
+  GroupByFnClause,
+  HavingClauseWithRightCondition,
+  LiteralType,
+  NegationCondition,
+  OrderByFieldClause,
+  OrderByFnClause,
+  Query,
+  Subquery,
+  ValueCondition,
+  ValueFunctionCondition,
+  ValueQueryCondition,
+  ValueWithDateLiteralCondition,
+  ValueWithDateNLiteralCondition,
+  WhereClauseWithRightCondition,
+} from './api/api-models';
 import { ComposeField, ComposeFieldFunction, ComposeFieldRelationship, ComposeFieldSubquery, ComposeFieldTypeof } from './api/public-utils';
-import { isUndefined } from 'util';
 
 export function isToken(val: any): val is IToken[] | IToken {
   val = Array.isArray(val) ? val[0] : val;
@@ -72,12 +92,8 @@ export function pad(val: string, len: number, left: number = 0): string {
   }
 }
 
-export function isSubquery(query: Query | Subquery): query is Subquery {
-  return isString((query as any).relationshipName);
-}
-
-export function isFieldSubquery(value: any): value is FieldSubquery {
-  return value && value.type && value.type === 'FieldSubquery';
+export function generateParens(count: number, character: '(' | ')') {
+  return isNumber(count) && count > 0 ? new Array(count).fill(character).join('') : '';
 }
 
 /**
@@ -99,6 +115,10 @@ export function getParams(functionFieldExp: FieldFunctionExpression): string[] {
   return getParams(functionFieldExp.parameters[0] as FieldFunctionExpression);
 }
 
+export function hasAlias(value: any): value is FieldWithAlias | FieldRelationshipWithAlias {
+  return value && !isNil(value.alias);
+}
+
 export function isComposeField(input: any): input is ComposeField {
   return isString(input.field) && !Array.isArray(input.relationships) && !Array.isArray(input.conditions);
 }
@@ -115,8 +135,72 @@ export function isComposeFieldTypeof(input: any): input is ComposeFieldTypeof {
   return isString(input.field) && Array.isArray(input.conditions);
 }
 
-export function isConditionWithValueQuery(input: any): input is Condition & ValueQuery {
-  return isUndefined(input.valueQuery) ? false : true;
+export function isSubquery(query: Query | Subquery): query is Subquery {
+  return isString((query as any).relationshipName);
+}
+
+export function isFieldSubquery(value: any): value is FieldSubquery {
+  return value && value.type && value.type === 'FieldSubquery';
+}
+
+export function isWhereClauseWithRightCondition(value: any): value is WhereClauseWithRightCondition {
+  return value && value.operator && value.right;
+}
+
+export function isHavingClauseWithRightCondition(value: any): value is HavingClauseWithRightCondition {
+  return value && value.operator && value.right;
+}
+
+export function isWhereOrHavingClauseWithRightCondition(
+  value: any,
+): value is WhereClauseWithRightCondition | HavingClauseWithRightCondition {
+  return value && value.operator && value.right;
+}
+
+export function isValueCondition(value: any): value is ValueCondition {
+  return value && isString(value.field) && isString(value.operator) && !isNil(value.value);
+}
+
+export function isValueWithDateLiteralCondition(value: any): value is ValueWithDateLiteralCondition {
+  return (
+    value &&
+    isString(value.field) &&
+    isString(value.operator) &&
+    !isNil(value.value) &&
+    (value.literalType === 'DATE_LITERAL' || (Array.isArray(value.literalType) && value.literalType[0] === 'DATE_LITERAL'))
+  );
+}
+
+export function isValueWithDateNLiteralCondition(value: any): value is ValueWithDateNLiteralCondition {
+  return value && isString(value.field) && isString(value.operator) && !isNil(value.value) && !isNil(value.dateLiteralVariable);
+}
+
+export function isValueFunctionCondition(value: any): value is ValueFunctionCondition {
+  return value && !isNil(value.fn) && isString(value.operator) && !isNil(value.value);
+}
+
+export function isNegationCondition(value: any): value is NegationCondition {
+  return value && isNumber(value.openParen) && isNil(value.operator) && isNil(value.field) && isNil(value.fn) && isNil(value.closeParen);
+}
+
+export function isValueQueryCondition(value: any): value is ValueQueryCondition {
+  return value && isString(value.field) && isString(value.operator) && !isNil(value.valueQuery) && isNil(value.value);
+}
+
+export function isOrderByField(value: any): value is OrderByFieldClause {
+  return value && !isNil(value.field);
+}
+
+export function isOrderByFn(value: any): value is OrderByFnClause {
+  return value && !isNil(value.fn);
+}
+
+export function isGroupByField(value: any): value is GroupByFieldClause {
+  return value && !isNil(value.field);
+}
+
+export function isGroupByFn(value: any): value is GroupByFnClause {
+  return value && !isNil(value.fn);
 }
 
 export function getWhereValue(value: any | any[], literalType?: LiteralType | LiteralType[]): any {

@@ -158,14 +158,15 @@ export class Formatter {
   }
 
   formatWhereClauseOperators(operator: string, whereClause: string): string {
+    const skipNewLineAndIndent = operator === 'NOT';
     if (this.enabled && this.options.whereClauseOperatorsIndented) {
       return `\n\t${operator} ${whereClause}`;
     } else {
-      return `${this.formatAddNewLine(' ')}${operator} ${whereClause}`;
+      return `${this.formatAddNewLine(skipNewLineAndIndent ? '' : ' ', skipNewLineAndIndent)}${operator} ${whereClause}`;
     }
   }
 
-  formatAddNewLine(alt: string = ' '): string {
-    return this.enabled ? `\n` : alt;
+  formatAddNewLine(alt: string = ' ', skipNewLineAndIndent?: boolean): string {
+    return this.enabled && !skipNewLineAndIndent ? `\n` : alt;
   }
 }

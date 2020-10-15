@@ -11,12 +11,14 @@
 **Available Features:**
 
 1. Parse SOQL queries into a common `Query` data structure.
-2. Compose a `Query` data structure back into a SOQL query.
-3. Validate a query to check if the syntax is valid. (Note: even if a query is returned as valid, it might still be invalid based on your Salesforce configuration)
+2. Deterministically compose a `Query` data structure back into a SOQL query string.
+3. Validate a query to check if the syntax is valid.
+   1. _Even if a query is returned as valid, it might still be invalid based on your Salesforce configuration_
 
-This library uses [Chevrotain](https://github.com/SAP/chevrotain) to parse queries. Prior to version 2.0.0, [antlr4](https://github.com/antlr/antlr4) was used. The move to Chevrotain provided a significant performance increase and decrease in bundle size. :tada:
+This library uses [Chevrotain](https://github.com/SAP/chevrotain) to parse queries. Prior to version 2.0.0, [antlr4](https://github.com/antlr/antlr4) was used.
 
 Migrating from version 1 to version 2? [Check out the changelog](CHANGELOG.md#200) for a full list of changes.
+Migrating from version 2 to version 3? [Check out the changelog](CHANGELOG.md#300) for a full list of changes.
 
 Want to try it out? [Check out the demo](https://paustint.github.io/soql-parser-js/).
 
@@ -46,12 +48,30 @@ isQueryValid('SELECT Id Foo FROM Baz'); // false
 
 ## Utility Functions
 
-| Function           | Description                                                                                                                                                               | Arguments                                                                 |
-| ------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------- |
-| getField           | Convenience method to construct fields in the correct format when using `composeQuery()`. Look in the data models section below for the structure of `ComposeFieldInput`. | input: `string | ComposeFieldInput`                                       |
-| isSubquery         | Returns `true` if the data passed in is a subquery.                                                                                                                       | query: `Query | Subquery`                                                 |
-| isFieldSubquery    | Returns `true` if the data passed in is a FieldSubquery.                                                                                                                  | value: `any`                                                              |
-| getFlattenedFields | Flatten a Salesforce record based on the parsed SOQL Query.                                                                                                               | soql: `Query | Subquery | FieldSubquery`<br> config?: `SoqlComposeConfig` |
+**General Utility**
+
+Many of hte utility functions are provided to easily determine the shape of specific data since there are many variations. If you are using Typescript in strict mode, you can use these to narrow types with if statements.
+
+| Function                                | Description                                                                                                                                                                                                             | Arguments                                                                 |
+| --------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------- |
+| hasAlias                                | Returns `true` if the field passed in has the `alias` property.                                                                                                                                                         | input: `string | ComposeFieldInput`                                       |
+| getField                                | Convenience method to construct fields in the correct format when using `composeQuery()`. Look in the data models section below for the structure of `ComposeFieldInput`.                                               | input: `string | ComposeFieldInput`                                       |
+| getFlattenedFields                      | Flatten a Salesforce record based on the parsed SOQL Query. this is useful if you have relationships in your query and want to show the results in a table, using `.` dot notation for the relationship field headings. | soql: `Query | Subquery | FieldSubquery`<br> config?: `SoqlComposeConfig` |
+| isSubquery                              | Returns `true` if the data passed in is a subquery.                                                                                                                                                                     | query: `Query | Subquery`                                                 |
+| isFieldSubquery                         | Returns `true` if the data passed in is a FieldSubquery.                                                                                                                                                                | value: `any`                                                              |
+| isWhereClauseWithRightCondition         | Returns `true` if the value passed in is a `WhereClause` with an `operator` and `right` property                                                                                                                        | value: `WhereClause`                                                      |
+| isHavingClauseWithRightCondition        | Returns `true` if the value passed in is a `HavingClause` with an `operator` and `right` property                                                                                                                       | value: `HavingClause`                                                     |
+| isWhereOrHavingClauseWithRightCondition | Returns `true` if the value passed in is a `WhereClause` or `HavingClause` with an `operator` and `right` property                                                                                                      | value: `WhereClause | HavingClause`                                       |
+| isValueCondition                        | Returns `true` if the value passed in has `field`, `operator` and `value` properties                                                                                                                                    | value: `Condition`                                                        |
+| isValueWithDateLiteralCondition         | Returns `true` if the value passed in has `field`, `operator` and `value` properties and has a `literalType` property that is `DATE_LITERAL` of `['DATE_LITERAL',...]`                                                  | value: `Condition`                                                        |
+| isValueWithDateNLiteralCondition        | Returns `true` if the value passed in has `field`, `operator`, `value` and `dateLiteralVariable` properties                                                                                                             | value: `Condition`                                                        |
+| isValueFunctionCondition                | Returns `true` if the value passed in has `fn`, `operator` and `value` properties                                                                                                                                       | value: `Condition`                                                        |
+| isNegationCondition                     | Returns `true` if the value passed in has a `openParen` property and does not have `fn`, `field`, `operator`, `value`, and `closeParen` properties                                                                      | value: `Condition`                                                        |
+| isValueQueryCondition                   | Returns `true` if the value passed in has `field`, `operator` and `valueQuery` properties and does not have a `value` property                                                                                          | value: `Condition | ValueQueryCondition`                                  |
+| isOrderByField                          | Returns `true` if the value passed in has `field` property                                                                                                                                                              | value: `OrderByClause`                                                    |
+| isOrderByFn                             | Returns `true` if the value passed in has `fn` property                                                                                                                                                                 | value: `OrderByClause`                                                    |
+| isGroupByField                          | Returns `true` if the value passed in has `field` property                                                                                                                                                              | value: `GroupByClause`                                                    |
+| isGroupByFn                             | Returns `true` if the value passed in has `fn` property                                                                                                                                                                 | value: `GroupByClause`                                                    |
 
 **ParseQueryConfig**
 
@@ -374,30 +394,15 @@ WHERE Name LIKE 'a%'
 	OR Name LIKE 'c%'
 ```
 
-## Utility Functions
-
-The following utility functions are available:
-
-1. `getField(input: string | ComposeFieldInput)`
-   1. Convenience method to construct fields in the correct format. See data model below for the various input types as well as example usage in the Compose examples above.
-   2. returns one of the following data structures: `SoqlModels.FieldFunctionExpression | SoqlModels.Field | SoqlModels.FieldRelationship | SoqlModels.FieldSubquery | SoqlModels.FieldTypeOf`.
-2. `isSubquery(query: Query | Subquery)`
-   1. Returns `true` if the data passed in is a subquery
-3. `getFlattenedFields(query: Query | Subquery | FieldSubquery)`
-   1. Flatten a Salesforce record based on the parsed SOQL Query. this is useful if you have relationships in your query and want to show the results in a table, using `.` dot notation for the relationship field headings.
-   2. Returns an array of strings.
-   3. Refer to `tests/publicUtils.spec.ts` for usage examples.
-
 ## Data Models
 
 ### Query
 
 ```typescript
-export type LogicalOperator = 'AND' | 'OR';
+export type LogicalOperator = 'AND' | 'OR' | 'NOT';
 export type Operator = '=' | '!=' | '<=' | '>=' | '>' | '<' | 'LIKE' | 'IN' | 'NOT IN' | 'INCLUDES' | 'EXCLUDES';
 export type FieldTypeOfConditionType = 'WHEN' | 'ELSE';
 export type GroupSelector = 'ABOVE' | 'AT' | 'BELOW' | 'ABOVE_OR_BELOW';
-export type LogicalPrefix = 'NOT';
 export type ForClause = 'VIEW' | 'UPDATE' | 'REFERENCE';
 export type UpdateClause = 'TRACKING' | 'VIEWSTAT';
 export type LiteralType =
@@ -413,7 +418,14 @@ export type LiteralType =
   | 'DATE_LITERAL'
   | 'DATE_N_LITERAL'
   | 'APEX_BIND_VARIABLE';
-export type FieldType = Field | FieldFunctionExpression | FieldRelationship | FieldSubquery | FieldTypeOf;
+export type FieldType =
+  | Field
+  | FieldWithAlias
+  | FieldFunctionExpression
+  | FieldRelationship
+  | FieldRelationshipWithAlias
+  | FieldSubquery
+  | FieldTypeOf;
 export type OrderByCriterion = 'ASC' | 'DESC';
 export type NullsOrder = 'FIRST' | 'LAST';
 export type GroupByType = 'CUBE' | 'ROLLUP';
@@ -469,9 +481,12 @@ export type DateNLiteral =
 export interface Field {
   type: 'Field';
   field: string;
-  objectPrefix?: string; // required if object is aliased
-  rawValue?: string; // only included if objectPrefix is defined
   alias?: string;
+}
+
+export interface FieldWithAlias extends Field {
+  objectPrefix: string;
+  rawValue: string;
 }
 
 export interface FieldFunctionExpression {
@@ -487,9 +502,12 @@ export interface FieldRelationship {
   type: 'FieldRelationship';
   field: string;
   relationships: string[];
-  objectPrefix?: string; // required if object is aliased
   rawValue?: string; // not required for compose, will be populated if SOQL is parsed with the raw value of the entire field
-  alias?: string;
+}
+
+export interface FieldRelationshipWithAlias extends FieldRelationship {
+  objectPrefix: string;
+  alias: string;
 }
 
 export interface FieldSubquery {
@@ -533,52 +551,115 @@ export interface Subquery extends QueryBase {
   sObjectPrefix?: string[];
 }
 
-export interface WhereClause {
-  left: Condition & ValueQuery;
-  right?: WhereClause;
-  operator?: LogicalOperator;
+export type WhereClause = WhereClauseWithoutOperator | WhereClauseWithRightCondition;
+
+export interface WhereClauseWithoutOperator {
+  left: ConditionWithValueQuery;
 }
 
-export interface ValueQuery {
-  valueQuery?: Query;
+export interface WhereClauseWithRightCondition extends WhereClauseWithoutOperator {
+  operator: LogicalOperator;
+  right: WhereClause;
 }
 
-export interface Condition {
+export type Condition =
+  | ValueCondition
+  | ValueWithDateLiteralCondition
+  | ValueWithDateNLiteralCondition
+  | ValueFunctionCondition
+  | NegationCondition;
+
+export type ConditionWithValueQuery = Condition | ValueQueryCondition;
+
+export interface OptionalParentheses {
   openParen?: number;
   closeParen?: number;
-  logicalPrefix?: LogicalPrefix;
-  field?: string;
-  fn?: FunctionExp;
-  operator: Operator;
-  value?: string | string[];
-  literalType?: LiteralType | LiteralType[]; // If populated with STRING on compose, the value(s) will be wrapped in "'" if they are not already. - All other values ignored
-  dateLiteralVariable?: number | number[]; // not required for compose, will be populated if SOQL is parsed
 }
 
-export interface OrderByClause {
-  field?: string;
-  fn?: FunctionExp;
+export interface ValueCondition extends OptionalParentheses {
+  field: string;
+  operator: Operator;
+  value: string | string[];
+  literalType?: LiteralType | LiteralType[];
+}
+
+export interface ValueWithDateLiteralCondition extends OptionalParentheses {
+  field: string;
+  operator: Operator;
+  value: DateLiteral | DateLiteral[];
+  literalType?: 'DATE_LITERAL' | 'DATE_LITERAL'[];
+}
+
+export interface ValueWithDateNLiteralCondition extends OptionalParentheses {
+  field: string;
+  operator: Operator;
+  value: string | string[];
+  literalType?: 'DATE_N_LITERAL' | 'DATE_N_LITERAL'[];
+  dateLiteralVariable: number | number[];
+}
+
+export interface ValueQueryCondition extends OptionalParentheses {
+  field: string;
+  operator: Operator;
+  valueQuery: Query;
+}
+
+export interface ValueFunctionCondition extends OptionalParentheses {
+  fn: FunctionExp;
+  operator: Operator;
+  value: string | string[];
+  literalType?: LiteralType | LiteralType[];
+}
+
+export interface NegationCondition {
+  openParen: number;
+}
+
+export type OrderByClause = OrderByFieldClause | OrderByFnClause;
+
+export interface OrderByOptionalFieldsClause {
   order?: OrderByCriterion;
   nulls?: NullsOrder;
 }
 
-export interface GroupByClause {
-  field?: string | string[];
-  fn?: FunctionExp;
+export interface OrderByFieldClause extends OrderByOptionalFieldsClause {
+  field: string;
+}
+
+export interface OrderByFnClause extends OrderByOptionalFieldsClause {
+  fn: FunctionExp;
+}
+
+export type GroupByClause = GroupByFieldClause | GroupByFnClause;
+
+export interface GroupByOptionalFieldsClause {
   having?: HavingClause;
 }
 
-export interface HavingClause {
+export interface GroupByFieldClause extends GroupByOptionalFieldsClause {
+  field: string | string[];
+}
+
+export interface GroupByFnClause extends GroupByOptionalFieldsClause {
+  fn: FunctionExp;
+}
+
+export type HavingClause = HavingClauseWithoutOperator | HavingClauseWithRightCondition;
+
+export interface HavingClauseWithoutOperator {
   left: Condition;
-  right?: HavingClause;
-  operator?: LogicalOperator;
+}
+
+export interface HavingClauseWithRightCondition extends HavingClauseWithoutOperator {
+  operator: LogicalOperator;
+  right: HavingClause;
 }
 
 export interface FunctionExp {
-  rawValue?: string; // This is the entire text of the function, such as Count(Id). When composing a query, if this is populated this will be used to build output SOQL query.
-  functionName?: string; // When composing a query, if rawValue is undefined/null this will be used to build the SOQL query.
+  rawValue?: string; // only used for compose fields if useRawValueForFn=true. Should be formatted like this: Count(Id)
+  functionName?: string; // only used for compose fields if useRawValueForFn=false, will be populated if SOQL is parsed
   alias?: string;
-  parameters?: (string | FunctionExp)[]; // When composing a query, if rawValue is undefined/null this will be used to build the SOQL query.
+  parameters?: (string | FunctionExp)[]; // only used for compose fields if useRawValueForFn=false, will be populated if SOQL is parsed
   isAggregateFn?: boolean; // not used for compose, will be populated if SOQL is parsed
 }
 
@@ -590,40 +671,6 @@ export interface WithDataCategoryCondition {
   groupName: string;
   selector: GroupSelector;
   parameters: string[];
-}
-```
-
-## Compose / Utility
-
-```typescript
-export type ComposeFieldInput = ComposeField | ComposeFieldFunction | ComposeFieldRelationship | ComposeFieldSubquery | ComposeFieldTypeof;
-
-export interface ComposeField {
-  field: string;
-  objectPrefix?: string;
-}
-
-export interface ComposeFieldFunction {
-  // @Deprecated - will still be used if populated, but `functionName` is checked first and preferred
-  fn?: string;
-  functionName: string;
-  parameters?: string | SoqlModels.FieldFunctionExpression | (string | SoqlModels.FieldFunctionExpression)[];
-  alias?: string;
-}
-
-export interface ComposeFieldRelationship {
-  field: string;
-  relationships: string[];
-  objectPrefix?: string;
-}
-
-export interface ComposeFieldSubquery {
-  subquery?: SoqlModels.Subquery;
-}
-
-export interface ComposeFieldTypeof {
-  field: string;
-  conditions: SoqlModels.FieldTypeOfCondition[];
 }
 ```
 

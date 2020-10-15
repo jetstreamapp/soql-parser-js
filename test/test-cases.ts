@@ -526,21 +526,25 @@ export const testCases: TestCase[] = [
         right: {
           left: {
             openParen: 1,
-            logicalPrefix: 'NOT',
-            field: 'Id',
-            operator: '=',
-            value: "'2'",
-            literalType: 'STRING',
-            closeParen: 1,
           },
-          operator: 'OR',
+          operator: 'NOT',
           right: {
-            left: { openParen: 1, field: 'Name', operator: 'LIKE', value: "'%FOO%'", literalType: 'STRING' },
+            left: {
+              field: 'Id',
+              operator: '=',
+              value: "'2'",
+              literalType: 'STRING',
+              closeParen: 1,
+            },
             operator: 'OR',
             right: {
-              left: { openParen: 1, field: 'Name', operator: 'LIKE', value: "'%ARM%'", literalType: 'STRING' },
-              operator: 'AND',
-              right: { left: { field: 'FOO', operator: '=', value: "'bar'", literalType: 'STRING', closeParen: 3 } },
+              left: { openParen: 1, field: 'Name', operator: 'LIKE', value: "'%FOO%'", literalType: 'STRING' },
+              operator: 'OR',
+              right: {
+                left: { openParen: 1, field: 'Name', operator: 'LIKE', value: "'%ARM%'", literalType: 'STRING' },
+                operator: 'AND',
+                right: { left: { field: 'FOO', operator: '=', value: "'bar'", literalType: 'STRING', closeParen: 3 } },
+              },
             },
           },
         },
@@ -1563,14 +1567,16 @@ export const testCases: TestCase[] = [
           },
           operator: 'AND',
           right: {
-            left: {
-              openParen: 1,
-              closeParen: 1,
-              logicalPrefix: 'NOT',
-              field: 'Name',
-              operator: 'IN',
-              value: [`'4/30 testing account'`, `'amendment quote doc testing'`],
-              literalType: 'STRING',
+            left: { openParen: 1 },
+            operator: 'NOT',
+            right: {
+              left: {
+                closeParen: 1,
+                field: 'Name',
+                operator: 'IN',
+                value: [`'4/30 testing account'`, `'amendment quote doc testing'`],
+                literalType: 'STRING',
+              },
             },
           },
         },
@@ -1924,22 +1930,25 @@ export const testCases: TestCase[] = [
       fields: [{ type: 'Field', field: 'AnnualRevenue' }],
       sObject: 'Account',
       where: {
-        left: {
-          field: 'AnnualRevenue',
-          logicalPrefix: 'NOT',
-          openParen: 1,
-          operator: '>',
-          value: '0',
-          literalType: 'INTEGER',
-        },
-        operator: 'AND',
+        left: null,
+        operator: 'NOT',
         right: {
           left: {
             field: 'AnnualRevenue',
-            closeParen: 1,
-            operator: '<',
-            value: '200000',
+            openParen: 1,
+            operator: '>',
+            value: '0',
             literalType: 'INTEGER',
+          },
+          operator: 'AND',
+          right: {
+            left: {
+              field: 'AnnualRevenue',
+              closeParen: 1,
+              operator: '<',
+              value: '200000',
+              literalType: 'INTEGER',
+            },
           },
         },
       },
@@ -1953,22 +1962,51 @@ export const testCases: TestCase[] = [
       sObject: 'Account',
       where: {
         left: {
-          field: 'AnnualRevenue',
-          logicalPrefix: 'NOT',
           openParen: 2,
-          closeParen: 1,
-          operator: '>',
-          value: '0',
-          literalType: 'INTEGER',
         },
-        operator: 'AND',
+        operator: 'NOT',
         right: {
           left: {
             field: 'AnnualRevenue',
             closeParen: 1,
-            operator: '<',
-            value: '200000',
+            operator: '>',
+            value: '0',
             literalType: 'INTEGER',
+          },
+          operator: 'AND',
+          right: {
+            left: {
+              field: 'AnnualRevenue',
+              closeParen: 1,
+              operator: '<',
+              value: '200000',
+              literalType: 'INTEGER',
+            },
+          },
+        },
+      },
+    },
+  },
+  {
+    testCase: 105,
+    soql: `SELECT Id FROM Account WHERE NOT Id = '2'`,
+    output: {
+      fields: [
+        {
+          type: 'Field',
+          field: 'Id',
+        },
+      ],
+      sObject: 'Account',
+      where: {
+        left: null,
+        operator: 'NOT',
+        right: {
+          left: {
+            field: 'Id',
+            operator: '=',
+            value: "'2'",
+            literalType: 'STRING',
           },
         },
       },

@@ -14,7 +14,6 @@ import {
 import * as utils from '../utils';
 import { FieldData, Formatter, FormatOptions } from '../formatter/formatter';
 import { parseQuery } from '../parser/visitor';
-import { isArray } from 'util';
 
 export interface SoqlComposeConfig {
   logging: boolean; // default=false
@@ -191,7 +190,7 @@ export class Compose {
       }
     }
 
-    if (query.orderBy && (!isArray(query.orderBy) || query.orderBy.length > 0)) {
+    if (query.orderBy && (!Array.isArray(query.orderBy) || query.orderBy.length > 0)) {
       output += this.formatter.formatClause('ORDER BY');
       output += ` ${this.parseOrderBy(query.orderBy)}`;
       this.log(output);
@@ -258,7 +257,7 @@ export class Compose {
           return `${field.functionName}(${params})${field.alias ? ` ${field.alias}` : ''}`;
         }
         case 'FieldRelationship': {
-          return `${objPrefix}${field.relationships.join('.')}.${field.field}${field.alias ? ` ${field.alias}` : ''}`;
+          return `${objPrefix}${field.relationships.join('.')}.${field.field}${utils.hasAlias(field) ? ` ${field.alias}` : ''}`;
         }
         case 'FieldSubquery': {
           return this.formatter.formatSubquery(this.parseQuery(field.subquery));
@@ -294,31 +293,27 @@ export class Compose {
    * e.x.: WHERE LoginTime > 2010-09-20T22:16:30.000Z AND LoginTime < 2010-09-21T22:16:30.000Z
    * WHERE Id IN (SELECT AccountId FROM Contact WHERE LastName LIKE 'apple%') AND Id IN (SELECT AccountId FROM Opportunity WHERE isClosed = false)
    * @param where
+   * @param priorIsNegationOperator - do not set this when calling manually. Recursive call will set this to ensure proper formatting.
    * @returns where clause
    */
   public parseWhereOrHavingClause(whereOrHaving: WhereClause | HavingClause): string {
     let output = '';
-    if (whereOrHaving.left) {
-      output +=
-        utils.isNumber(whereOrHaving.left.openParen) && whereOrHaving.left.openParen > 0
-          ? new Array(whereOrHaving.left.openParen).fill('(').join('')
-          : '';
-      output += `${utils.get(whereOrHaving.left.logicalPrefix, ' ')}`;
-      output += whereOrHaving.left.fn ? this.parseFn(whereOrHaving.left.fn) : whereOrHaving.left.field;
-      output += ` ${whereOrHaving.left.operator} `;
+    const left = whereOrHaving.left;
+    if (left) {
+      output += utils.generateParens(left.openParen, '(');
+      if (!utils.isNegationCondition(left)) {
+        output += utils.isValueFunctionCondition(left) ? this.parseFn(left.fn) : left.field;
+        output += ` ${left.operator} `;
 
-      if (utils.isConditionWithValueQuery(whereOrHaving.left) && whereOrHaving.left.valueQuery) {
-        output += this.formatter.formatSubquery(this.parseQuery(whereOrHaving.left.valueQuery), 1, true);
-      } else {
-        output += utils.getAsArrayStr(utils.getWhereValue(whereOrHaving.left.value, whereOrHaving.left.literalType));
+        if (utils.isValueQueryCondition(left)) {
+          output += this.formatter.formatSubquery(this.parseQuery(left.valueQuery), 1, true);
+        } else {
+          output += utils.getAsArrayStr(utils.getWhereValue(left.value, left.literalType));
+        }
+        output += utils.generateParens(left.closeParen, ')');
       }
-
-      output +=
-        utils.isNumber(whereOrHaving.left.closeParen) && whereOrHaving.left.closeParen > 0
-          ? new Array(whereOrHaving.left.closeParen).fill(')').join('')
-          : '';
     }
-    if (whereOrHaving.right) {
+    if (utils.isWhereOrHavingClauseWithRightCondition(whereOrHaving)) {
       const formattedData = this.formatter.formatWhereClauseOperators(
         utils.get(whereOrHaving.operator),
         this.parseWhereOrHavingClause(whereOrHaving.right),
@@ -336,7 +331,7 @@ export class Compose {
    * @returns group by clause
    */
   public parseGroupByClause(groupBy: GroupByClause): string {
-    if (groupBy.fn) {
+    if (utils.isGroupByFn(groupBy)) {
       return this.parseFn(groupBy.fn);
     } else {
       return (Array.isArray(groupBy.field) ? groupBy.field : [groupBy.field]).join(', ');
@@ -353,8 +348,12 @@ export class Compose {
     if (Array.isArray(orderBy)) {
       return this.formatter.formatOrderByArray(orderBy.map(ob => this.parseOrderBy(ob)));
     } else {
-      let output = `${utils.get(orderBy.field, ' ')}`;
-      output += orderBy.fn ? `${this.parseFn(orderBy.fn)} ` : '';
+      let output = '';
+      if (utils.isOrderByField(orderBy)) {
+        output = `${utils.get(orderBy.field, ' ')}`;
+      } else {
+        output += `${this.parseFn(orderBy.fn)} `;
+      }
       output += `${utils.get(orderBy.order, ' ')}${utils.get(orderBy.nulls, '', 'NULLS ')}`;
       return output.trim();
     }

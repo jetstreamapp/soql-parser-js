@@ -1,5 +1,151 @@
 # Changelog
 
+## 3.0.0
+
+October 14, 2020
+
+🔥 Breaking Changes 🔥
+
+This version changes the `WHERE` clause structure when using the `NOT` operator t0 fix issue #122, and has implemented stricter type definitions.
+
+The `NOT` operator is now treated as a `LogicalOperator` and will be set in the `operator` field between `left` and `right`.
+In cases where this is populated, the preceding `left` condition will either be set to `null` or will at most have the `openParens` field populated.
+
+The `logicalPrefix` property has been removed from `Condition`.
+
+Example of the change in structure for queries using NOT - `SELECT Id FROM Account WHERE NOT Id = '2'`
+
+```diff
+{
+  "fields": [
+    {
+      "type": "Field",
+      "field": "Id"
+    }
+  ],
+  "sObject": "Account",
+  "where": {
+-    "left": {
+-      "logicalPrefix": "NOT",
+-      "field": "Id",
+-      "operator": "=",
+-      "value": "'2'",
+-      "literalType": "STRING"
+-    }
++    "left": null
++    "operator": "NOT",
++    "right": {
++      "left": {
++        "field": "Id",
++        "operator": "=",
++        "value": "'2'",
++        "literalType": "STRING"
++      }
+  }
+}
+```
+
+If you are using Typescript in strict mode, you may encounter some breaking changes to your types depending on how you pre-checked for the presence of fields.
+
+`Field` and `FieldRelationship` are now made up of two types, one with and one without alias.
+`Condition` is now made up of multiple individual interfaces that represent different data types based on what data is populated.
+`OrderByClause` is now made up of multiple individual interfaces that represent different data types based on what data is populated.
+`GroupByClause` is now made up of multiple individual interfaces that represent different data types based on what data is populated.
+`HavingClause` is now made up of multiple individual interfaces that represent different data types based on what data is populated.
+
+Previously you could have just done null/undefined checks in Typescript strict mode.
+Now, to avoid using the `any` type, you can use the newly introduced utility methods that provide type detection and type narrowing.
+
+- `hasAlias()`
+- `isFieldSubquery()`
+- `isGroupByField()`
+- `isGroupByFn()`
+- `isHavingClauseWithRightCondition()`b
+- `isNegationCondition()`
+- `isOrderByField()`
+- `isOrderByFn()`
+- `isString()`
+- `isSubquery()`
+- `isValueCondition()`
+- `isValueFunctionCondition()`
+- `isValueQueryCondition()`
+- `isValueWithDateLiteralCondition()`
+- `isValueWithDateNLiteralCondition()`
+- `isWhereClauseWithRightCondition()`
+- `isWhereOrHavingClauseWithRightCondition()`
+
+Here is a summary of the core changes, view the `Readme` for the comprehensive types.
+
+```diff
+export type FieldType =
+   | Field
++  | FieldWithAlias
+   | FieldFunctionExpression
+   | FieldRelationship
++  | FieldRelationshipWithAlias
+   | FieldSubquery
+   | FieldTypeOf;
+```
+
+```diff
+-export interface WhereClause {
+-  left: Condition & ValueQuery;
+-  right?: WhereClause;
+-  operator?: LogicalOperator;
+-}
+
++export type WhereClause = WhereClauseWithoutOperator | WhereClauseWithRightCondition;
+
+-export interface Condition {
+-  openParen?: number;
+-  closeParen?: number;
+-  logicalPrefix?: LogicalPrefix;
+-  field?: string;
+-  fn?: FunctionExp;
+-  operator: Operator;
+-  value?: string | string[];
+-  literalType?: LiteralType | LiteralType[]; // If populated with STRING on compose, the value(s) will be wrapped in "'" if they are not already. - All other values ignored
+-  dateLiteralVariable?: number | number[]; // not required for compose, will be populated if SOQL is parsed
+-}
+
++export type Condition =
++  | ValueCondition
++  | ValueWithDateLiteralCondition
++  | ValueWithDateNLiteralCondition
++  | ValueFunctionCondition
++  | NegationCondition;
+```
+
+```diff
+-export interface OrderByClause {
+-  field?: string;
+-  fn?: FunctionExp;
+-  order?: OrderByCriterion;
+-  nulls?: NullsOrder;
+-}
+
++export type OrderByClause = OrderByFieldClause | OrderByFnClause;
+```
+
+```diff
+-export interface GroupByClause {
+-  field?: string | string[];
+-  fn?: FunctionExp;
+-  having?: HavingClause;
+-}
+
++export type GroupByClause = GroupByFieldClause | GroupByFnClause;
+
+-export interface HavingClause {
+-  left: Condition;
+-  right?: HavingClause;
+-  operator?: LogicalOperator;
+-}
+
++export type HavingClause = HavingClauseWithoutOperator | HavingClauseWithRightCondition;
+
+```
+
 ## 2.5.5
 
 Aug 23, 2020

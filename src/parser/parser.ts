@@ -232,10 +232,21 @@ export class SoqlParser extends CstParser {
         this.OR([
           { ALT: () => this.CONSUME(lexer.And, { LABEL: 'logicalOperator' }) },
           { ALT: () => this.CONSUME(lexer.Or, { LABEL: 'logicalOperator' }) },
-          { ALT: () => this.CONSUME(lexer.Not, { LABEL: 'logicalPrefix' }) },
         ]);
       });
-      this.SUBRULE(this.expression, { ARGS: [parenCount, allowSubquery, alowAggregateFn, allowLocationFn] });
+
+      // MAX_LOOKAHEAD -> this is increased because an arbitrary number of parens could be used causing a parsing error
+      // this does not allow infinite parentheses, but is more than enough for any real use-cases
+      // Under no circumstances would large numbers of nested expressions not be expressable with fewer conditions
+      this.MANY({
+        MAX_LOOKAHEAD: 10,
+        DEF: () => this.SUBRULE(this.expressionPartWithNegation, { ARGS: [parenCount], LABEL: 'expressionNegation' }),
+      });
+
+      this.OR1({
+        MAX_LOOKAHEAD: 10,
+        DEF: [{ ALT: () => this.SUBRULE(this.expression, { ARGS: [parenCount, allowSubquery, alowAggregateFn, allowLocationFn] }) }],
+      });
     },
   );
 
@@ -476,24 +487,30 @@ export class SoqlParser extends CstParser {
     this.CONSUME(lexer.RParen);
   });
 
+  private expressionPartWithNegation = this.RULE('expressionPartWithNegation', (parenCount?: ParenCount) => {
+    let leftParenCount = 0; // ensure parenCount is not mutated unless rule is executed
+    this.MANY(() => {
+      this.CONSUME(lexer.LParen);
+      leftParenCount++;
+    });
+
+    this.CONSUME(lexer.Not, { LABEL: 'expressionNegation' });
+
+    if (parenCount && leftParenCount) {
+      parenCount.left += leftParenCount;
+    }
+  });
+
   private expression = this.RULE(
     'expression',
     (parenCount?: ParenCount, allowSubquery?: boolean, alowAggregateFn?: boolean, allowLocationFn?: boolean) => {
-      this.OPTION(() => {
-        this.CONSUME(lexer.Not, { LABEL: 'logicalPrefix' });
-      });
-
       this.OPTION1(() => {
-        this.MANY(() => {
+        this.MANY1(() => {
           this.CONSUME(lexer.LParen);
           if (parenCount) {
             parenCount.left++;
           }
         });
-      });
-
-      this.OPTION2(() => {
-        this.CONSUME1(lexer.Not, { LABEL: 'logicalPrefix' });
       });
 
       this.OR1([
@@ -510,7 +527,7 @@ export class SoqlParser extends CstParser {
       ]);
 
       this.OPTION3(() => {
-        this.MANY1({
+        this.MANY2({
           GATE: () => (parenCount ? parenCount.left > parenCount.right : true),
           DEF: () => {
             this.CONSUME(lexer.RParen);
