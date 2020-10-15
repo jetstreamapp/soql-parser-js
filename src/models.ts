@@ -188,7 +188,6 @@ export interface GeoLocationFunctionContext {
 }
 
 export interface ExpressionContext {
-  logicalPrefix?: IToken[];
   lhs: IToken[] | CstNode[];
   operator: CstNode[]; // ExpressionOperatorContext
   L_PAREN?: IToken[];
@@ -236,7 +235,6 @@ export interface AtomicExpressionContext {
 }
 
 export interface ExpressionWithAggregateFunctionContext {
-  logicalPrefix?: IToken[];
   lhs: IToken[] | CstNode[];
   rhs: CstNode[];
   relationalOperator?: CstNode[];

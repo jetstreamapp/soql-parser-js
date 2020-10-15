@@ -1,6 +1,5 @@
 import {
   Condition,
-  ValueQuery,
   DateLiteral,
   DateNLiteral,
   FieldFunctionExpression,
@@ -13,7 +12,6 @@ import {
   GroupByClause,
   HavingClause,
   LiteralType,
-  LogicalPrefix,
   NullsOrder,
   OrderByClause,
   OrderByCriterion,
@@ -22,6 +20,18 @@ import {
   WhereClause,
   WithDataCategoryCondition,
   Field,
+  FieldRelationshipWithAlias,
+  FieldWithAlias,
+  WhereClauseWithRightCondition,
+  GroupByFnClause,
+  GroupByFieldClause,
+  HavingClauseWithRightCondition,
+  OrderByFnClause,
+  ConditionWithValueQuery,
+  ValueFunctionCondition,
+  ValueCondition,
+  ValueQueryCondition,
+  ValueWithDateNLiteralCondition,
 } from '../api/api-models';
 import {
   ApexBindVariableExpressionContext,
@@ -247,12 +257,12 @@ class SOQLVisitor extends BaseSoqlVisitor {
     return [];
   }
 
-  selectClauseFunctionIdentifier(ctx: SelectClauseFunctionIdentifierContext): FieldRelationship {
-    let output: FieldRelationship = {
+  selectClauseFunctionIdentifier(ctx: SelectClauseFunctionIdentifierContext): FieldRelationship | FieldRelationshipWithAlias {
+    let output: FieldRelationship | FieldRelationshipWithAlias = {
       ...this.visit(ctx.fn),
     };
     if (ctx.alias) {
-      output.alias = ctx.alias[0].image;
+      (output as FieldRelationshipWithAlias).alias = ctx.alias[0].image;
     }
     return output;
   }
@@ -298,7 +308,7 @@ class SOQLVisitor extends BaseSoqlVisitor {
       };
     }
     if (alias) {
-      output.alias = alias;
+      (output as FieldWithAlias | FieldRelationshipWithAlias).alias = alias;
     }
     return output;
   }
@@ -349,12 +359,12 @@ class SOQLVisitor extends BaseSoqlVisitor {
     const where = ctx.conditionExpression.reduce(
       (expressions: ExpressionTree<WhereClause>, currExpression: any) => {
         if (!expressions.expressionTree) {
-          const tempExpression: WhereClause = this.visit(currExpression);
+          const tempExpression: WhereClauseWithRightCondition = this.visit(currExpression);
           expressions.expressionTree = tempExpression;
           expressions.prevExpression = tempExpression.right ? tempExpression.right : tempExpression;
         } else {
-          const tempExpression: WhereClause = this.visit(currExpression, { prevExpression: expressions.prevExpression });
-          expressions.prevExpression.right = tempExpression;
+          const tempExpression: WhereClauseWithRightCondition = this.visit(currExpression, { prevExpression: expressions.prevExpression });
+          (expressions.prevExpression as WhereClauseWithRightCondition).right = tempExpression;
           expressions.prevExpression = tempExpression.right ? tempExpression.right : tempExpression;
         }
         return expressions;
@@ -374,7 +384,7 @@ class SOQLVisitor extends BaseSoqlVisitor {
 
     if (Array.isArray(ctx.expressionNegation)) {
       baseExpression = this.visit(ctx.expressionNegation);
-      currExpression = baseExpression.right;
+      currExpression = (baseExpression as WhereClauseWithRightCondition).right;
     }
 
     currExpression.left = this.visit(ctx.expression);
@@ -410,17 +420,17 @@ class SOQLVisitor extends BaseSoqlVisitor {
     if (field && field.length === 1) {
       field = field[0];
     }
-    const output: GroupByClause = {};
+    const output: Partial<GroupByClause> = {};
     if (field) {
-      output.field = field;
+      (output as GroupByFieldClause).field = field;
     }
     if (ctx.fn) {
-      output.fn = this.visit(ctx.fn, { includeType: false });
+      (output as GroupByFnClause).fn = this.visit(ctx.fn, { includeType: false });
     }
     if (ctx.havingClause) {
       output.having = this.visit(ctx.havingClause);
     }
-    return output;
+    return output as GroupByClause;
   }
 
   groupByFieldList(ctx: GroupByFieldListContext): string | string[] {
@@ -439,8 +449,10 @@ class SOQLVisitor extends BaseSoqlVisitor {
           expressions.expressionTree = this.visit(currExpression);
           expressions.prevExpression = expressions.expressionTree;
         } else {
-          expressions.prevExpression.right = this.visit(currExpression, { prevExpression: expressions.prevExpression });
-          expressions.prevExpression = expressions.prevExpression.right;
+          (expressions.prevExpression as HavingClauseWithRightCondition).right = this.visit(currExpression, {
+            prevExpression: expressions.prevExpression,
+          });
+          expressions.prevExpression = (expressions.prevExpression as HavingClauseWithRightCondition).right;
         }
         return expressions;
       },
@@ -483,11 +495,11 @@ class SOQLVisitor extends BaseSoqlVisitor {
   }
 
   orderByAggregateOrLocationExpression(ctx: orderByAggregateOrLocationExpressionContext): OrderByClause {
-    const orderByClause: OrderByClause = {};
+    const orderByClause: Partial<OrderByClause> = {};
     if (ctx.locationFunction) {
-      orderByClause.fn = this.visit(ctx.locationFunction, { includeType: false });
+      (orderByClause as OrderByFnClause).fn = this.visit(ctx.locationFunction, { includeType: false });
     } else {
-      orderByClause.fn = this.visit(ctx.aggregateFunction, { includeType: false });
+      (orderByClause as OrderByFnClause).fn = this.visit(ctx.aggregateFunction, { includeType: false });
     }
     if (ctx.order && ctx.order[0]) {
       orderByClause.order = ctx.order[0].tokenType.name as OrderByCriterion;
@@ -495,7 +507,7 @@ class SOQLVisitor extends BaseSoqlVisitor {
     if (ctx.nulls && ctx.nulls[0]) {
       orderByClause.nulls = ctx.nulls[0].tokenType.name as NullsOrder;
     }
-    return orderByClause;
+    return orderByClause as OrderByClause;
   }
 
   limitClause(ctx: ValueContext) {
@@ -604,52 +616,48 @@ class SOQLVisitor extends BaseSoqlVisitor {
     return [];
   }
 
-  expression(ctx: ExpressionContext): Condition & ValueQuery {
+  expression(ctx: ExpressionContext): ConditionWithValueQuery {
     // const { value, literalType, dateLiteralVariable } = this.visit(ctx.rhs, { returnLiteralType: true });
     const { value, literalType, dateLiteralVariable, operator } = this.visit(ctx.operator, { returnLiteralType: true });
 
-    const output: Partial<Condition & ValueQuery> = {};
-
-    if (ctx.logicalPrefix) {
-      output.logicalPrefix = ctx.logicalPrefix[0].image as LogicalPrefix;
-    }
+    const output: Partial<ConditionWithValueQuery> = {};
 
     if (isToken(ctx.lhs)) {
-      output.field = ctx.lhs[0].image;
+      (output as ValueCondition).field = ctx.lhs[0].image;
     } else {
-      output.fn = this.visit(ctx.lhs, { includeType: false });
+      (output as ValueFunctionCondition).fn = this.visit(ctx.lhs, { includeType: false });
     }
 
     // output.operator = this.visit(ctx.relationalOperator) || this.visit(ctx.setOperator);
-    output.operator = operator;
+    (output as ValueCondition).operator = operator;
 
     if (literalType === 'SUBQUERY') {
-      output.valueQuery = value;
+      (output as ValueQueryCondition).valueQuery = value;
     } else {
-      output.value = value;
-      output.literalType = literalType;
+      (output as ValueCondition).value = value;
+      (output as ValueCondition).literalType = literalType;
     }
 
     if (dateLiteralVariable) {
-      output.dateLiteralVariable = dateLiteralVariable;
+      (output as ValueWithDateNLiteralCondition).dateLiteralVariable = dateLiteralVariable;
     }
 
     if (ctx.L_PAREN) {
       output.openParen = ctx.L_PAREN.length;
     }
     if (ctx.R_PAREN) {
-      output.closeParen = ctx.R_PAREN.length;
+      (output as ValueCondition).closeParen = ctx.R_PAREN.length;
     }
 
     return output as Condition;
   }
 
   expressionPartWithNegation(ctx: any) {
-    const output: Partial<WhereClause> = {
+    const output: Partial<WhereClauseWithRightCondition> = {
       left: ctx.L_PAREN ? { openParen: ctx.L_PAREN.length } : null,
       operator: 'NOT',
       right: {
-        left: {},
+        left: {} as ValueCondition,
       },
     };
     return output;
