@@ -99,5 +99,8 @@
   "SELECT SBQQ__Product__r.Name foo, SBQQ__Quote__c foo1 FROM SBQQ__Quoteline__c GROUP BY SBQQ__Quote__c, SBQQ__Product__r.Name",
   "SELECT Id, convertCurrency(Amount) FROM Opportunity WHERE Amount > 0 AND CALENDAR_YEAR(CloseDate) = 2020",
   "SELECT Id FROM LoginHistory WHERE LoginTime > 2020-04-23T09:00:00.00000000000000000000000000000000+00:00 AND LoginTime < 2020-04-15T02:40:03.000+0000",
-  "SELECT ProductCode FROM Product2 GROUP BY ProductCode HAVING COUNT(Id) > 1 ORDER BY COUNT(Id) DESC"
+  "SELECT ProductCode FROM Product2 GROUP BY ProductCode HAVING COUNT(Id) > 1 ORDER BY COUNT(Id) DESC",
+  "SELECT AnnualRevenue FROM Account WHERE NOT (AnnualRevenue > 0 AND AnnualRevenue < 200000)",
+  "SELECT AnnualRevenue FROM Account WHERE ((NOT AnnualRevenue > 0) AND AnnualRevenue < 200000)",
+  "SELECT Id FROM Account WHERE NOT Id = '2'"
 ]
