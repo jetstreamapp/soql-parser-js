@@ -1,8 +1,7 @@
-export type LogicalOperator = 'AND' | 'OR';
+export type LogicalOperator = 'AND' | 'OR' | 'NOT';
 export type Operator = '=' | '!=' | '<=' | '>=' | '>' | '<' | 'LIKE' | 'IN' | 'NOT IN' | 'INCLUDES' | 'EXCLUDES';
 export type FieldTypeOfConditionType = 'WHEN' | 'ELSE';
 export type GroupSelector = 'ABOVE' | 'AT' | 'BELOW' | 'ABOVE_OR_BELOW';
-export type LogicalPrefix = 'NOT';
 export type ForClause = 'VIEW' | 'UPDATE' | 'REFERENCE';
 export type UpdateClause = 'TRACKING' | 'VIEWSTAT';
 export type LiteralType =
@@ -18,7 +17,14 @@ export type LiteralType =
   | 'DATE_LITERAL'
   | 'DATE_N_LITERAL'
   | 'APEX_BIND_VARIABLE';
-export type FieldType = Field | FieldFunctionExpression | FieldRelationship | FieldSubquery | FieldTypeOf;
+export type FieldType =
+  | Field
+  | FieldWithAlias
+  | FieldFunctionExpression
+  | FieldRelationship
+  | FieldRelationshipWithAlias
+  | FieldSubquery
+  | FieldTypeOf;
 export type OrderByCriterion = 'ASC' | 'DESC';
 export type NullsOrder = 'FIRST' | 'LAST';
 export type GroupByType = 'CUBE' | 'ROLLUP';
@@ -74,9 +80,12 @@ export type DateNLiteral =
 export interface Field {
   type: 'Field';
   field: string;
-  objectPrefix?: string; // required if object is aliased
-  rawValue?: string; // only included if objectPrefix is defined
   alias?: string;
+}
+
+export interface FieldWithAlias extends Field {
+  objectPrefix: string;
+  rawValue: string;
 }
 
 export interface FieldFunctionExpression {
@@ -92,9 +101,12 @@ export interface FieldRelationship {
   type: 'FieldRelationship';
   field: string;
   relationships: string[];
-  objectPrefix?: string; // required if object is aliased
   rawValue?: string; // not required for compose, will be populated if SOQL is parsed with the raw value of the entire field
-  alias?: string;
+}
+
+export interface FieldRelationshipWithAlias extends FieldRelationship {
+  objectPrefix: string;
+  alias: string;
 }
 
 export interface FieldSubquery {
@@ -138,45 +150,108 @@ export interface Subquery extends QueryBase {
   sObjectPrefix?: string[];
 }
 
-export interface WhereClause {
-  left: Condition & ValueQuery;
-  right?: WhereClause;
-  operator?: LogicalOperator;
+export type WhereClause = WhereClauseWithoutOperator | WhereClauseWithRightCondition;
+
+export interface WhereClauseWithoutOperator {
+  left: ConditionWithValueQuery;
 }
 
-export interface ValueQuery {
-  valueQuery?: Query;
+export interface WhereClauseWithRightCondition extends WhereClauseWithoutOperator {
+  operator: LogicalOperator;
+  right: WhereClause;
 }
 
-export interface Condition {
+export type Condition =
+  | ValueCondition
+  | ValueWithDateLiteralCondition
+  | ValueWithDateNLiteralCondition
+  | ValueFunctionCondition
+  | NegationCondition;
+
+export type ConditionWithValueQuery = Condition | ValueQueryCondition;
+
+export interface OptionalParentheses {
   openParen?: number;
   closeParen?: number;
-  logicalPrefix?: LogicalPrefix;
-  field?: string;
-  fn?: FunctionExp;
-  operator: Operator;
-  value?: string | string[];
-  literalType?: LiteralType | LiteralType[]; // If populated with STRING on compose, the value(s) will be wrapped in "'" if they are not already. - All other values ignored
-  dateLiteralVariable?: number | number[]; // not required for compose, will be populated if SOQL is parsed
 }
 
-export interface OrderByClause {
-  field?: string;
-  fn?: FunctionExp;
+export interface ValueCondition extends OptionalParentheses {
+  field: string;
+  operator: Operator;
+  value: string | string[];
+  literalType?: LiteralType | LiteralType[];
+}
+
+export interface ValueWithDateLiteralCondition extends OptionalParentheses {
+  field: string;
+  operator: Operator;
+  value: DateLiteral | DateLiteral[];
+  literalType?: 'DATE_LITERAL' | 'DATE_LITERAL'[];
+}
+
+export interface ValueWithDateNLiteralCondition extends OptionalParentheses {
+  field: string;
+  operator: Operator;
+  value: string | string[];
+  literalType?: 'DATE_N_LITERAL' | 'DATE_N_LITERAL'[];
+  dateLiteralVariable: number | number[];
+}
+
+export interface ValueQueryCondition extends OptionalParentheses {
+  field: string;
+  operator: Operator;
+  valueQuery: Query;
+}
+
+export interface ValueFunctionCondition extends OptionalParentheses {
+  fn: FunctionExp;
+  operator: Operator;
+  value: string | string[];
+  literalType?: LiteralType | LiteralType[];
+}
+
+export interface NegationCondition {
+  openParen: number;
+}
+
+export type OrderByClause = OrderByFieldClause | OrderByFnClause;
+
+export interface OrderByOptionalFieldsClause {
   order?: OrderByCriterion;
   nulls?: NullsOrder;
 }
 
-export interface GroupByClause {
-  field?: string | string[];
-  fn?: FunctionExp;
+export interface OrderByFieldClause extends OrderByOptionalFieldsClause {
+  field: string;
+}
+
+export interface OrderByFnClause extends OrderByOptionalFieldsClause {
+  fn: FunctionExp;
+}
+
+export type GroupByClause = GroupByFieldClause | GroupByFnClause;
+
+export interface GroupByOptionalFieldsClause {
   having?: HavingClause;
 }
 
-export interface HavingClause {
+export interface GroupByFieldClause extends GroupByOptionalFieldsClause {
+  field: string | string[];
+}
+
+export interface GroupByFnClause extends GroupByOptionalFieldsClause {
+  fn: FunctionExp;
+}
+
+export type HavingClause = HavingClauseWithoutOperator | HavingClauseWithRightCondition;
+
+export interface HavingClauseWithoutOperator {
   left: Condition;
-  right?: HavingClause;
-  operator?: LogicalOperator;
+}
+
+export interface HavingClauseWithRightCondition extends HavingClauseWithoutOperator {
+  operator: LogicalOperator;
+  right: HavingClause;
 }
 
 export interface FunctionExp {

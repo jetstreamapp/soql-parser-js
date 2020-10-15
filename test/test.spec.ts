@@ -1,6 +1,7 @@
 import { expect } from 'chai';
 import 'mocha';
 import { parseQuery, WhereClause, Query, Compose, composeQuery, formatQuery } from '../src';
+import { isValueQueryCondition, isWhereClauseWithRightCondition } from '../src/api/public-utils';
 import { isQueryValid } from '../src/parser/visitor';
 import testCases from './test-cases';
 import testCasesForFormat from './test-cases-for-format';
@@ -11,16 +12,17 @@ const replacements = [{ matching: / last /i, replace: ' LAST ' }];
 // Uncomment these to easily test one specific query - useful for troubleshooting/bugfixing
 
 // describe.only('parse queries', () => {
-//   const testCase = testCases.find(tc => tc.testCase === 102);
+//   const testCase = testCases.find(tc => tc.testCase === 87);
 //   it(`should correctly parse test case ${testCase.testCase} - ${testCase.soql}`, () => {
 //     const soqlQuery = parseQuery(testCase.soql, testCase.options);
+//     console.log(soqlQuery);
 //     const soqlQueryWithoutUndefinedProps = JSON.parse(JSON.stringify(soqlQuery));
 //     expect(testCase.output).to.deep.equal(soqlQueryWithoutUndefinedProps);
 //   });
 // });
 
 // describe.only('compose queries', () => {
-//   const testCase = testCases.find(tc => tc.testCase === 99);
+//   const testCase = testCases.find(tc => tc.testCase === 32);
 //   it(`should compose correctly - test case ${testCase.testCase} - ${testCase.soql}`, () => {
 //     const soqlQuery = composeQuery(removeComposeOnlyFields(parseQuery(testCase.soql, testCase.options)));
 //     let soql = testCase.soqlComposed || testCase.soql;
@@ -31,19 +33,31 @@ const replacements = [{ matching: / last /i, replace: ' LAST ' }];
 
 // describe.only('Test valid queries', () => {
 //   testCasesForIsValid
-//     .filter(testCase => testCase.testCase === 152)
+//     .filter(testCase => testCase.isValid)
 //     .forEach(testCase => {
-//       it(`should identify validity of query - test case ${testCase.testCase} - ${testCase.soql}`, () => {
-//         const soqlQuery = parseQuery(testCase.soql, { logErrors: true, ...testCase.options });
-//         const isValid = isQueryValid(testCase.soql);
+//       it(`should identify valid queries - test case ${testCase.testCase} - ${testCase.soql}`, () => {
+//         const isValid = isQueryValid(testCase.soql, testCase.options);
+//         expect(parseQuery(testCase.soql, testCase.options)).to.not.throw;
 //         expect(isValid).equal(testCase.isValid);
 //       });
-//       // it(`should identify valid queries - test case ${testCase.testCase} - ${testCase.soql}`, () => {
-//       //   const isValid = isQueryValid(testCase.soql);
-//       //   expect(isValid).equal(testCase.isValid);
-//       //   expect(parseQuery(testCase.soql, testCase.options)).to.not.throw;
-//       // });
 //     });
+
+//   testCasesForIsValid
+//     .filter(testCase => !testCase.isValid)
+//     .forEach(testCase => {
+//       it(`should identify invalid queries - test case ${testCase.testCase} - ${testCase.soql}`, () => {
+//         const isValid = isQueryValid(testCase.soql, testCase.options);
+//         expect(isValid).equal(testCase.isValid);
+//       });
+//     });
+// });
+
+// describe.only('format queries', () => {
+//   const testCase = testCasesForFormat.find(tc => tc.testCase === 5);
+//   it(`should format query - test case ${testCase.testCase} - ${testCase.soql}`, () => {
+//     const formattedQuery = formatQuery(testCase.soql, testCase.formatOptions);
+//     expect(formattedQuery).equal(testCase.formattedSoql);
+//   });
 // });
 
 describe('parse queries', () => {
@@ -179,10 +193,14 @@ function removeFieldsFromWhere(where?: WhereClause) {
   if (!where) {
     return;
   }
-  if (where.left.valueQuery) {
+
+  if (isValueQueryCondition(where.left)) {
     where.left.valueQuery.fields.forEach(removeComposeOnlyField);
   }
-  removeFieldsFromWhere(where.right);
+
+  if (isWhereClauseWithRightCondition(where)) {
+    removeFieldsFromWhere(where.right);
+  }
 }
 
 function removeComposeOnlyField(field: any) {

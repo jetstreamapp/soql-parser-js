@@ -93,6 +93,7 @@ export interface WhereClauseSubqueryContext {
 
 export interface ConditionExpressionContext {
   logicalOperator?: IToken[];
+  expressionNegation?: CstNode[];
   expression: CstNode[];
 }
 
@@ -187,7 +188,6 @@ export interface GeoLocationFunctionContext {
 }
 
 export interface ExpressionContext {
-  logicalPrefix?: IToken[];
   lhs: IToken[] | CstNode[];
   operator: CstNode[]; // ExpressionOperatorContext
   L_PAREN?: IToken[];
@@ -235,7 +235,6 @@ export interface AtomicExpressionContext {
 }
 
 export interface ExpressionWithAggregateFunctionContext {
-  logicalPrefix?: IToken[];
   lhs: IToken[] | CstNode[];
   rhs: CstNode[];
   relationalOperator?: CstNode[];
