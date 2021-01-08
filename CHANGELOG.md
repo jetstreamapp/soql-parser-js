@@ -1,5 +1,11 @@
 # Changelog
 
+## 3.0.1
+
+January 7, 20201
+
+1. `getFlattenedFields` did not properly handle the alias for an aggregate function within an aggregate query. (#131)
+
 ## 3.0.0
 
 October 14, 2020
