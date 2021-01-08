@@ -414,4 +414,32 @@ export const testCases: FlattenedObjTestCase[] = [
       },
     },
   },
+  {
+    testCase: 13,
+    expectedFields: ['AccountId', 'AcctCreatedDate'],
+    query: {
+      fields: [
+        {
+          type: 'Field',
+          field: 'AccountId',
+        },
+        {
+          type: 'FieldFunctionExpression',
+          functionName: 'MAX',
+          parameters: ['Account.CreatedDate'],
+          isAggregateFn: true,
+          rawValue: 'MAX(Account.CreatedDate)',
+          alias: 'AcctCreatedDate',
+        },
+      ],
+      sObject: 'Contact',
+      groupBy: {
+        field: ['AccountId'],
+      },
+    },
+    sfdcObj: {
+      AccountId: '0016g00000ETu0HAAT',
+      AcctCreatedDate: '2020-02-28T03:00:31.000+0000',
+    },
+  },
 ];

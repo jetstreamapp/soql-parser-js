@@ -192,6 +192,10 @@ export function getFlattenedFields(
             return param;
           });
 
+          if (field.alias && (field.isAggregateFn || isAggregateResult)) {
+            return field.alias;
+          }
+
           if (field.alias) {
             const firstParam = params[0];
             // Include the full path and replace the field with the alias
