@@ -2012,6 +2012,129 @@ export const testCases: TestCase[] = [
       },
     },
   },
+  {
+    testCase: 106,
+    soql: `SELECT WEEK_IN_YEAR(CloseDate), SUM(amount) FROM Opportunity GROUP BY WEEK_IN_YEAR(CloseDate) ORDER BY WEEK_IN_YEAR(CloseDate)`,
+    output: {
+      fields: [
+        {
+          type: 'FieldFunctionExpression',
+          functionName: 'WEEK_IN_YEAR',
+          parameters: ['CloseDate'],
+          rawValue: 'WEEK_IN_YEAR(CloseDate)',
+        },
+        {
+          type: 'FieldFunctionExpression',
+          functionName: 'SUM',
+          parameters: ['amount'],
+          isAggregateFn: true,
+          rawValue: 'SUM(amount)',
+        },
+      ],
+      sObject: 'Opportunity',
+      groupBy: {
+        fn: {
+          functionName: 'WEEK_IN_YEAR',
+          parameters: ['CloseDate'],
+          rawValue: 'WEEK_IN_YEAR(CloseDate)',
+        },
+      },
+      orderBy: {
+        fn: {
+          functionName: 'WEEK_IN_YEAR',
+          parameters: ['CloseDate'],
+          rawValue: 'WEEK_IN_YEAR(CloseDate)',
+        },
+      },
+    },
+  },
+  {
+    testCase: 107,
+    soql: `SELECT WEEK_IN_YEAR(CloseDate), SUM(amount) FROM Opportunity GROUP BY WEEK_IN_YEAR(CloseDate) ORDER BY WEEK_IN_YEAR(CloseDate) DESC NULLS FIRST`,
+    output: {
+      fields: [
+        {
+          type: 'FieldFunctionExpression',
+          functionName: 'WEEK_IN_YEAR',
+          parameters: ['CloseDate'],
+          rawValue: 'WEEK_IN_YEAR(CloseDate)',
+        },
+        {
+          type: 'FieldFunctionExpression',
+          functionName: 'SUM',
+          parameters: ['amount'],
+          isAggregateFn: true,
+          rawValue: 'SUM(amount)',
+        },
+      ],
+      sObject: 'Opportunity',
+      groupBy: {
+        fn: {
+          functionName: 'WEEK_IN_YEAR',
+          parameters: ['CloseDate'],
+          rawValue: 'WEEK_IN_YEAR(CloseDate)',
+        },
+      },
+      orderBy: {
+        fn: {
+          functionName: 'WEEK_IN_YEAR',
+          parameters: ['CloseDate'],
+          rawValue: 'WEEK_IN_YEAR(CloseDate)',
+        },
+        order: 'DESC',
+        nulls: 'FIRST',
+      },
+    },
+  },
+  {
+    testCase: 108,
+    soql: `SELECT WEEK_IN_YEAR(CloseDate), SUM(amount) FROM Opportunity GROUP BY WEEK_IN_YEAR(CloseDate) ORDER BY WEEK_IN_YEAR(CloseDate) DESC NULLS LAST, SUM(amount) ASC NULLS LAST`,
+    output: {
+      fields: [
+        {
+          type: 'FieldFunctionExpression',
+          functionName: 'WEEK_IN_YEAR',
+          parameters: ['CloseDate'],
+          rawValue: 'WEEK_IN_YEAR(CloseDate)',
+        },
+        {
+          type: 'FieldFunctionExpression',
+          functionName: 'SUM',
+          parameters: ['amount'],
+          isAggregateFn: true,
+          rawValue: 'SUM(amount)',
+        },
+      ],
+      sObject: 'Opportunity',
+      groupBy: {
+        fn: {
+          functionName: 'WEEK_IN_YEAR',
+          parameters: ['CloseDate'],
+          rawValue: 'WEEK_IN_YEAR(CloseDate)',
+        },
+      },
+      orderBy: [
+        {
+          fn: {
+            functionName: 'WEEK_IN_YEAR',
+            parameters: ['CloseDate'],
+            rawValue: 'WEEK_IN_YEAR(CloseDate)',
+          },
+          order: 'DESC',
+          nulls: 'LAST',
+        },
+        {
+          fn: {
+            functionName: 'SUM',
+            parameters: ['amount'],
+            rawValue: 'SUM(amount)',
+          },
+          order: 'ASC',
+          nulls: 'LAST',
+        },
+      ],
+    },
+  },
 ];
 
 export default testCases;
