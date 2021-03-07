@@ -1,5 +1,13 @@
 # Changelog
 
+## 2.5.6
+
+March 6, 2021
+
+1. Date functions were not properly parsed when used in order by clauses. (#139)
+2. Modified names of functions / types (internal)
+3. Removed improper import of `isString` from node utils
+
 ## 2.5.5
 
 Aug 23, 2020

@@ -327,8 +327,8 @@ export class SoqlParser extends CstParser {
       SEP: lexer.Comma,
       DEF: () => {
         this.OR([
-          { ALT: () => this.SUBRULE(this.orderByFunctionExpression, { LABEL: 'orderByExpressionOrFn' }) },
-          { ALT: () => this.SUBRULE(this.orderByAggregateOrLocationExpression, { LABEL: 'orderByExpressionOrFn' }) },
+          { ALT: () => this.SUBRULE(this.orderByGroupingFunctionExpression, { LABEL: 'orderByExpressionOrFn' }) },
+          { ALT: () => this.SUBRULE(this.orderBySpecialFunctionExpression, { LABEL: 'orderByExpressionOrFn' }) },
           { ALT: () => this.SUBRULE(this.orderByExpression, { LABEL: 'orderByExpressionOrFn' }) },
         ]);
       },
@@ -346,13 +346,17 @@ export class SoqlParser extends CstParser {
     });
   });
 
-  private orderByFunctionExpression = this.RULE('orderByFunctionExpression', () => {
+  private orderByGroupingFunctionExpression = this.RULE('orderByGroupingFunctionExpression', () => {
     this.CONSUME(lexer.Grouping, { LABEL: 'fn' });
     this.SUBRULE(this.functionExpression);
   });
 
-  private orderByAggregateOrLocationExpression = this.RULE('orderByAggregateOrLocationExpression', () => {
-    this.OR([{ ALT: () => this.SUBRULE(this.locationFunction) }, { ALT: () => this.SUBRULE(this.aggregateFunction) }]);
+  private orderBySpecialFunctionExpression = this.RULE('orderBySpecialFunctionExpression', () => {
+    this.OR([
+      { ALT: () => this.SUBRULE(this.aggregateFunction) },
+      { ALT: () => this.SUBRULE(this.dateFunction) },
+      { ALT: () => this.SUBRULE(this.locationFunction) },
+    ]);
     this.OPTION(() => {
       this.OR1([{ ALT: () => this.CONSUME(lexer.Asc, { LABEL: 'order' }) }, { ALT: () => this.CONSUME(lexer.Desc, { LABEL: 'order' }) }]);
     });

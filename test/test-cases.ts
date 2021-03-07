@@ -1917,6 +1917,218 @@ export const testCases: TestCase[] = [
       },
     },
   },
+  // {
+  //   testCase: 103,
+  //   soql: 'SELECT AnnualRevenue FROM Account WHERE NOT (AnnualRevenue > 0 AND AnnualRevenue < 200000)',
+  //   output: {
+  //     fields: [{ type: 'Field', field: 'AnnualRevenue' }],
+  //     sObject: 'Account',
+  //     where: {
+  //       left: null,
+  //       operator: 'NOT',
+  //       right: {
+  //         left: {
+  //           field: 'AnnualRevenue',
+  //           openParen: 1,
+  //           operator: '>',
+  //           value: '0',
+  //           literalType: 'INTEGER',
+  //         },
+  //         operator: 'AND',
+  //         right: {
+  //           left: {
+  //             field: 'AnnualRevenue',
+  //             closeParen: 1,
+  //             operator: '<',
+  //             value: '200000',
+  //             literalType: 'INTEGER',
+  //           },
+  //         },
+  //       },
+  //     },
+  //   },
+  // },
+  // {
+  //   testCase: 104,
+  //   soql: 'SELECT AnnualRevenue FROM Account WHERE ((NOT AnnualRevenue > 0) AND AnnualRevenue < 200000)',
+  //   output: {
+  //     fields: [{ type: 'Field', field: 'AnnualRevenue' }],
+  //     sObject: 'Account',
+  //     where: {
+  //       left: {
+  //         openParen: 2,
+  //       },
+  //       operator: 'NOT',
+  //       right: {
+  //         left: {
+  //           field: 'AnnualRevenue',
+  //           closeParen: 1,
+  //           operator: '>',
+  //           value: '0',
+  //           literalType: 'INTEGER',
+  //         },
+  //         operator: 'AND',
+  //         right: {
+  //           left: {
+  //             field: 'AnnualRevenue',
+  //             closeParen: 1,
+  //             operator: '<',
+  //             value: '200000',
+  //             literalType: 'INTEGER',
+  //           },
+  //         },
+  //       },
+  //     },
+  //   },
+  // },
+  // {
+  //   testCase: 105,
+  //   soql: `SELECT Id FROM Account WHERE NOT Id = '2'`,
+  //   output: {
+  //     fields: [
+  //       {
+  //         type: 'Field',
+  //         field: 'Id',
+  //       },
+  //     ],
+  //     sObject: 'Account',
+  //     where: {
+  //       left: null,
+  //       operator: 'NOT',
+  //       right: {
+  //         left: {
+  //           field: 'Id',
+  //           operator: '=',
+  //           value: "'2'",
+  //           literalType: 'STRING',
+  //         },
+  //       },
+  //     },
+  //   },
+  // },
+  {
+    testCase: 106,
+    soql: `SELECT WEEK_IN_YEAR(CloseDate), SUM(amount) FROM Opportunity GROUP BY WEEK_IN_YEAR(CloseDate) ORDER BY WEEK_IN_YEAR(CloseDate)`,
+    output: {
+      fields: [
+        {
+          type: 'FieldFunctionExpression',
+          functionName: 'WEEK_IN_YEAR',
+          parameters: ['CloseDate'],
+          rawValue: 'WEEK_IN_YEAR(CloseDate)',
+        },
+        {
+          type: 'FieldFunctionExpression',
+          functionName: 'SUM',
+          parameters: ['amount'],
+          isAggregateFn: true,
+          rawValue: 'SUM(amount)',
+        },
+      ],
+      sObject: 'Opportunity',
+      groupBy: {
+        fn: {
+          functionName: 'WEEK_IN_YEAR',
+          parameters: ['CloseDate'],
+          rawValue: 'WEEK_IN_YEAR(CloseDate)',
+        },
+      },
+      orderBy: {
+        fn: {
+          functionName: 'WEEK_IN_YEAR',
+          parameters: ['CloseDate'],
+          rawValue: 'WEEK_IN_YEAR(CloseDate)',
+        },
+      },
+    },
+  },
+  {
+    testCase: 107,
+    soql: `SELECT WEEK_IN_YEAR(CloseDate), SUM(amount) FROM Opportunity GROUP BY WEEK_IN_YEAR(CloseDate) ORDER BY WEEK_IN_YEAR(CloseDate) DESC NULLS FIRST`,
+    output: {
+      fields: [
+        {
+          type: 'FieldFunctionExpression',
+          functionName: 'WEEK_IN_YEAR',
+          parameters: ['CloseDate'],
+          rawValue: 'WEEK_IN_YEAR(CloseDate)',
+        },
+        {
+          type: 'FieldFunctionExpression',
+          functionName: 'SUM',
+          parameters: ['amount'],
+          isAggregateFn: true,
+          rawValue: 'SUM(amount)',
+        },
+      ],
+      sObject: 'Opportunity',
+      groupBy: {
+        fn: {
+          functionName: 'WEEK_IN_YEAR',
+          parameters: ['CloseDate'],
+          rawValue: 'WEEK_IN_YEAR(CloseDate)',
+        },
+      },
+      orderBy: {
+        fn: {
+          functionName: 'WEEK_IN_YEAR',
+          parameters: ['CloseDate'],
+          rawValue: 'WEEK_IN_YEAR(CloseDate)',
+        },
+        order: 'DESC',
+        nulls: 'FIRST',
+      },
+    },
+  },
+  {
+    testCase: 108,
+    soql: `SELECT WEEK_IN_YEAR(CloseDate), SUM(amount) FROM Opportunity GROUP BY WEEK_IN_YEAR(CloseDate) ORDER BY WEEK_IN_YEAR(CloseDate) DESC NULLS LAST, SUM(amount) ASC NULLS LAST`,
+    output: {
+      fields: [
+        {
+          type: 'FieldFunctionExpression',
+          functionName: 'WEEK_IN_YEAR',
+          parameters: ['CloseDate'],
+          rawValue: 'WEEK_IN_YEAR(CloseDate)',
+        },
+        {
+          type: 'FieldFunctionExpression',
+          functionName: 'SUM',
+          parameters: ['amount'],
+          isAggregateFn: true,
+          rawValue: 'SUM(amount)',
+        },
+      ],
+      sObject: 'Opportunity',
+      groupBy: {
+        fn: {
+          functionName: 'WEEK_IN_YEAR',
+          parameters: ['CloseDate'],
+          rawValue: 'WEEK_IN_YEAR(CloseDate)',
+        },
+      },
+      orderBy: [
+        {
+          fn: {
+            functionName: 'WEEK_IN_YEAR',
+            parameters: ['CloseDate'],
+            rawValue: 'WEEK_IN_YEAR(CloseDate)',
+          },
+          order: 'DESC',
+          nulls: 'LAST',
+        },
+        {
+          fn: {
+            functionName: 'SUM',
+            parameters: ['amount'],
+            rawValue: 'SUM(amount)',
+          },
+          order: 'ASC',
+          nulls: 'LAST',
+        },
+      ],
+    },
+  },
 ];
 
 export default testCases;

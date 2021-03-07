@@ -1,8 +1,9 @@
+import { IToken } from 'chevrotain';
 import {
   Condition,
-  ValueQuery,
   DateLiteral,
   DateNLiteral,
+  Field,
   FieldFunctionExpression,
   FieldRelationship,
   FieldSubquery,
@@ -19,9 +20,9 @@ import {
   OrderByCriterion,
   Query,
   Subquery,
+  ValueQuery,
   WhereClause,
   WithDataCategoryCondition,
-  Field,
 } from '../api/api-models';
 import {
   ApexBindVariableExpressionContext,
@@ -36,15 +37,20 @@ import {
   FieldFunctionContext,
   FromClauseContext,
   FunctionExpressionContext,
+  GeoLocationFunctionContext,
   GroupByClauseContext,
+  GroupByFieldListContext,
   HavingClauseContext,
   LiteralTypeWithSubquery,
+  LocationFunctionContext,
   OperatorContext,
   OrderByClauseContext,
   OrderByExpressionContext,
-  OrderByFunctionExpressionContext,
+  OrderByGroupingFunctionExpressionContext,
+  OrderBySpecialFunctionExpressionContext,
   SelectClauseContext,
   SelectClauseFunctionIdentifierContext,
+  SelectClauseIdentifierContext,
   SelectClauseSubqueryIdentifierContext,
   SelectClauseTypeOfContext,
   SelectClauseTypeOfElseContext,
@@ -56,16 +62,9 @@ import {
   WhereClauseSubqueryContext,
   WithClauseContext,
   WithDateCategoryContext,
-  LocationFunctionContext,
-  GeoLocationFunctionContext,
-  orderByAggregateOrLocationExpressionContext,
-  GroupByFieldListContext,
-  SelectClauseIdentifierContext,
 } from '../models';
-import { isSubqueryFromFlag, isToken } from '../utils';
+import { isString, isSubqueryFromFlag, isToken } from '../utils';
 import { parse, ParseQueryConfig, SoqlParser } from './parser';
-import { isString, isNull } from 'util';
-import { IToken } from 'chevrotain';
 
 const parser = new SoqlParser();
 
@@ -460,7 +459,7 @@ class SOQLVisitor extends BaseSoqlVisitor {
     return orderByClause;
   }
 
-  orderByFunctionExpression(ctx: OrderByFunctionExpressionContext): OrderByClause {
+  orderByGroupingFunctionExpression(ctx: OrderByGroupingFunctionExpressionContext): OrderByClause {
     const orderByClause: OrderByClause = {
       fn: this.$_getFieldFunction(ctx, false, false),
     };
@@ -473,12 +472,14 @@ class SOQLVisitor extends BaseSoqlVisitor {
     return orderByClause;
   }
 
-  orderByAggregateOrLocationExpression(ctx: orderByAggregateOrLocationExpressionContext): OrderByClause {
+  orderBySpecialFunctionExpression(ctx: OrderBySpecialFunctionExpressionContext): OrderByClause {
     const orderByClause: OrderByClause = {};
-    if (ctx.locationFunction) {
-      orderByClause.fn = this.visit(ctx.locationFunction, { includeType: false });
-    } else {
+    if (ctx.aggregateFunction) {
       orderByClause.fn = this.visit(ctx.aggregateFunction, { includeType: false });
+    } else if (ctx.dateFunction) {
+      orderByClause.fn = this.visit(ctx.dateFunction, { includeType: false });
+    } else if (ctx.locationFunction) {
+      orderByClause.fn = this.visit(ctx.locationFunction, { includeType: false });
     }
     if (ctx.order && ctx.order[0]) {
       orderByClause.order = ctx.order[0].tokenType.name as OrderByCriterion;
@@ -708,7 +709,7 @@ class SOQLVisitor extends BaseSoqlVisitor {
       const arrayValues: ArrayExpressionWithType[] = this.visit(ctx.arrayExpression);
       value = arrayValues.map((item: any) => item.value);
       const dateLiteralTemp = arrayValues.map((item: any) => item.variable || null);
-      const hasDateLiterals = dateLiteralTemp.some(item => !isNull(item));
+      const hasDateLiterals = dateLiteralTemp.some(item => item !== null);
       if (new Set(arrayValues.map((item: any) => item.type)).size === 1) {
         literalType = this.$_getLiteralTypeFromTokenType(arrayValues[0].type);
       } else {
