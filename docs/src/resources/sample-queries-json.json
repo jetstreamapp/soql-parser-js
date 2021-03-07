@@ -102,5 +102,8 @@
   "SELECT ProductCode FROM Product2 GROUP BY ProductCode HAVING COUNT(Id) > 1 ORDER BY COUNT(Id) DESC",
   "SELECT AnnualRevenue FROM Account WHERE NOT (AnnualRevenue > 0 AND AnnualRevenue < 200000)",
   "SELECT AnnualRevenue FROM Account WHERE ((NOT AnnualRevenue > 0) AND AnnualRevenue < 200000)",
-  "SELECT Id FROM Account WHERE NOT Id = '2'"
+  "SELECT Id FROM Account WHERE NOT Id = '2'",
+  "SELECT WEEK_IN_YEAR(CloseDate), SUM(amount) FROM Opportunity GROUP BY WEEK_IN_YEAR(CloseDate) ORDER BY WEEK_IN_YEAR(CloseDate)",
+  "SELECT WEEK_IN_YEAR(CloseDate), SUM(amount) FROM Opportunity GROUP BY WEEK_IN_YEAR(CloseDate) ORDER BY WEEK_IN_YEAR(CloseDate) DESC NULLS FIRST",
+  "SELECT WEEK_IN_YEAR(CloseDate), SUM(amount) FROM Opportunity GROUP BY WEEK_IN_YEAR(CloseDate) ORDER BY WEEK_IN_YEAR(CloseDate) DESC NULLS LAST, SUM(amount) ASC NULLS LAST"
 ]

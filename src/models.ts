@@ -136,15 +136,16 @@ export interface OrderByExpressionContext extends WithIdentifier {
   nulls?: IToken[];
 }
 
-export interface OrderByFunctionExpressionContext extends WithIdentifier {
+export interface OrderByGroupingFunctionExpressionContext extends WithIdentifier {
   fn: IToken[];
   order?: IToken[];
   nulls?: IToken[];
 }
 
-export interface orderByAggregateOrLocationExpressionContext {
-  locationFunction?: CstNode[];
+export interface OrderBySpecialFunctionExpressionContext {
   aggregateFunction?: CstNode[];
+  dateFunction?: CstNode[];
+  locationFunction?: CstNode[];
   order?: IToken[];
   nulls?: IToken[];
 }
