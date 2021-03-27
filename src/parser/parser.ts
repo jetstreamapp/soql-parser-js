@@ -131,6 +131,7 @@ export class SoqlParser extends CstParser {
           { ALT: () => this.SUBRULE(this.dateFunction, { LABEL: 'fn' }) },
           { ALT: () => this.SUBRULE(this.aggregateFunction, { LABEL: 'fn', ARGS: [true] }) },
           { ALT: () => this.SUBRULE(this.locationFunction, { LABEL: 'fn' }) },
+          { ALT: () => this.SUBRULE(this.fieldsFunction, { LABEL: 'fn' }) },
           { ALT: () => this.SUBRULE(this.otherFunction, { LABEL: 'fn' }) },
         ]),
     );
@@ -412,7 +413,7 @@ export class SoqlParser extends CstParser {
     this.SUBRULE(this.functionExpression);
   });
 
-  private aggregateFunction = this.RULE('aggregateFunction', allowAlias => {
+  private aggregateFunction = this.RULE('aggregateFunction', () => {
     this.OR(
       this.$_aggregateFunction ||
         (this.$_aggregateFunction = [
@@ -425,6 +426,13 @@ export class SoqlParser extends CstParser {
         ]),
     );
     this.SUBRULE(this.functionExpression, { ARGS: [true] });
+  });
+
+  private fieldsFunction = this.RULE('fieldsFunction', () => {
+    this.CONSUME(lexer.Fields, { LABEL: 'fn' });
+    this.CONSUME(lexer.LParen);
+    this.CONSUME(lexer.FieldsFunctionParamIdentifier, { LABEL: 'params' });
+    this.CONSUME(lexer.RParen);
   });
 
   private otherFunction = this.RULE('otherFunction', () => {

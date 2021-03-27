@@ -45,6 +45,7 @@ import {
   ExpressionOperatorContext,
   ExpressionTree,
   FieldFunctionContext,
+  FieldsFunctionContext,
   FromClauseContext,
   FunctionExpressionContext,
   GeoLocationFunctionContext,
@@ -550,6 +551,22 @@ class SOQLVisitor extends BaseSoqlVisitor {
     return this.$_getFieldFunction(ctx, true, options.includeType);
   }
 
+  fieldsFunction(ctx: FieldsFunctionContext, options: { includeType: boolean } = { includeType: true }) {
+    let output: any = {};
+    if (options.includeType) {
+      output.type = 'FieldFunctionExpression';
+    }
+    output = {
+      ...output,
+      ...{
+        functionName: 'FIELDS',
+        parameters: [ctx.params[0].image],
+      },
+    };
+
+    output.rawValue = `FIELDS(${output.parameters[0]})`;
+    return output;
+  }
   otherFunction(ctx: FieldFunctionContext, options: { includeType: boolean } = { includeType: true }) {
     return this.$_getFieldFunction(ctx, false, options.includeType);
   }

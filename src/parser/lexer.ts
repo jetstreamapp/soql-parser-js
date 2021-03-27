@@ -29,6 +29,16 @@ export const LocationFunction = createToken({
   pattern: Lexer.NA,
 });
 
+export const FieldsFunction = createToken({
+  name: 'FieldsFunction',
+  pattern: Lexer.NA,
+});
+
+export const FieldsFunctionParamIdentifier = createToken({
+  name: 'FieldsFunctionParamIdentifier',
+  pattern: Lexer.NA,
+});
+
 export const OtherFunction = createToken({
   name: 'OtherFunction',
   pattern: Lexer.NA,
@@ -393,6 +403,14 @@ export const Geolocation = createToken({
   categories: [LocationFunction, Identifier],
 });
 
+// FIELDS FUNCTIONS
+export const Fields = createToken({
+  name: 'FIELDS',
+  pattern: /FIELDS/i,
+  longer_alt: Identifier,
+  categories: [FieldsFunction, Identifier],
+});
+
 // OTHER FUNCTIONS
 export const Format = createToken({
   name: 'FORMAT',
@@ -423,6 +441,28 @@ export const Grouping = createToken({
   pattern: /GROUPING/i,
   longer_alt: Identifier,
   categories: [OtherFunction, Identifier],
+});
+
+// FIELDS() PARAMETERS
+export const All = createToken({
+  name: 'ALL',
+  pattern: /ALL/i,
+  longer_alt: Identifier,
+  categories: [FieldsFunctionParamIdentifier, Identifier],
+});
+
+export const Custom = createToken({
+  name: 'CUSTOM',
+  pattern: /CUSTOM/i,
+  longer_alt: Identifier,
+  categories: [FieldsFunctionParamIdentifier, Identifier],
+});
+
+export const Standard = createToken({
+  name: 'STANDARD',
+  pattern: /STANDARD/i,
+  longer_alt: Identifier,
+  categories: [FieldsFunctionParamIdentifier, Identifier],
 });
 
 // DATE LITERALS
@@ -908,6 +948,7 @@ export const allTokens = [
   Sum,
   Distance,
   Geolocation,
+  Fields,
   Format,
   Tolabel,
   ConvertTimeZone,
@@ -958,6 +999,10 @@ export const allTokens = [
   NFiscalYearsAgo,
 
   GeolocationUnit,
+
+  All,
+  Custom,
+  Standard,
 
   In,
   NotIn,

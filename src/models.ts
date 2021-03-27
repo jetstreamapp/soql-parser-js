@@ -177,6 +177,11 @@ export interface FieldFunctionContext {
   fn: IToken[];
 }
 
+export interface FieldsFunctionContext {
+  fn: IToken[];
+  params: IToken[];
+}
+
 export interface LocationFunctionContext {
   location1: IToken[];
   location2: IToken[] | CstNode[];
