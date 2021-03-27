@@ -138,6 +138,60 @@ class SOQLVisitor extends BaseSoqlVisitor {
     this.validateVisitor();
   }
 
+  private helpers = {
+    $_getFieldFunction: (ctx: FieldFunctionContext, isAggregateFn = false, includeType = true): FunctionExp | FieldFunctionExpression => {
+      const args = ctx.functionExpression
+        ? ctx.functionExpression.map((node: any) => this.visit(ctx.functionExpression, { includeType })).flat()
+        : [];
+      const output: any = {};
+      if (includeType) {
+        output.type = 'FieldFunctionExpression';
+      }
+      output.functionName = ctx.fn[0].tokenType.name;
+      output.parameters = args;
+      if (includeType && isAggregateFn) {
+        output.isAggregateFn = isAggregateFn;
+      }
+      output.rawValue = `${ctx.fn[0].image}(${args.map((arg: any) => (typeof arg === 'string' ? arg : arg.rawValue)).join(', ')})`;
+      return output;
+    },
+    $_getLiteralTypeFromTokenType: (tokenTypeName: string | DateLiteral | DateNLiteral): LiteralType => {
+      if (tokenTypeName === 'REAL_NUMBER') {
+        return 'DECIMAL';
+      } else if (tokenTypeName === 'CURRENCY_PREFIXED_DECIMAL') {
+        return 'DECIMAL_WITH_CURRENCY_PREFIX';
+      } else if (tokenTypeName === 'CURRENCY_PREFIXED_INTEGER') {
+        return 'INTEGER_WITH_CURRENCY_PREFIX';
+      } else if (tokenTypeName === 'SIGNED_DECIMAL') {
+        return 'DECIMAL';
+      } else if (tokenTypeName === 'UNSIGNED_DECIMAL') {
+        return 'DECIMAL';
+      } else if (tokenTypeName === 'UNSIGNED_INTEGER') {
+        return 'INTEGER';
+      } else if (tokenTypeName === 'SIGNED_INTEGER') {
+        return 'INTEGER';
+      } else if (tokenTypeName === 'DATETIME') {
+        return 'DATETIME';
+      } else if (tokenTypeName === 'DATE') {
+        return 'DATE';
+      } else if (tokenTypeName === 'NULL') {
+        return 'NULL';
+      } else if (tokenTypeName === 'StringIdentifier') {
+        return 'STRING';
+      } else if (tokenTypeName === 'Identifier') {
+        return 'STRING';
+      } else if (BOOLEANS.includes(tokenTypeName)) {
+        return 'BOOLEAN';
+      } else if (DATE_LITERALS.includes(tokenTypeName as DateLiteral)) {
+        return 'DATE_LITERAL';
+      } else if (DATE_N_LITERALS.includes(tokenTypeName as DateNLiteral)) {
+        return 'DATE_N_LITERAL';
+      } else {
+        return 'STRING';
+      }
+    },
+  };
+
   /**
    * This is the only public entry point for the parser
    * @param ctx
@@ -483,7 +537,7 @@ class SOQLVisitor extends BaseSoqlVisitor {
 
   orderByGroupingFunctionExpression(ctx: OrderByGroupingFunctionExpressionContext): OrderByClause {
     const orderByClause: OrderByClause = {
-      fn: this.$_getFieldFunction(ctx, false, false),
+      fn: this.helpers.$_getFieldFunction(ctx, false, false),
     };
     if (ctx.order && ctx.order[0]) {
       orderByClause.order = ctx.order[0].tokenType.name as OrderByCriterion;
@@ -520,35 +574,12 @@ class SOQLVisitor extends BaseSoqlVisitor {
     return ctx.value[0].image;
   }
 
-  /**
-   * @HELPER
-   *
-   * @param ctx
-   * @param isAggregateFn
-   */
-  private $_getFieldFunction(ctx: FieldFunctionContext, isAggregateFn = false, includeType = true): FunctionExp | FieldFunctionExpression {
-    const args = ctx.functionExpression
-      ? ctx.functionExpression.map((node: any) => this.visit(ctx.functionExpression, { includeType })).flat()
-      : [];
-    const output: any = {};
-    if (includeType) {
-      output.type = 'FieldFunctionExpression';
-    }
-    output.functionName = ctx.fn[0].tokenType.name;
-    output.parameters = args;
-    if (includeType && isAggregateFn) {
-      output.isAggregateFn = isAggregateFn;
-    }
-    output.rawValue = `${ctx.fn[0].image}(${args.map((arg: any) => (typeof arg === 'string' ? arg : arg.rawValue)).join(', ')})`;
-    return output;
-  }
-
   dateFunction(ctx: FieldFunctionContext, options: { includeType: boolean } = { includeType: true }) {
-    return this.$_getFieldFunction(ctx, false, options.includeType);
+    return this.helpers.$_getFieldFunction(ctx, false, options.includeType);
   }
 
   aggregateFunction(ctx: FieldFunctionContext, options: { includeType: boolean } = { includeType: true }) {
-    return this.$_getFieldFunction(ctx, true, options.includeType);
+    return this.helpers.$_getFieldFunction(ctx, true, options.includeType);
   }
 
   fieldsFunction(ctx: FieldsFunctionContext, options: { includeType: boolean } = { includeType: true }) {
@@ -568,15 +599,15 @@ class SOQLVisitor extends BaseSoqlVisitor {
     return output;
   }
   otherFunction(ctx: FieldFunctionContext, options: { includeType: boolean } = { includeType: true }) {
-    return this.$_getFieldFunction(ctx, false, options.includeType);
+    return this.helpers.$_getFieldFunction(ctx, false, options.includeType);
   }
 
   cubeFunction(ctx: FieldFunctionContext) {
-    return this.$_getFieldFunction(ctx, false, false);
+    return this.helpers.$_getFieldFunction(ctx, false, false);
   }
 
   rollupFunction(ctx: FieldFunctionContext) {
-    return this.$_getFieldFunction(ctx, false, false);
+    return this.helpers.$_getFieldFunction(ctx, false, false);
   }
 
   locationFunction(ctx: LocationFunctionContext, options: { includeType: boolean } = { includeType: true }) {
@@ -705,7 +736,7 @@ class SOQLVisitor extends BaseSoqlVisitor {
       literalType = 'APEX_BIND_VARIABLE';
     } else if (ctx.NumberIdentifier) {
       value = ctx.NumberIdentifier[0].image;
-      literalType = this.$_getLiteralTypeFromTokenType(ctx.NumberIdentifier[0].tokenType.name);
+      literalType = this.helpers.$_getLiteralTypeFromTokenType(ctx.NumberIdentifier[0].tokenType.name);
     } else if (ctx.UnsignedInteger) {
       value = ctx.UnsignedInteger[0].image;
       literalType = 'INTEGER';
@@ -717,7 +748,7 @@ class SOQLVisitor extends BaseSoqlVisitor {
       literalType = 'DECIMAL';
     } else if (ctx.DateIdentifier) {
       value = ctx.DateIdentifier[0].image;
-      literalType = this.$_getLiteralTypeFromTokenType(ctx.DateIdentifier[0].tokenType.name);
+      literalType = this.helpers.$_getLiteralTypeFromTokenType(ctx.DateIdentifier[0].tokenType.name);
     } else if (ctx.CurrencyPrefixedInteger) {
       value = ctx.CurrencyPrefixedInteger[0].image;
       literalType = 'INTEGER_WITH_CURRENCY_PREFIX';
@@ -756,9 +787,9 @@ class SOQLVisitor extends BaseSoqlVisitor {
       const dateLiteralTemp = arrayValues.map((item: any) => item.variable || null);
       const hasDateLiterals = dateLiteralTemp.some(item => item !== null);
       if (new Set(arrayValues.map((item: any) => item.type)).size === 1) {
-        literalType = this.$_getLiteralTypeFromTokenType(arrayValues[0].type);
+        literalType = this.helpers.$_getLiteralTypeFromTokenType(arrayValues[0].type);
       } else {
-        literalType = arrayValues.map((item: any) => this.$_getLiteralTypeFromTokenType(item.type));
+        literalType = arrayValues.map((item: any) => this.helpers.$_getLiteralTypeFromTokenType(item.type));
       }
       if (hasDateLiterals) {
         dateLiteralVariable = dateLiteralTemp;
@@ -826,44 +857,7 @@ class SOQLVisitor extends BaseSoqlVisitor {
   updateTrackingViewstat(ctx: ValueContext) {
     return ctx.value[0].tokenType.name;
   }
-
-  private $_getLiteralTypeFromTokenType(tokenTypeName: string | DateLiteral | DateNLiteral): LiteralType {
-    if (tokenTypeName === 'REAL_NUMBER') {
-      return 'DECIMAL';
-    } else if (tokenTypeName === 'CURRENCY_PREFIXED_DECIMAL') {
-      return 'DECIMAL_WITH_CURRENCY_PREFIX';
-    } else if (tokenTypeName === 'CURRENCY_PREFIXED_INTEGER') {
-      return 'INTEGER_WITH_CURRENCY_PREFIX';
-    } else if (tokenTypeName === 'SIGNED_DECIMAL') {
-      return 'DECIMAL';
-    } else if (tokenTypeName === 'UNSIGNED_DECIMAL') {
-      return 'DECIMAL';
-    } else if (tokenTypeName === 'UNSIGNED_INTEGER') {
-      return 'INTEGER';
-    } else if (tokenTypeName === 'SIGNED_INTEGER') {
-      return 'INTEGER';
-    } else if (tokenTypeName === 'DATETIME') {
-      return 'DATETIME';
-    } else if (tokenTypeName === 'DATE') {
-      return 'DATE';
-    } else if (tokenTypeName === 'NULL') {
-      return 'NULL';
-    } else if (tokenTypeName === 'StringIdentifier') {
-      return 'STRING';
-    } else if (tokenTypeName === 'Identifier') {
-      return 'STRING';
-    } else if (BOOLEANS.includes(tokenTypeName)) {
-      return 'BOOLEAN';
-    } else if (DATE_LITERALS.includes(tokenTypeName as DateLiteral)) {
-      return 'DATE_LITERAL';
-    } else if (DATE_N_LITERALS.includes(tokenTypeName as DateNLiteral)) {
-      return 'DATE_N_LITERAL';
-    } else {
-      return 'STRING';
-    }
-  }
 }
-
 // Our visitor has no state, so a single instance is sufficient.
 const visitor = new SOQLVisitor();
 
