@@ -2135,6 +2135,66 @@ export const testCases: TestCase[] = [
       ],
     },
   },
+  {
+    testCase: 109,
+    soql: `SELECT FIELDS(ALL) FROM Account`,
+    output: {
+      fields: [
+        {
+          type: 'FieldFunctionExpression',
+          functionName: 'FIELDS',
+          parameters: ['ALL'],
+          rawValue: 'FIELDS(ALL)',
+        },
+      ],
+      sObject: 'Account',
+    },
+  },
+  {
+    testCase: 110,
+    soql: `SELECT FIELDS(CUSTOM), FIELDS(STANDARD) FROM Account`,
+    output: {
+      fields: [
+        {
+          type: 'FieldFunctionExpression',
+          functionName: 'FIELDS',
+          parameters: ['CUSTOM'],
+          rawValue: 'FIELDS(CUSTOM)',
+        },
+        {
+          type: 'FieldFunctionExpression',
+          functionName: 'FIELDS',
+          parameters: ['STANDARD'],
+          rawValue: 'FIELDS(STANDARD)',
+        },
+      ],
+      sObject: 'Account',
+    },
+  },
+  {
+    testCase: 110,
+    soql: `SELECT Id, (SELECT FIELDS(ALL) FROM Contacts) FROM Account`,
+    output: {
+      fields: [
+        { type: 'Field', field: 'Id' },
+        {
+          type: 'FieldSubquery',
+          subquery: {
+            fields: [
+              {
+                type: 'FieldFunctionExpression',
+                functionName: 'FIELDS',
+                parameters: ['ALL'],
+                rawValue: 'FIELDS(ALL)',
+              },
+            ],
+            relationshipName: 'Contacts',
+          },
+        },
+      ],
+      sObject: 'Account',
+    },
+  },
 ];
 
 export default testCases;

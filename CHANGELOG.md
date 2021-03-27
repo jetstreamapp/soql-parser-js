@@ -1,5 +1,11 @@
 # Changelog
 
+## 3.0.3
+
+March 27, 2021
+
+1. Added support for the `FIELDS()` function
+
 ## 3.0.2
 
 March 6, 2021
