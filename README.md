@@ -96,13 +96,14 @@ Many of hte utility functions are provided to easily determine the shape of spec
 
 **FormatOptions**
 
-| Property                     | Type    | Description                                                                                                                          | required | default |
-| ---------------------------- | ------- | ------------------------------------------------------------------------------------------------------------------------------------ | -------- | ------- |
-| numIndent                    | number  | The number of tab characters to indent.                                                                                              | FALSE    | 1       |
-| fieldMaxLineLength           | number  | The number of characters that the fields should take up before making a new line. Set this to 1 to have every field on its own line. | FALSE    | 60      |
-| fieldSubqueryParensOnOwnLine | boolean | If true, the opening and closing parentheses will be on their own line for subqueries.                                               | FALSE    | TRUE    |
-| whereClauseOperatorsIndented | boolean | If true, indents the where clause operators.                                                                                         | FALSE    | FALSE   |
-| logging                      | boolean | Print out logging statements to the console about the format operation.                                                              | FALSE    | FALSE   |
+| Property                         | Type    | Description                                                                                                                                                                                 | required | default |
+| -------------------------------- | ------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------- | ------- |
+| numIndent                        | number  | The number of tab characters to indent.                                                                                                                                                     | FALSE    | 1       |
+| fieldMaxLineLength               | number  | The number of characters that the fields should take up before making a new line. Set this to 1 to have every field on its own line.                                                        | FALSE    | 60      |
+| fieldSubqueryParensOnOwnLine     | boolean | If true, the opening and closing parentheses will be on their own line for subqueries.                                                                                                      | FALSE    | TRUE    |
+| newLineAfterKeywords             | boolean | Adds a new line and indent after all keywords (such as SELECT, FROM, WHERE, ORDER BY, etc..) Setting this to true will add new lines in other places as well, such as complex WHERE clauses | FALSE    | FALSE   |
+| ~~whereClauseOperatorsIndented~~ | boolean | **Deprecated** If true, indents the where clause operators.                                                                                                                                 | FALSE    | FALSE   |
+| logging                          | boolean | Print out logging statements to the console about the format operation.                                                                                                                     | FALSE    | FALSE   |
 
 ## Examples
 

@@ -138,8 +138,9 @@ export class Compose {
   public parseQuery(query: Query | Subquery): string {
     const fieldData: FieldData = {
       fields: this.parseFields(query.fields).map(field => ({
-        text: field,
-        isSubquery: field.startsWith('('),
+        text: field.text,
+        typeOfClause: field.typeOfClause,
+        isSubquery: field.text.startsWith('('),
         prefix: '',
         suffix: '',
       })),
@@ -147,70 +148,76 @@ export class Compose {
       lineBreaks: [],
     };
 
-    let output = `SELECT `;
+    let output = this.formatter.formatClause('SELECT').trimStart();
 
     // Format fields based on configuration
     this.formatter.formatFields(fieldData);
 
+    let fieldsOutput = '';
     fieldData.fields.forEach(field => {
-      output += `${field.prefix}${field.text}${field.suffix}`;
+      if (Array.isArray(field.typeOfClause)) {
+        fieldsOutput += `${field.prefix}${this.formatter.formatTyeOfField(field.text, field.typeOfClause)}${field.suffix}`;
+      } else {
+        fieldsOutput += `${field.prefix}${field.text}${field.suffix}`;
+      }
     });
+    output += this.formatter.formatText(fieldsOutput);
 
     output += this.formatter.formatClause('FROM');
 
     if (utils.isSubquery(query)) {
       const sObjectPrefix = query.sObjectPrefix || [];
       sObjectPrefix.push(query.relationshipName);
-      output += ` ${sObjectPrefix.join('.')}${utils.get(query.sObjectAlias, '', ' ')}`;
+      output += this.formatter.formatText(`${sObjectPrefix.join('.')}${utils.get(query.sObjectAlias, '', ' ')}`);
     } else {
-      output += ` ${query.sObject}${utils.get(query.sObjectAlias, '', ' ')}`;
+      output += this.formatter.formatText(`${query.sObject}${utils.get(query.sObjectAlias, '', ' ')}`);
     }
     this.log(output);
 
     if (query.usingScope) {
       output += this.formatter.formatClause('USING SCOPE');
-      output += ` ${query.usingScope}`;
+      output += this.formatter.formatText(query.usingScope);
       this.log(output);
     }
 
     if (query.where) {
       output += this.formatter.formatClause('WHERE');
-      output += ` ${this.parseWhereOrHavingClause(query.where)}`;
+      output += this.formatter.formatText(this.parseWhereOrHavingClause(query.where));
       this.log(output);
     }
 
     if (query.groupBy) {
       output += this.formatter.formatClause('GROUP BY');
-      output += ` ${this.parseGroupByClause(query.groupBy)}`;
+      output += this.formatter.formatText(this.parseGroupByClause(query.groupBy));
       this.log(output);
       if (query.groupBy.having) {
         output += this.formatter.formatClause('HAVING');
-        output += ` ${this.parseWhereOrHavingClause(query.groupBy.having)}`;
+        output += this.formatter.formatText(this.parseWhereOrHavingClause(query.groupBy.having));
         this.log(output);
       }
     }
 
     if (query.orderBy && (!Array.isArray(query.orderBy) || query.orderBy.length > 0)) {
       output += this.formatter.formatClause('ORDER BY');
-      output += ` ${this.parseOrderBy(query.orderBy)}`;
+      output += this.formatter.formatText(this.parseOrderBy(query.orderBy));
       this.log(output);
     }
 
     if (utils.isNumber(query.limit)) {
       output += this.formatter.formatClause('LIMIT');
-      output += ` ${query.limit}`;
+      output += this.formatter.formatText(`${query.limit}`);
       this.log(output);
     }
 
     if (utils.isNumber(query.offset)) {
       output += this.formatter.formatClause('OFFSET');
-      output += ` ${query.offset}`;
+      output += this.formatter.formatText(`${query.offset}`);
       this.log(output);
     }
 
     if (query.withDataCategory) {
       output += this.formatter.formatClause('WITH DATA CATEGORY');
-      output += ` ${this.parseWithDataCategory(query.withDataCategory)}`;
+      output += this.formatter.formatText(this.parseWithDataCategory(query.withDataCategory));
       this.log(output);
     }
 
@@ -221,13 +228,13 @@ export class Compose {
 
     if (query.for) {
       output += this.formatter.formatClause('FOR');
-      output += ` ${query.for}`;
+      output += this.formatter.formatText(query.for);
       this.log(output);
     }
 
     if (query.update) {
       output += this.formatter.formatClause('UPDATE');
-      output += ` ${query.update}`;
+      output += this.formatter.formatText(query.update);
       this.log(output);
     }
 
@@ -240,34 +247,44 @@ export class Compose {
    * @param fields
    * @returns fields
    */
-  public parseFields(fields: FieldType[]): string[] {
+  public parseFields(fields: FieldType[]): { text: string; typeOfClause?: string[] }[] {
     return fields.map(field => {
+      let text = '';
+      let typeOfClause: string[];
+
       const objPrefix = (field as any).objectPrefix ? `${(field as any).objectPrefix}.` : '';
       switch (field.type) {
         case 'Field': {
-          return `${objPrefix}${field.field}${field.alias ? ` ${field.alias}` : ''}`;
+          text = `${objPrefix}${field.field}${field.alias ? ` ${field.alias}` : ''}`;
+          break;
         }
         case 'FieldFunctionExpression': {
           let params = '';
           if (field.parameters) {
             params = field.parameters
-              .map(param => (utils.isString(param) ? param : this.parseFields([param as FieldFunctionExpression])))
+              .map(param => (utils.isString(param) ? param : this.parseFields([param as FieldFunctionExpression]).map(param => param.text)))
               .join(', ');
           }
-          return `${field.functionName}(${params})${field.alias ? ` ${field.alias}` : ''}`;
+          text = `${field.functionName}(${params})${field.alias ? ` ${field.alias}` : ''}`;
+          break;
         }
         case 'FieldRelationship': {
-          return `${objPrefix}${field.relationships.join('.')}.${field.field}${utils.hasAlias(field) ? ` ${field.alias}` : ''}`;
+          text = `${objPrefix}${field.relationships.join('.')}.${field.field}${utils.hasAlias(field) ? ` ${field.alias}` : ''}`;
+          break;
         }
         case 'FieldSubquery': {
-          return this.formatter.formatSubquery(this.parseQuery(field.subquery));
+          text = this.formatter.formatSubquery(this.parseQuery(field.subquery));
+          break;
         }
         case 'FieldTypeof': {
-          return this.parseTypeOfField(field);
+          typeOfClause = this.parseTypeOfField(field);
+          text = typeOfClause.join(' ');
+          break;
         }
         default:
           break;
       }
+      return { text, typeOfClause };
     });
   }
 
@@ -277,14 +294,11 @@ export class Compose {
    * @param typeOfField
    * @returns type of field
    */
-  public parseTypeOfField(typeOfField: FieldTypeOf): string {
-    let output = `TYPEOF ${typeOfField.field} `;
-    output += typeOfField.conditions
-      .map(cond => {
-        return `${cond.type} ${utils.get(cond.objectType, ' THEN ')}${cond.fieldList.join(', ')}`;
-      })
-      .join(' ');
-    output += ` END`;
+  public parseTypeOfField(typeOfField: FieldTypeOf): string[] {
+    const output = [`TYPEOF ${typeOfField.field}`].concat(
+      typeOfField.conditions.map(condition => this.formatter.formatTypeofFieldCondition(condition)),
+    );
+    output.push(`END`);
     return output;
   }
 
@@ -296,29 +310,39 @@ export class Compose {
    * @param priorIsNegationOperator - do not set this when calling manually. Recursive call will set this to ensure proper formatting.
    * @returns where clause
    */
-  public parseWhereOrHavingClause(whereOrHaving: WhereClause | HavingClause): string {
+  public parseWhereOrHavingClause(whereOrHaving: WhereClause | HavingClause, tabOffset = 0, priorConditionIsNegation = false): string {
     let output = '';
     const left = whereOrHaving.left;
+    let trimPrecedingOutput = false;
     if (left) {
-      output += utils.generateParens(left.openParen, '(');
+      output += this.formatter.formatParens(left.openParen, '(', utils.isNegationCondition(left));
       if (!utils.isNegationCondition(left)) {
-        output += utils.isValueFunctionCondition(left) ? this.parseFn(left.fn) : left.field;
-        output += ` ${left.operator} `;
+        tabOffset = tabOffset + (left.openParen || 0) - (left.closeParen || 0);
+        if (priorConditionIsNegation) {
+          tabOffset++;
+        }
+        let expression = '';
+        expression += utils.isValueFunctionCondition(left) ? this.parseFn(left.fn) : left.field;
+        expression += ` ${left.operator} `;
 
         if (utils.isValueQueryCondition(left)) {
-          output += this.formatter.formatSubquery(this.parseQuery(left.valueQuery), 1, true);
+          expression += this.formatter.formatSubquery(this.parseQuery(left.valueQuery), 1, true);
         } else {
-          output += utils.getAsArrayStr(utils.getWhereValue(left.value, left.literalType));
+          expression += utils.getAsArrayStr(utils.getWhereValue(left.value, left.literalType));
         }
-        output += utils.generateParens(left.closeParen, ')');
+        output += this.formatter.formatWithIndent(expression);
+        output += this.formatter.formatParens(left.closeParen, ')', priorConditionIsNegation);
       }
     }
     if (utils.isWhereOrHavingClauseWithRightCondition(whereOrHaving)) {
+      const operator = utils.get(whereOrHaving.operator);
+      trimPrecedingOutput = operator === 'NOT';
       const formattedData = this.formatter.formatWhereClauseOperators(
-        utils.get(whereOrHaving.operator),
-        this.parseWhereOrHavingClause(whereOrHaving.right),
+        operator,
+        this.parseWhereOrHavingClause(whereOrHaving.right, tabOffset, utils.isNegationCondition(left)),
+        tabOffset,
       );
-      return `${output}${formattedData}`.trim();
+      return `${trimPrecedingOutput ? output.trimRight() : output}${formattedData}`.trim();
     } else {
       return output.trim();
     }

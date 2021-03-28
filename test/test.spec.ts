@@ -22,7 +22,7 @@ const replacements = [{ matching: / last /i, replace: ' LAST ' }];
 // });
 
 // describe.only('compose queries', () => {
-//   const testCase = testCases.find(tc => tc.testCase === 32);
+//   const testCase = testCases.find(tc => tc.testCase === 104);
 //   it(`should compose correctly - test case ${testCase.testCase} - ${testCase.soql}`, () => {
 //     const soqlQuery = composeQuery(removeComposeOnlyFields(parseQuery(testCase.soql, testCase.options)));
 //     let soql = testCase.soqlComposed || testCase.soql;
@@ -53,7 +53,7 @@ const replacements = [{ matching: / last /i, replace: ' LAST ' }];
 // });
 
 // describe.only('format queries', () => {
-//   const testCase = testCasesForFormat.find(tc => tc.testCase === 5);
+//   const testCase = testCasesForFormat.find(tc => tc.testCase === 17);
 //   it(`should format query - test case ${testCase.testCase} - ${testCase.soql}`, () => {
 //     const formattedQuery = formatQuery(testCase.soql, testCase.formatOptions);
 //     expect(formattedQuery).equal(testCase.formattedSoql);
