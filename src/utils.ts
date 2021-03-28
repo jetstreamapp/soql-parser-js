@@ -92,8 +92,8 @@ export function pad(val: string, len: number, left: number = 0): string {
   }
 }
 
-export function generateParens(count: number, character: '(' | ')') {
-  return isNumber(count) && count > 0 ? new Array(count).fill(character).join('') : '';
+export function generateParens(count: number, character: '(' | ')', joinCharacter = '') {
+  return isNumber(count) && count > 0 ? new Array(count).fill(character).join(joinCharacter) : '';
 }
 
 /**

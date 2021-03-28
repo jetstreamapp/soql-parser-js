@@ -1,5 +1,41 @@
 # Changelog
 
+## 3.2.0
+
+March 27, 2021
+
+A number of improvements to the formatter have been made with this release.
+
+- The formatter option `whereClauseOperatorsIndented` has been deprecated and will always be applied.
+- A new boolean formatter option named `newLineAfterKeywords` has been added and will ensure that there is always a new line after any keyword. (#137)
+- `TYPEOF` fields will now always be included on their own line be default, or will span multiple lines, split by keywords if `newLineAfterKeywords` is set to true. (#135)
+
+## Example
+
+`SELECT Id, TYPEOF What WHEN Account THEN Phone, NumberOfEmployees WHEN Opportunity THEN Amount, CloseDate ELSE Name, Email END, Name FROM Event`
+
+`formatOptions: { newLineAfterKeywords: true, fieldMaxLineLength: 1 },`
+
+```sql
+SELECT
+  Id,
+  TYPEOF What
+    WHEN
+      Account
+    THEN
+      Phone, NumberOfEmployees
+    WHEN
+      Opportunity
+    THEN
+      Amount, CloseDate
+    ELSE
+      Name, Email
+  END,
+  Name
+FROM
+  Event
+```
+
 ## 3.1.0
 
 March 27, 2021

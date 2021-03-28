@@ -3,7 +3,7 @@ import { Query, composeQuery } from 'soql-parser-js';
 import * as hljs from 'highlight.js/lib/highlight.js';
 hljs.registerLanguage('sql', require('highlight.js/lib/languages/sql'));
 
-const DEFAULT_LINE_LEN = 60;
+const DEFAULT_LINE_LEN = 1;
 const NOT_DIGIT_RGX = /[^\d]/g;
 
 export default class QueryComposer extends LightningElement {
@@ -21,7 +21,7 @@ export default class QueryComposer extends LightningElement {
   @track composedQuery: string;
   @track formatOutput = true;
   @track fieldSubqueryParensOnOwnLine = true;
-  @track whereClauseOperatorsIndented = false;
+  @track newLineAfterKeywords = true;
   @track fieldMaxLineLength = DEFAULT_LINE_LEN;
   hasRendered = false;
   fieldMaxLineLengthTransformFn = (value: string): string => {
@@ -40,7 +40,7 @@ export default class QueryComposer extends LightningElement {
       `//   format: ${this.formatOutput},\n` +
       `//   formatOptions: {\n` +
       `//     fieldSubqueryParensOnOwnLine: ${this.fieldSubqueryParensOnOwnLine},\n` +
-      `//     whereClauseOperatorsIndented: ${this.whereClauseOperatorsIndented},\n` +
+      `//     newLineAfterKeywords: ${this.newLineAfterKeywords},\n` +
       `//     fieldMaxLineLength: ${this.fieldMaxLineLength},\n` +
       `//   }\n` +
       `// });\n`;
@@ -48,7 +48,7 @@ export default class QueryComposer extends LightningElement {
     element.innerText =
       `// composeQuery(parsedQuery), {\n` +
       `//   format: ${this.formatOutput},\n` +
-      `//   formatOptions: { fieldSubqueryParensOnOwnLine: ${this.fieldSubqueryParensOnOwnLine}, whereClauseOperatorsIndented: ${this.whereClauseOperatorsIndented}, fieldMaxLineLength: ${this.fieldMaxLineLength} }\n` +
+      `//   formatOptions: { fieldSubqueryParensOnOwnLine: ${this.fieldSubqueryParensOnOwnLine}, newLineAfterKeywords: ${this.newLineAfterKeywords}, fieldMaxLineLength: ${this.fieldMaxLineLength} }\n` +
       `// });\n`;
 
     // element.innerText = `// composeQuery(parsedQuery, { format: ${this.formatOutput}, formatOptions: { fieldSubqueryParensOnOwnLine, whereClauseOperatorsIndented, fieldMaxLineLength } });`;
@@ -59,10 +59,10 @@ export default class QueryComposer extends LightningElement {
   composeQuery() {
     try {
       if (this.parsedQuery) {
-        const { fieldSubqueryParensOnOwnLine, whereClauseOperatorsIndented, fieldMaxLineLength } = this;
+        const { fieldSubqueryParensOnOwnLine, newLineAfterKeywords, fieldMaxLineLength } = this;
         this.composedQuery = composeQuery(JSON.parse(JSON.stringify(this.parsedQuery)), {
           format: this.formatOutput,
-          formatOptions: { fieldSubqueryParensOnOwnLine, whereClauseOperatorsIndented, fieldMaxLineLength }
+          formatOptions: { fieldSubqueryParensOnOwnLine, newLineAfterKeywords, fieldMaxLineLength }
         });
         this.highlight();
       }
@@ -82,8 +82,8 @@ export default class QueryComposer extends LightningElement {
         this.fieldSubqueryParensOnOwnLine = value;
         break;
       }
-      case 'whereClauseOperatorsIndented': {
-        this.whereClauseOperatorsIndented = value;
+      case 'newLineAfterKeywords': {
+        this.newLineAfterKeywords = value;
         break;
       }
       case 'fieldMaxLineLength': {
