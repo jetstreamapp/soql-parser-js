@@ -77,9 +77,11 @@ export const testCases: FlattenedObjTestCase[] = [
         },
       ],
       sObject: 'LoginHistory',
-      groupBy: {
-        field: 'UserId',
-      },
+      groupBy: [
+        {
+          field: 'UserId',
+        },
+      ],
     },
     sfdcObj: {
       UserId: '0051I000000rg53QAA',
@@ -337,9 +339,7 @@ export const testCases: FlattenedObjTestCase[] = [
         },
       ],
       sObject: 'SBQQ__Quoteline__c',
-      groupBy: {
-        field: ['SBQQ__Quote__c', 'SBQQ__Product__r.name'],
-      },
+      groupBy: [{ field: 'SBQQ__Quote__c' }, { field: 'SBQQ__Product__r.name' }],
     },
     sfdcObj: {
       expr0: 1,
@@ -367,9 +367,11 @@ export const testCases: FlattenedObjTestCase[] = [
         },
       ],
       sObject: 'Opportunity',
-      groupBy: {
-        field: 'Account.Name',
-      },
+      groupBy: [
+        {
+          field: 'Account.Name',
+        },
+      ],
       limit: 5,
     },
     sfdcObj: {
@@ -433,9 +435,11 @@ export const testCases: FlattenedObjTestCase[] = [
         },
       ],
       sObject: 'Contact',
-      groupBy: {
-        field: ['AccountId'],
-      },
+      groupBy: [
+        {
+          field: 'AccountId',
+        },
+      ],
     },
     sfdcObj: {
       AccountId: '0016g00000ETu0HAAT',

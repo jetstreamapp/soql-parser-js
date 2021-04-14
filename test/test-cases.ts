@@ -42,7 +42,7 @@ export const testCases: TestCase[] = [
     output: {
       fields: [{ type: 'Field', field: 'Name' }],
       sObject: 'Account',
-      orderBy: { field: 'Name', order: 'DESC', nulls: 'LAST' },
+      orderBy: [{ field: 'Name', order: 'DESC', nulls: 'LAST' }],
     },
   },
   {
@@ -62,7 +62,7 @@ export const testCases: TestCase[] = [
       fields: [{ type: 'Field', field: 'Name' }],
       sObject: 'Account',
       where: { left: { field: 'Industry', operator: '=', value: "'media'", literalType: 'STRING' } },
-      orderBy: { field: 'BillingPostalCode', order: 'ASC', nulls: 'LAST' },
+      orderBy: [{ field: 'BillingPostalCode', order: 'ASC', nulls: 'LAST' }],
       limit: 125,
     },
   },
@@ -89,7 +89,7 @@ export const testCases: TestCase[] = [
         },
       ],
       sObject: 'Lead',
-      groupBy: { field: 'LeadSource' },
+      groupBy: [{ field: 'LeadSource' }],
     },
   },
   {
@@ -101,15 +101,17 @@ export const testCases: TestCase[] = [
         { type: 'FieldFunctionExpression', functionName: 'COUNT', rawValue: 'COUNT(Id)', isAggregateFn: true, parameters: ['Id'] },
       ],
       sObject: 'Account',
-      groupBy: {
-        field: 'Name',
-        having: {
-          left: {
-            operator: '>',
-            value: '1',
-            literalType: 'INTEGER',
-            fn: { rawValue: 'COUNT(Id)', functionName: 'COUNT', parameters: ['Id'] },
-          },
+      groupBy: [
+        {
+          field: 'Name',
+        },
+      ],
+      having: {
+        left: {
+          operator: '>',
+          value: '1',
+          literalType: 'INTEGER',
+          fn: { rawValue: 'COUNT(Id)', functionName: 'COUNT', parameters: ['Id'] },
         },
       },
     },
@@ -123,7 +125,7 @@ export const testCases: TestCase[] = [
         { type: 'Field', field: 'Id' },
       ],
       sObject: 'Merchandise__c',
-      orderBy: { field: 'Name' },
+      orderBy: [{ field: 'Name' }],
       offset: 100,
     },
   },
@@ -136,7 +138,7 @@ export const testCases: TestCase[] = [
         { type: 'Field', field: 'Id' },
       ],
       sObject: 'Merchandise__c',
-      orderBy: { field: 'Name' },
+      orderBy: [{ field: 'Name' }],
       limit: 20,
       offset: 100,
     },
@@ -372,7 +374,7 @@ export const testCases: TestCase[] = [
         operator: 'AND',
         right: { left: { field: 'LoginTime', operator: '<', value: '2010-09-21', literalType: 'DATE' } },
       },
-      groupBy: { field: 'UserId' },
+      groupBy: [{ field: 'UserId' }],
     },
   },
   {
@@ -406,15 +408,17 @@ export const testCases: TestCase[] = [
         },
       ],
       sObject: 'Opportunity',
-      groupBy: {
-        field: 'CampaignId',
-        having: {
-          left: {
-            operator: '>',
-            value: '1',
-            literalType: 'INTEGER',
-            fn: { rawValue: 'COUNT(Id, Name)', functionName: 'COUNT', parameters: ['Id', 'Name'] },
-          },
+      groupBy: [
+        {
+          field: 'CampaignId',
+        },
+      ],
+      having: {
+        left: {
+          operator: '>',
+          value: '1',
+          literalType: 'INTEGER',
+          fn: { rawValue: 'COUNT(Id, Name)', functionName: 'COUNT', parameters: ['Id', 'Name'] },
         },
       },
     },
@@ -435,7 +439,7 @@ export const testCases: TestCase[] = [
         },
       ],
       sObject: 'Lead',
-      groupBy: { fn: { functionName: 'ROLLUP', parameters: ['LeadSource'], rawValue: 'ROLLUP(LeadSource)' } },
+      groupBy: [{ fn: { functionName: 'ROLLUP', parameters: ['LeadSource'], rawValue: 'ROLLUP(LeadSource)' } }],
     },
   },
   {
@@ -455,7 +459,7 @@ export const testCases: TestCase[] = [
         },
       ],
       sObject: 'Lead',
-      groupBy: { fn: { functionName: 'ROLLUP', parameters: ['Status', 'LeadSource'], rawValue: 'ROLLUP(Status, LeadSource)' } },
+      groupBy: [{ fn: { functionName: 'ROLLUP', parameters: ['Status', 'LeadSource'], rawValue: 'ROLLUP(Status, LeadSource)' } }],
     },
   },
   {
@@ -492,7 +496,7 @@ export const testCases: TestCase[] = [
         },
       ],
       sObject: 'Account',
-      groupBy: { fn: { rawValue: 'CUBE(Type, BillingCountry)', parameters: ['Type', 'BillingCountry'], functionName: 'CUBE' } },
+      groupBy: [{ fn: { rawValue: 'CUBE(Type, BillingCountry)', parameters: ['Type', 'BillingCountry'], functionName: 'CUBE' } }],
       orderBy: [
         { fn: { rawValue: 'GROUPING(Type)', functionName: 'GROUPING', parameters: ['Type'] } },
         { fn: { rawValue: 'GROUPING(Id, BillingCountry)', functionName: 'GROUPING', parameters: ['Id', 'BillingCountry'] } },
@@ -566,18 +570,20 @@ export const testCases: TestCase[] = [
         },
       ],
       sObject: 'Lead',
-      groupBy: {
-        field: 'LeadSource',
-        having: {
-          left: {
-            operator: '>',
-            value: '100',
-            literalType: 'INTEGER',
-            fn: { rawValue: 'COUNT(Name)', functionName: 'COUNT', parameters: ['Name'] },
-          },
-          operator: 'AND',
-          right: { left: { field: 'LeadSource', operator: '>', value: "'Phone'", literalType: 'STRING' } },
+      groupBy: [
+        {
+          field: 'LeadSource',
         },
+      ],
+      having: {
+        left: {
+          operator: '>',
+          value: '100',
+          literalType: 'INTEGER',
+          fn: { rawValue: 'COUNT(Name)', functionName: 'COUNT', parameters: ['Name'] },
+        },
+        operator: 'AND',
+        right: { left: { field: 'LeadSource', operator: '>', value: "'Phone'", literalType: 'STRING' } },
       },
     },
   },
@@ -1173,7 +1179,7 @@ export const testCases: TestCase[] = [
         },
       ],
       sObject: 'Opportunity',
-      groupBy: { fn: { functionName: 'CALENDAR_YEAR', parameters: ['CreatedDate'], rawValue: 'CALENDAR_YEAR(CreatedDate)' } },
+      groupBy: [{ fn: { functionName: 'CALENDAR_YEAR', parameters: ['CreatedDate'], rawValue: 'CALENDAR_YEAR(CreatedDate)' } }],
     },
   },
   {
@@ -1206,13 +1212,15 @@ export const testCases: TestCase[] = [
         },
       ],
       sObject: 'Opportunity',
-      groupBy: {
-        fn: {
-          functionName: 'CALENDAR_YEAR',
-          parameters: [{ functionName: 'convertTimezone', parameters: ['CreatedDate'], rawValue: 'convertTimezone(CreatedDate)' }],
-          rawValue: 'CALENDAR_YEAR(convertTimezone(CreatedDate))',
+      groupBy: [
+        {
+          fn: {
+            functionName: 'CALENDAR_YEAR',
+            parameters: [{ functionName: 'convertTimezone', parameters: ['CreatedDate'], rawValue: 'convertTimezone(CreatedDate)' }],
+            rawValue: 'CALENDAR_YEAR(convertTimezone(CreatedDate))',
+          },
         },
-      },
+      ],
     },
   },
   {
@@ -1356,7 +1364,7 @@ export const testCases: TestCase[] = [
         },
       ],
       sObject: 'Lead',
-      groupBy: { fn: { functionName: 'ROLLUP', parameters: ['LeadSource', 'Rating'], rawValue: 'ROLLUP(LeadSource, Rating)' } },
+      groupBy: [{ fn: { functionName: 'ROLLUP', parameters: ['LeadSource', 'Rating'], rawValue: 'ROLLUP(LeadSource, Rating)' } }],
     },
   },
   {
@@ -1391,7 +1399,7 @@ export const testCases: TestCase[] = [
         },
       ],
       sObject: 'Account',
-      groupBy: { fn: { functionName: 'CUBE', parameters: ['Type', 'BillingCountry'], rawValue: 'CUBE(Type, BillingCountry)' } },
+      groupBy: [{ fn: { functionName: 'CUBE', parameters: ['Type', 'BillingCountry'], rawValue: 'CUBE(Type, BillingCountry)' } }],
       orderBy: [
         { fn: { functionName: 'GROUPING', parameters: ['Type'], rawValue: 'GROUPING(Type)' } },
         { fn: { functionName: 'GROUPING', parameters: ['BillingCountry'], rawValue: 'GROUPING(BillingCountry)' } },
@@ -1426,13 +1434,15 @@ export const testCases: TestCase[] = [
         },
       ],
       sObject: 'Opportunity',
-      groupBy: {
-        fn: {
-          functionName: 'HOUR_IN_DAY',
-          parameters: [{ functionName: 'convertTimezone', parameters: ['CreatedDate'], rawValue: 'convertTimezone(CreatedDate)' }],
-          rawValue: 'HOUR_IN_DAY(convertTimezone(CreatedDate))',
+      groupBy: [
+        {
+          fn: {
+            functionName: 'HOUR_IN_DAY',
+            parameters: [{ functionName: 'convertTimezone', parameters: ['CreatedDate'], rawValue: 'convertTimezone(CreatedDate)' }],
+            rawValue: 'HOUR_IN_DAY(convertTimezone(CreatedDate))',
+          },
         },
-      },
+      ],
     },
   },
   {
@@ -1481,33 +1491,35 @@ export const testCases: TestCase[] = [
         { type: 'FieldFunctionExpression', functionName: 'COUNT', rawValue: 'COUNT(Id)', isAggregateFn: true, parameters: ['Id'] },
       ],
       sObject: 'Account',
-      groupBy: {
-        field: 'Name',
-        having: {
+      groupBy: [
+        {
+          field: 'Name',
+        },
+      ],
+      having: {
+        left: {
+          operator: '>',
+          value: '0',
+          literalType: 'INTEGER',
+          fn: { rawValue: 'COUNT(Id)', functionName: 'COUNT', parameters: ['Id'] },
+        },
+        operator: 'AND',
+        right: {
           left: {
-            operator: '>',
-            value: '0',
-            literalType: 'INTEGER',
-            fn: { rawValue: 'COUNT(Id)', functionName: 'COUNT', parameters: ['Id'] },
+            openParen: 1,
+            field: 'Name',
+            operator: 'LIKE',
+            value: `'%testing%'`,
+            literalType: 'STRING',
           },
-          operator: 'AND',
+          operator: 'OR',
           right: {
             left: {
-              openParen: 1,
+              closeParen: 1,
               field: 'Name',
               operator: 'LIKE',
-              value: `'%testing%'`,
+              value: `'%123%'`,
               literalType: 'STRING',
-            },
-            operator: 'OR',
-            right: {
-              left: {
-                closeParen: 1,
-                field: 'Name',
-                operator: 'LIKE',
-                value: `'%123%'`,
-                literalType: 'STRING',
-              },
             },
           },
         },
@@ -1523,25 +1535,27 @@ export const testCases: TestCase[] = [
         { type: 'FieldFunctionExpression', functionName: 'COUNT', rawValue: 'COUNT(Id)', isAggregateFn: true, parameters: ['Id'] },
       ],
       sObject: 'Account',
-      groupBy: {
-        field: 'Name',
-        having: {
+      groupBy: [
+        {
+          field: 'Name',
+        },
+      ],
+      having: {
+        left: {
+          operator: '>',
+          value: '0',
+          literalType: 'INTEGER',
+          fn: { rawValue: 'COUNT(Id)', functionName: 'COUNT', parameters: ['Id'] },
+        },
+        operator: 'AND',
+        right: {
           left: {
-            operator: '>',
-            value: '0',
-            literalType: 'INTEGER',
-            fn: { rawValue: 'COUNT(Id)', functionName: 'COUNT', parameters: ['Id'] },
-          },
-          operator: 'AND',
-          right: {
-            left: {
-              openParen: 1,
-              closeParen: 1,
-              field: 'Name',
-              operator: 'IN',
-              value: [`'4/30 testing account'`, `'amendment quote doc testing'`, 'null'],
-              literalType: ['STRING', 'STRING', 'NULL'],
-            },
+            openParen: 1,
+            closeParen: 1,
+            field: 'Name',
+            operator: 'IN',
+            value: [`'4/30 testing account'`, `'amendment quote doc testing'`, 'null'],
+            literalType: ['STRING', 'STRING', 'NULL'],
           },
         },
       },
@@ -1556,27 +1570,29 @@ export const testCases: TestCase[] = [
         { type: 'FieldFunctionExpression', functionName: 'COUNT', rawValue: 'COUNT(Id)', isAggregateFn: true, parameters: ['Id'] },
       ],
       sObject: 'Account',
-      groupBy: {
-        field: 'Name',
-        having: {
-          left: {
-            operator: '>',
-            value: '0',
-            literalType: 'INTEGER',
-            fn: { rawValue: 'COUNT(Id)', functionName: 'COUNT', parameters: ['Id'] },
-          },
-          operator: 'AND',
+      groupBy: [
+        {
+          field: 'Name',
+        },
+      ],
+      having: {
+        left: {
+          operator: '>',
+          value: '0',
+          literalType: 'INTEGER',
+          fn: { rawValue: 'COUNT(Id)', functionName: 'COUNT', parameters: ['Id'] },
+        },
+        operator: 'AND',
+        right: {
+          left: { openParen: 1 },
+          operator: 'NOT',
           right: {
-            left: { openParen: 1 },
-            operator: 'NOT',
-            right: {
-              left: {
-                closeParen: 1,
-                field: 'Name',
-                operator: 'IN',
-                value: [`'4/30 testing account'`, `'amendment quote doc testing'`],
-                literalType: 'STRING',
-              },
+            left: {
+              closeParen: 1,
+              field: 'Name',
+              operator: 'IN',
+              value: [`'4/30 testing account'`, `'amendment quote doc testing'`],
+              literalType: 'STRING',
             },
           },
         },
@@ -1643,22 +1659,24 @@ export const testCases: TestCase[] = [
           literalType: 'INTEGER',
         },
       },
-      orderBy: {
-        order: 'DESC',
-        fn: {
-          rawValue: `DISTANCE(Location__c, GEOLOCATION(37.775, -122.418), 'mi')`,
-          functionName: 'DISTANCE',
-          parameters: [
-            'Location__c',
-            {
-              rawValue: 'GEOLOCATION(37.775, -122.418)',
-              functionName: 'GEOLOCATION',
-              parameters: ['37.775', '-122.418'],
-            },
-            `'mi'`,
-          ],
+      orderBy: [
+        {
+          order: 'DESC',
+          fn: {
+            rawValue: `DISTANCE(Location__c, GEOLOCATION(37.775, -122.418), 'mi')`,
+            functionName: 'DISTANCE',
+            parameters: [
+              'Location__c',
+              {
+                rawValue: 'GEOLOCATION(37.775, -122.418)',
+                functionName: 'GEOLOCATION',
+                parameters: ['37.775', '-122.418'],
+              },
+              `'mi'`,
+            ],
+          },
         },
-      },
+      ],
       limit: 10,
     },
   },
@@ -1706,7 +1724,7 @@ export const testCases: TestCase[] = [
         },
       ],
       sObject: 'Account',
-      groupBy: { field: ['BillingState', 'BillingStreet'] },
+      groupBy: [{ field: 'BillingState' }, { field: 'BillingStreet' }],
     },
   },
   {
@@ -1839,9 +1857,7 @@ export const testCases: TestCase[] = [
         },
       ],
       sObject: 'SBQQ__Quoteline__c',
-      groupBy: {
-        field: ['SBQQ__Quote__c', 'SBQQ__Product__r.Name'],
-      },
+      groupBy: [{ field: 'SBQQ__Quote__c' }, { field: 'SBQQ__Product__r.Name' }],
     },
   },
   {
@@ -1906,21 +1922,25 @@ export const testCases: TestCase[] = [
     output: {
       fields: [{ type: 'Field', field: 'ProductCode' }],
       sObject: 'Product2',
-      groupBy: {
-        field: 'ProductCode',
-        having: {
-          left: {
-            operator: '>',
-            value: '1',
-            literalType: 'INTEGER',
-            fn: { rawValue: 'COUNT(Id)', functionName: 'COUNT', parameters: ['Id'] },
-          },
+      groupBy: [
+        {
+          field: 'ProductCode',
+        },
+      ],
+      having: {
+        left: {
+          operator: '>',
+          value: '1',
+          literalType: 'INTEGER',
+          fn: { rawValue: 'COUNT(Id)', functionName: 'COUNT', parameters: ['Id'] },
         },
       },
-      orderBy: {
-        fn: { rawValue: 'COUNT(Id)', functionName: 'COUNT', parameters: ['Id'] },
-        order: 'DESC',
-      },
+      orderBy: [
+        {
+          fn: { rawValue: 'COUNT(Id)', functionName: 'COUNT', parameters: ['Id'] },
+          order: 'DESC',
+        },
+      ],
     },
   },
   {
@@ -2032,20 +2052,24 @@ export const testCases: TestCase[] = [
         },
       ],
       sObject: 'Opportunity',
-      groupBy: {
-        fn: {
-          functionName: 'WEEK_IN_YEAR',
-          parameters: ['CloseDate'],
-          rawValue: 'WEEK_IN_YEAR(CloseDate)',
+      groupBy: [
+        {
+          fn: {
+            functionName: 'WEEK_IN_YEAR',
+            parameters: ['CloseDate'],
+            rawValue: 'WEEK_IN_YEAR(CloseDate)',
+          },
         },
-      },
-      orderBy: {
-        fn: {
-          functionName: 'WEEK_IN_YEAR',
-          parameters: ['CloseDate'],
-          rawValue: 'WEEK_IN_YEAR(CloseDate)',
+      ],
+      orderBy: [
+        {
+          fn: {
+            functionName: 'WEEK_IN_YEAR',
+            parameters: ['CloseDate'],
+            rawValue: 'WEEK_IN_YEAR(CloseDate)',
+          },
         },
-      },
+      ],
     },
   },
   {
@@ -2068,22 +2092,26 @@ export const testCases: TestCase[] = [
         },
       ],
       sObject: 'Opportunity',
-      groupBy: {
-        fn: {
-          functionName: 'WEEK_IN_YEAR',
-          parameters: ['CloseDate'],
-          rawValue: 'WEEK_IN_YEAR(CloseDate)',
+      groupBy: [
+        {
+          fn: {
+            functionName: 'WEEK_IN_YEAR',
+            parameters: ['CloseDate'],
+            rawValue: 'WEEK_IN_YEAR(CloseDate)',
+          },
         },
-      },
-      orderBy: {
-        fn: {
-          functionName: 'WEEK_IN_YEAR',
-          parameters: ['CloseDate'],
-          rawValue: 'WEEK_IN_YEAR(CloseDate)',
+      ],
+      orderBy: [
+        {
+          fn: {
+            functionName: 'WEEK_IN_YEAR',
+            parameters: ['CloseDate'],
+            rawValue: 'WEEK_IN_YEAR(CloseDate)',
+          },
+          order: 'DESC',
+          nulls: 'FIRST',
         },
-        order: 'DESC',
-        nulls: 'FIRST',
-      },
+      ],
     },
   },
   {
@@ -2106,13 +2134,15 @@ export const testCases: TestCase[] = [
         },
       ],
       sObject: 'Opportunity',
-      groupBy: {
-        fn: {
-          functionName: 'WEEK_IN_YEAR',
-          parameters: ['CloseDate'],
-          rawValue: 'WEEK_IN_YEAR(CloseDate)',
+      groupBy: [
+        {
+          fn: {
+            functionName: 'WEEK_IN_YEAR',
+            parameters: ['CloseDate'],
+            rawValue: 'WEEK_IN_YEAR(CloseDate)',
+          },
         },
-      },
+      ],
       orderBy: [
         {
           fn: {
@@ -2193,6 +2223,44 @@ export const testCases: TestCase[] = [
         },
       ],
       sObject: 'Account',
+    },
+  },
+  {
+    testCase: 111,
+    soql: `SELECT UserId, CALENDAR_MONTH(LoginTime) month FROM LoginHistory WHERE NetworkId != NULL GROUP BY UserId, CALENDAR_MONTH(LoginTime)`,
+    output: {
+      fields: [
+        {
+          type: 'Field',
+          field: 'UserId',
+        },
+        {
+          type: 'FieldFunctionExpression',
+          functionName: 'CALENDAR_MONTH',
+          rawValue: 'CALENDAR_MONTH(LoginTime)',
+          parameters: ['LoginTime'],
+          alias: 'month',
+        },
+      ],
+      sObject: 'LoginHistory',
+      where: {
+        left: {
+          field: 'NetworkId',
+          operator: '!=',
+          literalType: 'NULL',
+          value: 'NULL',
+        },
+      },
+      groupBy: [
+        { field: 'UserId' },
+        {
+          fn: {
+            functionName: 'CALENDAR_MONTH',
+            rawValue: 'CALENDAR_MONTH(LoginTime)',
+            parameters: ['LoginTime'],
+          },
+        },
+      ],
     },
   },
 ];

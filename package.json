@@ -36,7 +36,7 @@
     "CHANGELOG.md"
   ],
   "dependencies": {
-    "chevrotain": "^8.0.1",
+    "chevrotain": "^9.0.1",
     "lodash.get": "^4.4.2"
   },
   "devDependencies": {
@@ -60,7 +60,6 @@
     "webpack": "^4.46.0",
     "webpack-cli": "^4.6.0"
   },
-  "peerDependencies": {},
   "keywords": [
     "soql",
     "salesforce",

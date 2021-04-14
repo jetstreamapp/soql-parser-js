@@ -133,7 +133,8 @@ export interface QueryBase {
   where?: WhereClause;
   limit?: number;
   offset?: number;
-  groupBy?: GroupByClause;
+  groupBy?: GroupByClause | GroupByClause[];
+  having?: HavingClause;
   orderBy?: OrderByClause | OrderByClause[];
   withDataCategory?: WithDataCategoryClause;
   withSecurityEnforced?: boolean;
@@ -231,15 +232,11 @@ export interface OrderByFnClause extends OrderByOptionalFieldsClause {
 
 export type GroupByClause = GroupByFieldClause | GroupByFnClause;
 
-export interface GroupByOptionalFieldsClause {
-  having?: HavingClause;
+export interface GroupByFieldClause {
+  field: string;
 }
 
-export interface GroupByFieldClause extends GroupByOptionalFieldsClause {
-  field: string | string[];
-}
-
-export interface GroupByFnClause extends GroupByOptionalFieldsClause {
+export interface GroupByFnClause {
   fn: FunctionExp;
 }
 

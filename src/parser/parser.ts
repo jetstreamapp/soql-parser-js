@@ -1,4 +1,4 @@
-import { CstParser, IRecognitionException, ILexingError } from 'chevrotain';
+import { CstParser, ILexingError, IRecognitionException } from 'chevrotain';
 import * as lexer from './lexer';
 
 export interface ParseQueryConfig {
@@ -69,20 +69,23 @@ export class SoqlParser extends CstParser {
     });
     this.OPTION3(() => {
       this.SUBRULE(this.groupByClause);
-    });
-    this.OPTION4(() => {
-      this.SUBRULE(this.orderByClause);
+      this.OPTION4(() => {
+        this.SUBRULE(this.havingClause);
+      });
     });
     this.OPTION5(() => {
-      this.SUBRULE(this.limitClause);
+      this.SUBRULE(this.orderByClause);
     });
     this.OPTION6(() => {
-      this.SUBRULE(this.offsetClause);
+      this.SUBRULE(this.limitClause);
     });
     this.OPTION7(() => {
-      this.SUBRULE(this.forViewOrReference);
+      this.SUBRULE(this.offsetClause);
     });
     this.OPTION8(() => {
+      this.SUBRULE(this.forViewOrReference);
+    });
+    this.OPTION9(() => {
       this.SUBRULE(this.updateTrackingViewstat);
     });
   });
@@ -297,22 +300,15 @@ export class SoqlParser extends CstParser {
 
   private groupByClause = this.RULE('groupByClause', () => {
     this.CONSUME(lexer.GroupBy);
-    this.OR([
-      { ALT: () => this.SUBRULE(this.cubeFunction, { LABEL: 'fn' }) },
-      { ALT: () => this.SUBRULE(this.rollupFunction, { LABEL: 'fn' }) },
-      { ALT: () => this.SUBRULE(this.dateFunction, { LABEL: 'fn' }) },
-      { ALT: () => this.SUBRULE(this.groupByFieldList) },
-    ]);
-    this.OPTION(() => {
-      this.SUBRULE(this.havingClause);
-    });
-  });
-
-  private groupByFieldList = this.RULE('groupByFieldList', () => {
     this.AT_LEAST_ONE_SEP({
       SEP: lexer.Comma,
       DEF: () => {
-        this.CONSUME(lexer.Identifier, { LABEL: 'field' });
+        this.OR([
+          { ALT: () => this.SUBRULE(this.cubeFunction, { LABEL: 'groupBy' }) },
+          { ALT: () => this.SUBRULE(this.rollupFunction, { LABEL: 'groupBy' }) },
+          { ALT: () => this.SUBRULE(this.dateFunction, { LABEL: 'groupBy' }) },
+          { ALT: () => this.CONSUME(lexer.Identifier, { LABEL: 'groupBy' }) },
+        ]);
       },
     });
   });
