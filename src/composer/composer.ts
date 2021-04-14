@@ -190,9 +190,9 @@ export class Compose {
       output += this.formatter.formatClause('GROUP BY');
       output += this.formatter.formatText(this.parseGroupByClause(query.groupBy));
       this.log(output);
-      if (query.groupBy.having) {
+      if (query.having) {
         output += this.formatter.formatClause('HAVING');
-        output += this.formatter.formatText(this.parseWhereOrHavingClause(query.groupBy.having));
+        output += this.formatter.formatText(this.parseWhereOrHavingClause(query.having));
         this.log(output);
       }
     }
@@ -354,12 +354,10 @@ export class Compose {
    * @param groupBy
    * @returns group by clause
    */
-  public parseGroupByClause(groupBy: GroupByClause): string {
-    if (utils.isGroupByFn(groupBy)) {
-      return this.parseFn(groupBy.fn);
-    } else {
-      return (Array.isArray(groupBy.field) ? groupBy.field : [groupBy.field]).join(', ');
-    }
+  public parseGroupByClause(groupBy: GroupByClause | GroupByClause[]): string {
+    return (Array.isArray(groupBy) ? groupBy : [groupBy])
+      .map(clause => (utils.isGroupByField(clause) ? clause.field : this.parseFn(clause.fn)))
+      .join(', ');
   }
 
   /**

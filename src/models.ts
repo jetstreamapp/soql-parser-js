@@ -28,6 +28,7 @@ export interface SelectStatementContext {
   whereClause?: CstNode[];
   withClause?: CstNode[];
   groupByClause?: CstNode[];
+  havingClause?: CstNode[];
   orderByClause?: CstNode[];
   limitClause?: CstNode[];
   offsetClause?: CstNode[];
@@ -113,8 +114,7 @@ export interface WithDateCategoryConditionContext {
 }
 
 export interface GroupByClauseContext {
-  groupByFieldList?: CstNode[];
-  fn: CstNode[];
+  groupBy: (CstNode | IToken)[];
   havingClause: CstNode[];
 }
 

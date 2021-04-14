@@ -15,8 +15,6 @@ import {
   FieldWithAlias,
   FunctionExp,
   GroupByClause,
-  GroupByFieldClause,
-  GroupByFnClause,
   HavingClause,
   HavingClauseWithRightCondition,
   LiteralType,
@@ -50,7 +48,6 @@ import {
   FunctionExpressionContext,
   GeoLocationFunctionContext,
   GroupByClauseContext,
-  GroupByFieldListContext,
   HavingClauseContext,
   LiteralTypeWithSubquery,
   LocationFunctionContext,
@@ -255,6 +252,10 @@ class SOQLVisitor extends BaseSoqlVisitor {
 
     if (ctx.groupByClause) {
       output.groupBy = this.visit(ctx.groupByClause);
+    }
+
+    if (ctx.havingClause) {
+      output.having = this.visit(ctx.havingClause);
     }
 
     if (ctx.orderByClause) {
@@ -469,30 +470,10 @@ class SOQLVisitor extends BaseSoqlVisitor {
     };
   }
 
-  groupByClause(ctx: GroupByClauseContext): GroupByClause {
-    let field = ctx.groupByFieldList ? ctx.groupByFieldList.map((item: any) => this.visit(item)) : undefined;
-    if (field && field.length === 1) {
-      field = field[0];
-    }
-    const output: Partial<GroupByClause> = {};
-    if (field) {
-      (output as GroupByFieldClause).field = field;
-    }
-    if (ctx.fn) {
-      (output as GroupByFnClause).fn = this.visit(ctx.fn, { includeType: false });
-    }
-    if (ctx.havingClause) {
-      output.having = this.visit(ctx.havingClause);
-    }
-    return output as GroupByClause;
-  }
-
-  groupByFieldList(ctx: GroupByFieldListContext): string | string[] {
-    if (ctx.field.length > 1) {
-      return ctx.field.map((item: any) => item.image);
-    } else {
-      return ctx.field[0].image;
-    }
+  groupByClause(ctx: GroupByClauseContext): GroupByClause | GroupByClause[] {
+    return ctx.groupBy.map(
+      (groupBy): GroupByClause => (isToken(groupBy) ? { field: groupBy.image } : { fn: this.visit(groupBy, { includeType: false }) }),
+    );
   }
 
   havingClause(ctx: HavingClauseContext): HavingClause {
@@ -516,9 +497,6 @@ class SOQLVisitor extends BaseSoqlVisitor {
   }
 
   orderByClause(ctx: OrderByClauseContext): OrderByClause | OrderByClause[] {
-    if (ctx.orderByExpressionOrFn.length === 1) {
-      return this.visit(ctx.orderByExpressionOrFn);
-    }
     return ctx.orderByExpressionOrFn.map(item => this.visit(item));
   }
 

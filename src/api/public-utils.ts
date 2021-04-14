@@ -158,14 +158,16 @@ export function getFlattenedFields(
   const fields = query.fields;
   // if a relationship field is used in a group by, then Salesforce removes the relationship portion of the field in the returned records
   let groupByFields: { [field: string]: string } = {};
-  if (!!query.groupBy && isGroupByField(query.groupBy)) {
-    if (!Array.isArray(query.groupBy.field)) {
-      query.groupBy.field = [query.groupBy.field];
-    }
-    groupByFields = query.groupBy.field.reduce((output: { [field: string]: string }, field) => {
-      output[field.toLocaleLowerCase()] = field;
-      return output;
-    }, {});
+  if (!!query.groupBy) {
+    groupByFields = (Array.isArray(query.groupBy) ? query.groupBy : [query.groupBy]).reduce(
+      (output: { [field: string]: string }, clause) => {
+        if (isGroupByField(clause)) {
+          output[clause.field.toLocaleLowerCase()] = clause.field;
+        }
+        return output;
+      },
+      {},
+    );
   }
   let currUnAliasedAggExp = -1;
   let sObject = (isSubquery(query) ? query.relationshipName : query.sObject || '').toLowerCase();

@@ -1,5 +1,143 @@
 # Changelog
 
+## 4.0.0
+
+April 13, 20201
+
+💥 Breaking Changes 💥
+
+Release 4.x has changed the way the `groupBy` and `having` clauses are parsed. (#149)
+Previously, the `groupBy` clause only allowed multiple entries for fields, but not functions.
+
+The `groupBy` and `orderBy` are now always returned as arrays from parsed queries to normalize the returned data structure.
+
+For backwards compatibility, a single `groupBy` or `orderBy` object is allowed to be passed in to `composeQuery()`, but a parsed query will always return an array.
+
+The `Query` object now has
+
+- A list of group by clauses (a single groupBy clause is allowed if you build the data structure yourself)
+- A Having clause (this was previously nested in the groupBy clause)
+- A list of orderBy clauses (a single orderBy clause is allowed if you build the data structure yourself)
+
+```diff
+-groupBy?: GroupByClause;
++groupBy?: GroupByClause | GroupByClause[]; // a parsed query will always be undefined or an array
++having?: HavingClause;
+orderBy?: OrderByClause | OrderByClause[]; // a parsed query will always be undefined or an array
+```
+
+Each groupBy clause
+
+- No longer has a nested having clause
+- Is an object with a single `field` or `fn` property
+
+```diff
+type GroupByClause = GroupByFieldClause | GroupByFnClause;
+
+-interface GroupByOptionalFieldsClause {
+-  having?: HavingClause;
+-}
+
+-interface GroupByFieldClause extends GroupByOptionalFieldsClause {
++interface GroupByFieldClause {
+-  field: string | string[];
++  field: string;
+}
+
+-interface GroupByFnClause extends GroupByOptionalFieldsClause {
++interface GroupByFnClause {
+  fn: FunctionExp;
+}
+```
+
+Here are a few examples of how the `groupBy` is parsed or expected when composing a query:
+
+`SELECT UserId, CALENDAR_MONTH(LoginTime) month FROM LoginHistory WHERE NetworkId != NULL GROUP BY UserId, CALENDAR_MONTH(LoginTime)`
+
+```javascript
+{
+  fields: [
+    {
+      type: 'Field',
+      field: 'UserId',
+    },
+    {
+      type: 'FieldFunctionExpression',
+      functionName: 'CALENDAR_MONTH',
+      rawValue: 'CALENDAR_MONTH(LoginTime)',
+      parameters: ['LoginTime'],
+      alias: 'month',
+    },
+  ],
+  sObject: 'LoginHistory',
+  where: {
+    left: {
+      field: 'NetworkId',
+      operator: '!=',
+      literalType: 'NULL',
+      value: 'NULL',
+    },
+  },
+  groupBy: [
+    { field: 'UserId' },
+    {
+      fn: {
+        functionName: 'CALENDAR_MONTH',
+        rawValue: 'CALENDAR_MONTH(LoginTime)',
+        parameters: ['LoginTime'],
+      },
+    },
+  ],
+}
+```
+
+`SELECT ProductCode FROM Product2 GROUP BY ProductCode HAVING COUNT(Id) > 1 ORDER BY COUNT(Id) DESC`
+
+```javascript
+{
+  fields: [{ type: 'Field', field: 'ProductCode' }],
+  sObject: 'Product2',
+  groupBy: [{
+    field: 'ProductCode',
+  }],
+  having: {
+    left: {
+      operator: '>',
+      value: '1',
+      literalType: 'INTEGER',
+      fn: { rawValue: 'COUNT(Id)', functionName: 'COUNT', parameters: ['Id'] },
+    },
+  },
+  orderBy: [{
+    fn: { rawValue: 'COUNT(Id)', functionName: 'COUNT', parameters: ['Id'] },
+    order: 'DESC',
+  }],
+}
+```
+
+`SELECT SBQQ__Product__r.Name foo, SBQQ__Quote__c foo1 FROM SBQQ__Quoteline__c GROUP BY SBQQ__Quote__c, SBQQ__Product__r.Name`
+
+```javascript
+{
+  fields: [
+    {
+      type: 'FieldRelationship',
+      field: 'Name',
+      relationships: ['SBQQ__Product__r'],
+      rawValue: 'SBQQ__Product__r.Name',
+      alias: 'foo',
+    },
+    {
+      type: 'Field',
+      field: 'SBQQ__Quote__c',
+      alias: 'foo1',
+    },
+  ],
+  sObject: 'SBQQ__Quoteline__c',
+  groupBy: [{ field: 'SBQQ__Quote__c' }, { field: 'SBQQ__Product__r.Name' }],
+}
+```
+
 ## 3.2.0
 
 March 27, 2021
