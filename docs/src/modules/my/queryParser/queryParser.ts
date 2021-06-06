@@ -21,22 +21,25 @@ export default class QueryParser extends LightningElement {
   @track parsedQuery: Query;
   @track parsedQueryJson: string;
   @track composedQuery: string;
+  @track allowApexBindVariables = false;
+  @track ignoreParseErrors = false;
   hasError = false;
   hasRendered = false;
 
   renderedCallback() {
     if (!this.hasRendered) {
-      // @ts-ignore type-mismatch
-      const element = this.template.querySelector('code.javascript');
-      element.innerText = `// parseQuery(soqlQuery);`;
-      hljs.highlightBlock(element);
+      this.setExampleJs();
       this.hasRendered = true;
     }
   }
 
   parseQuery() {
     try {
-      this.parsedQuery = parseQuery(this._query || '');
+      this.parsedQuery = parseQuery(this._query || '', {
+        allowApexBindVariables: this.allowApexBindVariables,
+        ignoreParseErrors: this.ignoreParseErrors,
+        logErrors: true
+      });
       this.parsedQueryJson = JSON.stringify(this.parsedQuery, null, 2);
       this.hasError = false;
     } catch (ex) {
@@ -47,6 +50,13 @@ export default class QueryParser extends LightningElement {
     this.dispatchEvent(new CustomEvent('queryerror', { detail: this.hasError }));
   }
 
+  setExampleJs() {
+    // @ts-ignore type-mismatch
+    const element = this.template.querySelector('code.javascript');
+    element.innerText = `parseQuery(soqlQuery, { allowApexBindVariables: ${this.allowApexBindVariables}, ignoreParseErrors: ${this.ignoreParseErrors} });`;
+    hljs.highlightBlock(element);
+  }
+
   highlight() {
     // @ts-ignore type-mismatch
     const element = this.template.querySelector('code.json');
@@ -54,5 +64,23 @@ export default class QueryParser extends LightningElement {
       element.innerText = this.parsedQueryJson;
       hljs.highlightBlock(element);
     }
+  }
+
+  handleChange(event) {
+    const { name, value } = event.detail;
+    switch (name) {
+      case 'allowApexBindVariables': {
+        this.allowApexBindVariables = value;
+        break;
+      }
+      case 'ignoreParseErrors': {
+        this.ignoreParseErrors = value;
+        break;
+      }
+      default:
+        break;
+    }
+    this.setExampleJs();
+    this.parseQuery();
   }
 }

@@ -1,5 +1,15 @@
 # Changelog
 
+## 4.1.0
+
+June 6, 2021
+
+#153 - A new parser option has been added named `ignoreParseErrors`, which will remove invalid parts of a query if there are parsing errors.
+
+The general structure of the query must be valid and the `SELECT` and `WHERE` clauses must both be valid, but any other clause may be removed from the parsed output if there are errors parsing the query and `ignoreParseErrors` is set to `true`.
+
+This option has been added to the documentation application.
+
 ## 4.0.0
 
 April 13, 20201
