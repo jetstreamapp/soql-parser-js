@@ -18,6 +18,7 @@
 This library uses [Chevrotain](https://github.com/SAP/chevrotain) to parse queries. Prior to version 2.0.0, [antlr4](https://github.com/antlr/antlr4) was used.
 
 Migrating from version 1 to version 2? [Check out the changelog](CHANGELOG.md#200) for a full list of changes.
+
 Migrating from version 2 to version 3? [Check out the changelog](CHANGELOG.md#300) for a full list of changes.
 
 Want to try it out? [Check out the demo](https://paustint.github.io/soql-parser-js/).
@@ -80,10 +81,11 @@ Many of hte utility functions are provided to easily determine the shape of spec
 
 **ParseQueryConfig**
 
-| Property               | Type    | Description                                                                                          | required | default |
-| ---------------------- | ------- | ---------------------------------------------------------------------------------------------------- | -------- | ------- |
-| allowApexBindVariables | boolean | Determines if apex variables are allowed in parsed query. Example: `WHERE Id IN :accountIds`.        | FALSE    | FALSE   |
-| logErrors              | boolean | If true, then additional detail will be logged to the console if there is a lexing or parsing error. | FALSE    | FALSE   |
+| Property               | Type    | Description                                                                                                                                                                                                                                   | required | default |
+| ---------------------- | ------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------- | ------- |
+| allowApexBindVariables | boolean | Determines if apex variables are allowed in parsed query. Example: `WHERE Id IN :accountIds`. Only simple Apex is supported. Function calls are not supported. (e.x. `accountMap.keyset()` is not supported)                                  | FALSE    | FALSE   |
+| ignoreParseErrors      | boolean | If set to true, then queries with partially invalid syntax will still be parsed, but any clauses with invalid parts will be omitted. The SELECT clause and FROM clause must always be valid, but all other clauses can contain invalid parts. | FALSE    | FALSE   |
+| logErrors              | boolean | If true, parsing and lexing errors will be logged to the console.                                                                                                                                                                             | FALSE    | FALSE   |
 
 **SoqlComposeConfig**
 

@@ -1,4 +1,4 @@
-import { IToken } from 'chevrotain';
+import { CstNode, IToken } from 'chevrotain';
 import {
   Condition,
   ConditionWithValueQuery,
@@ -230,51 +230,53 @@ class SOQLVisitor extends BaseSoqlVisitor {
       });
     }
 
-    if (ctx.usingScopeClause) {
+    if (ctx.usingScopeClause && !ctx.usingScopeClause[0].recoveredNode) {
       output.usingScope = this.visit(ctx.usingScopeClause);
     }
 
-    if (ctx.whereClause) {
+    if (ctx.whereClause && !ctx.whereClause[0].recoveredNode) {
       output.where = this.visit(ctx.whereClause);
     }
 
     if (ctx.withClause) {
-      ctx.withClause.forEach((item: any) => {
-        const { withSecurityEnforced, withDataCategory } = this.visit(item);
-        if (withSecurityEnforced) {
-          output.withSecurityEnforced = withSecurityEnforced;
-        }
-        if (withDataCategory) {
-          output.withDataCategory = withDataCategory;
-        }
-      });
+      ctx.withClause
+        .filter(item => !item.recoveredNode)
+        .forEach(item => {
+          const { withSecurityEnforced, withDataCategory } = this.visit(item);
+          if (withSecurityEnforced) {
+            output.withSecurityEnforced = withSecurityEnforced;
+          }
+          if (withDataCategory) {
+            output.withDataCategory = withDataCategory;
+          }
+        });
     }
 
-    if (ctx.groupByClause) {
+    if (ctx.groupByClause && !ctx.groupByClause[0].recoveredNode) {
       output.groupBy = this.visit(ctx.groupByClause);
     }
 
-    if (ctx.havingClause) {
+    if (ctx.havingClause && !ctx.havingClause[0].recoveredNode) {
       output.having = this.visit(ctx.havingClause);
     }
 
-    if (ctx.orderByClause) {
+    if (ctx.orderByClause && !ctx.orderByClause[0].recoveredNode) {
       output.orderBy = this.visit(ctx.orderByClause);
     }
 
-    if (ctx.limitClause) {
+    if (ctx.limitClause && !ctx.limitClause[0].recoveredNode) {
       output.limit = Number(this.visit(ctx.limitClause));
     }
 
-    if (ctx.offsetClause) {
+    if (ctx.offsetClause && !ctx.offsetClause[0].recoveredNode) {
       output.offset = Number(this.visit(ctx.offsetClause));
     }
 
-    if (ctx.forViewOrReference) {
+    if (ctx.forViewOrReference && !ctx.forViewOrReference[0].recoveredNode) {
       output.for = this.visit(ctx.forViewOrReference);
     }
 
-    if (ctx.updateTrackingViewstat) {
+    if (ctx.updateTrackingViewstat && !ctx.updateTrackingViewstat[0].recoveredNode) {
       output.update = this.visit(ctx.updateTrackingViewstat);
     }
 
@@ -844,19 +846,20 @@ const visitor = new SOQLVisitor();
  * @param soql
  */
 export function parseQuery(soql: string, options?: ParseQueryConfig): Query {
-  const query: Query = visitor.visit(parse(soql, options));
+  const { cst } = parse(soql, options);
+  const query: Query = visitor.visit(cst);
   return query;
 }
 
 /**
- * Lex and parse query (without walking parsed results)
- * to determine if query is valid
+ * Lex and parse query (without walking parsed results) to determine if query is valid.
+ * options.ignoreParseErrors will not be honored
  * @param soql
  */
 export function isQueryValid(soql: string, options?: ParseQueryConfig): boolean {
   try {
-    parse(soql, options);
-    return true;
+    const { parseErrors } = parse(soql, options);
+    return parseErrors.length === 0 ? true : false;
   } catch (ex) {
     return false;
   }

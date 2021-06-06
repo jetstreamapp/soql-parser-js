@@ -2263,6 +2263,22 @@ export const testCases: TestCase[] = [
       ],
     },
   },
+  {
+    testCase: 112,
+    options: { allowApexBindVariables: true, ignoreParseErrors: true },
+    soql: `SELECT Id, (SELECT Id FROM Contacts WHERE Id IN :contactMap.keySet()) FROM Account WHERE Id IN :accountMap.keySet()`,
+    soqlComposed: `SELECT Id, (SELECT Id FROM Contacts) FROM Account`,
+    output: {
+      fields: [
+        {
+          type: 'Field',
+          field: 'Id',
+        },
+        { type: 'FieldSubquery', subquery: { fields: [{ type: 'Field', field: 'Id' }], relationshipName: 'Contacts' } },
+      ],
+      sObject: 'Account',
+    },
+  },
 ];
 
 export default testCases;

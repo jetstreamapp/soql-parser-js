@@ -3,6 +3,7 @@ import * as lexer from './lexer';
 
 export interface ParseQueryConfig {
   allowApexBindVariables?: boolean;
+  ignoreParseErrors?: boolean;
   logErrors?: boolean;
 }
 
@@ -40,14 +41,16 @@ export class SoqlParser extends CstParser {
 
   // Set to true to allow apex bind variables, such as "WHERE Id IN :accountIds"
   public allowApexBindVariables = false;
+  public ignoreParseErrors = false;
 
-  constructor() {
+  constructor({ ignoreParseErrors }: { ignoreParseErrors: boolean } = { ignoreParseErrors: false }) {
     super(lexer.allTokens, {
       // true in production (webpack replaces this string)
       skipValidations: false,
+      recoveryEnabled: ignoreParseErrors,
       // nodeLocationTracking: 'full', // not sure if needed, could look at
     });
-
+    this.ignoreParseErrors = ignoreParseErrors;
     this.performSelfAnalysis();
   }
 
@@ -108,94 +111,126 @@ export class SoqlParser extends CstParser {
     }
   }
 
-  private selectClause = this.RULE('selectClause', () => {
-    this.CONSUME(lexer.Select);
-    this.AT_LEAST_ONE_SEP({
-      SEP: lexer.Comma,
-      DEF: () => {
-        this.OR(
-          this.$_selectClause ||
-            (this.$_selectClause = [
-              // selectClauseFunctionIdentifier must be first because the alias could also be an identifier
-              { ALT: () => this.SUBRULE(this.selectClauseFunctionIdentifier, { LABEL: 'field' }) },
-              { ALT: () => this.SUBRULE(this.selectClauseSubqueryIdentifier, { LABEL: 'field' }) },
-              { ALT: () => this.SUBRULE(this.selectClauseTypeOf, { LABEL: 'field' }) },
-              { ALT: () => this.SUBRULE(this.selectClauseIdentifier, { LABEL: 'field' }) },
-            ]),
-        );
-      },
-    });
-  });
+  private selectClause = this.RULE(
+    'selectClause',
+    () => {
+      this.CONSUME(lexer.Select);
+      this.AT_LEAST_ONE_SEP({
+        SEP: lexer.Comma,
+        DEF: () => {
+          this.OR(
+            this.$_selectClause ||
+              (this.$_selectClause = [
+                // selectClauseFunctionIdentifier must be first because the alias could also be an identifier
+                { ALT: () => this.SUBRULE(this.selectClauseFunctionIdentifier, { LABEL: 'field' }) },
+                { ALT: () => this.SUBRULE(this.selectClauseSubqueryIdentifier, { LABEL: 'field' }) },
+                { ALT: () => this.SUBRULE(this.selectClauseTypeOf, { LABEL: 'field' }) },
+                { ALT: () => this.SUBRULE(this.selectClauseIdentifier, { LABEL: 'field' }) },
+              ]),
+          );
+        },
+      });
+    },
+    { resyncEnabled: false },
+  );
 
-  private selectClauseFunctionIdentifier = this.RULE('selectClauseFunctionIdentifier', () => {
-    this.OR(
-      this.$_selectClauseFunctionIdentifier ||
-        (this.$_selectClauseFunctionIdentifier = [
-          { ALT: () => this.SUBRULE(this.dateFunction, { LABEL: 'fn' }) },
-          { ALT: () => this.SUBRULE(this.aggregateFunction, { LABEL: 'fn', ARGS: [true] }) },
-          { ALT: () => this.SUBRULE(this.locationFunction, { LABEL: 'fn' }) },
-          { ALT: () => this.SUBRULE(this.fieldsFunction, { LABEL: 'fn' }) },
-          { ALT: () => this.SUBRULE(this.otherFunction, { LABEL: 'fn' }) },
-        ]),
-    );
-    this.OPTION(() => this.CONSUME(lexer.Identifier, { LABEL: 'alias' }));
-  });
+  private selectClauseFunctionIdentifier = this.RULE(
+    'selectClauseFunctionIdentifier',
+    () => {
+      this.OR(
+        this.$_selectClauseFunctionIdentifier ||
+          (this.$_selectClauseFunctionIdentifier = [
+            { ALT: () => this.SUBRULE(this.dateFunction, { LABEL: 'fn' }) },
+            { ALT: () => this.SUBRULE(this.aggregateFunction, { LABEL: 'fn', ARGS: [true] }) },
+            { ALT: () => this.SUBRULE(this.locationFunction, { LABEL: 'fn' }) },
+            { ALT: () => this.SUBRULE(this.fieldsFunction, { LABEL: 'fn' }) },
+            { ALT: () => this.SUBRULE(this.otherFunction, { LABEL: 'fn' }) },
+          ]),
+      );
+      this.OPTION(() => this.CONSUME(lexer.Identifier, { LABEL: 'alias' }));
+    },
+    { resyncEnabled: false },
+  );
 
-  private selectClauseSubqueryIdentifier = this.RULE('selectClauseSubqueryIdentifier', () => {
-    this.CONSUME(lexer.LParen);
-    this.SUBRULE(this.selectStatement);
-    this.CONSUME(lexer.RParen);
-  });
+  private selectClauseSubqueryIdentifier = this.RULE(
+    'selectClauseSubqueryIdentifier',
+    () => {
+      this.CONSUME(lexer.LParen);
+      this.SUBRULE(this.selectStatement);
+      this.CONSUME(lexer.RParen);
+    },
+    { resyncEnabled: false },
+  );
 
-  private selectClauseTypeOf = this.RULE('selectClauseTypeOf', () => {
-    this.CONSUME(lexer.Typeof);
-    this.CONSUME(lexer.Identifier, { LABEL: 'typeOfField' });
-    this.AT_LEAST_ONE({
-      DEF: () => {
-        this.SUBRULE(this.selectClauseTypeOfThen);
-      },
-    });
-    this.OPTION(() => {
-      this.SUBRULE(this.selectClauseTypeOfElse);
-    });
-    this.CONSUME(lexer.End);
-  });
+  private selectClauseTypeOf = this.RULE(
+    'selectClauseTypeOf',
+    () => {
+      this.CONSUME(lexer.Typeof);
+      this.CONSUME(lexer.Identifier, { LABEL: 'typeOfField' });
+      this.AT_LEAST_ONE({
+        DEF: () => {
+          this.SUBRULE(this.selectClauseTypeOfThen);
+        },
+      });
+      this.OPTION(() => {
+        this.SUBRULE(this.selectClauseTypeOfElse);
+      });
+      this.CONSUME(lexer.End);
+    },
+    { resyncEnabled: false },
+  );
 
-  private selectClauseIdentifier = this.RULE('selectClauseIdentifier', () => {
-    this.CONSUME(lexer.Identifier, { LABEL: 'field' });
-    this.OPTION(() => this.CONSUME1(lexer.Identifier, { LABEL: 'alias' }));
-  });
+  private selectClauseIdentifier = this.RULE(
+    'selectClauseIdentifier',
+    () => {
+      this.CONSUME(lexer.Identifier, { LABEL: 'field' });
+      this.OPTION(() => this.CONSUME1(lexer.Identifier, { LABEL: 'alias' }));
+    },
+    { resyncEnabled: false },
+  );
 
-  private selectClauseTypeOfThen = this.RULE('selectClauseTypeOfThen', () => {
-    this.CONSUME(lexer.When);
-    this.CONSUME(lexer.Identifier, { LABEL: 'typeOfField' });
-    this.CONSUME(lexer.Then);
-    this.AT_LEAST_ONE_SEP({
-      SEP: lexer.Comma,
-      DEF: () => {
-        this.CONSUME1(lexer.Identifier, { LABEL: 'field' });
-      },
-    });
-  });
+  private selectClauseTypeOfThen = this.RULE(
+    'selectClauseTypeOfThen',
+    () => {
+      this.CONSUME(lexer.When);
+      this.CONSUME(lexer.Identifier, { LABEL: 'typeOfField' });
+      this.CONSUME(lexer.Then);
+      this.AT_LEAST_ONE_SEP({
+        SEP: lexer.Comma,
+        DEF: () => {
+          this.CONSUME1(lexer.Identifier, { LABEL: 'field' });
+        },
+      });
+    },
+    { resyncEnabled: false },
+  );
 
-  private selectClauseTypeOfElse = this.RULE('selectClauseTypeOfElse', () => {
-    this.CONSUME(lexer.Else);
-    this.AT_LEAST_ONE_SEP({
-      SEP: lexer.Comma,
-      DEF: () => {
-        this.CONSUME(lexer.Identifier, { LABEL: 'field' });
-      },
-    });
-  });
+  private selectClauseTypeOfElse = this.RULE(
+    'selectClauseTypeOfElse',
+    () => {
+      this.CONSUME(lexer.Else);
+      this.AT_LEAST_ONE_SEP({
+        SEP: lexer.Comma,
+        DEF: () => {
+          this.CONSUME(lexer.Identifier, { LABEL: 'field' });
+        },
+      });
+    },
+    { resyncEnabled: false },
+  );
 
-  private fromClause = this.RULE('fromClause', () => {
-    this.CONSUME(lexer.From);
-    this.CONSUME(lexer.Identifier);
-    this.OPTION({
-      GATE: () => !(this.LA(1).tokenType === lexer.Offset && this.LA(2).tokenType === lexer.UnsignedInteger),
-      DEF: () => this.CONSUME1(lexer.Identifier, { LABEL: 'alias' }),
-    });
-  });
+  private fromClause = this.RULE(
+    'fromClause',
+    () => {
+      this.CONSUME(lexer.From);
+      this.CONSUME(lexer.Identifier);
+      this.OPTION({
+        GATE: () => !(this.LA(1).tokenType === lexer.Offset && this.LA(2).tokenType === lexer.UnsignedInteger),
+        DEF: () => this.CONSUME1(lexer.Identifier, { LABEL: 'alias' }),
+      });
+    },
+    { resyncEnabled: false },
+  );
 
   private usingScopeClause = this.RULE('usingScopeClause', () => {
     this.CONSUME(lexer.Using);
@@ -672,36 +707,50 @@ export class SoqlParser extends CstParser {
   }
 }
 
-const parser = new SoqlParser();
+let parser = new SoqlParser();
 
 export function parse(soql: string, options?: ParseQueryConfig) {
-  options = options || { allowApexBindVariables: false, logErrors: false };
+  const { allowApexBindVariables, logErrors, ignoreParseErrors } = options || {
+    allowApexBindVariables: false,
+    logErrors: false,
+    ignoreParseErrors: false,
+  };
 
   const lexResult = lexer.lex(soql);
 
   if (lexResult.errors.length > 0) {
-    if (options.logErrors) {
+    if (logErrors) {
       console.log('Lexing Errors:');
       console.log(lexResult.errors);
     }
     throw new LexingError(lexResult.errors[0]);
   }
 
+  // get new instance if ignoreParseErrors changes
+  if (parser.ignoreParseErrors !== ignoreParseErrors) {
+    parser = new SoqlParser({ ignoreParseErrors });
+  }
+
   // setting a new input will RESET the parser instance's state.
   parser.input = lexResult.tokens;
 
   // If true, allows WHERE foo = :bar
-  parser.allowApexBindVariables = options.allowApexBindVariables || false;
+  parser.allowApexBindVariables = allowApexBindVariables || false;
 
   const cst = parser.selectStatement();
 
   if (parser.errors.length > 0) {
-    if (options.logErrors) {
+    if (logErrors) {
       console.log('Parsing Errors:');
       console.log(parser.errors);
     }
-    throw new ParsingError(parser.errors[0]);
+    if (!ignoreParseErrors) {
+      throw new ParsingError(parser.errors[0]);
+    }
   }
 
-  return cst;
+  return {
+    cst,
+    parseErrors: parser.errors.map(err => new ParsingError(err)),
+  };
 }

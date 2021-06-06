@@ -4,6 +4,15 @@
       PARSED QUERY
       <ui-copy-to-clipboard value={parsedQueryJson}></ui-copy-to-clipboard>
     </h4>
+    <div class="ml-2">
+      <ui-checkbox
+        name="allowApexBindVariables"
+        value={allowApexBindVariables}
+        label="Allow apex bind variables"
+        onchange={handleChange}
+      ></ui-checkbox>
+      <ui-checkbox name="ignoreParseErrors" value={ignoreParseErrors} label="Ignore parsing errors" onchange={handleChange}></ui-checkbox>
+    </div>
     <div class="mb-1">
       <pre><code class="javascript" lwc:dom="manual"></code></pre>
     </div>
