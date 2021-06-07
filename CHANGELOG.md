@@ -1,6 +1,12 @@
 # Changelog
 
-## 4.1.0
+## 4.2.0
+
+June 7, 2021
+
+#155 - Apex bind variable support is improved to allow parsing of more complex Apex.
+
+## 4.1.1
 
 June 6, 2021
 

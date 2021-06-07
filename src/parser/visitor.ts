@@ -34,6 +34,10 @@ import {
 } from '../api/api-models';
 import {
   ApexBindVariableExpressionContext,
+  ApexBindVariableFunctionCallContext,
+  ApexBindVariableFunctionParamsContext,
+  ApexBindVariableGenericContext,
+  ApexBindVariableNewInstantiationContext,
   ArrayExpressionWithType,
   AtomicExpressionContext,
   BooleanContext,
@@ -791,7 +795,29 @@ class SOQLVisitor extends BaseSoqlVisitor {
   }
 
   apexBindVariableExpression(ctx: ApexBindVariableExpressionContext): string {
-    return ctx.Identifier[0].image;
+    return ctx.apex.map(item => (isToken(item) ? item.image : this.visit(item))).join('.');
+  }
+
+  apexBindVariableNewInstantiation(ctx: ApexBindVariableNewInstantiationContext): string {
+    let output = `new ${ctx.FUNCTION[0].image}`;
+    if (ctx.apexBindVariableGeneric) {
+      output += this.visit(ctx.apexBindVariableGeneric[0]);
+    }
+    output += this.visit(ctx.apexBindVariableFunctionParams[0]);
+    return output;
+  }
+
+  apexBindVariableFunctionCall(ctx: ApexBindVariableFunctionCallContext): string {
+    return `${ctx.FUNCTION[0].image}${this.visit(ctx.apexBindVariableFunctionParams[0])}`;
+  }
+
+  apexBindVariableGeneric(ctx: ApexBindVariableGenericContext): string {
+    return `<${ctx.PARAMETER.map(item => item.image).join(', ')}>`;
+  }
+
+  apexBindVariableFunctionParams(ctx: ApexBindVariableFunctionParamsContext): string {
+    const params = Array.isArray(ctx.PARAMETER) ? ctx.PARAMETER : [];
+    return `(${params.map(item => item.image).join(', ')})`;
   }
 
   arrayExpression(ctx: ValueContext): ArrayExpressionWithType[] {

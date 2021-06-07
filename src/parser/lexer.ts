@@ -263,6 +263,7 @@ export const AboveOrBelow = createToken({
   longer_alt: Identifier,
   categories: [Keyword, Identifier],
 });
+export const ApexNew = createToken({ name: 'new', pattern: /new/i, longer_alt: Identifier, categories: [Keyword, Identifier] });
 export const At = createToken({ name: 'AT', pattern: /AT/i, longer_alt: Identifier, categories: [Keyword, Identifier] });
 export const Below = createToken({ name: 'BELOW', pattern: /BELOW/i, longer_alt: Identifier, categories: [Keyword, Identifier] });
 export const DataCategory = createToken({
@@ -913,6 +914,7 @@ export const allTokens = [
 
   AboveOrBelow,
   Above,
+  ApexNew,
   At,
   Below,
   DataCategory,

@@ -201,7 +201,31 @@ export interface ExpressionContext {
 }
 
 export interface ApexBindVariableExpressionContext {
-  Identifier: IToken[];
+  apex: (CstNode | IToken)[];
+  COLON: IToken[];
+  DECIMAL?: IToken[];
+}
+
+export interface ApexBindVariableNewInstantiationContext {
+  NEW: IToken[];
+  FUNCTION: IToken[];
+  apexBindVariableGeneric?: CstNode[];
+  apexBindVariableFunctionParams: CstNode[];
+}
+export interface ApexBindVariableFunctionCallContext {
+  FUNCTION: IToken[];
+  apexBindVariableFunctionParams: CstNode[];
+}
+export interface ApexBindVariableGenericContext {
+  COMMA: IToken[];
+  GREATER_THAN: IToken[];
+  LESS_THAN: IToken[];
+  PARAMETER: IToken[];
+}
+export interface ApexBindVariableFunctionParamsContext {
+  L_PAREN: IToken[];
+  R_PAREN: IToken[];
+  PARAMETER?: IToken[];
 }
 
 export interface ExpressionOperatorContext {
