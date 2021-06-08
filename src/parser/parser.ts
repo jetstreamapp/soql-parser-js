@@ -33,6 +33,7 @@ export class SoqlParser extends CstParser {
   private $_aggregateFunction: any = undefined;
   private $_otherFunction: any = undefined;
   private $_atomicExpression: any = undefined;
+  private $_apexBindVariableExpression: any = undefined;
   private $_arrayExpression: any = undefined;
   private $_relationalOperator: any = undefined;
   private $_selectClause: any = undefined;
@@ -617,7 +618,79 @@ export class SoqlParser extends CstParser {
 
   private apexBindVariableExpression = this.RULE('apexBindVariableExpression', () => {
     this.CONSUME(lexer.Colon);
+    // First item in list could optionally be a new instantiation
+    this.OPTION(() => {
+      this.SUBRULE(this.apexBindVariableNewInstantiation, { LABEL: 'apex' });
+      this.OPTION1(() => {
+        this.CONSUME(lexer.Decimal);
+      });
+    });
+    // Chained function calls or nested arguments with function calls at the end
+    this.MANY_SEP({
+      SEP: lexer.Decimal,
+      DEF: () => {
+        this.OR(
+          this.$_apexBindVariableExpression ||
+            (this.$_apexBindVariableExpression = [
+              { ALT: () => this.SUBRULE(this.apexBindVariableFunctionCall, { LABEL: 'apex' }) },
+              { ALT: () => this.SUBRULE(this.apexBindVariableIdentifier, { LABEL: 'apex' }) },
+            ]),
+        );
+      },
+    });
+  });
+
+  private apexBindVariableIdentifier = this.RULE('apexBindVariableIdentifier', () => {
     this.CONSUME(lexer.Identifier);
+    this.OPTION(() => this.SUBRULE(this.apexBindVariableFunctionArrayAccessor));
+  });
+
+  private apexBindVariableNewInstantiation = this.RULE('apexBindVariableNewInstantiation', () => {
+    this.CONSUME(lexer.ApexNew, { LABEL: 'new' });
+    this.CONSUME(lexer.Identifier, { LABEL: 'function' });
+    this.OPTION(() => {
+      this.SUBRULE(this.apexBindVariableGeneric);
+    });
+    this.SUBRULE(this.apexBindVariableFunctionParams);
+    this.OPTION1(() => this.SUBRULE(this.apexBindVariableFunctionArrayAccessor));
+  });
+
+  private apexBindVariableFunctionCall = this.RULE('apexBindVariableFunctionCall', () => {
+    this.CONSUME(lexer.Identifier, { LABEL: 'function' });
+    this.SUBRULE(this.apexBindVariableFunctionParams);
+    this.OPTION(() => this.SUBRULE(this.apexBindVariableFunctionArrayAccessor));
+  });
+
+  private apexBindVariableGeneric = this.RULE('apexBindVariableGeneric', () => {
+    this.CONSUME(lexer.LessThan);
+    this.AT_LEAST_ONE_SEP({
+      SEP: lexer.Comma,
+      DEF: () => {
+        this.CONSUME(lexer.Identifier, { LABEL: 'parameter' });
+      },
+    });
+    this.CONSUME(lexer.GreaterThan);
+  });
+
+  private apexBindVariableFunctionParams = this.RULE('apexBindVariableFunctionParams', () => {
+    this.CONSUME(lexer.LParen);
+    this.MANY_SEP({
+      SEP: lexer.Comma,
+      DEF: () => {
+        this.CONSUME(lexer.Identifier, { LABEL: 'parameter' });
+      },
+    });
+    this.CONSUME(lexer.RParen);
+  });
+
+  // foo[3] or foo[somIntVariable]
+  private apexBindVariableFunctionArrayAccessor = this.RULE('apexBindVariableFunctionArrayAccessor', () => {
+    this.CONSUME(lexer.LSquareBracket);
+    this.OR([
+      { ALT: () => this.CONSUME(lexer.UnsignedInteger, { LABEL: 'value' }) },
+      { ALT: () => this.CONSUME(lexer.Identifier, { LABEL: 'value' }) },
+    ]);
+    this.CONSUME(lexer.RSquareBracket);
   });
 
   private arrayExpression = this.RULE('arrayExpression', () => {

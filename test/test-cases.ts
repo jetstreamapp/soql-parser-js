@@ -2265,18 +2265,129 @@ export const testCases: TestCase[] = [
   },
   {
     testCase: 112,
-    options: { allowApexBindVariables: true, ignoreParseErrors: true },
+    options: { allowApexBindVariables: true },
     soql: `SELECT Id, (SELECT Id FROM Contacts WHERE Id IN :contactMap.keySet()) FROM Account WHERE Id IN :accountMap.keySet()`,
-    soqlComposed: `SELECT Id, (SELECT Id FROM Contacts) FROM Account`,
     output: {
       fields: [
         {
           type: 'Field',
           field: 'Id',
         },
-        { type: 'FieldSubquery', subquery: { fields: [{ type: 'Field', field: 'Id' }], relationshipName: 'Contacts' } },
+        {
+          type: 'FieldSubquery',
+          subquery: {
+            fields: [{ type: 'Field', field: 'Id' }],
+            relationshipName: 'Contacts',
+            where: { left: { field: 'Id', literalType: 'APEX_BIND_VARIABLE', operator: 'IN', value: 'contactMap.keySet()' } },
+          },
+        },
       ],
       sObject: 'Account',
+      where: { left: { field: 'Id', literalType: 'APEX_BIND_VARIABLE', operator: 'IN', value: 'accountMap.keySet()' } },
+    },
+  },
+  {
+    testCase: 113,
+    options: { allowApexBindVariables: true, ignoreParseErrors: true },
+    soql: `SELECT Id, (SELECT Id FROM Contacts WHERE Id IN :contact_900Map.keySet()) FROM Account WHERE Id IN :acco INVALID untMap.keySet()`,
+    soqlComposed: `SELECT Id, (SELECT Id FROM Contacts WHERE Id IN :contact_900Map.keySet()) FROM Account`,
+    output: {
+      fields: [
+        {
+          type: 'Field',
+          field: 'Id',
+        },
+        {
+          type: 'FieldSubquery',
+          subquery: {
+            fields: [{ type: 'Field', field: 'Id' }],
+            relationshipName: 'Contacts',
+            where: { left: { field: 'Id', literalType: 'APEX_BIND_VARIABLE', operator: 'IN', value: 'contact_900Map.keySet()' } },
+          },
+        },
+      ],
+      sObject: 'Account',
+    },
+  },
+  {
+    testCase: 114,
+    options: { allowApexBindVariables: true },
+    soql: `SELECT Id FROM Account WHERE Id IN :new Map<Id, SObject>(someVar).keySet()`,
+    output: {
+      fields: [
+        {
+          type: 'Field',
+          field: 'Id',
+        },
+      ],
+      sObject: 'Account',
+      where: { left: { field: 'Id', literalType: 'APEX_BIND_VARIABLE', operator: 'IN', value: 'new Map<Id, SObject>(someVar).keySet()' } },
+    },
+  },
+  {
+    testCase: 115,
+    options: { allowApexBindVariables: true },
+    soql: `SELECT Id FROM Account WHERE Id IN :new Map<Id, SObject>(someVar).getSomeClass().records`,
+    output: {
+      fields: [
+        {
+          type: 'Field',
+          field: 'Id',
+        },
+      ],
+      sObject: 'Account',
+      where: {
+        left: {
+          field: 'Id',
+          literalType: 'APEX_BIND_VARIABLE',
+          operator: 'IN',
+          value: 'new Map<Id, SObject>(someVar).getSomeClass().records',
+        },
+      },
+    },
+  },
+  {
+    testCase: 116,
+    options: { allowApexBindVariables: true },
+    soql: `SELECT Id FROM SBQQ__QuoteTerm__c WHERE SBQQ__StandardTerm__c = :CPQ_Hard_Coded_Ids__c.getInstance().Standard_Quote_Term_Id__c`,
+    output: {
+      fields: [
+        {
+          type: 'Field',
+          field: 'Id',
+        },
+      ],
+      sObject: 'SBQQ__QuoteTerm__c',
+      where: {
+        left: {
+          field: 'SBQQ__StandardTerm__c',
+          literalType: 'APEX_BIND_VARIABLE',
+          operator: '=',
+          value: 'CPQ_Hard_Coded_Ids__c.getInstance().Standard_Quote_Term_Id__c',
+        },
+      },
+    },
+  },
+  {
+    testCase: 117,
+    options: { allowApexBindVariables: true },
+    soql: `SELECT Id FROM Opportunity WHERE SBQQ__StandardTerm__c = :quotes[3].SBQQ__QuoteLine__r[0].Term__c`,
+    output: {
+      fields: [
+        {
+          type: 'Field',
+          field: 'Id',
+        },
+      ],
+      sObject: 'Opportunity',
+      where: {
+        left: {
+          field: 'SBQQ__StandardTerm__c',
+          literalType: 'APEX_BIND_VARIABLE',
+          operator: '=',
+          value: 'quotes[3].SBQQ__QuoteLine__r[0].Term__c',
+        },
+      },
     },
   },
 ];
