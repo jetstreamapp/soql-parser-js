@@ -110,5 +110,10 @@
   "SELECT FIELDS(CUSTOM), FIELDS(STANDARD) FROM Account",
   "SELECT Id, (SELECT FIELDS(ALL) FROM Contacts) FROM Account",
   "SELECT UserId, CALENDAR_MONTH(LoginTime) month FROM LoginHistory WHERE NetworkId != NULL GROUP BY UserId, CALENDAR_MONTH(LoginTime)",
-  "SELECT Id, (SELECT Id FROM Contacts WHERE Id IN :contactMap.keySet()) FROM Account WHERE Id IN :accountMap.keySet()"
+  "SELECT Id, (SELECT Id FROM Contacts WHERE Id IN :contactMap.keySet()) FROM Account WHERE Id IN :accountMap.keySet()",
+  "SELECT Id, (SELECT Id FROM Contacts WHERE Id IN :contact_900Map.keySet()) FROM Account WHERE Id IN :acco INVALID untMap.keySet()",
+  "SELECT Id FROM Account WHERE Id IN :new Map<Id, SObject>(someVar).keySet()",
+  "SELECT Id FROM Account WHERE Id IN :new Map<Id, SObject>(someVar).getSomeClass().records",
+  "SELECT Id FROM SBQQ__QuoteTerm__c WHERE SBQQ__StandardTerm__c = :CPQ_Hard_Coded_Ids__c.getInstance().Standard_Quote_Term_Id__c",
+  "SELECT Id FROM Opportunity WHERE SBQQ__StandardTerm__c = :quotes[3].SBQQ__QuoteLine__r[0].Term__c"
 ]
