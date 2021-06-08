@@ -201,31 +201,47 @@ export interface ExpressionContext {
 }
 
 export interface ApexBindVariableExpressionContext {
-  apex: (CstNode | IToken)[];
+  apex: CstNode[];
   COLON: IToken[];
   DECIMAL?: IToken[];
 }
 
+export interface ApexBindVariableIdentifierContext {
+  Identifier: IToken[];
+  apexBindVariableFunctionArrayAccessor?: CstNode[];
+}
+
 export interface ApexBindVariableNewInstantiationContext {
-  NEW: IToken[];
-  FUNCTION: IToken[];
+  new: IToken[];
+  function: IToken[];
   apexBindVariableGeneric?: CstNode[];
   apexBindVariableFunctionParams: CstNode[];
+  apexBindVariableFunctionArrayAccessor?: CstNode[];
 }
+
 export interface ApexBindVariableFunctionCallContext {
-  FUNCTION: IToken[];
+  function: IToken[];
   apexBindVariableFunctionParams: CstNode[];
+  apexBindVariableFunctionArrayAccessor?: CstNode[];
 }
+
 export interface ApexBindVariableGenericContext {
   COMMA: IToken[];
   GREATER_THAN: IToken[];
   LESS_THAN: IToken[];
-  PARAMETER: IToken[];
+  parameter: IToken[];
 }
+
 export interface ApexBindVariableFunctionParamsContext {
   L_PAREN: IToken[];
   R_PAREN: IToken[];
-  PARAMETER?: IToken[];
+  parameter?: IToken[];
+}
+
+export interface ApexBindVariableFunctionArrayAccessorContext {
+  L_SQUARE_BRACKET: IToken[];
+  R_SQUARE_BRACKET: IToken[];
+  value: IToken[];
 }
 
 export interface ExpressionOperatorContext {

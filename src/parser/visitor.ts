@@ -34,9 +34,11 @@ import {
 } from '../api/api-models';
 import {
   ApexBindVariableExpressionContext,
+  ApexBindVariableFunctionArrayAccessorContext,
   ApexBindVariableFunctionCallContext,
   ApexBindVariableFunctionParamsContext,
   ApexBindVariableGenericContext,
+  ApexBindVariableIdentifierContext,
   ApexBindVariableNewInstantiationContext,
   ArrayExpressionWithType,
   AtomicExpressionContext,
@@ -795,29 +797,48 @@ class SOQLVisitor extends BaseSoqlVisitor {
   }
 
   apexBindVariableExpression(ctx: ApexBindVariableExpressionContext): string {
-    return ctx.apex.map(item => (isToken(item) ? item.image : this.visit(item))).join('.');
+    return ctx.apex.map(item => this.visit(item)).join('.');
+  }
+
+  apexBindVariableIdentifier(ctx: ApexBindVariableIdentifierContext): string {
+    let output = ctx.Identifier[0].image;
+    if (ctx.apexBindVariableFunctionArrayAccessor) {
+      output += this.visit(ctx.apexBindVariableFunctionArrayAccessor[0]);
+    }
+    return output;
   }
 
   apexBindVariableNewInstantiation(ctx: ApexBindVariableNewInstantiationContext): string {
-    let output = `new ${ctx.FUNCTION[0].image}`;
+    let output = `new ${ctx.function[0].image}`;
     if (ctx.apexBindVariableGeneric) {
       output += this.visit(ctx.apexBindVariableGeneric[0]);
     }
     output += this.visit(ctx.apexBindVariableFunctionParams[0]);
+    if (ctx.apexBindVariableFunctionArrayAccessor) {
+      output += this.visit(ctx.apexBindVariableFunctionArrayAccessor[0]);
+    }
     return output;
   }
 
   apexBindVariableFunctionCall(ctx: ApexBindVariableFunctionCallContext): string {
-    return `${ctx.FUNCTION[0].image}${this.visit(ctx.apexBindVariableFunctionParams[0])}`;
+    let output = `${ctx.function[0].image}${this.visit(ctx.apexBindVariableFunctionParams[0])}`;
+    if (ctx.apexBindVariableFunctionArrayAccessor) {
+      output += this.visit(ctx.apexBindVariableFunctionArrayAccessor[0]);
+    }
+    return output;
   }
 
   apexBindVariableGeneric(ctx: ApexBindVariableGenericContext): string {
-    return `<${ctx.PARAMETER.map(item => item.image).join(', ')}>`;
+    return `<${ctx.parameter.map(item => item.image).join(', ')}>`;
   }
 
   apexBindVariableFunctionParams(ctx: ApexBindVariableFunctionParamsContext): string {
-    const params = Array.isArray(ctx.PARAMETER) ? ctx.PARAMETER : [];
+    const params = Array.isArray(ctx.parameter) ? ctx.parameter : [];
     return `(${params.map(item => item.image).join(', ')})`;
+  }
+
+  apexBindVariableFunctionArrayAccessor(ctx: ApexBindVariableFunctionArrayAccessorContext): string {
+    return `[${ctx.value[0].image}]`;
   }
 
   arrayExpression(ctx: ValueContext): ArrayExpressionWithType[] {

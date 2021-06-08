@@ -2346,6 +2346,50 @@ export const testCases: TestCase[] = [
       },
     },
   },
+  {
+    testCase: 116,
+    options: { allowApexBindVariables: true },
+    soql: `SELECT Id FROM SBQQ__QuoteTerm__c WHERE SBQQ__StandardTerm__c = :CPQ_Hard_Coded_Ids__c.getInstance().Standard_Quote_Term_Id__c`,
+    output: {
+      fields: [
+        {
+          type: 'Field',
+          field: 'Id',
+        },
+      ],
+      sObject: 'SBQQ__QuoteTerm__c',
+      where: {
+        left: {
+          field: 'SBQQ__StandardTerm__c',
+          literalType: 'APEX_BIND_VARIABLE',
+          operator: '=',
+          value: 'CPQ_Hard_Coded_Ids__c.getInstance().Standard_Quote_Term_Id__c',
+        },
+      },
+    },
+  },
+  {
+    testCase: 117,
+    options: { allowApexBindVariables: true },
+    soql: `SELECT Id FROM Opportunity WHERE SBQQ__StandardTerm__c = :quotes[3].SBQQ__QuoteLine__r[0].Term__c`,
+    output: {
+      fields: [
+        {
+          type: 'Field',
+          field: 'Id',
+        },
+      ],
+      sObject: 'Opportunity',
+      where: {
+        left: {
+          field: 'SBQQ__StandardTerm__c',
+          literalType: 'APEX_BIND_VARIABLE',
+          operator: '=',
+          value: 'quotes[3].SBQQ__QuoteLine__r[0].Term__c',
+        },
+      },
+    },
+  },
 ];
 
 export default testCases;

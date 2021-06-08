@@ -750,6 +750,8 @@ export const Comma = createToken({ name: 'COMMA', pattern: ',', categories: [Sym
 export const Asterisk = createToken({ name: 'ASTERISK', pattern: '*', categories: [SymbolIdentifier] });
 export const LParen = createToken({ name: 'L_PAREN', pattern: '(', categories: [SymbolIdentifier] });
 export const RParen = createToken({ name: 'R_PAREN', pattern: ')', categories: [SymbolIdentifier] });
+export const LSquareBracket = createToken({ name: 'L_SQUARE_BRACKET', pattern: '[', categories: [SymbolIdentifier] });
+export const RSquareBracket = createToken({ name: 'R_SQUARE_BRACKET', pattern: ']', categories: [SymbolIdentifier] });
 export const Plus = createToken({ name: 'PLUS', pattern: '+', categories: [SymbolIdentifier] });
 export const Minus = createToken({ name: 'MINUS', pattern: '-', categories: [SymbolIdentifier] });
 
@@ -1037,6 +1039,8 @@ export const allTokens = [
   Asterisk,
   LParen,
   RParen,
+  LSquareBracket,
+  RSquareBracket,
   Plus,
   Minus,
 ];

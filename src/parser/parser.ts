@@ -633,25 +633,32 @@ export class SoqlParser extends CstParser {
           this.$_apexBindVariableExpression ||
             (this.$_apexBindVariableExpression = [
               { ALT: () => this.SUBRULE(this.apexBindVariableFunctionCall, { LABEL: 'apex' }) },
-              { ALT: () => this.CONSUME(lexer.Identifier, { LABEL: 'apex' }) },
+              { ALT: () => this.SUBRULE(this.apexBindVariableIdentifier, { LABEL: 'apex' }) },
             ]),
         );
       },
     });
   });
 
+  private apexBindVariableIdentifier = this.RULE('apexBindVariableIdentifier', () => {
+    this.CONSUME(lexer.Identifier);
+    this.OPTION(() => this.SUBRULE(this.apexBindVariableFunctionArrayAccessor));
+  });
+
   private apexBindVariableNewInstantiation = this.RULE('apexBindVariableNewInstantiation', () => {
-    this.CONSUME(lexer.ApexNew, { LABEL: 'NEW' });
-    this.CONSUME(lexer.Identifier, { LABEL: 'FUNCTION' });
+    this.CONSUME(lexer.ApexNew, { LABEL: 'new' });
+    this.CONSUME(lexer.Identifier, { LABEL: 'function' });
     this.OPTION(() => {
       this.SUBRULE(this.apexBindVariableGeneric);
     });
     this.SUBRULE(this.apexBindVariableFunctionParams);
+    this.OPTION1(() => this.SUBRULE(this.apexBindVariableFunctionArrayAccessor));
   });
 
   private apexBindVariableFunctionCall = this.RULE('apexBindVariableFunctionCall', () => {
-    this.CONSUME(lexer.Identifier, { LABEL: 'FUNCTION' });
+    this.CONSUME(lexer.Identifier, { LABEL: 'function' });
     this.SUBRULE(this.apexBindVariableFunctionParams);
+    this.OPTION(() => this.SUBRULE(this.apexBindVariableFunctionArrayAccessor));
   });
 
   private apexBindVariableGeneric = this.RULE('apexBindVariableGeneric', () => {
@@ -659,7 +666,7 @@ export class SoqlParser extends CstParser {
     this.AT_LEAST_ONE_SEP({
       SEP: lexer.Comma,
       DEF: () => {
-        this.CONSUME(lexer.Identifier, { LABEL: 'PARAMETER' });
+        this.CONSUME(lexer.Identifier, { LABEL: 'parameter' });
       },
     });
     this.CONSUME(lexer.GreaterThan);
@@ -670,10 +677,20 @@ export class SoqlParser extends CstParser {
     this.MANY_SEP({
       SEP: lexer.Comma,
       DEF: () => {
-        this.CONSUME(lexer.Identifier, { LABEL: 'PARAMETER' });
+        this.CONSUME(lexer.Identifier, { LABEL: 'parameter' });
       },
     });
     this.CONSUME(lexer.RParen);
+  });
+
+  // foo[3] or foo[somIntVariable]
+  private apexBindVariableFunctionArrayAccessor = this.RULE('apexBindVariableFunctionArrayAccessor', () => {
+    this.CONSUME(lexer.LSquareBracket);
+    this.OR([
+      { ALT: () => this.CONSUME(lexer.UnsignedInteger, { LABEL: 'value' }) },
+      { ALT: () => this.CONSUME(lexer.Identifier, { LABEL: 'value' }) },
+    ]);
+    this.CONSUME(lexer.RSquareBracket);
   });
 
   private arrayExpression = this.RULE('arrayExpression', () => {
