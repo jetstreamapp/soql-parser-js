@@ -466,5 +466,22 @@ export const testCases: TestCaseForFormat[] = [
     soql: `SELECT Id FROM Account WHERE NOT Name = '2'`,
     isValid: true,
   },
+  {
+    testCase: 158,
+    options: { allowApexBindVariables: true },
+    soql: `
+SELECT Id
+FROM Account
+WHERE
+  Id IN :new Map<
+    Id,
+    SObject
+  >
+  (someVar)
+  .getSomeClass()
+  .records
+    `,
+    isValid: true,
+  },
 ];
 export default testCases;
