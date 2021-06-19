@@ -11,6 +11,7 @@ import {
   isGroupByFn,
   isHavingClauseWithRightCondition,
   isNegationCondition,
+  isNestedParamAggregateFunction,
   isOrderByField,
   isOrderByFn,
   isString,
@@ -209,7 +210,7 @@ export function getFlattenedFields(
             return field.alias;
           }
           // Non-aliased aggregate fields use computed name expr0, expr1, etc..
-          if (field.isAggregateFn || isAggregateResult) {
+          if (field.isAggregateFn || isNestedParamAggregateFunction(field) || isAggregateResult) {
             currUnAliasedAggExp++;
             return `expr${currUnAliasedAggExp}`;
           }

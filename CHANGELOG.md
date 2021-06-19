@@ -1,5 +1,12 @@
 # Changelog
 
+## 4.2.1
+
+June 18, 2021
+
+#157 - `getFlattenedFields()` Did not return correct results if the aggregate function was nested in another function, such as `FORMAT(MAX(CreatedDate))`.
+This bug only applied if there was not a field alias defined.
+
 ## 4.2.0
 
 June 8, 2021

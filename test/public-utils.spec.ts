@@ -211,7 +211,7 @@ describe('getFlattenedFields', () => {
       const fields = utils.getFlattenedFields(testCase.query);
       expect(fields).to.deep.equal(testCase.expectedFields);
       fields.forEach(field => {
-        expect(lodashGet(testCase.sfdcObj, field)).to.not.be.undefined;
+        expect(lodashGet(testCase.sfdcObj, field), `${field} does not exist on sfdc record`).to.not.be.undefined;
       });
     });
   });

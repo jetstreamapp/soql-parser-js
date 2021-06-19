@@ -446,4 +446,117 @@ export const testCases: FlattenedObjTestCase[] = [
       AcctCreatedDate: '2020-02-28T03:00:31.000+0000',
     },
   },
+  {
+    testCase: 14,
+    expectedFields: ['expr0', 'myDate', 'Email'],
+    query: {
+      fields: [
+        {
+          type: 'FieldFunctionExpression',
+          functionName: 'COUNT',
+          parameters: ['Id'],
+          isAggregateFn: true,
+          rawValue: 'COUNT(Id)',
+        },
+        {
+          type: 'FieldFunctionExpression',
+          functionName: 'FORMAT',
+          alias: 'myDate',
+          parameters: [
+            {
+              type: 'FieldFunctionExpression',
+              functionName: 'MAX',
+              parameters: ['CreatedDate'],
+              isAggregateFn: true,
+              rawValue: 'MAX(CreatedDate)',
+            },
+          ],
+          rawValue: 'FORMAT(MAX(CreatedDate))',
+        },
+        {
+          type: 'Field',
+          field: 'Email',
+        },
+      ],
+      sObject: 'Contact',
+      groupBy: [
+        {
+          field: 'Email',
+        },
+      ],
+      having: {
+        left: {
+          fn: {
+            functionName: 'COUNT',
+            parameters: ['Id'],
+            rawValue: 'COUNT(Id)',
+          },
+          operator: '>=',
+          value: '0',
+          literalType: 'INTEGER',
+        },
+      },
+    },
+    sfdcObj: {
+      expr0: 16,
+      myDate: '7/13/2018 7:07 AM',
+      Email: 'agreen@foo.com',
+    },
+  },
+  {
+    testCase: 15,
+    expectedFields: ['expr0', 'expr1', 'Email'],
+    query: {
+      fields: [
+        {
+          type: 'FieldFunctionExpression',
+          functionName: 'COUNT',
+          parameters: ['Id'],
+          isAggregateFn: true,
+          rawValue: 'COUNT(Id)',
+        },
+        {
+          type: 'FieldFunctionExpression',
+          functionName: 'FORMAT',
+          parameters: [
+            {
+              type: 'FieldFunctionExpression',
+              functionName: 'MAX',
+              parameters: ['CreatedDate'],
+              isAggregateFn: true,
+              rawValue: 'MAX(CreatedDate)',
+            },
+          ],
+          rawValue: 'FORMAT(MAX(CreatedDate))',
+        },
+        {
+          type: 'Field',
+          field: 'Email',
+        },
+      ],
+      sObject: 'Contact',
+      groupBy: [
+        {
+          field: 'Email',
+        },
+      ],
+      having: {
+        left: {
+          fn: {
+            functionName: 'COUNT',
+            parameters: ['Id'],
+            rawValue: 'COUNT(Id)',
+          },
+          operator: '>=',
+          value: '0',
+          literalType: 'INTEGER',
+        },
+      },
+    },
+    sfdcObj: {
+      expr0: 16,
+      expr1: '7/13/2018 7:07 AM',
+      Email: 'agreen@foo.com',
+    },
+  },
 ];
