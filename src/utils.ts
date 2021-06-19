@@ -115,6 +115,17 @@ export function getParams(functionFieldExp: FieldFunctionExpression): string[] {
   return getParams(functionFieldExp.parameters[0] as FieldFunctionExpression);
 }
 
+export function isNestedParamAggregateFunction(functionFieldExp: FieldFunctionExpression): boolean {
+  if (!functionFieldExp.parameters || functionFieldExp.parameters.length === 0) {
+    return false;
+  }
+  const parameter = functionFieldExp.parameters[0];
+  if (isString(parameter)) {
+    return false;
+  }
+  return !!parameter.isAggregateFn;
+}
+
 export function hasAlias(value: any): value is FieldWithAlias | FieldRelationshipWithAlias {
   return value && !isNil(value.alias);
 }
