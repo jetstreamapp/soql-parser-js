@@ -559,4 +559,34 @@ export const testCases: FlattenedObjTestCase[] = [
       Email: 'agreen@foo.com',
     },
   },
+  {
+    testCase: 16,
+    expectedFields: ['expr0', 'account_name'],
+    query: {
+      fields: [
+        {
+          type: 'FieldFunctionExpression',
+          functionName: 'COUNT',
+          parameters: ['Id'],
+          isAggregateFn: true,
+          rawValue: 'Count(Id)',
+        },
+        {
+          type: 'Field',
+          field: 'Name',
+          alias: 'account_name',
+        },
+      ],
+      sObject: 'Account',
+      groupBy: [
+        {
+          field: 'Name',
+        },
+      ],
+    },
+    sfdcObj: {
+      expr0: 10,
+      account_name: 'Account 1',
+    },
+  },
 ];
