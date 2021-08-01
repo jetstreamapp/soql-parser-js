@@ -178,7 +178,7 @@ export function getFlattenedFields(
     .flatMap(field => {
       switch (field.type) {
         case 'Field': {
-          return field.field;
+          return field.alias || field.field;
         }
         case 'FieldFunctionExpression': {
           let params = getParams(field);

@@ -1,5 +1,11 @@
 # Changelog
 
+## 4.2.2
+
+August 1, 2021
+
+#160 - `getFlattenedFields()` Did not return correct results if a normal field used an alias, such as `SELECT Count(Id), Name account_name FROM Account GROUP BY Name`
+
 ## 4.2.1
 
 June 18, 2021
