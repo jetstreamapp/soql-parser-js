@@ -1,5 +1,11 @@
 # Changelog
 
+## 4.3
+
+September 19, 2021
+
+- Added cli support, check out the readme for usage details
+
 ## 4.2.2
 
 August 1, 2021
