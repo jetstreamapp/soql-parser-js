@@ -1,0 +1,12 @@
+{
+  "compilerOptions": {
+    "lib": ["esnext"],
+    "module": "commonjs",
+    "noImplicitAny": true,
+    "outDir": "./dist_cli",
+    "target": "es6",
+    "resolveJsonModule": true
+  },
+  "include": ["cli/**/*.ts"],
+  "exclude": ["node_modules", "test"]
+}

@@ -28,6 +28,8 @@ Want to try it out? [Check out the demo](https://paustint.github.io/soql-parser-
 **Node**: version 11 or higher, or a polyfill for [Array.flat](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/flat)  
 **Browser**: Tested in all modern browsers, may not work with older browsers.
 
+The **commander** dependency is only required for the cli, the other two dependencies **chevrotain** and **lodash.get** are bundled with the non-cli code.
+
 ## Quick Start
 
 ```javascript
@@ -400,6 +402,155 @@ FROM Account
 WHERE Name LIKE 'a%'
 	OR Name LIKE 'b%'
 	OR Name LIKE 'c%'
+```
+
+## CLI
+
+If you install globally, you can use the cli
+
+### Available Commands
+
+- `soql-parser-js --help`
+- `soql-parser-js parse --help`
+- `soql-parser-js compose --help`
+- `soql-parser-js format --help`
+
+### Examples
+
+#### Parse
+
+`soql-parser-js parse "SELECT Id FROM Account"`
+
+```bash
+{"fields":[{"type":"Field","field":"Id"}],"sObject":"Account"}
+```
+
+#### Compose
+
+`soql-parser-js compose "{\"fields\":[{\"type\":\"Field\",\"field\":\"Id\"}],\"sObject\":\"Account\"}"`
+
+```bash
+SELECT Id FROM Account
+```
+
+`soql-parser-js compose "{\"fields\":[{\"type\":\"Field\",\"field\":\"Id\"}],\"sObject\":\"Account\"}" --json` or -j
+
+```json
+{ "query": "SELECT Id FROM Account" }
+```
+
+#### Format
+
+`soql-parser-js format "SELECT Name, COUNT(Id) FROM Account GROUP BY Name HAVING COUNT(Id) > 1"`
+
+```bash
+SELECT Name, COUNT(Id)
+FROM Account
+GROUP BY Name
+HAVING COUNT(Id) > 1
+```
+
+`soql-parser-js format "SELECT Name, COUNT(Id) FROM Account GROUP BY Name HAVING COUNT(Id) > 1 -j`
+
+```json
+{ "query": "SELECT Name, COUNT(Id)\nFROM Account\nGROUP BY Name\nHAVING COUNT(Id) > 1" }
+```
+
+#### Is Valid
+
+`soql-parser-js valid "SELECT Id FROM Account"`
+
+```bash
+true
+```
+
+`soql-parser-js valid "SELECT Id invalid FROM Account"`
+
+ℹ️ this returns an exit code of 1
+
+```bash
+false
+```
+
+`soql-parser-js valid "SELECT Id FROM Account -j`
+
+```json
+{ "isValid": true }
+```
+
+`soql-parser-js valid "SELECT Id invalid invalid FROM Account -j`
+
+ℹ️ this returns an exit code of 0
+
+```json
+{ "isValid": false }
+```
+
+### List of options
+
+`soql-parser-js --help`
+
+```bash
+Usage: soql-parser-js [options] [command]
+
+Options:
+  -h, --help                 output usage information
+
+Commands:
+  parse [options] <query>
+  compose [options] <query>
+  format [options] <query>
+  valid <query>
+```
+
+`soql-parser-js parse --help`
+
+```bash
+Usage: parse [options] <query>
+
+Options:
+  -a, --allow-apex     allow apex bind variables
+  -i, --ignore-errors  ignore parse errors, return as much of query as possible
+  -h, --help           output usage information
+```
+
+`soql-parser-js compose --help`
+
+```bash
+Usage: compose [options] <query>
+
+Options:
+  -f, --format                   format output
+  -i --indent <chars>            number of tab characters to indent (default: 1)
+  -m --line-length <chars>       max number of characters per lins (default: 60)
+  -s --subquery-parens-new-line  subquery parens on own line
+  -k --keywords-new-line         new line after keywords
+  -j, --json                     output as JSON
+  -h, --help                     output usage information
+```
+
+`soql-parser-js format --help`
+
+```bash
+Usage: format [options] <query>
+
+Options:
+  -i --indent <chars>            number of tab characters to indent (default: 1)
+  -m --line-length <chars>       max number of characters per lins (default: 60)
+  -s --subquery-parens-new-line  subquery parens on own line
+  -k --keywords-new-line         new line after keywords
+  -j, --json                     output as JSON
+  -h, --help                     output usage information
+```
+
+`soql-parser-js valid --help`
+
+```bash
+Usage: valid [options] <query>
+
+Options:
+  -j, --json  output as JSON
+  -h, --help  output usage information
 ```
 
 ## Data Models

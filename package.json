@@ -8,20 +8,27 @@
   "scripts": {
     "clean": "rm -rf ./dist/*",
     "clean:esm": "rm -rf ./dist_esm/*",
+    "clean:cli": "rm -rf ./dist_cli/*",
     "prebuild": "npm run clean",
-    "build": "npm-run-all compile bundle:regular bundle:min build:esm",
+    "build": "npm-run-all compile bundle:regular bundle:min build:esm build:cli",
     "build:esm": "npm-run-all clean:esm compile:esm",
+    "build:cli": "npm-run-all clean:cli compile:cli",
     "compile": "tsc",
     "compile:esm": "tsc --project tsconfig-esm.json",
+    "compile:cli": "tsc --project tsconfig-cli.json",
     "bundle:regular": "webpack --config webpack-regular.config.js",
     "bundle:min": "webpack --config webpack-min.config.js",
     "tsc": "./node_modules/.bin/tsc",
     "release": "release-it",
     "copy-tc-to-docs": "ts-node ./tasks/copy-test-cases-to-docs.ts",
-    "test": "TS_NODE_PROJECT=\"test/tsconfig.json\" mocha --timeout 10000 -r ts-node/register test/**/*.spec.ts -P test/tsconfig.json"
+    "test": "TS_NODE_PRO,JECT=\"test/tsconfig.json\" mocha --timeout 10000 -r ts-node/register test/**/*.spec.ts -P test/tsconfig.json",
+    "soql-parser-js": "node ./bin"
   },
   "author": "Austin Turner <paustint@gmail.com>",
   "license": "MIT",
+  "bin": {
+    "soql-parser-js": "bin/index"
+  },
   "files": [
     "dist/src/**/*.js",
     "dist/src/**/*.js.map",
@@ -31,12 +38,15 @@
     "dist/main.licenses.txt",
     "dist_esm/**/*.js",
     "dist/src/**/*.js.map",
+    "dist_cli/**/*.js",
+    "bin/**/*.js",
     "README.md",
     "LICENSE.txt",
     "CHANGELOG.md"
   ],
   "dependencies": {
     "chevrotain": "^9.0.1",
+    "commander": "^2.20.3",
     "lodash.get": "^4.4.2"
   },
   "devDependencies": {
