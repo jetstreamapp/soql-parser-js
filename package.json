@@ -21,7 +21,7 @@
     "tsc": "./node_modules/.bin/tsc",
     "release": "release-it",
     "copy-tc-to-docs": "ts-node ./tasks/copy-test-cases-to-docs.ts",
-    "test": "TS_NODE_PRO,JECT=\"test/tsconfig.json\" mocha --timeout 10000 -r ts-node/register test/**/*.spec.ts -P test/tsconfig.json",
+    "test": "TS_NODE_PROJECT=\"test/tsconfig.json\" mocha --timeout 10000 -r ts-node/register test/**/*.spec.ts -P test/tsconfig.json",
     "soql-parser-js": "node ./bin"
   },
   "author": "Austin Turner <paustint@gmail.com>",
