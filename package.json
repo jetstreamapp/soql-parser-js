@@ -27,7 +27,7 @@
   "author": "Austin Turner <paustint@gmail.com>",
   "license": "MIT",
   "bin": {
-    "soql-parser-js": "bin/index"
+    "soql-parser-js": "bin/soql-parser-js"
   },
   "files": [
     "dist/src/**/*.js",
