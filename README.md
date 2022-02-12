@@ -280,10 +280,10 @@ LIMIT 150
 
 If you need to compose just a part of a query instead of the entire query, you can create an instance of the Compose class directly.
 
-For example, if you just need the "WHERE" clause from a query as a string, you can do the following:
+For example, if you just need the `WHERE` clause from a query as a string, you can do the following:
 
 ```typescript
-import { Compose, getComposedField, parseQuery } from 'soql-parser-js';
+import { Compose, parseQuery } from 'soql-parser-js';
 
 const soql = `SELECT Id FROM Account WHERE Name = 'Foo'`;
 const parsedQuery = parseQuery(soql);
@@ -311,12 +311,24 @@ const parsedQuery = parseQuery(soql);
   const composer = new Compose(parsedQuery, { autoCompose: false });
 
 
-  const whereClause = composer.parseWhereClause(parsedQuery.where);
+  const whereClause = composer.parseWhereOrHavingClause(parsedQuery.where);
 
   console.log(whereClause);
-  // Name = 'Foo'
 }
+```
 
+#### Available methods on the `Compose` class
+
+These are used internally, but are public and available for use.
+
+```typescript
+parseQuery(query: Query | Subquery): string;
+parseFields(fields: FieldType[]): { text: string; typeOfClause?: string[] }[];
+parseTypeOfField(typeOfField: FieldTypeOf): string[];
+parseWhereOrHavingClause(whereOrHaving: WhereClause | HavingClause, tabOffset = 0, priorConditionIsNegation = false): string;
+parseGroupByClause(groupBy: GroupByClause | GroupByClause[]): string;
+parseOrderBy(orderBy: OrderByClause | OrderByClause[]): string;
+parseWithDataCategory(withDataCategory: WithDataCategoryClause): string;
 ```
 
 ## Format Query
