@@ -24,6 +24,10 @@ interface WithIdentifier {
 export interface SelectStatementContext {
   selectClause: CstNode[];
   fromClause: CstNode[];
+  clauseStatements: CstNode[];
+}
+
+export interface ClauseStatementsContext {
   usingScopeClause?: CstNode[];
   whereClause?: CstNode[];
   withClause?: CstNode[];

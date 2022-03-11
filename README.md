@@ -15,8 +15,6 @@
 3. Validate a query to check if the syntax is valid.
    1. _Even if a query is returned as valid, it might still be invalid based on your Salesforce configuration_
 
-This library uses [Chevrotain](https://github.com/SAP/chevrotain) to parse queries. Prior to version 2.0.0, [antlr4](https://github.com/antlr/antlr4) was used.
-
 Migrating from version 1 to version 2? [Check out the changelog](CHANGELOG.md#200) for a full list of changes.
 
 Migrating from version 2 to version 3? [Check out the changelog](CHANGELOG.md#300) for a full list of changes.
@@ -58,7 +56,7 @@ isQueryValid('SELECT Id Foo FROM Baz'); // false
 
 **General Utility**
 
-Many of hte utility functions are provided to easily determine the shape of specific data since there are many variations. If you are using Typescript in strict mode, you can use these to narrow types with if statements.
+Many of hte utility functions are provided to easily determine the shape of specific data since there are many variants. If you are using Typescript in strict mode, you can use these to narrow your types.
 
 | Function                                | Description                                                                                                                                                                                                             | Arguments                                                                   |
 | --------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------- |
@@ -86,6 +84,7 @@ Many of hte utility functions are provided to easily determine the shape of spec
 | Property               | Type    | Description                                                                                                                                                                                                                                   | required | default |
 | ---------------------- | ------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------- | ------- |
 | allowApexBindVariables | boolean | Determines if apex variables are allowed in parsed query. Example: `WHERE Id IN :accountIds`. Only simple Apex is supported. Function calls are not supported. (e.x. `accountMap.keyset()` is not supported)                                  | FALSE    | FALSE   |
+| allowPartialQuery      | boolean | If provided, you can provide an incomplete soql query. This is useful if you need to parse WHERE clauses, for example. Subqueries are required to be valid.                                                                                   | FALSE    | FALSE   |
 | ignoreParseErrors      | boolean | If set to true, then queries with partially invalid syntax will still be parsed, but any clauses with invalid parts will be omitted. The SELECT clause and FROM clause must always be valid, but all other clauses can contain invalid parts. | FALSE    | FALSE   |
 | logErrors              | boolean | If true, parsing and lexing errors will be logged to the console.                                                                                                                                                                             | FALSE    | FALSE   |
 
@@ -117,7 +116,6 @@ Parsing a SOQL query can be completed by calling `parseQuery(soqlQueryString)`. 
 
 ```typescript
 import { parseQuery } from 'soql-parser-js';
-// var soqlParserJs = require('soql-parser-js'); // node's require format - usage: soqlParserJs.parseQuery()
 
 const soql = `
   SELECT UserId, COUNT(Id)
@@ -126,8 +124,6 @@ const soql = `
   AND LoginTime < 2010-09-21T22:16:30.000Z
   GROUP BY UserId
 `;
-
-const soqlQuery = parseQuery(soql);
 
 console.log(JSON.stringify(soqlQuery, null, 2));
 ```
@@ -151,6 +147,54 @@ console.log(JSON.stringify(soqlQuery, null, 2));
     }
   ],
   "sObject": "LoginHistory",
+  "where": {
+    "left": {
+      "field": "LoginTime",
+      "operator": ">",
+      "value": "2010-09-20T22:16:30.000Z",
+      "literalType": "DATETIME"
+    },
+    "operator": "AND",
+    "right": {
+      "left": {
+        "field": "LoginTime",
+        "operator": "<",
+        "value": "2010-09-21T22:16:30.000Z",
+        "literalType": "DATETIME"
+      }
+    }
+  },
+  "groupBy": {
+    "field": "UserId"
+  }
+}
+```
+
+</details>
+
+### Parsing a partial query
+
+Added support for `allowPartialQuery` in version `4.4.0`
+
+```typescript
+import { parseQuery } from 'soql-parser-js';
+
+const soql = `
+  WHERE LoginTime > 2010-09-20T22:16:30.000Z
+  AND LoginTime < 2010-09-21T22:16:30.000Z
+  GROUP BY UserId
+`;
+
+const soqlQuery = parseQuery(soql, { allowPartialQuery: true });
+
+console.log(JSON.stringify(soqlQuery, null, 2));
+```
+
+<details>
+  <summary><b>Results (click to show)</b></summary>
+
+```json
+{
   "where": {
     "left": {
       "field": "LoginTime",
@@ -278,6 +322,41 @@ LIMIT 150
 
 ### Composing a partial query
 
+Starting in version `4.4`, compose will not fail if there are missing `SELECT` and `FROM` clauses in your query.
+
+Partial compose support it supported without any additional steps.
+
+```typescript
+import { Compose, parseQuery } from 'soql-parser-js';
+
+const soql = `WHERE Name LIKE 'A%' AND MailingCity = 'California`;
+const parsedQuery = parseQuery(soql, { allowPartialQuery: true });
+
+// Results of Parsed Query:
+/**
+{
+  where: {
+    left: { field: 'Name', operator: 'LIKE', value: "'A%'", literalType: 'STRING' },
+    operator: 'AND',
+    right: { left: { field: 'MailingCity', operator: '=', value: "'California'", literalType: 'STRING' } },
+  },
+}
+*/
+
+const composedQuery = composeQuery(soqlQuery, { format: true });
+
+console.log(composedQuery);
+```
+
+**Results**
+
+```sql
+WHERE Name LIKE 'A%' AND MailingCity = 'California
+```
+
+<details>
+  <summary><b>See the alternate way to compose partial queries by calling the Compose class directly</b></summary>
+
 If you need to compose just a part of a query instead of the entire query, you can create an instance of the Compose class directly.
 
 For example, if you just need the `WHERE` clause from a query as a string, you can do the following:
@@ -330,6 +409,8 @@ parseGroupByClause(groupBy: GroupByClause | GroupByClause[]): string;
 parseOrderBy(orderBy: OrderByClause | OrderByClause[]): string;
 parseWithDataCategory(withDataCategory: WithDataCategoryClause): string;
 ```
+
+</details>
 
 ## Format Query
 
@@ -418,11 +499,11 @@ WHERE Name LIKE 'a%'
 
 ## CLI
 
-If you install globally, you can use the cli
+Install globally or use `npx` to interact with the cli.
 
 ### Available Commands
 
-- `soql-parser-js --help`
+- `soql-parser-js --help` (or using `npx`: `npx soql-parser-js --help`)
 - `soql-parser-js parse --help`
 - `soql-parser-js compose --help`
 - `soql-parser-js format --help`
@@ -431,7 +512,7 @@ If you install globally, you can use the cli
 
 #### Parse
 
-`soql-parser-js parse "SELECT Id FROM Account"`
+`npx soql-parser-js parse "SELECT Id FROM Account"`
 
 ```bash
 {"fields":[{"type":"Field","field":"Id"}],"sObject":"Account"}
@@ -439,13 +520,13 @@ If you install globally, you can use the cli
 
 #### Compose
 
-`soql-parser-js compose "{\"fields\":[{\"type\":\"Field\",\"field\":\"Id\"}],\"sObject\":\"Account\"}"`
+`npx soql-parser-js compose "{\"fields\":[{\"type\":\"Field\",\"field\":\"Id\"}],\"sObject\":\"Account\"}"`
 
 ```bash
 SELECT Id FROM Account
 ```
 
-`soql-parser-js compose "{\"fields\":[{\"type\":\"Field\",\"field\":\"Id\"}],\"sObject\":\"Account\"}" --json` or -j
+`npx soql-parser-js compose "{\"fields\":[{\"type\":\"Field\",\"field\":\"Id\"}],\"sObject\":\"Account\"}" --json` or -j
 
 ```json
 { "query": "SELECT Id FROM Account" }
@@ -453,7 +534,7 @@ SELECT Id FROM Account
 
 #### Format
 
-`soql-parser-js format "SELECT Name, COUNT(Id) FROM Account GROUP BY Name HAVING COUNT(Id) > 1"`
+`npx soql-parser-js format "SELECT Name, COUNT(Id) FROM Account GROUP BY Name HAVING COUNT(Id) > 1"`
 
 ```bash
 SELECT Name, COUNT(Id)
@@ -462,7 +543,7 @@ GROUP BY Name
 HAVING COUNT(Id) > 1
 ```
 
-`soql-parser-js format "SELECT Name, COUNT(Id) FROM Account GROUP BY Name HAVING COUNT(Id) > 1 -j`
+`npx soql-parser-js format "SELECT Name, COUNT(Id) FROM Account GROUP BY Name HAVING COUNT(Id) > 1 -j`
 
 ```json
 { "query": "SELECT Name, COUNT(Id)\nFROM Account\nGROUP BY Name\nHAVING COUNT(Id) > 1" }
@@ -470,13 +551,13 @@ HAVING COUNT(Id) > 1
 
 #### Is Valid
 
-`soql-parser-js valid "SELECT Id FROM Account"`
+`npx soql-parser-js valid "SELECT Id FROM Account"`
 
 ```bash
 true
 ```
 
-`soql-parser-js valid "SELECT Id invalid FROM Account"`
+`npx soql-parser-js valid "SELECT Id invalid FROM Account"`
 
 ℹ️ this returns an exit code of 1
 
@@ -484,13 +565,13 @@ true
 false
 ```
 
-`soql-parser-js valid "SELECT Id FROM Account -j`
+`npx soql-parser-js valid "SELECT Id FROM Account" -j`
 
 ```json
 { "isValid": true }
 ```
 
-`soql-parser-js valid "SELECT Id invalid invalid FROM Account -j`
+`npx soql-parser-js valid "SELECT Id invalid invalid FROM Account" -j`
 
 ℹ️ this returns an exit code of 0
 
@@ -509,19 +590,20 @@ Options:
   -h, --help                 output usage information
 
 Commands:
-  parse [options] <query>
+  parse [options] <sql>
   compose [options] <query>
-  format [options] <query>
-  valid <query>
+  format [options] <sql>
+  valid <sql>
 ```
 
 `soql-parser-js parse --help`
 
 ```bash
-Usage: parse [options] <query>
+Usage: parse [options] <sql>
 
 Options:
   -a, --allow-apex     allow apex bind variables
+  -p, --allow-partial  allow partial queries
   -i, --ignore-errors  ignore parse errors, return as much of query as possible
   -h, --help           output usage information
 ```
@@ -544,9 +626,11 @@ Options:
 `soql-parser-js format --help`
 
 ```bash
-Usage: format [options] <query>
+Usage: format [options] <sql>
 
 Options:
+  -a, --allow-apex     allow apex bind variables
+  -p, --allow-partial  allow partial queries
   -i --indent <chars>            number of tab characters to indent (default: 1)
   -m --line-length <chars>       max number of characters per lins (default: 60)
   -s --subquery-parens-new-line  subquery parens on own line
@@ -558,9 +642,11 @@ Options:
 `soql-parser-js valid --help`
 
 ```bash
-Usage: valid [options] <query>
+Usage: valid [options] <sql>
 
 Options:
+  -a, --allow-apex     allow apex bind variables
+  -p, --allow-partial  allow partial queries
   -j, --json  output as JSON
   -h, --help  output usage information
 ```
@@ -699,7 +785,7 @@ export interface FieldTypeOfCondition {
 }
 
 export interface QueryBase {
-  fields: FieldType[];
+  fields?: FieldType[];
   sObjectAlias?: string;
   usingScope?: string;
   where?: WhereClause;
@@ -714,7 +800,7 @@ export interface QueryBase {
 }
 
 export interface Query extends QueryBase {
-  sObject: string;
+  sObject?: string;
 }
 
 export interface Subquery extends QueryBase {

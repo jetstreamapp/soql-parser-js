@@ -1,5 +1,15 @@
 # Changelog
 
+## 4.4
+
+March 11, 2022
+
+- Add support for partial parse and compose #182
+  - Added support for parsing and composing partial queries. When parsing, the new option `allowPartialQuery` enables this functionality.
+  - Added a third argument for `formatQuery`, allowing `ParseQueryConfig` options to be provided.
+  - Some types on the `Query` interface were made optional to support partial queries
+  - Updated CLI to include additional commands
+
 ## 4.3
 
 September 19, 2021

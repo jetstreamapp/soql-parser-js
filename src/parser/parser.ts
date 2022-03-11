@@ -1,7 +1,8 @@
-import { CstParser, ILexingError, IRecognitionException } from 'chevrotain';
+import { CstNode, CstParser, ILexingError, IRecognitionException } from 'chevrotain';
 import * as lexer from './lexer';
 
 export interface ParseQueryConfig {
+  allowPartialQuery?: boolean;
   allowApexBindVariables?: boolean;
   ignoreParseErrors?: boolean;
   logErrors?: boolean;
@@ -58,6 +59,20 @@ export class SoqlParser extends CstParser {
   public selectStatement = this.RULE('selectStatement', () => {
     this.SUBRULE(this.selectClause);
     this.SUBRULE(this.fromClause);
+    this.SUBRULE(this.clauseStatements);
+  });
+
+  public selectStatementPartial = this.RULE('selectStatementPartial', () => {
+    this.OPTION(() => {
+      this.SUBRULE(this.selectClause);
+    });
+    this.OPTION1(() => {
+      this.SUBRULE(this.fromClause);
+    });
+    this.SUBRULE(this.clauseStatements);
+  });
+
+  public clauseStatements = this.RULE('clauseStatements', () => {
     this.OPTION(() => {
       this.SUBRULE(this.usingScopeClause);
     });
@@ -783,7 +798,7 @@ export class SoqlParser extends CstParser {
 let parser = new SoqlParser();
 
 export function parse(soql: string, options?: ParseQueryConfig) {
-  const { allowApexBindVariables, logErrors, ignoreParseErrors } = options || {
+  const { allowApexBindVariables, logErrors, ignoreParseErrors, allowPartialQuery } = options || {
     allowApexBindVariables: false,
     logErrors: false,
     ignoreParseErrors: false,
@@ -810,7 +825,12 @@ export function parse(soql: string, options?: ParseQueryConfig) {
   // If true, allows WHERE foo = :bar
   parser.allowApexBindVariables = allowApexBindVariables || false;
 
-  const cst = parser.selectStatement();
+  let cst: CstNode;
+  if (allowPartialQuery) {
+    cst = parser.selectStatementPartial();
+  } else {
+    cst = parser.selectStatement();
+  }
 
   if (parser.errors.length > 0) {
     if (logErrors) {
