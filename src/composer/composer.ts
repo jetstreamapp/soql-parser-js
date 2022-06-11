@@ -14,6 +14,7 @@ import {
 import * as utils from '../utils';
 import { FieldData, Formatter, FormatOptions } from '../formatter/formatter';
 import { parseQuery } from '../parser/visitor';
+import { ParseQueryConfig } from '../parser/parser';
 
 export interface SoqlComposeConfig {
   logging: boolean; // default=false
@@ -28,8 +29,8 @@ export interface SoqlComposeConfig {
  * @param [formatOptions]
  * @returns
  */
-export function formatQuery(soql: string, formatOptions?: FormatOptions) {
-  return composeQuery(parseQuery(soql), { format: true, formatOptions });
+export function formatQuery(soql: string, formatOptions?: FormatOptions, parseOptions?: ParseQueryConfig) {
+  return composeQuery(parseQuery(soql, parseOptions), { format: true, formatOptions });
 }
 
 /**
@@ -137,7 +138,7 @@ export class Compose {
    */
   public parseQuery(query: Query | Subquery): string {
     const fieldData: FieldData = {
-      fields: this.parseFields(query.fields).map(field => ({
+      fields: this.parseFields(query.fields || []).map(field => ({
         text: field.text,
         typeOfClause: field.typeOfClause,
         isSubquery: field.text.startsWith('('),
@@ -148,7 +149,11 @@ export class Compose {
       lineBreaks: [],
     };
 
-    let output = this.formatter.formatClause('SELECT').trimStart();
+    let output = '';
+
+    if (query.fields) {
+      output += this.formatter.formatClause('SELECT').trimStart();
+    }
 
     // Format fields based on configuration
     this.formatter.formatFields(fieldData);
@@ -163,13 +168,15 @@ export class Compose {
     });
     output += this.formatter.formatText(fieldsOutput);
 
-    output += this.formatter.formatClause('FROM');
+    if (!!(utils.isSubquery(query) ? query.relationshipName : query.sObject)) {
+      output += this.formatter.formatClause('FROM');
+    }
 
     if (utils.isSubquery(query)) {
       const sObjectPrefix = query.sObjectPrefix || [];
       sObjectPrefix.push(query.relationshipName);
       output += this.formatter.formatText(`${sObjectPrefix.join('.')}${utils.get(query.sObjectAlias, '', ' ')}`);
-    } else {
+    } else if (query.sObject) {
       output += this.formatter.formatText(`${query.sObject}${utils.get(query.sObjectAlias, '', ' ')}`);
     }
     this.log(output);
@@ -238,7 +245,7 @@ export class Compose {
       this.log(output);
     }
 
-    return output;
+    return output.trim();
   }
 
   /**

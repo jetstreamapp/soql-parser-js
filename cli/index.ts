@@ -1,12 +1,16 @@
 import { parseQuery, composeQuery, isQueryValid, formatQuery, FormatOptions } from '../src';
 import { Command } from 'commander';
+import { ParseQueryConfig } from '../src/parser/parser';
 
 interface ParseCommandActions {
   allowApex: boolean;
+  allowPartial: boolean;
   ignoreErrors: boolean;
 }
 
 interface ComposeCommandOptions {
+  allowApex: boolean;
+  allowPartial: boolean;
   format: boolean;
   indent: number;
   lineLength: number;
@@ -16,19 +20,21 @@ interface ComposeCommandOptions {
 }
 
 type FormatCommandOptions = Omit<ComposeCommandOptions, 'format'>;
-type IsValidCommandOptions = Pick<ComposeCommandOptions, 'json'>;
+type IsValidCommandOptions = Pick<ComposeCommandOptions, 'allowApex' | 'allowPartial' | 'json'>;
 
 const program = new Command();
 
 program
-  .command('parse <query>')
+  .command('parse <soql>')
   .option('-a, --allow-apex', 'allow apex bind variables')
+  .option('-p, --allow-partial', 'allow partial queries')
   .option('-i, --ignore-errors', 'ignore parse errors, return as much of query as possible')
   .action((query: string, options: ParseCommandActions) => {
     console.log(
       JSON.stringify(
         parseQuery(query, {
           allowApexBindVariables: options.allowApex,
+          allowPartialQuery: options.allowPartial,
           ignoreParseErrors: options.ignoreErrors,
         }),
       ),
@@ -70,14 +76,25 @@ program
   });
 
 program
-  .command('format <query>')
+  .command('format <soql>')
+  .option('-a, --allow-apex', 'allow apex bind variables')
+  .option('-p, --allow-partial', 'allow partial queries')
   .option('-i --indent <chars>', 'number of tab characters to indent', 1)
   .option('-m --line-length <chars>', 'max number of characters per lins', 60)
   .option('-s --subquery-parens-new-line', 'subquery parens on own line')
   .option('-k --keywords-new-line', 'new line after keywords')
   .option('-j, --json', 'output as JSON')
   .action((query: string, options: FormatCommandOptions) => {
+    const parseQueryConfig: ParseQueryConfig = {};
     const formatOptions: FormatOptions = {};
+
+    if (options.allowApex) {
+      parseQueryConfig.allowApexBindVariables = true;
+    }
+    if (options.allowPartial) {
+      parseQueryConfig.allowPartialQuery = true;
+    }
+
     if (options.indent) {
       formatOptions.numIndent = options.indent;
     }
@@ -94,7 +111,7 @@ program
       formatOptions.newLineAfterKeywords = options.keywordsNewLine;
     }
 
-    const output = formatQuery(query, formatOptions);
+    const output = formatQuery(query, formatOptions, parseQueryConfig);
     if (options.json) {
       console.log(JSON.stringify({ query: output }));
     } else {
@@ -103,10 +120,21 @@ program
   });
 
 program
-  .command('valid <query>')
+  .command('valid <soql>')
+  .option('-a, --allow-apex', 'allow apex bind variables')
+  .option('-p, --allow-partial', 'allow partial queries')
   .option('-j, --json', 'output as JSON')
   .action((query: string, options: IsValidCommandOptions) => {
-    const isValid = isQueryValid(query);
+    const parseQueryConfig: ParseQueryConfig = {};
+
+    if (options.allowApex) {
+      parseQueryConfig.allowApexBindVariables = true;
+    }
+    if (options.allowPartial) {
+      parseQueryConfig.allowPartialQuery = true;
+    }
+
+    const isValid = isQueryValid(query, parseQueryConfig);
     if (options.json) {
       console.log(JSON.stringify({ isValid }));
     } else {

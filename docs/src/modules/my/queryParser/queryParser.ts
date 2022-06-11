@@ -22,6 +22,7 @@ export default class QueryParser extends LightningElement {
   @track parsedQueryJson: string;
   @track composedQuery: string;
   @track allowApexBindVariables = false;
+  @track allowPartialQuery = false;
   @track ignoreParseErrors = false;
   hasError = false;
   hasRendered = false;
@@ -37,6 +38,7 @@ export default class QueryParser extends LightningElement {
     try {
       this.parsedQuery = parseQuery(this._query || '', {
         allowApexBindVariables: this.allowApexBindVariables,
+        allowPartialQuery: this.allowPartialQuery,
         ignoreParseErrors: this.ignoreParseErrors,
         logErrors: true
       });
@@ -53,7 +55,7 @@ export default class QueryParser extends LightningElement {
   setExampleJs() {
     // @ts-ignore type-mismatch
     const element = this.template.querySelector('code.javascript');
-    element.innerText = `parseQuery(soqlQuery, { allowApexBindVariables: ${this.allowApexBindVariables}, ignoreParseErrors: ${this.ignoreParseErrors} });`;
+    element.innerText = `parseQuery(soqlQuery, { allowApexBindVariables: ${this.allowApexBindVariables}, allowPartialQuery: ${this.allowPartialQuery}, ignoreParseErrors: ${this.ignoreParseErrors} });`;
     hljs.highlightBlock(element);
   }
 
@@ -71,6 +73,10 @@ export default class QueryParser extends LightningElement {
     switch (name) {
       case 'allowApexBindVariables': {
         this.allowApexBindVariables = value;
+        break;
+      }
+      case 'allowPartialQuery': {
+        this.allowPartialQuery = value;
         break;
       }
       case 'ignoreParseErrors': {

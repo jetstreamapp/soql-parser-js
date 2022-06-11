@@ -127,7 +127,7 @@ export interface FieldTypeOfCondition {
 }
 
 export interface QueryBase {
-  fields: FieldType[];
+  fields?: FieldType[];
   sObjectAlias?: string;
   usingScope?: string;
   where?: WhereClause;
@@ -143,7 +143,7 @@ export interface QueryBase {
 }
 
 export interface Query extends QueryBase {
-  sObject: string;
+  sObject?: string;
 }
 
 export interface Subquery extends QueryBase {

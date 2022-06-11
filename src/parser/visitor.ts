@@ -1,4 +1,4 @@
-import { CstNode, IToken } from 'chevrotain';
+import { IToken } from 'chevrotain';
 import {
   Condition,
   ConditionWithValueQuery,
@@ -43,6 +43,7 @@ import {
   ArrayExpressionWithType,
   AtomicExpressionContext,
   BooleanContext,
+  ClauseStatementsContext,
   ConditionExpressionContext,
   DateNLiteralContext,
   ExpressionContext,
@@ -193,55 +194,83 @@ class SOQLVisitor extends BaseSoqlVisitor {
         return 'STRING';
       }
     },
+    /**
+     * Shared logic since there are two entry points depending on if allowPartialQuery=true
+     */
+    $_parseSelect(ctx: SelectStatementContext, options?: { isSubquery: boolean }): Partial<Query | Subquery> {
+      const { isSubquery } = options || { isSubquery: false };
+      let output: Partial<Query | Subquery> = {};
+
+      if (ctx.selectClause) {
+        output.fields = this.visit(ctx.selectClause);
+      }
+
+      if (ctx.fromClause) {
+        if (isSubqueryFromFlag(output, isSubquery)) {
+          const { sObject, alias, sObjectPrefix } = this.visit(ctx.fromClause);
+          output.relationshipName = sObject;
+          if (alias) {
+            output.sObjectAlias = alias;
+          }
+          if (sObjectPrefix) {
+            output.sObjectPrefix = sObjectPrefix;
+          }
+        } else {
+          const { sObject, alias } = this.visit(ctx.fromClause);
+          (output as Query).sObject = sObject;
+          if (alias) {
+            output.sObjectAlias = alias;
+          }
+        }
+      }
+
+      if (Array.isArray(output.fields)) {
+        if (!!output.sObjectAlias) {
+          output.fields.forEach((field: any) => {
+            if (field.relationships && field.relationships[0] === output.sObjectAlias) {
+              field.relationships = field.relationships.slice(1);
+              field.objectPrefix = output.sObjectAlias;
+            }
+            if (field.relationships && field.relationships.length === 0) {
+              delete field.relationships;
+              field.type = 'Field';
+            }
+          });
+        }
+      }
+
+      output = { ...output, ...this.visit(ctx.clauseStatements) };
+
+      return output;
+    },
   };
 
   /**
-   * This is the only public entry point for the parser
+   * Public entry point 1: `selectStatement`
    * @param ctx
    * @param options
    */
   selectStatement(ctx: SelectStatementContext, options?: { isSubquery: boolean }): Query | Subquery {
-    const { isSubquery } = options || { isSubquery: false };
-    const output: Partial<Query | Subquery> = {};
+    return this.helpers.$_parseSelect.bind(this)(ctx, options) as Query | Subquery;
+  }
 
-    output.fields = this.visit(ctx.selectClause);
+  /**
+   * Public entry point 2: `selectStatementPartial`
+   * @param ctx
+   * @param options
+   */
+  selectStatementPartial(ctx: SelectStatementContext, options?: { isSubquery: boolean }): Query | Subquery {
+    return this.helpers.$_parseSelect.bind(this)(ctx, options) as Query | Subquery;
+  }
 
-    if (isSubqueryFromFlag(output, isSubquery)) {
-      const { sObject, alias, sObjectPrefix } = this.visit(ctx.fromClause);
-      output.relationshipName = sObject;
-      if (alias) {
-        output.sObjectAlias = alias;
-      }
-      if (sObjectPrefix) {
-        output.sObjectPrefix = sObjectPrefix;
-      }
-    } else {
-      const { sObject, alias } = this.visit(ctx.fromClause);
-      (output as Query).sObject = sObject;
-      if (alias) {
-        output.sObjectAlias = alias;
-      }
-    }
-
-    if (!!output.sObjectAlias) {
-      output.fields.forEach((field: any) => {
-        if (field.relationships && field.relationships[0] === output.sObjectAlias) {
-          field.relationships = field.relationships.slice(1);
-          field.objectPrefix = output.sObjectAlias;
-        }
-        if (field.relationships && field.relationships.length === 0) {
-          delete field.relationships;
-          field.type = 'Field';
-        }
-      });
-    }
-
+  clauseStatements(ctx: ClauseStatementsContext): Partial<Query | Subquery> {
+    const query: Partial<Query | Subquery> = {};
     if (ctx.usingScopeClause && !ctx.usingScopeClause[0].recoveredNode) {
-      output.usingScope = this.visit(ctx.usingScopeClause);
+      query.usingScope = this.visit(ctx.usingScopeClause);
     }
 
     if (ctx.whereClause && !ctx.whereClause[0].recoveredNode) {
-      output.where = this.visit(ctx.whereClause);
+      query.where = this.visit(ctx.whereClause);
     }
 
     if (ctx.withClause) {
@@ -250,43 +279,42 @@ class SOQLVisitor extends BaseSoqlVisitor {
         .forEach(item => {
           const { withSecurityEnforced, withDataCategory } = this.visit(item);
           if (withSecurityEnforced) {
-            output.withSecurityEnforced = withSecurityEnforced;
+            query.withSecurityEnforced = withSecurityEnforced;
           }
           if (withDataCategory) {
-            output.withDataCategory = withDataCategory;
+            query.withDataCategory = withDataCategory;
           }
         });
     }
 
     if (ctx.groupByClause && !ctx.groupByClause[0].recoveredNode) {
-      output.groupBy = this.visit(ctx.groupByClause);
+      query.groupBy = this.visit(ctx.groupByClause);
     }
 
     if (ctx.havingClause && !ctx.havingClause[0].recoveredNode) {
-      output.having = this.visit(ctx.havingClause);
+      query.having = this.visit(ctx.havingClause);
     }
 
     if (ctx.orderByClause && !ctx.orderByClause[0].recoveredNode) {
-      output.orderBy = this.visit(ctx.orderByClause);
+      query.orderBy = this.visit(ctx.orderByClause);
     }
 
     if (ctx.limitClause && !ctx.limitClause[0].recoveredNode) {
-      output.limit = Number(this.visit(ctx.limitClause));
+      query.limit = Number(this.visit(ctx.limitClause));
     }
 
     if (ctx.offsetClause && !ctx.offsetClause[0].recoveredNode) {
-      output.offset = Number(this.visit(ctx.offsetClause));
+      query.offset = Number(this.visit(ctx.offsetClause));
     }
 
     if (ctx.forViewOrReference && !ctx.forViewOrReference[0].recoveredNode) {
-      output.for = this.visit(ctx.forViewOrReference);
+      query.for = this.visit(ctx.forViewOrReference);
     }
 
     if (ctx.updateTrackingViewstat && !ctx.updateTrackingViewstat[0].recoveredNode) {
-      output.update = this.visit(ctx.updateTrackingViewstat);
+      query.update = this.visit(ctx.updateTrackingViewstat);
     }
-
-    return output as Query | Subquery;
+    return query;
   }
 
   selectClause(ctx: SelectClauseContext): string[] {
@@ -299,7 +327,6 @@ class SOQLVisitor extends BaseSoqlVisitor {
             output = {
               type: 'Field',
               field: field,
-              // objectPrefix: undefined, // TODO: we cannot add this until the very und when we see if the sobject is aliased
             };
           } else {
             const splitFields = field.split('.');
@@ -307,7 +334,6 @@ class SOQLVisitor extends BaseSoqlVisitor {
               type: 'FieldRelationship',
               field: splitFields[splitFields.length - 1],
               relationships: splitFields.slice(0, splitFields.length - 1),
-              // objectPrefix: undefined, // TODO: we cannot add this until the very und when we see if the sobject is aliased
               rawValue: field,
             };
           }
@@ -358,7 +384,6 @@ class SOQLVisitor extends BaseSoqlVisitor {
       output = {
         type: 'Field',
         field: field,
-        // objectPrefix: undefined, // TODO: we cannot add this until the very und when we see if the sobject is aliased
       };
     } else {
       const splitFields = field.split('.');
@@ -366,7 +391,6 @@ class SOQLVisitor extends BaseSoqlVisitor {
         type: 'FieldRelationship',
         field: splitFields[splitFields.length - 1],
         relationships: splitFields.slice(0, splitFields.length - 1),
-        // objectPrefix: undefined, // TODO: we cannot add this until the very und when we see if the sobject is aliased
         rawValue: field,
       };
     }
@@ -889,8 +913,10 @@ class SOQLVisitor extends BaseSoqlVisitor {
 const visitor = new SOQLVisitor();
 
 /**
- * Parse query and process results
+ * Parse soql query into Query data structure.
+ *
  * @param soql
+ * @param options
  */
 export function parseQuery(soql: string, options?: ParseQueryConfig): Query {
   const { cst } = parse(soql, options);
