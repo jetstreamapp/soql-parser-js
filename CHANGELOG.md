@@ -1,5 +1,12 @@
 # Changelog
 
+## 4.5
+
+June 11, 2022
+
+- Fixed parser error where `'mi'` and `'km'` could not be used in a WHERE clause because they were being parsed as a GeoLocationUnit (#188)
+  - Thank you @divijklenty for reporting this.
+
 ## 4.4
 
 March 11, 2022
