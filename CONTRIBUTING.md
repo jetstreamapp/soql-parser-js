@@ -4,7 +4,7 @@ Contributions of any kind are welcome and appreciated.
 
 # What features are allowed
 
-Any feature that is part of the core project and does not deviate from what the product is will be considered t obe accepted.
+Any feature that is part of the core project and does not deviate from what the product is will be considered to be accepted.
 
 # Making Changes
 
