@@ -2390,6 +2390,113 @@ export const testCases: TestCase[] = [
       },
     },
   },
+  {
+    testCase: 118,
+    options: { allowApexBindVariables: true },
+    soql: `SELECT State_Abbr_c FROM Contact WHERE State_Abbr_c = 'MI' OR State_Abbr_c = 'km'`,
+    output: {
+      fields: [
+        {
+          type: 'Field',
+          field: 'State_Abbr_c',
+        },
+      ],
+      sObject: 'Contact',
+      where: {
+        left: {
+          field: 'State_Abbr_c',
+          literalType: 'STRING',
+          operator: '=',
+          value: "'MI'",
+        },
+        operator: 'OR',
+        right: {
+          left: {
+            field: 'State_Abbr_c',
+            literalType: 'STRING',
+            operator: '=',
+            value: "'km'",
+          },
+        },
+      },
+    },
+  },
+  {
+    testCase: 119,
+    options: { allowApexBindVariables: true },
+    soql: `SELECT State_Abbr_c FROM Contact WHERE State_Abbr_c = 'KM'`,
+    output: {
+      fields: [
+        {
+          type: 'Field',
+          field: 'State_Abbr_c',
+        },
+      ],
+      sObject: 'Contact',
+      where: {
+        left: {
+          field: 'State_Abbr_c',
+          literalType: 'STRING',
+          operator: '=',
+          value: "'KM'",
+        },
+      },
+    },
+  },
+  {
+    testCase: 120,
+    options: { allowApexBindVariables: true },
+    soql: `SELECT State_Abbr_c FROM Contact WHERE State_Abbr_c IN ('mi', 'KM')`,
+    output: {
+      fields: [
+        {
+          type: 'Field',
+          field: 'State_Abbr_c',
+        },
+      ],
+      sObject: 'Contact',
+      where: {
+        left: {
+          field: 'State_Abbr_c',
+          literalType: 'STRING',
+          operator: 'IN',
+          value: ["'mi'", "'KM'"],
+        },
+      },
+    },
+  },
+  {
+    testCase: 121,
+    soql: "SELECT LeadSource, COUNT(Name) FROM Lead GROUP BY LeadSource HAVING COUNT(Name) > 100 AND LeadSource > 'km'",
+    output: {
+      fields: [
+        { type: 'Field', field: 'LeadSource' },
+        {
+          type: 'FieldFunctionExpression',
+          functionName: 'COUNT',
+          rawValue: 'COUNT(Name)',
+          isAggregateFn: true,
+          parameters: ['Name'],
+        },
+      ],
+      sObject: 'Lead',
+      groupBy: [
+        {
+          field: 'LeadSource',
+        },
+      ],
+      having: {
+        left: {
+          operator: '>',
+          value: '100',
+          literalType: 'INTEGER',
+          fn: { rawValue: 'COUNT(Name)', functionName: 'COUNT', parameters: ['Name'] },
+        },
+        operator: 'AND',
+        right: { left: { field: 'LeadSource', operator: '>', value: "'km'", literalType: 'STRING' } },
+      },
+    },
+  },
 ];
 
 export default testCases;
