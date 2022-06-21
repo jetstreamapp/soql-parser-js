@@ -2503,7 +2503,7 @@ export const testCases: TestCase[] = [
     output: {
       fields: [{ type: 'Field', field: 'Id' }],
       sObject: 'Account',
-      accessLevel: 'USER_MODE',
+      withAccessLevel: 'USER_MODE',
     },
   },
   {
@@ -2512,7 +2512,7 @@ export const testCases: TestCase[] = [
     output: {
       fields: [{ type: 'Field', field: 'Id' }],
       sObject: 'Account',
-      accessLevel: 'SYSTEM_MODE',
+      withAccessLevel: 'SYSTEM_MODE',
     },
   },
 ];

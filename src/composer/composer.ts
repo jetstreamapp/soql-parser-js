@@ -233,8 +233,8 @@ export class Compose {
       this.log(output);
     }
 
-    if (query.accessLevel) {
-      output += this.formatter.formatClause(`WITH ${query.accessLevel}`);
+    if (query.withAccessLevel) {
+      output += this.formatter.formatClause(`WITH ${query.withAccessLevel}`);
       this.log(output);
     }
 

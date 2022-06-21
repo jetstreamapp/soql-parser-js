@@ -795,6 +795,7 @@ export interface QueryBase {
   orderBy?: OrderByClause | OrderByClause[];
   withDataCategory?: WithDataCategoryClause;
   withSecurityEnforced?: boolean;
+  withAccessLevel?: boolean;
   for?: ForClause;
   update?: UpdateClause;
 }
