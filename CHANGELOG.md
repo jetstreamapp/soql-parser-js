@@ -1,5 +1,15 @@
 # Changelog
 
+## 4.5.0
+
+June 21, 2022
+
+- Added support for [accessLevel parameters](https://developer.salesforce.com/docs/atlas.en-us.238.0.apexcode.meta/apexcode/apex_classes_enforce_usermode.htm) in a `WITH` clause (#193)
+  - Examples:
+    - `SELECT Id FROM Account WITH USER_MODE`
+    - `SELECT Id FROM Account WITH SYSTEM_MODE`
+  - Thank you @ghingis
+
 ## 4.4.1
 
 June 11, 2022

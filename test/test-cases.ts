@@ -2497,6 +2497,24 @@ export const testCases: TestCase[] = [
       },
     },
   },
+  {
+    testCase: 122,
+    soql: 'SELECT Id FROM Account WITH USER_MODE',
+    output: {
+      fields: [{ type: 'Field', field: 'Id' }],
+      sObject: 'Account',
+      accessLevel: 'USER_MODE',
+    },
+  },
+  {
+    testCase: 123,
+    soql: 'SELECT Id FROM Account WITH SYSTEM_MODE',
+    output: {
+      fields: [{ type: 'Field', field: 'Id' }],
+      sObject: 'Account',
+      accessLevel: 'SYSTEM_MODE',
+    },
+  },
 ];
 
 export default testCases;

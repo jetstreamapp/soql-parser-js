@@ -483,5 +483,15 @@ WHERE
     `,
     isValid: true,
   },
+  {
+    testCase: 159,
+    soql: `SELECT Id FROM Account WITH USER_MODE`,
+    isValid: true,
+  },
+  {
+    testCase: 160,
+    soql: `SELECT Id FROM Account WITH SYSTEM_MODE`,
+    isValid: true,
+  },
 ];
 export default testCases;

@@ -28,6 +28,7 @@ export type FieldType =
 export type OrderByCriterion = 'ASC' | 'DESC';
 export type NullsOrder = 'FIRST' | 'LAST';
 export type GroupByType = 'CUBE' | 'ROLLUP';
+export type AccessLevel = 'USER_MODE' | 'SYSTEM_MODE';
 export type DateLiteral =
   | 'YESTERDAY'
   | 'TODAY'
@@ -138,6 +139,7 @@ export interface QueryBase {
   orderBy?: OrderByClause | OrderByClause[];
   withDataCategory?: WithDataCategoryClause;
   withSecurityEnforced?: boolean;
+  accessLevel?: AccessLevel;
   for?: ForClause;
   update?: UpdateClause;
 }

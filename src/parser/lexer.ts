@@ -296,6 +296,20 @@ export const SecurityEnforced = createToken({
   categories: [Keyword, Identifier],
 });
 
+export const SystemMode = createToken({
+  name: 'SYSTEM_MODE',
+  pattern: /SYSTEM_MODE/i,
+  longer_alt: Identifier,
+  categories: [Keyword, Identifier],
+});
+
+export const UserMode = createToken({
+  name: 'USER_MODE',
+  pattern: /USER_MODE/i,
+  longer_alt: Identifier,
+  categories: [Keyword, Identifier],
+});
+
 // DATE FUNCTIONS
 export const CalendarMonth = createToken({
   name: 'CALENDAR_MONTH',
@@ -931,6 +945,8 @@ export const allTokens = [
   View,
   When,
   SecurityEnforced,
+  SystemMode,
+  UserMode,
   CalendarMonth,
   CalendarQuarter,
   CalendarYear,
