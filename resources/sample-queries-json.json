@@ -119,5 +119,7 @@
   "SELECT State_Abbr_c FROM Contact WHERE State_Abbr_c = 'MI' OR State_Abbr_c = 'km'",
   "SELECT State_Abbr_c FROM Contact WHERE State_Abbr_c = 'KM'",
   "SELECT State_Abbr_c FROM Contact WHERE State_Abbr_c IN ('mi', 'KM')",
-  "SELECT LeadSource, COUNT(Name) FROM Lead GROUP BY LeadSource HAVING COUNT(Name) > 100 AND LeadSource > 'km'"
+  "SELECT LeadSource, COUNT(Name) FROM Lead GROUP BY LeadSource HAVING COUNT(Name) > 100 AND LeadSource > 'km'",
+  "SELECT Id FROM Account WITH USER_MODE",
+  "SELECT Id FROM Account WITH SYSTEM_MODE"
 ]
