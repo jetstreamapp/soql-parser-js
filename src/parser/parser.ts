@@ -309,8 +309,8 @@ export class SoqlParser extends CstParser {
     this.CONSUME(lexer.With);
     this.OR([
       { ALT: () => this.CONSUME(lexer.SecurityEnforced, { LABEL: 'withSecurityEnforced' }) },
-      { ALT: () => this.CONSUME(lexer.UserMode, { LABEL: 'accessLevel' }) },
-      { ALT: () => this.CONSUME(lexer.SystemMode, { LABEL: 'accessLevel' }) },
+      { ALT: () => this.CONSUME(lexer.UserMode, { LABEL: 'withAccessLevel' }) },
+      { ALT: () => this.CONSUME(lexer.SystemMode, { LABEL: 'withAccessLevel' }) },
       { ALT: () => this.SUBRULE(this.withDataCategory) },
     ]);
   });

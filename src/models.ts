@@ -104,7 +104,7 @@ export interface ConditionExpressionContext {
 
 export interface WithClauseContext {
   withSecurityEnforced?: CstNode[];
-  accessLevel?: IToken[];
+  withAccessLevel?: IToken[];
   withDataCategory?: CstNode[];
 }
 

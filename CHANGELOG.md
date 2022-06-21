@@ -1,6 +1,6 @@
 # Changelog
 
-## 4.5.0
+## 4.5.0 / 4.5.1
 
 June 21, 2022
 
@@ -9,6 +9,7 @@ June 21, 2022
     - `SELECT Id FROM Account WITH USER_MODE`
     - `SELECT Id FROM Account WITH SYSTEM_MODE`
   - Thank you @ghingis
+- Patch release - changed property from `accessLevel` to `withAccessLevel`
 
 ## 4.4.1
 
