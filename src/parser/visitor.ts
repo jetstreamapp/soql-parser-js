@@ -277,9 +277,12 @@ class SOQLVisitor extends BaseSoqlVisitor {
       ctx.withClause
         .filter(item => !item.recoveredNode)
         .forEach(item => {
-          const { withSecurityEnforced, withDataCategory } = this.visit(item);
+          const { withSecurityEnforced, accessLevel, withDataCategory } = this.visit(item);
           if (withSecurityEnforced) {
             query.withSecurityEnforced = withSecurityEnforced;
+          }
+          if (accessLevel) {
+            query.accessLevel = accessLevel;
           }
           if (withDataCategory) {
             query.withDataCategory = withDataCategory;
@@ -481,6 +484,10 @@ class SOQLVisitor extends BaseSoqlVisitor {
     if (ctx.withSecurityEnforced) {
       return {
         withSecurityEnforced: true,
+      };
+    } else if (ctx.accessLevel) {
+      return {
+        accessLevel: ctx.accessLevel[0].image,
       };
     } else {
       return {
