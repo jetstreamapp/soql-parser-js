@@ -1,5 +1,3 @@
-import { expect } from 'chai';
-import 'mocha';
 import { composeQuery, parseQuery, Query, WhereClause } from '../src';
 import { isValueQueryCondition, isWhereClauseWithRightCondition } from '../src/api/public-utils';
 import testCases from './test-cases-for-partial-parse';
@@ -10,7 +8,7 @@ describe('parse queries', () => {
   testCases.forEach(testCase => {
     it(`should correctly parse test case ${testCase.testCase} - ${testCase.soql}`, () => {
       const soqlQuery = parseQuery(testCase.soql, { allowPartialQuery: true });
-      expect(testCase.output).to.deep.equal(soqlQuery);
+      expect(testCase.output).toEqual(soqlQuery);
     });
   });
 });
@@ -21,7 +19,7 @@ describe('compose queries', () => {
       const soqlQuery = composeQuery(removeComposeOnlyFields(parseQuery(testCase.soql, { allowPartialQuery: true })));
       let soql = testCase.soqlComposed || testCase.soql;
       replacements.forEach(replacement => (soql = soql.replace(replacement.matching, replacement.replace)));
-      expect(soqlQuery).to.equal(soql);
+      expect(soqlQuery).toEqual(soql);
     });
   });
 });

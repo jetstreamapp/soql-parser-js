@@ -1,5 +1,14 @@
 # Changelog
 
+## 4.6
+
+July 7, 2022
+
+- Converted test framework from mocha to jest.
+- Fixed bug where non-string values passed in to a where clause would throw an exception. (#121)
+- Fixed bug where in some cases a soql query would be improperly formed if the operator was an array type, such as `IN`, but the value and literal types were not arrays. (#107)
+- Added additional test-cases for stand-alone compose functions to test non-standard usage.
+
 ## 4.5.0 / 4.5.1
 
 June 21, 2022

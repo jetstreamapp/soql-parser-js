@@ -1,44 +1,42 @@
 import * as utils from '../src/api/public-utils';
-import { expect } from 'chai';
-import 'mocha';
 import { testCases } from './public-utils-test-data';
 import { FieldSubquery, Query } from '../src';
 const lodashGet = require('lodash.get');
 
 describe('getField', () => {
   it('Should compose Field', () => {
-    expect(utils.getField('Id')).to.deep.equal({ type: 'Field', field: 'Id' });
-    expect(utils.getField({ field: 'Id' })).to.deep.equal({
+    expect(utils.getField('Id')).toEqual({ type: 'Field', field: 'Id' });
+    expect(utils.getField({ field: 'Id' })).toEqual({
       type: 'Field',
       field: 'Id',
       objectPrefix: undefined,
     });
-    expect(utils.getField({ field: 'Id', objectPrefix: 'a' })).to.deep.equal({
+    expect(utils.getField({ field: 'Id', objectPrefix: 'a' })).toEqual({
       type: 'Field',
       field: 'Id',
       objectPrefix: 'a',
     });
   });
   it('Should compose FieldFunctionExpression', () => {
-    expect(utils.getField({ functionName: 'COUNT' })).to.deep.equal({
+    expect(utils.getField({ functionName: 'COUNT' })).toEqual({
       type: 'FieldFunctionExpression',
       functionName: 'COUNT',
       parameters: undefined,
       alias: undefined,
     });
-    expect(utils.getField({ functionName: 'FORMAT', parameters: ['Amount'] })).to.deep.equal({
+    expect(utils.getField({ functionName: 'FORMAT', parameters: ['Amount'] })).toEqual({
       type: 'FieldFunctionExpression',
       functionName: 'FORMAT',
       parameters: ['Amount'],
       alias: undefined,
     });
-    expect(utils.getField({ functionName: 'FORMAT', parameters: 'Amount' })).to.deep.equal({
+    expect(utils.getField({ functionName: 'FORMAT', parameters: 'Amount' })).toEqual({
       type: 'FieldFunctionExpression',
       functionName: 'FORMAT',
       parameters: ['Amount'],
       alias: undefined,
     });
-    expect(utils.getField({ functionName: 'FORMAT', parameters: ['Amount'], alias: 'amt' })).to.deep.equal({
+    expect(utils.getField({ functionName: 'FORMAT', parameters: ['Amount'], alias: 'amt' })).toEqual({
       type: 'FieldFunctionExpression',
       functionName: 'FORMAT',
       parameters: ['Amount'],
@@ -56,7 +54,7 @@ describe('getField', () => {
         ],
         alias: 'convertedCurrency',
       }),
-    ).to.deep.equal({
+    ).toEqual({
       type: 'FieldFunctionExpression',
       functionName: 'FORMAT',
       parameters: [
@@ -78,7 +76,7 @@ describe('getField', () => {
         },
         alias: 'convertedCurrency',
       }),
-    ).to.deep.equal({
+    ).toEqual({
       type: 'FieldFunctionExpression',
       functionName: 'FORMAT',
       parameters: [
@@ -92,13 +90,13 @@ describe('getField', () => {
     });
   });
   it('Should compose FieldRelationship', () => {
-    expect(utils.getField({ field: 'Id', relationships: ['Account', 'User'] })).to.deep.equal({
+    expect(utils.getField({ field: 'Id', relationships: ['Account', 'User'] })).toEqual({
       type: 'FieldRelationship',
       field: 'Id',
       relationships: ['Account', 'User'],
       objectPrefix: undefined,
     });
-    expect(utils.getField({ field: 'Id', objectPrefix: 'c', relationships: ['Account', 'User'] })).to.deep.equal({
+    expect(utils.getField({ field: 'Id', objectPrefix: 'c', relationships: ['Account', 'User'] })).toEqual({
       type: 'FieldRelationship',
       field: 'Id',
       relationships: ['Account', 'User'],
@@ -121,7 +119,7 @@ describe('getField', () => {
           sObjectPrefix: ['Account', 'Contact', 'Foo'],
         },
       }),
-    ).to.deep.equal({
+    ).toEqual({
       type: 'FieldSubquery',
       subquery: {
         fields: [
@@ -138,59 +136,55 @@ describe('getField', () => {
     });
   });
   it('Should compose FieldTypeof', () => {
-    it('Should compose FieldSubquery', () => {
-      expect(
-        utils.getField({
-          field: 'What',
-          conditions: [
-            {
-              type: 'WHEN',
-              objectType: 'Account',
-              fieldList: ['Phone', 'NumberOfEmployees'],
-            },
-            {
-              type: 'WHEN',
-              objectType: 'Opportunity',
-              fieldList: ['Amount', 'CloseDate'],
-            },
-            {
-              type: 'ELSE',
-              fieldList: ['Name', 'Email'],
-            },
-          ],
-        }),
-      ).to.deep.equal({
-        type: 'FieldSubquery',
-        subquery: {
-          field: 'What',
-          conditions: [
-            {
-              type: 'WHEN',
-              objectType: 'Account',
-              fieldList: ['Phone', 'NumberOfEmployees'],
-            },
-            {
-              type: 'WHEN',
-              objectType: 'Opportunity',
-              fieldList: ['Amount', 'CloseDate'],
-            },
-            {
-              type: 'ELSE',
-              fieldList: ['Name', 'Email'],
-            },
-          ],
+    expect(
+      utils.getField({
+        field: 'What',
+        conditions: [
+          {
+            type: 'WHEN',
+            objectType: 'Account',
+            fieldList: ['Phone', 'NumberOfEmployees'],
+          },
+          {
+            type: 'WHEN',
+            objectType: 'Opportunity',
+            fieldList: ['Amount', 'CloseDate'],
+          },
+          {
+            type: 'ELSE',
+            fieldList: ['Name', 'Email'],
+          },
+        ],
+      }),
+    ).toEqual({
+      type: 'FieldTypeof',
+      field: 'What',
+      conditions: [
+        {
+          type: 'WHEN',
+          objectType: 'Account',
+          fieldList: ['Phone', 'NumberOfEmployees'],
         },
-      });
+        {
+          type: 'WHEN',
+          objectType: 'Opportunity',
+          fieldList: ['Amount', 'CloseDate'],
+        },
+        {
+          type: 'ELSE',
+          fieldList: ['Name', 'Email'],
+        },
+      ],
     });
   });
   it('Should fail with invalid combination of data', () => {
-    expect(() => utils.getField({})).to.throw();
-    expect(() => utils.getField({ objectPrefix: 'foo' } as any)).to.throw(TypeError);
-    expect(() => utils.getField({ parameters: 'foo' } as any)).to.throw(TypeError);
-    expect(() => utils.getField({ parameters: ['foo'] } as any)).to.throw(TypeError);
-    expect(() => utils.getField({ alias: 'foo' } as any)).to.throw(TypeError);
-    expect(() => utils.getField({ relationships: ['foo'] } as any)).to.throw(TypeError);
-    expect(() => utils.getField({ conditions: [] } as any)).to.throw(TypeError);
+    expect(() => utils.getField({})).toThrow();
+    expect(() => utils.getField({ objectPrefix: 'foo' } as any)).toThrow(TypeError);
+    expect(() => utils.getField({ parameters: 'foo' } as any)).toThrow(TypeError);
+    expect(() => utils.getField({ parameters: ['foo'] } as any)).toThrow(TypeError);
+    expect(() => utils.getField({ alias: 'foo' } as any)).toThrow(TypeError);
+    expect(() => utils.getField({ relationships: ['foo'] } as any)).toThrow(TypeError);
+    expect(() => utils.getField({ conditions: [] } as any)).toThrow(TypeError);
     expect(() =>
       utils.getField({
         conditions: [
@@ -201,7 +195,7 @@ describe('getField', () => {
           },
         ],
       } as any),
-    ).to.throw(TypeError);
+    ).toThrow(TypeError);
   });
 });
 
@@ -209,9 +203,9 @@ describe('getFlattenedFields', () => {
   testCases.forEach(testCase => {
     it(`Should create fields from query - Test Case: ${testCase.testCase}`, () => {
       const fields = utils.getFlattenedFields(testCase.query);
-      expect(fields).to.deep.equal(testCase.expectedFields);
+      expect(fields).toEqual(testCase.expectedFields);
       fields.forEach(field => {
-        expect(lodashGet(testCase.sfdcObj, field), `${field} does not exist on sfdc record`).to.not.be.undefined;
+        expect(lodashGet(testCase.sfdcObj, field)).not.toBeUndefined();
       });
     });
   });
@@ -222,7 +216,7 @@ describe('getFlattenedFields', () => {
       subquery: { fields: [{ type: 'Field', field: 'LastName' }], relationshipName: 'Contacts' },
     };
     const fields = utils.getFlattenedFields(fieldSubquery);
-    expect(fields).to.deep.equal(['LastName']);
+    expect(fields).toEqual(['LastName']);
   });
 
   it(`Should allow a Subquery to be passed in`, () => {
@@ -231,6 +225,6 @@ describe('getFlattenedFields', () => {
       subquery: { fields: [{ type: 'Field', field: 'LastName' }], relationshipName: 'Contacts' },
     };
     const fields = utils.getFlattenedFields(fieldSubquery.subquery);
-    expect(fields).to.deep.equal(['LastName']);
+    expect(fields).toEqual(['LastName']);
   });
 });

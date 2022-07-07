@@ -1,15 +1,14 @@
-import { expect } from 'chai';
-import 'mocha';
 import { parseQuery, WhereClause, Query, Compose, composeQuery, formatQuery } from '../src';
 import { isValueQueryCondition, isWhereClauseWithRightCondition } from '../src/api/public-utils';
 import { isQueryValid } from '../src/parser/visitor';
 import testCases from './test-cases';
+import testCasesForComposeStandAlone from './test-cases-compose';
 import testCasesForFormat from './test-cases-for-format';
 import testCasesForIsValid from './test-cases-for-is-valid';
 
 const replacements = [{ matching: / last /i, replace: ' LAST ' }];
 
-// Uncomment these to easily test one specific query - useful for troubleshooting/bugfixing
+// Uncomment these to easily test one specific query - useful for troubleshooting/bug-fixing
 
 // describe.only('parse queries', () => {
 //   const testCase = testCases.find(tc => tc.testCase === 118);
@@ -17,7 +16,7 @@ const replacements = [{ matching: / last /i, replace: ' LAST ' }];
 //     const soqlQuery = parseQuery(testCase.soql, testCase.options);
 //     console.log(soqlQuery);
 //     const soqlQueryWithoutUndefinedProps = JSON.parse(JSON.stringify(soqlQuery));
-//     expect(testCase.output).to.deep.equal(soqlQueryWithoutUndefinedProps);
+//     expect(testCase.output).toEqual(soqlQueryWithoutUndefinedProps);
 //   });
 // });
 
@@ -27,7 +26,16 @@ const replacements = [{ matching: / last /i, replace: ' LAST ' }];
 //     const soqlQuery = composeQuery(removeComposeOnlyFields(parseQuery(testCase.soql, testCase.options)));
 //     let soql = testCase.soqlComposed || testCase.soql;
 //     replacements.forEach(replacement => (soql = soql.replace(replacement.matching, replacement.replace)));
-//     expect(soqlQuery).to.equal(soql);
+//     expect(soqlQuery).toEqual(soql);
+//   });
+// });
+
+// describe.only('compose queries - standalone', () => {
+//   testCasesForComposeStandAlone.forEach(testCase => {
+//     it(`should correctly compose test case ${testCase.testCase} - ${testCase.soql}`, () => {
+//       const soqlQuery = composeQuery(parseQuery(testCase.soql, testCase.options));
+//       expect(testCase.soql).toEqual(soqlQuery);
+//     });
 //   });
 // });
 
@@ -38,7 +46,7 @@ const replacements = [{ matching: / last /i, replace: ' LAST ' }];
 //       it(`should identify valid queries - test case ${testCase.testCase} - ${testCase.soql}`, () => {
 //         const isValid = isQueryValid(testCase.soql, testCase.options);
 //         expect(parseQuery(testCase.soql, testCase.options)).to.not.throw;
-//         expect(isValid).equal(testCase.isValid);
+//         expect(isValid).toEqual(testCase.isValid);
 //       });
 //     });
 
@@ -47,7 +55,7 @@ const replacements = [{ matching: / last /i, replace: ' LAST ' }];
 //     .forEach(testCase => {
 //       it(`should identify invalid queries - test case ${testCase.testCase} - ${testCase.soql}`, () => {
 //         const isValid = isQueryValid(testCase.soql, testCase.options);
-//         expect(isValid).equal(testCase.isValid);
+//         expect(isValid).toEqual(testCase.isValid);
 //       });
 //     });
 // });
@@ -56,7 +64,7 @@ const replacements = [{ matching: / last /i, replace: ' LAST ' }];
 //   const testCase = testCasesForFormat.find(tc => tc.testCase === 17);
 //   it(`should format query - test case ${testCase.testCase} - ${testCase.soql}`, () => {
 //     const formattedQuery = formatQuery(testCase.soql, testCase.formatOptions);
-//     expect(formattedQuery).equal(testCase.formattedSoql);
+//     expect(formattedQuery).toEqual(testCase.formattedSoql);
 //   });
 // });
 
@@ -64,7 +72,7 @@ describe('parse queries', () => {
   testCases.forEach(testCase => {
     it(`should correctly parse test case ${testCase.testCase} - ${testCase.soql}`, () => {
       const soqlQuery = parseQuery(testCase.soql, testCase.options);
-      expect(testCase.output).to.deep.equal(soqlQuery);
+      expect(testCase.output).toEqual(soqlQuery);
     });
   });
 });
@@ -75,11 +83,11 @@ describe('compose queries', () => {
       const soqlQuery = composeQuery(removeComposeOnlyFields(parseQuery(testCase.soql, testCase.options)));
       let soql = testCase.soqlComposed || testCase.soql;
       replacements.forEach(replacement => (soql = soql.replace(replacement.matching, replacement.replace)));
-      expect(soqlQuery).to.equal(soql);
+      expect(soqlQuery).toEqual(soql);
     });
     it(`should have valid composed queries - test case ${testCase.testCase} - ${testCase.soql}`, () => {
       const soqlQuery = composeQuery(removeComposeOnlyFields(parseQuery(testCase.soql, testCase.options)));
-      expect(isQueryValid(soqlQuery, testCase.options)).equal(true);
+      expect(isQueryValid(soqlQuery, testCase.options)).toEqual(true);
     });
   });
   it('Should add single quotes to WHERE clause if not already exists', () => {
@@ -110,7 +118,7 @@ describe('compose queries', () => {
       },
     };
     const soqlQuery = composeQuery(query);
-    expect(soqlQuery).to.equal(`SELECT Id FROM Account WHERE Foo IN ('1', '2', '3') OR Bar = 'foo'`);
+    expect(soqlQuery).toEqual(`SELECT Id FROM Account WHERE Foo IN ('1', '2', '3') OR Bar = 'foo'`);
   });
   it('Should not add extraneous order by clauses', () => {
     const query: Query = {
@@ -124,7 +132,16 @@ describe('compose queries', () => {
       orderBy: [],
     };
     const soqlQuery = composeQuery(query);
-    expect(soqlQuery).to.equal(`SELECT Id FROM Account`);
+    expect(soqlQuery).toEqual(`SELECT Id FROM Account`);
+  });
+});
+
+describe('compose queries - standalone', () => {
+  testCasesForComposeStandAlone.forEach(testCase => {
+    it(`should correctly compose test case ${testCase.testCase} - ${testCase.soql}`, () => {
+      const soqlQuery = composeQuery(testCase.input);
+      expect(soqlQuery).toEqual(testCase.soql);
+    });
   });
 });
 
@@ -132,7 +149,7 @@ describe('format queries', () => {
   testCasesForFormat.forEach(testCase => {
     it(`should format query - test case ${testCase.testCase} - ${testCase.soql}`, () => {
       const formattedQuery = formatQuery(testCase.soql, testCase.formatOptions);
-      expect(formattedQuery).equal(testCase.formattedSoql);
+      expect(formattedQuery).toEqual(testCase.formattedSoql);
     });
   });
 });
@@ -143,8 +160,8 @@ describe('validate queries', () => {
     .forEach(testCase => {
       it(`should identify valid queries - test case ${testCase.testCase} - ${testCase.soql}`, () => {
         const isValid = isQueryValid(testCase.soql, testCase.options);
-        expect(parseQuery(testCase.soql, testCase.options)).to.not.throw;
-        expect(isValid).equal(testCase.isValid);
+        expect(() => parseQuery(testCase.soql, testCase.options)).not.toThrow();
+        expect(isValid).toEqual(testCase.isValid);
       });
     });
 
@@ -153,7 +170,7 @@ describe('validate queries', () => {
     .forEach(testCase => {
       it(`should identify invalid queries - test case ${testCase.testCase} - ${testCase.soql}`, () => {
         const isValid = isQueryValid(testCase.soql, testCase.options);
-        expect(isValid).equal(testCase.isValid);
+        expect(isValid).toEqual(testCase.isValid);
       });
     });
 });
@@ -166,14 +183,14 @@ describe('calls individual compose methods', () => {
     const parsedQuery = parseQuery(soql);
     const composer = new Compose(parsedQuery, { autoCompose: false });
     const whereClause = composer.parseWhereOrHavingClause(parsedQuery.where);
-    expect(whereClause).to.equal(`Name = 'Foo'`);
+    expect(whereClause).toEqual(`Name = 'Foo'`);
   });
   it(`Should compose the where clause properly with semi-join`, () => {
     const soql = `SELECT Id FROM Account WHERE Id IN (SELECT AccountId FROM Contact WHERE Name LIKE '%foo%')`;
     const parsedQuery = parseQuery(soql);
     const composer = new Compose(parsedQuery, { autoCompose: false });
     const whereClause = composer.parseWhereOrHavingClause(parsedQuery.where);
-    expect(whereClause).to.equal(`Id IN (SELECT AccountId FROM Contact WHERE Name LIKE '%foo%')`);
+    expect(whereClause).toEqual(`Id IN (SELECT AccountId FROM Contact WHERE Name LIKE '%foo%')`);
   });
 });
 

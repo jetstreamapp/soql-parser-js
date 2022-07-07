@@ -340,7 +340,7 @@ export class Compose {
         if (utils.isValueQueryCondition(left)) {
           expression += this.formatter.formatSubquery(this.parseQuery(left.valueQuery), 1, true);
         } else {
-          expression += utils.getAsArrayStr(utils.getWhereValue(left.value, left.literalType));
+          expression += utils.getAsArrayStr(utils.getWhereValue(left.value, left.literalType, left.operator));
         }
         output += this.formatter.formatWithIndent(expression);
         output += this.formatter.formatParens(left.closeParen, ')', priorConditionIsNegation);
