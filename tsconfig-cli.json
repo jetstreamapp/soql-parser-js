@@ -5,7 +5,9 @@
     "noImplicitAny": true,
     "outDir": "./dist_cli",
     "target": "es6",
-    "resolveJsonModule": true
+    "resolveJsonModule": true,
+    "skipLibCheck": true,
+    "typeRoots": ["node_modules/@types"]
   },
   "include": ["cli/**/*.ts"],
   "exclude": ["node_modules", "test"]

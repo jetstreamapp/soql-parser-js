@@ -1,7 +1,6 @@
 import { IToken } from 'chevrotain';
 import {
   FieldFunctionExpression,
-  FieldRelationship,
   FieldRelationshipWithAlias,
   FieldSubquery,
   FieldWithAlias,

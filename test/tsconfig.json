@@ -6,7 +6,8 @@
     "noImplicitAny": true,
     "outDir": "dist",
     "sourceMap": true,
-    "target": "es2015"
+    "target": "es2015",
+    "typeRoots": ["../node_modules/@types"]
   },
   "include": ["./*.spec.ts"]
 }
