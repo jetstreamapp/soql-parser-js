@@ -10,6 +10,7 @@ import {
   HavingClauseWithRightCondition,
   LiteralType,
   NegationCondition,
+  Operator,
   OrderByFieldClause,
   OrderByFnClause,
   Query,
@@ -214,10 +215,21 @@ export function isGroupByFn(value: any): value is GroupByFnClause {
   return value && !isNil(value.fn);
 }
 
-export function getWhereValue(value: any | any[], literalType?: LiteralType | LiteralType[]): any {
+export function isArrayOperator(operator: Operator) {
+  return ['IN', 'NOT IN', 'INCLUDES', 'EXCLUDES'].includes(operator);
+}
+
+export function getWhereValue(value: any | any[], literalType?: LiteralType | LiteralType[], operator?: Operator): any {
   if (isNil(literalType)) {
     return value;
   }
+
+  // Ensure that we process as an array for array type operators
+  if (operator && literalType !== 'APEX_BIND_VARIABLE' && isArrayOperator(operator) && !Array.isArray(value)) {
+    value = [value];
+    literalType = Array.isArray(literalType) ? literalType : [literalType];
+  }
+
   if (Array.isArray(literalType) && Array.isArray(value)) {
     return value.map((val, i) => {
       return whereValueHelper(val, literalType[i] as LiteralType);
@@ -225,7 +237,6 @@ export function getWhereValue(value: any | any[], literalType?: LiteralType | Li
   } else {
     // This path should never hit, but on the off chance that literal type is an array and value is a string
     // then the first literal type is considered
-    // TODO: BUG
     if (Array.isArray(literalType)) {
       literalType = literalType[0];
     }
@@ -233,9 +244,10 @@ export function getWhereValue(value: any | any[], literalType?: LiteralType | Li
     switch (literalType) {
       case 'STRING': {
         if (Array.isArray(value)) {
-          return value.map(val => ((val as string).startsWith("'") ? val : `'${val}'`));
+          return value.filter(Boolean).map(val => ((val as string).startsWith("'") ? val : `'${val ?? ''}'`));
         } else {
-          return (value as string).startsWith("'") ? value : `'${value}'`;
+          value = String(value ?? '');
+          return value.startsWith("'") ? value : `'${value}'`;
         }
       }
       case 'APEX_BIND_VARIABLE': {
@@ -251,7 +263,8 @@ export function getWhereValue(value: any | any[], literalType?: LiteralType | Li
 function whereValueHelper(value: any, literalType?: LiteralType) {
   switch (literalType) {
     case 'STRING': {
-      return (value as string).startsWith("'") ? value : `'${value}'`;
+      value = String(value ?? '');
+      return value.startsWith("'") ? value : `'${value ?? ''}'`;
     }
     default: {
       return value;

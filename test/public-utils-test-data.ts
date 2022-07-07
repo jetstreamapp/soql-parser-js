@@ -589,4 +589,107 @@ export const testCases: FlattenedObjTestCase[] = [
       account_name: 'Account 1',
     },
   },
+  {
+    testCase: 17,
+    expectedFields: ['Id', 'What.Name', 'What.Phone', 'What.NumberOfEmployees', 'What.Amount', 'What.CloseDate'],
+    query: {
+      fields: [
+        {
+          type: 'Field',
+          field: 'Id',
+        },
+        {
+          type: 'FieldTypeof',
+          field: 'What',
+          conditions: [
+            {
+              type: 'WHEN',
+              objectType: 'Account',
+              fieldList: ['Name', 'Phone', 'NumberOfEmployees'],
+            },
+            {
+              type: 'WHEN',
+              objectType: 'Opportunity',
+              fieldList: ['Name', 'Amount', 'CloseDate'],
+            },
+          ],
+        },
+      ],
+      sObject: 'Event',
+    },
+    sfdcObj: {
+      Id: '00U6g00000F8cf0EAB',
+      What: {
+        Name: 'Edge Communications',
+        Phone: '(512) 757-6000',
+        NumberOfEmployees: 1000,
+        // These would not actually exist - adding just to ensure test passes
+        Amount: null,
+        CloseDate: null,
+      },
+    },
+  },
+  {
+    testCase: 18,
+    expectedFields: ['Name', 'SBQQ__Quote__c'],
+    query: {
+      fields: [
+        {
+          type: 'FieldRelationship',
+          field: 'Name',
+          relationships: ['SBQQ__Product__r'],
+          rawValue: 'SBQQ__Product__r.Name',
+        },
+        {
+          type: 'Field',
+          field: 'SBQQ__Quote__c',
+        },
+      ],
+      sObject: 'SBQQ__Quoteline__c',
+      groupBy: [
+        {
+          field: 'SBQQ__Quote__c',
+        },
+        {
+          field: 'SBQQ__Product__r.name',
+        },
+      ],
+    },
+    sfdcObj: {
+      Name: 'SLA: Gold',
+      SBQQ__Quote__c: 'a116g000007R9yVAAS',
+    },
+  },
+  {
+    testCase: 19,
+    expectedFields: ['foo', 'SBQQ__Quote__c'],
+    query: {
+      fields: [
+        {
+          type: 'FieldRelationship',
+          field: 'Name',
+          relationships: ['SBQQ__Product__r'],
+          rawValue: 'SBQQ__Product__r.Name',
+          alias: 'foo',
+        },
+        {
+          type: 'Field',
+          field: 'SBQQ__Quote__c',
+        },
+      ],
+      sObject: 'SBQQ__Quoteline__c',
+      groupBy: [
+        {
+          field: 'SBQQ__Quote__c',
+        },
+        {
+          field: 'SBQQ__Product__r.name',
+        },
+      ],
+    },
+    sfdcObj: {
+      foo: 'SLA: Gold',
+      SBQQ__Quote__c: 'a116g000007R9yVAAS',
+    },
+  },
 ];
