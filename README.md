@@ -125,6 +125,8 @@ const soql = `
   GROUP BY UserId
 `;
 
+const soqlQuery = parseQuery(soql);
+
 console.log(JSON.stringify(soqlQuery, null, 2));
 ```
 
