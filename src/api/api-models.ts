@@ -16,7 +16,8 @@ export type LiteralType =
   | 'DATE'
   | 'DATE_LITERAL'
   | 'DATE_N_LITERAL'
-  | 'APEX_BIND_VARIABLE';
+  | 'APEX_BIND_VARIABLE'
+  | 'SUBQUERY';
 export type FieldType =
   | Field
   | FieldWithAlias
@@ -204,6 +205,7 @@ export interface ValueQueryCondition extends OptionalParentheses {
   field: string;
   operator: Operator;
   valueQuery: Query;
+  literalType?: 'SUBQUERY';
 }
 
 export interface ValueFunctionCondition extends OptionalParentheses {
