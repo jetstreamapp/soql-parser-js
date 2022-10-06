@@ -1,6 +1,6 @@
 {
   "name": "soql-parser-js",
-  "version": "4.6.1",
+  "version": "4.7.0",
   "description": "Salesforce.com SOQL parser and composer",
   "main": "dist/index.js",
   "module": "dist_esm/index.js",
