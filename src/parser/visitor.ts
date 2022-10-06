@@ -683,7 +683,6 @@ class SOQLVisitor extends BaseSoqlVisitor {
   }
 
   expression(ctx: ExpressionContext): ConditionWithValueQuery {
-    // const { value, literalType, dateLiteralVariable } = this.visit(ctx.rhs, { returnLiteralType: true });
     const { value, literalType, dateLiteralVariable, operator } = this.visit(ctx.operator, { returnLiteralType: true });
 
     const output: Partial<ConditionWithValueQuery> = {};
@@ -694,14 +693,13 @@ class SOQLVisitor extends BaseSoqlVisitor {
       (output as ValueFunctionCondition).fn = this.visit(ctx.lhs, { includeType: false });
     }
 
-    // output.operator = this.visit(ctx.relationalOperator) || this.visit(ctx.setOperator);
     (output as ValueCondition).operator = operator;
+    (output as ValueCondition).literalType = literalType;
 
     if (literalType === 'SUBQUERY') {
       (output as ValueQueryCondition).valueQuery = value;
     } else {
       (output as ValueCondition).value = value;
-      (output as ValueCondition).literalType = literalType;
     }
 
     if (dateLiteralVariable) {

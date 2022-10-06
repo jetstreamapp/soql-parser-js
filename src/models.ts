@@ -1,7 +1,7 @@
 import { CstNode, IToken } from 'chevrotain';
 import { LiteralType } from './api/api-models';
 
-export type LiteralTypeWithSubquery = (LiteralType | 'SUBQUERY') | LiteralType[];
+export type LiteralTypeWithSubquery = LiteralType | Omit<LiteralType, 'SUBQUERY'>[];
 
 export interface ArrayExpressionWithType {
   type: string;

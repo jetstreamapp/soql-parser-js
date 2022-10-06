@@ -1,5 +1,11 @@
 # Changelog
 
+## 4.7.0
+
+October 6, 2022
+
+- Ensure the `literalType` is populated on subqueries that are part of a WHERE clause.
+
 ## 4.6.1
 
 July 17, 2022

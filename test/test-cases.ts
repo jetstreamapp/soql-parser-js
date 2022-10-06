@@ -777,6 +777,7 @@ export const testCases: TestCase[] = [
         left: {
           field: 'Id',
           operator: 'IN',
+          literalType: 'SUBQUERY',
           valueQuery: {
             fields: [{ type: 'Field', field: 'AccountId' }],
             sObject: 'Opportunity',
@@ -796,6 +797,7 @@ export const testCases: TestCase[] = [
         left: {
           field: 'Id',
           operator: 'NOT IN',
+          literalType: 'SUBQUERY',
           valueQuery: {
             fields: [{ type: 'Field', field: 'AccountId' }],
             sObject: 'Opportunity',
@@ -819,6 +821,7 @@ export const testCases: TestCase[] = [
         left: {
           field: 'Id',
           operator: 'IN',
+          literalType: 'SUBQUERY',
           valueQuery: {
             fields: [{ type: 'Field', field: 'AccountId' }],
             sObject: 'Contact',
@@ -830,6 +833,7 @@ export const testCases: TestCase[] = [
           left: {
             field: 'Id',
             operator: 'IN',
+            literalType: 'SUBQUERY',
             valueQuery: {
               fields: [{ type: 'Field', field: 'AccountId' }],
               sObject: 'Opportunity',
@@ -1048,6 +1052,7 @@ export const testCases: TestCase[] = [
         left: {
           field: 'CreatedById',
           operator: 'IN',
+          literalType: 'SUBQUERY',
           valueQuery: {
             fields: [
               {
