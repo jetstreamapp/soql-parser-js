@@ -1,5 +1,12 @@
 # Changelog
 
+## 4.6.1
+
+July 17, 2022
+
+- Ensure boolean return from some utility functions.
+- Re-designed the documentation website.
+
 ## 4.6
 
 July 7, 2022

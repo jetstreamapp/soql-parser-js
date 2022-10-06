@@ -19,7 +19,9 @@ Migrating from version 1 to version 2? [Check out the changelog](CHANGELOG.md#20
 
 Migrating from version 2 to version 3? [Check out the changelog](CHANGELOG.md#300) for a full list of changes.
 
-Want to try it out? [Check out the demo](https://paustint.github.io/soql-parser-js/).
+## Documentation
+
+**[Read the documentation on our docs site](https://paustint.github.io/soql-parser-js/)**.
 
 ## Compatibility
 

@@ -1,29 +1,20 @@
-# Log files
-logs
-*.log
-*-debug.log
-*-error.log
+# Dependencies
+/node_modules
 
-# Standard lib folder
-/lib
+# Production
+/build
 
-# Standard dist folder
-/dist
+# Generated files
+.docusaurus
+.cache-loader
 
-# Tooling files
-node_modules
-
-# Temp directory
-/tmp
-
-# Jest coverage folder
-/coverage
-
-# MacOS system files
+# Misc
 .DS_Store
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
 
-# Windows system files
-Thumbs.db
-ehthumbs.db
-[Dd]esktop.ini
-$RECYCLE.BIN/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*

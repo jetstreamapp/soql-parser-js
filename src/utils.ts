@@ -151,21 +151,21 @@ export function isSubquery(query: Query | Subquery): query is Subquery {
 }
 
 export function isFieldSubquery(value: any): value is FieldSubquery {
-  return value && value.type && value.type === 'FieldSubquery';
+  return !!value && !!value.type && value.type === 'FieldSubquery';
 }
 
 export function isWhereClauseWithRightCondition(value: any): value is WhereClauseWithRightCondition {
-  return value && value.operator && value.right;
+  return !!value && !!value.operator && !!value.right;
 }
 
 export function isHavingClauseWithRightCondition(value: any): value is HavingClauseWithRightCondition {
-  return value && value.operator && value.right;
+  return !!value && !!value.operator && !!value.right;
 }
 
 export function isWhereOrHavingClauseWithRightCondition(
   value: any,
 ): value is WhereClauseWithRightCondition | HavingClauseWithRightCondition {
-  return value && value.operator && value.right;
+  return !!value && !!value.operator && !!value.right;
 }
 
 export function isValueCondition(value: any): value is ValueCondition {

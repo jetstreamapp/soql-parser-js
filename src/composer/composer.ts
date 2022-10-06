@@ -29,7 +29,7 @@ export interface SoqlComposeConfig {
  * @param [formatOptions]
  * @returns
  */
-export function formatQuery(soql: string, formatOptions?: FormatOptions, parseOptions?: ParseQueryConfig) {
+export function formatQuery(soql: string, formatOptions?: FormatOptions, parseOptions?: ParseQueryConfig): string {
   return composeQuery(parseQuery(soql, parseOptions), { format: true, formatOptions });
 }
 
