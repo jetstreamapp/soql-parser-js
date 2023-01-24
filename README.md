@@ -1,8 +1,8 @@
 <img src="./assets/soql-parser-js-logo.svg">
 
-[![build](https://api.travis-ci.com/paustint/soql-parser-js.png?branch=master)](https://travis-ci.com/paustint/soql-parser-js)
+[![build](https://api.travis-ci.com/jetstreamapp/soql-parser-js.png?branch=master)](https://travis-ci.com/jetstreamapp/soql-parser-js)
 [![npm version](https://badge.fury.io/js/soql-parser-js.svg)](https://badge.fury.io/js/soql-parser-js)
-[![dependencies](https://david-dm.org/paustint/soql-parser-js.svg)](https://david-dm.org/paustint/soql-parser-js)
+[![dependencies](https://david-dm.org/jetstreamapp/soql-parser-js.svg)](https://david-dm.org/jetstreamapp/soql-parser-js)
 
 ## Description
 
@@ -419,7 +419,7 @@ parseWithDataCategory(withDataCategory: WithDataCategoryClause): string;
 ## Format Query
 
 This function is provided as a convenience and just calls parse and compose.
-[Check out the demo](https://paustint.github.io/soql-parser-js/) to see the outcome of the various format options.
+[Check out the demo](https://jetstreamapp.github.io/soql-parser-js/) to see the outcome of the various format options.
 
 ```typescript
 import { formatQuery } from 'soql-parser-js';
@@ -938,4 +938,4 @@ export interface WithDataCategoryCondition {
 
 ## Contributing
 
-All contributions are welcome on the project. Please read the [contribution guidelines](https://github.com/paustint/soql-parser-js/blob/master/CONTRIBUTING.md).
+All contributions are welcome on the project. Please read the [contribution guidelines](https://github.com/jetstreamapp/soql-parser-js/blob/master/CONTRIBUTING.md).

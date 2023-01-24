@@ -1,5 +1,9 @@
 # Changelog
 
+## 4.7.1
+
+The repository was moved from `paustint` to `jetstreamapp`. No code changes.
+
 ## 4.7.0
 
 October 6, 2022

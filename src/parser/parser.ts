@@ -629,7 +629,7 @@ export class SoqlParser extends CstParser {
           { GATE: () => !isArray, ALT: () => this.CONSUME(lexer.DateLiteral) },
           { GATE: () => !isArray, ALT: () => this.SUBRULE(this.dateNLiteral) },
           // GeolocationUnit is matched even when it is an actual string in a WHERE clause - treat as StringIdentifier
-          // https://github.com/paustint/soql-parser-js/issues/188
+          // https://github.com/jetstreamapp/soql-parser-js/issues/188
           { GATE: () => !isArray, ALT: () => this.CONSUME(lexer.GeolocationUnit, { LABEL: 'StringIdentifier' }) },
           { GATE: () => !isArray, ALT: () => this.CONSUME(lexer.StringIdentifier) },
         ]),
