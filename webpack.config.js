@@ -2,11 +2,13 @@ const path = require('path');
 const webpack = require('webpack');
 const jf = require('jsonfile');
 const pkg = jf.readFileSync('./package.json');
+const LicenseWebpackPlugin = require('license-webpack-plugin').LicenseWebpackPlugin;
 
 const banner = `/*! ${pkg.name} - v${pkg.version} */`;
 
 module.exports = {
   mode: 'production',
+  devtool: 'source-map',
   stats: {
     colors: true,
     modules: true,
@@ -15,7 +17,7 @@ module.exports = {
   entry: './dist/src/index.js',
   output: {
     path: path.resolve(__dirname, './dist/'),
-    filename: 'index.min.js',
+    filename: 'index.js',
     library: 'soqlParserJs',
     libraryTarget: 'umd',
     umdNamedDefine: true,
@@ -38,5 +40,5 @@ module.exports = {
       },
     ],
   },
-  plugins: [new webpack.BannerPlugin({ banner: banner, raw: true })],
+  plugins: [new webpack.BannerPlugin({ banner: banner, raw: true }), new LicenseWebpackPlugin()],
 };

@@ -592,7 +592,7 @@ class SOQLVisitor extends BaseSoqlVisitor {
   }
 
   dateFunction(ctx: FieldFunctionContext, options: { includeType: boolean } = { includeType: true }) {
-    return this.helpers.$_getFieldFunction(ctx, false, options.includeType);
+    return this.helpers.$_getFieldFunction(ctx, true, options.includeType);
   }
 
   aggregateFunction(ctx: FieldFunctionContext, options: { includeType: boolean } = { includeType: true }) {

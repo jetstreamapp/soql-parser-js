@@ -692,4 +692,37 @@ export const testCases: FlattenedObjTestCase[] = [
       SBQQ__Quote__c: 'a116g000007R9yVAAS',
     },
   },
+  {
+    testCase: 20,
+    expectedFields: ['expr0'],
+    query: {
+      fields: [
+        {
+          type: 'FieldFunctionExpression',
+          functionName: 'CALENDAR_MONTH',
+          parameters: ['CreatedDate'],
+          isAggregateFn: true,
+          rawValue: 'CALENDAR_MONTH(CreatedDate)',
+        },
+      ],
+      sObject: 'Account',
+      groupBy: [
+        {
+          fn: { functionName: 'CALENDAR_MONTH', parameters: ['CreatedDate'], rawValue: 'CALENDAR_MONTH(CreatedDate)' },
+        },
+      ],
+      having: {
+        left: {
+          fn: { functionName: 'CALENDAR_MONTH', parameters: ['CreatedDate'], rawValue: 'CALENDAR_MONTH(CreatedDate)' },
+          operator: '!=',
+          value: '2',
+          literalType: 'INTEGER',
+        },
+      },
+    },
+    sfdcObj: {
+      attributes: { type: 'AggregateResult' },
+      expr0: 3,
+    },
+  },
 ];

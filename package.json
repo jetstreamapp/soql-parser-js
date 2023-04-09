@@ -10,14 +10,14 @@
     "clean:esm": "rm -rf ./dist_esm/*",
     "clean:cli": "rm -rf ./dist_cli/*",
     "prebuild": "npm run clean",
-    "build": "npm-run-all compile bundle:regular bundle:min build:esm build:cli",
+    "build": "npm-run-all compile bundle:min build:esm build:cli",
     "build:esm": "npm-run-all clean:esm compile:esm",
     "build:cli": "npm-run-all clean:cli compile:cli",
     "compile": "tsc --project tsconfig.json",
     "compile:esm": "tsc --project tsconfig-esm.json",
     "compile:cli": "tsc --project tsconfig-cli.json",
     "bundle:regular": "webpack --config webpack-regular.config.js",
-    "bundle:min": "webpack --config webpack-min.config.js",
+    "bundle:min": "webpack --config webpack.config.js",
     "tsc": "./node_modules/.bin/tsc",
     "release": "release-it",
     "copy-tc-to-docs": "ts-node ./tasks/copy-test-cases-to-docs.ts",
@@ -68,8 +68,8 @@
     "ts-jest": "^28.0.5",
     "ts-node": "^10.8.2",
     "typescript": "^4.2.3",
-    "webpack": "^5.73.0",
-    "webpack-cli": "^4.10.0"
+    "webpack": "^5.78.0",
+    "webpack-cli": "^5.0.1"
   },
   "keywords": [
     "soql",
