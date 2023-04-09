@@ -7,6 +7,8 @@ April 9, 2023
 - Fix `isAggregateFn` (#228)
   - Date functions, such as `HOUR_IN_DAY(CreatedDate)` did not properly have the `isAggregateFn` property set to true for the field.
   - As a result, `getFlattenedFields` would produce incorrect results for these fields if they were not aliased.
+- Upgraded webpack, migrated from Travis CI to Github Actions
+- Update dependencies to resolve reported security issues
 
 ## 4.7.1
 
