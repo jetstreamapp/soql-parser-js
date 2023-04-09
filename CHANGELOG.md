@@ -1,5 +1,11 @@
 # Changelog
 
+## 4.8.1
+
+April 9, 2023
+
+- Fix output files to ensure sourcemaps are included in npm package. (#227)
+
 ## 4.8.0
 
 April 9, 2023
