@@ -1171,6 +1171,7 @@ export const testCases: TestCase[] = [
           type: 'FieldFunctionExpression',
           functionName: 'CALENDAR_YEAR',
           parameters: ['CreatedDate'],
+          isAggregateFn: true,
           rawValue: 'CALENDAR_YEAR(CreatedDate)',
           alias: 'calYear',
         },
@@ -1204,6 +1205,7 @@ export const testCases: TestCase[] = [
               rawValue: 'convertTimezone(CreatedDate)',
             },
           ],
+          isAggregateFn: true,
           rawValue: 'CALENDAR_YEAR(convertTimezone(CreatedDate))',
           alias: 'calYear',
         },
@@ -1428,6 +1430,7 @@ export const testCases: TestCase[] = [
               rawValue: 'convertTimezone(CreatedDate)',
             },
           ],
+          isAggregateFn: true,
           rawValue: 'HOUR_IN_DAY(convertTimezone(CreatedDate))',
         },
         {
@@ -2046,6 +2049,7 @@ export const testCases: TestCase[] = [
           type: 'FieldFunctionExpression',
           functionName: 'WEEK_IN_YEAR',
           parameters: ['CloseDate'],
+          isAggregateFn: true,
           rawValue: 'WEEK_IN_YEAR(CloseDate)',
         },
         {
@@ -2086,6 +2090,7 @@ export const testCases: TestCase[] = [
           type: 'FieldFunctionExpression',
           functionName: 'WEEK_IN_YEAR',
           parameters: ['CloseDate'],
+          isAggregateFn: true,
           rawValue: 'WEEK_IN_YEAR(CloseDate)',
         },
         {
@@ -2128,6 +2133,7 @@ export const testCases: TestCase[] = [
           type: 'FieldFunctionExpression',
           functionName: 'WEEK_IN_YEAR',
           parameters: ['CloseDate'],
+          isAggregateFn: true,
           rawValue: 'WEEK_IN_YEAR(CloseDate)',
         },
         {
@@ -2242,6 +2248,7 @@ export const testCases: TestCase[] = [
         {
           type: 'FieldFunctionExpression',
           functionName: 'CALENDAR_MONTH',
+          isAggregateFn: true,
           rawValue: 'CALENDAR_MONTH(LoginTime)',
           parameters: ['LoginTime'],
           alias: 'month',

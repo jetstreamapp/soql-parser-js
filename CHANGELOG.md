@@ -1,6 +1,16 @@
 # Changelog
 
+## 4.8.0
+
+April 9, 2023
+
+- Fix `isAggregateFn` (#228)
+  - Date functions, such as `HOUR_IN_DAY(CreatedDate)` did not properly have the `isAggregateFn` property set to true for the field.
+  - As a result, `getFlattenedFields` would produce incorrect results for these fields if they were not aliased.
+
 ## 4.7.1
+
+January 23rd, 2023
 
 The repository was moved from `paustint` to `jetstreamapp`. No code changes.
 
