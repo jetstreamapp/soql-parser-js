@@ -9,6 +9,9 @@ April 9, 2023
   - As a result, `getFlattenedFields` would produce incorrect results for these fields if they were not aliased.
 - Upgraded webpack, migrated from Travis CI to Github Actions
 - Update dependencies to resolve reported security issues
+- Update build process to fix invalid sourcemap mapping (#227)
+  - Removed non-minified version of application which had incorrect path to sourcemaps
+  - Ensure webpack generates a sourcemap for the minified code output
 
 ## 4.7.1
 
