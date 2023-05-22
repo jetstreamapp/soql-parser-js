@@ -1,5 +1,12 @@
 # Changelog
 
+## 4.8.2
+
+May 22, 2023
+
+- Fix output files to ensure sourcemaps are included in npm package for esm_build. (#227)
+  - There was a typo in one of the output paths.
+
 ## 4.8.1
 
 April 9, 2023
