@@ -39,7 +39,7 @@
     "dist/index.js.LICENSE.txt",
     "dist/main.licenses.txt",
     "dist_esm/**/*.js",
-    "dist/src/**/*.js.map",
+    "dist_esm/**/*.js.map",
     "dist_cli/**/*.js",
     "bin/**/*.js",
     "README.md",
