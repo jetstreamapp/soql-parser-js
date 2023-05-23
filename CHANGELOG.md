@@ -1,5 +1,11 @@
 # Changelog
 
+## 4.9.0
+
+May 23, 2023
+
+Upgraded Chevrotain to version 10. Chevrotain dropped support for older browsers, but since this library has a build step, the target output from the processed build should remain in the same target format that was previously available.
+
 ## 4.8.3
 
 May 22, 2023
