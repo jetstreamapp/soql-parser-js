@@ -31,20 +31,16 @@
     "soql-parser-js": "bin/soql-parser-js"
   },
   "files": [
-    "dist/src/**/*.js",
-    "dist/src/**/*.js.map",
-    "dist/src/**/*.d.ts",
-    "dist/index.js",
-    "dist/index.js.map",
-    "dist/index.js.LICENSE.txt",
-    "dist/main.licenses.txt",
-    "dist_esm/**/*.js",
-    "dist_esm/**/*.js.map",
-    "dist_cli/**/*.js",
-    "bin/**/*.js",
-    "README.md",
+    "dist/**",
+    "dist_esm/**",
+    "dist_cli/**",
+    "src/**",
+    "bin/**",
+    "AUTHORS.md",
+    "CHANGELOG.md",
     "LICENSE.txt",
-    "CHANGELOG.md"
+    "package.json",
+    "README.md"
   ],
   "dependencies": {
     "chevrotain": "^9.0.1",

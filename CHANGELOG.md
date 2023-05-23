@@ -1,5 +1,11 @@
 # Changelog
 
+## 4.8.3
+
+May 22, 2023
+
+- Included `src` folder in npm package
+
 ## 4.8.2
 
 May 22, 2023
