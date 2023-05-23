@@ -24,7 +24,7 @@ describe.skip('parse queries', () => {
     for (let i = 0; i < numIterations; i++) {
       testCases.forEach(testCase => {
         try {
-          parseQuery(testCase.soql, { allowApexBindVariables: true, logErrors: true });
+          parseQuery(testCase.soql, { allowApexBindVariables: true, logErrors: true, ...testCase.options });
         } catch (ex) {
           console.log('Exception on TC', testCase.testCase, testCase.soql);
           console.log(ex);

@@ -280,7 +280,7 @@ export class SoqlParser extends CstParser {
 
   private conditionExpression = this.RULE(
     'conditionExpression',
-    (parenCount?: ParenCount, allowSubquery?: boolean, alowAggregateFn?: boolean, allowLocationFn?: boolean) => {
+    (parenCount?: ParenCount, allowSubquery?: boolean, allowAggregateFn?: boolean, allowLocationFn?: boolean) => {
       // argument is undefined during self-analysis, need to initialize to avoid exception
       parenCount = this.getParenCount(parenCount);
       this.OPTION(() => {
@@ -300,7 +300,7 @@ export class SoqlParser extends CstParser {
 
       this.OR1({
         MAX_LOOKAHEAD: 10,
-        DEF: [{ ALT: () => this.SUBRULE(this.expression, { ARGS: [parenCount, allowSubquery, alowAggregateFn, allowLocationFn] }) }],
+        DEF: [{ ALT: () => this.SUBRULE(this.expression, { ARGS: [parenCount, allowSubquery, allowAggregateFn, allowLocationFn] }) }],
       });
     },
   );
@@ -372,7 +372,7 @@ export class SoqlParser extends CstParser {
     const parenCount = this.getParenCount();
     this.AT_LEAST_ONE({
       DEF: () => {
-        this.SUBRULE(this.conditionExpression, { ARGS: [parenCount, true] });
+        this.SUBRULE(this.conditionExpression, { ARGS: [parenCount, true, undefined, undefined] });
       },
     });
 
@@ -564,7 +564,7 @@ export class SoqlParser extends CstParser {
 
   private expression = this.RULE(
     'expression',
-    (parenCount?: ParenCount, allowSubquery?: boolean, alowAggregateFn?: boolean, allowLocationFn?: boolean) => {
+    (parenCount?: ParenCount, allowSubquery?: boolean, allowAggregateFn?: boolean, allowLocationFn?: boolean) => {
       this.OPTION1(() => {
         this.MANY1(() => {
           this.CONSUME(lexer.LParen);
@@ -575,7 +575,7 @@ export class SoqlParser extends CstParser {
       });
 
       this.OR1([
-        { GATE: () => alowAggregateFn, ALT: () => this.SUBRULE(this.aggregateFunction, { LABEL: 'lhs' }) },
+        { GATE: () => allowAggregateFn, ALT: () => this.SUBRULE(this.aggregateFunction, { LABEL: 'lhs' }) },
         { GATE: () => allowLocationFn, ALT: () => this.SUBRULE(this.locationFunction, { LABEL: 'lhs' }) },
         { ALT: () => this.SUBRULE(this.dateFunction, { LABEL: 'lhs' }) },
         { ALT: () => this.SUBRULE(this.otherFunction, { LABEL: 'lhs' }) },
@@ -611,7 +611,7 @@ export class SoqlParser extends CstParser {
     this.SUBRULE2(this.atomicExpression, { LABEL: 'rhs', ARGS: [true, allowSubquery] });
   });
 
-  private atomicExpression = this.RULE('atomicExpression', (isArray, allowSubquery?: boolean) => {
+  private atomicExpression = this.RULE('atomicExpression', (isArray?: boolean, allowSubquery?: boolean) => {
     this.OR(
       this.$_atomicExpression ||
         (this.$_atomicExpression = [
