@@ -43,7 +43,7 @@
     "README.md"
   ],
   "dependencies": {
-    "chevrotain": "^9.0.1",
+    "chevrotain": "^10.5.0",
     "commander": "^2.20.3",
     "lodash.get": "^4.4.2"
   },
