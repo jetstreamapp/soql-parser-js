@@ -81,6 +81,81 @@ export const testCases: TestCase[] = [
       },
     },
   },
+  {
+    testCase: 6,
+    soql: "SELECT Id, Fax FROM Account WHERE Fax IN ('55', 'foo')",
+    input: {
+      sObject: 'Account',
+      fields: [
+        {
+          type: 'Field',
+          field: 'Id',
+        },
+        {
+          type: 'Field',
+          field: 'Fax',
+        },
+      ],
+      where: {
+        left: {
+          field: 'Fax',
+          operator: 'IN',
+          value: [55, null, undefined, 'foo'],
+          literalType: 'STRING',
+        },
+      },
+    },
+  },
+  {
+    testCase: 7,
+    soql: "SELECT Id, Fax FROM Account WHERE Fax IN ('55')",
+    input: {
+      sObject: 'Account',
+      fields: [
+        {
+          type: 'Field',
+          field: 'Id',
+        },
+        {
+          type: 'Field',
+          field: 'Fax',
+        },
+      ],
+      where: {
+        left: {
+          field: 'Fax',
+          operator: 'IN',
+          value: 55 as any,
+          literalType: 'STRING',
+        },
+      },
+    },
+  },
+  {
+    testCase: 7,
+    soql: "SELECT Id, Fax FROM Account WHERE Fax = '55'",
+    input: {
+      sObject: 'Account',
+      fields: [
+        {
+          type: 'Field',
+          field: 'Id',
+        },
+        {
+          type: 'Field',
+          field: 'Fax',
+        },
+      ],
+      where: {
+        left: {
+          field: 'Fax',
+          operator: '=',
+          value: 55 as any,
+          literalType: 'STRING',
+        },
+      },
+    },
+  },
 ];
 
 export default testCases;
