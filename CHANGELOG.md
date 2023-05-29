@@ -1,5 +1,11 @@
 # Changelog
 
+## 4.9.1
+
+May 29, 2023
+
+Fixed bug with composeQuery when some of the WHERE clause values were not strings.
+
 ## 4.9.0
 
 May 23, 2023
@@ -470,7 +476,6 @@ export type FieldType =
 -}
 
 +export type HavingClause = HavingClauseWithoutOperator | HavingClauseWithRightCondition;
-
 ```
 
 ## 2.5.5
@@ -851,7 +856,6 @@ export interface FunctionExp {
   isAggregateFn?: boolean;
 - fn?: FunctionExp;
 }
-
 ```
 
 ## 1.2.1

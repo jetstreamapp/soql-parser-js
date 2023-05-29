@@ -243,10 +243,10 @@ export function getWhereValue(value: any | any[], literalType?: LiteralType | Li
     switch (literalType) {
       case 'STRING': {
         if (Array.isArray(value)) {
-          return value.filter(Boolean).map(val => ((val as string).startsWith("'") ? val : `'${val ?? ''}'`));
+          return value.filter(Boolean).map(val => (isString(val) && val.startsWith("'") ? val : `'${val ?? ''}'`));
         } else {
           value = String(value ?? '');
-          return value.startsWith("'") ? value : `'${value}'`;
+          return isString(value) && value.startsWith("'") ? value : `'${value ?? ''}'`;
         }
       }
       case 'APEX_BIND_VARIABLE': {
@@ -262,8 +262,7 @@ export function getWhereValue(value: any | any[], literalType?: LiteralType | Li
 function whereValueHelper(value: any, literalType?: LiteralType) {
   switch (literalType) {
     case 'STRING': {
-      value = String(value ?? '');
-      return value.startsWith("'") ? value : `'${value ?? ''}'`;
+      return isString(value) && value.startsWith("'") ? value : `'${value ?? ''}'`;
     }
     default: {
       return value;
