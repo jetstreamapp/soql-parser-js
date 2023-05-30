@@ -116,6 +116,7 @@
   "SELECT Id FROM Account WHERE Id IN :new Map<Id, SObject>(someVar).getSomeClass().records",
   "SELECT Id FROM SBQQ__QuoteTerm__c WHERE SBQQ__StandardTerm__c = :CPQ_Hard_Coded_Ids__c.getInstance().Standard_Quote_Term_Id__c",
   "SELECT Id FROM Opportunity WHERE SBQQ__StandardTerm__c = :quotes[3].SBQQ__QuoteLine__r[0].Term__c",
+  "SELECT Name FROM Account WHERE Name IN ('GenePoint\\'s \\n Ok!?!@#$^%$&*()_+')",
   "SELECT State_Abbr_c FROM Contact WHERE State_Abbr_c = 'MI' OR State_Abbr_c = 'km'",
   "SELECT State_Abbr_c FROM Contact WHERE State_Abbr_c = 'KM'",
   "SELECT State_Abbr_c FROM Contact WHERE State_Abbr_c IN ('mi', 'KM')",
