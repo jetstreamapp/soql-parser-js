@@ -8,7 +8,7 @@ const darkCodeTheme = require('prism-react-renderer/themes/dracula');
 const config = {
   title: 'Soql Parser JS',
   tagline: 'Parse and generate SOQL queries',
-  url: 'https://paustint.github.io',
+  url: 'https://jetstreamapp.github.io',
   baseUrl: '/soql-parser-js/',
   onBrokenLinks: 'throw',
   onBrokenMarkdownLinks: 'warn',
@@ -16,7 +16,7 @@ const config = {
 
   // GitHub pages deployment config.
   // If you aren't using GitHub pages, you don't need these.
-  organizationName: 'paustint',
+  organizationName: 'jetstreamapp',
   projectName: 'soql-parser-js',
   deploymentBranch: 'gh-pages',
   trailingSlash: false,
@@ -38,7 +38,7 @@ const config = {
           sidebarPath: require.resolve('./sidebars.js'),
           // Please change this to your repo.
           // Remove this to remove the "edit this page" links.
-          editUrl: 'https://github.com/paustint/soql-parser-js/docs/docs/',
+          editUrl: 'https://github.com/jetstreamapp/soql-parser-js/docs/docs/',
         },
         theme: {
           customCss: require.resolve('./src/css/custom.css'),
@@ -69,7 +69,7 @@ const config = {
           },
           { to: '/playground', label: 'Playground', position: 'left' },
           {
-            href: 'https://github.com/paustint/soql-parser-js',
+            href: 'https://github.com/jetstreamapp/soql-parser-js',
             label: 'GitHub',
             position: 'right',
           },
@@ -87,7 +87,7 @@ const config = {
               },
               {
                 label: 'GitHub',
-                href: 'https://github.com/paustint/soql-parser-js',
+                href: 'https://github.com/jetstreamapp/soql-parser-js',
               },
             ],
           },
