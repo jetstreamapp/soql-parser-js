@@ -55,7 +55,7 @@ const config = {
         respectPrefersColorScheme: true,
       },
       navbar: {
-        title: 'Home',
+        title: '',
         logo: {
           alt: 'Logo',
           src: 'img/soql-parser-js-logo.svg',
