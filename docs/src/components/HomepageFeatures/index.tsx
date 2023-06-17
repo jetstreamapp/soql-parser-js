@@ -4,54 +4,108 @@ import styles from './styles.module.css';
 
 type FeatureItem = {
   title: string;
-  Svg: React.ComponentType<React.ComponentProps<'svg'>>;
   description: JSX.Element;
 };
 
+const exampleSoql = `SELECT Name
+FROM Account
+WHERE Industry = 'media'
+ORDER BY BillingPostalCode ASC NULLS LAST
+LIMIT 125`;
+
+const exampleCompose = JSON.stringify(
+  {
+    fields: [
+      {
+        type: 'Field',
+        field: 'Name',
+      },
+    ],
+    sObject: 'Account',
+    where: {
+      left: {
+        field: 'Industry',
+        operator: '=',
+        literalType: 'STRING',
+        value: "'media'",
+      },
+    },
+    orderBy: [
+      {
+        field: 'BillingPostalCode',
+        order: 'ASC',
+        nulls: 'LAST',
+      },
+    ],
+    limit: 125,
+  },
+  null,
+  2,
+);
+
 const FeatureList: FeatureItem[] = [
   {
-    title: 'Blazing fast',
-    Svg: require('@site/static/img/undraw_docusaurus_mountain.svg').default,
+    title: 'Parse',
     description: (
       <>
-        Soql Parser JS is built using{' '}
-        <a href="https://chevrotain.io/docs/" target="_blank">
-          Chevrotain
-        </a>
-        , which is faster and lighter-weight than other comparable parsing frameworks.
+        <p className={styles.featuresSubHeading}>turn</p>
+        <div>
+          <pre>
+            <code>{exampleSoql}</code>
+          </pre>
+        </div>
+        <p className={styles.featuresSubHeading}>into</p>
+        <pre>
+          <code>{exampleCompose}</code>
+        </pre>
       </>
     ),
   },
   {
-    title: 'Battle tested',
-    Svg: require('@site/static/img/undraw_docusaurus_tree.svg').default,
+    title: 'Compose',
     description: (
       <>
-        Soql Parser JS powers{' '}
-        <a href="https://getjetstream.app/" target="_blank">
-          Jetstream
-        </a>{' '}
-        and has been used in production for years and has been invoked millions of times. In addition, this library includes a ton of
-        test-cases of parsing queries and turning those back into soql queries and confirming the results match the original soql query. You
-        can have confidence that your parsed query will not lose any fidelity.
+        <p className={styles.featuresSubHeading}>turn</p>
+        <div>
+          <pre>
+            <code>{exampleCompose}</code>
+          </pre>
+        </div>
+        <p className={styles.featuresSubHeading}>into</p>
+        <pre>
+          <code>{exampleSoql}</code>
+        </pre>
       </>
     ),
   },
   {
-    title: 'Written with TypeScript',
-    Svg: require('@site/static/img/undraw_docusaurus_react.svg').default,
-    description: <>Soql Parser JS is written using TypeScript - you get type completion in your project.</>,
+    title: 'Battle Tested',
+    description: (
+      <>
+        <p>
+          Your SOQL query is parsed using a proper language parser,{' '}
+          <a href="https://chevrotain.io/docs/features/blazing_fast.html" target="_blank">
+            Chevrotain JS
+          </a>
+          , and aims to support every SOQL feature.
+        </p>
+        <p>
+          This library has been powering{' '}
+          <a href="https://getjetstream.app/" target="_blank">
+            Jetstream
+          </a>{' '}
+          in production for many years and has parsed and composed millions of queries from thousands of users.
+        </p>
+      </>
+    ),
   },
 ];
 
-function Feature({ title, Svg, description }: FeatureItem) {
+function Feature({ title, description }: FeatureItem) {
   return (
     <div className={clsx('col col--4')}>
-      <div className="text--center">
-        <Svg className={styles.featureSvg} role="img" />
-      </div>
-      <div className="text--center padding-horiz--md">
-        <h3>{title}</h3>
+      <div className="padding-horiz--md">
+        <h2 className="text--center">{title}</h2>
         <p>{description}</p>
       </div>
     </div>

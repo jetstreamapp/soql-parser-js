@@ -5,6 +5,12 @@
   width: 100%;
 }
 
+.featuresSubHeading {
+  text-align: center;
+  text-transform: uppercase;
+  font-weight: semi-bold;
+}
+
 .featureSvg {
   height: 200px;
   width: 200px;
