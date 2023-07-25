@@ -1,5 +1,11 @@
 # Changelog
 
+## 4.9.2
+
+July 24, 2023
+
+Ensure `getFlattenedFields` does not throw exception if query does not have `fields` property.
+
 ## 4.9.1
 
 May 29, 2023

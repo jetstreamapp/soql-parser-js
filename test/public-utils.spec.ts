@@ -227,4 +227,10 @@ describe('getFlattenedFields', () => {
     const fields = utils.getFlattenedFields(fieldSubquery.subquery);
     expect(fields).toEqual(['LastName']);
   });
+
+  it(`Should not blow up with invalid input`, () => {
+    expect(utils.getFlattenedFields({})).toEqual([]);
+    expect(utils.getFlattenedFields(null as any)).toEqual([]);
+    expect(utils.getFlattenedFields({ fields: [] })).toEqual([]);
+  });
 });
