@@ -157,6 +157,9 @@ export function getFlattenedFields(
   }
   query = isFieldSubquery(query) ? query.subquery : query;
   const fields = query.fields;
+  if (!fields) {
+    return [];
+  }
   // if a relationship field is used in a group by, then Salesforce removes the relationship portion of the field in the returned records
   let groupByFields: { [field: string]: string } = {};
   if (!!query.groupBy) {
