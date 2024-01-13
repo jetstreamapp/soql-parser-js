@@ -1,6 +1,6 @@
 # Changelog
 
-## 5.0.0
+## 5.0.1
 
 Jan 13, 2024
 
@@ -10,6 +10,10 @@ This was always the case, but prior to enabling strict typescript types, this we
 
 For Typescript consumers that have strict null checks enabled, they may need to make code changes depending on usage.
 
+## 5.0.0
+
+💥 Did not publish correct assets - package was marked as deprecated on npm.
+
 ## 4.10.1
 
 Jan 13, 2024
@@ -18,6 +22,8 @@ Revert accidental breaking change to types. `WhereClause` left can have `null` i
 Updating types to match reality is a breaking change for consumers, so worked around issue and will publish version 5 with breaking change.
 
 ## 4.10.0
+
+💥 Use 4.10.1, this version was marked as deprecated because of accidental breaking change with is reverted in 4.10.1
 
 Jan 13, 2024
 
