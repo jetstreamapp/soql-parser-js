@@ -157,7 +157,7 @@ export interface Subquery extends QueryBase {
 export type WhereClause = WhereClauseWithoutOperator | WhereClauseWithRightCondition;
 
 export interface WhereClauseWithoutOperator {
-  left: ConditionWithValueQuery | null;
+  left: ConditionWithValueQuery;
 }
 
 export interface WhereClauseWithRightCondition extends WhereClauseWithoutOperator {
