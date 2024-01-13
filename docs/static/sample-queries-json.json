@@ -122,5 +122,8 @@
   "SELECT State_Abbr_c FROM Contact WHERE State_Abbr_c IN ('mi', 'KM')",
   "SELECT LeadSource, COUNT(Name) FROM Lead GROUP BY LeadSource HAVING COUNT(Name) > 100 AND LeadSource > 'km'",
   "SELECT Id FROM Account WITH USER_MODE",
-  "SELECT Id FROM Account WITH SYSTEM_MODE"
+  "SELECT Id FROM Account WITH SYSTEM_MODE",
+  "SELECT Id, BillingCity FROM Account WHERE NOT (NOT BillingCity LIKE '%123%')",
+  "SELECT Id FROM Account WHERE NOT (NOT Invoice_Type__c LIKE '%Usage%')",
+  "SELECT Id FROM Account WHERE (NOT Invoice_Type__c LIKE '%Usage%')"
 ]
