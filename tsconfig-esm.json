@@ -5,6 +5,7 @@
     "module": "esnext",
     "target": "es5",
     "outDir": "dist_esm",
+    "strict": true,
     "declaration": false,
     "typeRoots": ["node_modules/@types"]
   }

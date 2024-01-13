@@ -1,4 +1,4 @@
-import { Query } from '../src/api/api-models';
+import { Query, ValueWithDateNLiteralCondition } from '../src/api/api-models';
 import { ParseQueryConfig } from '../src/parser/parser';
 // Queries obtained from SFDC examples
 // https://developer.salesforce.com/docs/atlas.en-us.soql_sosl.meta/soql_sosl/sforce_api_calls_soql_select_examples.htm
@@ -284,7 +284,8 @@ export const testCases: TestCase[] = [
   },
   {
     testCase: 21,
-    soql: 'SELECT TYPEOF What WHEN Account THEN Phone, NumberOfEmployees WHEN Opportunity THEN Amount, CloseDate ELSE Name, Email END FROM Event',
+    soql:
+      'SELECT TYPEOF What WHEN Account THEN Phone, NumberOfEmployees WHEN Opportunity THEN Amount, CloseDate ELSE Name, Email END FROM Event',
     output: {
       fields: [
         {
@@ -319,7 +320,8 @@ export const testCases: TestCase[] = [
   },
   {
     testCase: 23,
-    soql: 'SELECT Amount, Id, Name, (SELECT Quantity, ListPrice, PricebookEntry.UnitPrice, PricebookEntry.Name FROM OpportunityLineItems) FROM Opportunity',
+    soql:
+      'SELECT Amount, Id, Name, (SELECT Quantity, ListPrice, PricebookEntry.UnitPrice, PricebookEntry.Name FROM OpportunityLineItems) FROM Opportunity',
     output: {
       fields: [
         { type: 'Field', field: 'Amount' },
@@ -359,7 +361,8 @@ export const testCases: TestCase[] = [
   },
   {
     testCase: 25,
-    soql: 'SELECT UserId, COUNT(Id) FROM LoginHistory WHERE LoginTime > 2010-09-20T22:16:30.000Z AND LoginTime < 2010-09-21 GROUP BY UserId',
+    soql:
+      'SELECT UserId, COUNT(Id) FROM LoginHistory WHERE LoginTime > 2010-09-20T22:16:30.000Z AND LoginTime < 2010-09-21 GROUP BY UserId',
     output: {
       fields: [
         { type: 'Field', field: 'UserId' },
@@ -461,7 +464,8 @@ export const testCases: TestCase[] = [
   },
   {
     testCase: 30,
-    soql: 'SELECT Type, BillingCountry, GROUPING(Type)grpType, GROUPING(BillingCountry) grpCty, COUNT(id) accts FROM Account GROUP BY CUBE(Type,BillingCountry) ORDER BY GROUPING(Type), GROUPING(Id,BillingCountry), Name DESC NULLS FIRST, Id ASC NULLS LAST',
+    soql:
+      'SELECT Type, BillingCountry, GROUPING(Type)grpType, GROUPING(BillingCountry) grpCty, COUNT(id) accts FROM Account GROUP BY CUBE(Type,BillingCountry) ORDER BY GROUPING(Type), GROUPING(Id,BillingCountry), Name DESC NULLS FIRST, Id ASC NULLS LAST',
     soqlComposed:
       'SELECT Type, BillingCountry, GROUPING(Type) grpType, GROUPING(BillingCountry) grpCty, COUNT(id) accts FROM Account GROUP BY CUBE(Type, BillingCountry) ORDER BY GROUPING(Type), GROUPING(Id, BillingCountry), Name DESC NULLS FIRST, Id ASC NULLS LAST',
     output: {
@@ -515,7 +519,8 @@ export const testCases: TestCase[] = [
   },
   {
     testCase: 32,
-    soql: "SELECT Id FROM Account WHERE (Id IN ('1', '2', '3') OR (NOT Id = '2') OR (Name LIKE '%FOO%' OR (Name LIKE '%ARM%' AND FOO = 'bar')))",
+    soql:
+      "SELECT Id FROM Account WHERE (Id IN ('1', '2', '3') OR (NOT Id = '2') OR (Name LIKE '%FOO%' OR (Name LIKE '%ARM%' AND FOO = 'bar')))",
     output: {
       fields: [{ type: 'Field', field: 'Id' }],
       sObject: 'Account',
@@ -632,7 +637,8 @@ export const testCases: TestCase[] = [
   },
   {
     testCase: 37,
-    soql: "SELECT UrlName FROM KnowledgeArticleVersion WHERE PublishStatus = 'draft' WITH DATA CATEGORY Geography__c AT usa__c AND Product__c ABOVE_OR_BELOW mobile_phones__c",
+    soql:
+      "SELECT UrlName FROM KnowledgeArticleVersion WHERE PublishStatus = 'draft' WITH DATA CATEGORY Geography__c AT usa__c AND Product__c ABOVE_OR_BELOW mobile_phones__c",
     output: {
       fields: [{ type: 'Field', field: 'UrlName' }],
       sObject: 'KnowledgeArticleVersion',
@@ -677,7 +683,8 @@ export const testCases: TestCase[] = [
   },
   {
     testCase: 44,
-    soql: "SELECT amount, FORMAT(amount) Amt, convertCurrency(amount) editDate, FORMAT(convertCurrency(amount)) convertedCurrency FROM Opportunity WHERE id = '12345'",
+    soql:
+      "SELECT amount, FORMAT(amount) Amt, convertCurrency(amount) editDate, FORMAT(convertCurrency(amount)) convertedCurrency FROM Opportunity WHERE id = '12345'",
     output: {
       fields: [
         { type: 'Field', field: 'amount' },
@@ -802,7 +809,8 @@ export const testCases: TestCase[] = [
   },
   {
     testCase: 49,
-    soql: "SELECT Id, Name FROM Account WHERE Id IN (SELECT AccountId FROM Contact WHERE LastName LIKE 'apple%') AND Id IN (SELECT AccountId FROM Opportunity WHERE isClosed = FALSE)",
+    soql:
+      "SELECT Id, Name FROM Account WHERE Id IN (SELECT AccountId FROM Contact WHERE LastName LIKE 'apple%') AND Id IN (SELECT AccountId FROM Opportunity WHERE isClosed = FALSE)",
     output: {
       fields: [
         { type: 'Field', field: 'Id' },
@@ -931,7 +939,8 @@ export const testCases: TestCase[] = [
   },
   {
     testCase: 55,
-    soql: 'SELECT Id, CreatedById, CreatedDate, DefType, IsDeleted, Format, LastModifiedById, LastModifiedDate, AuraDefinitionBundleId, ManageableState, Source, SystemModstamp FROM AuraDefinition',
+    soql:
+      'SELECT Id, CreatedById, CreatedDate, DefType, IsDeleted, Format, LastModifiedById, LastModifiedDate, AuraDefinitionBundleId, ManageableState, Source, SystemModstamp FROM AuraDefinition',
     output: {
       fields: [
         { type: 'Field', field: 'Id' },
@@ -965,7 +974,8 @@ export const testCases: TestCase[] = [
   },
   {
     testCase: 57,
-    soql: "SELECT Title FROM KnowledgeArticleVersion WHERE PublishStatus = 'online' WITH DATA CATEGORY Geography__c ABOVE usa__c WITH SECURITY_ENFORCED",
+    soql:
+      "SELECT Title FROM KnowledgeArticleVersion WHERE PublishStatus = 'online' WITH DATA CATEGORY Geography__c ABOVE usa__c WITH SECURITY_ENFORCED",
     output: {
       fields: [{ type: 'Field', field: 'Title' }],
       sObject: 'KnowledgeArticleVersion',
@@ -976,7 +986,8 @@ export const testCases: TestCase[] = [
   },
   {
     testCase: 58,
-    soql: "SELECT Id FROM Account WHERE (((Name = '1' OR Name = '2') AND Name = '3')) AND (((Description = '123') OR (Id = '1' AND Id = '2'))) AND Id = '1'",
+    soql:
+      "SELECT Id FROM Account WHERE (((Name = '1' OR Name = '2') AND Name = '3')) AND (((Description = '123') OR (Id = '1' AND Id = '2'))) AND Id = '1'",
     output: {
       fields: [{ type: 'Field', field: 'Id' }],
       sObject: 'Account',
@@ -1179,7 +1190,8 @@ export const testCases: TestCase[] = [
   },
   {
     testCase: 71,
-    soql: 'SELECT CALENDAR_YEAR(convertTimezone(CreatedDate)) calYear, SUM(Amount) mySum FROM Opportunity GROUP BY CALENDAR_YEAR(convertTimezone(CreatedDate))',
+    soql:
+      'SELECT CALENDAR_YEAR(convertTimezone(CreatedDate)) calYear, SUM(Amount) mySum FROM Opportunity GROUP BY CALENDAR_YEAR(convertTimezone(CreatedDate))',
     output: {
       fields: [
         {
@@ -1329,7 +1341,8 @@ export const testCases: TestCase[] = [
   },
   {
     testCase: 79,
-    soql: 'SELECT LeadSource, Rating, GROUPING(LeadSource) grpLS, GROUPING(Rating) grpRating, COUNT(Name) cnt FROM Lead GROUP BY ROLLUP(LeadSource, Rating)',
+    soql:
+      'SELECT LeadSource, Rating, GROUPING(LeadSource) grpLS, GROUPING(Rating) grpRating, COUNT(Name) cnt FROM Lead GROUP BY ROLLUP(LeadSource, Rating)',
     output: {
       fields: [
         { type: 'Field', field: 'LeadSource' },
@@ -1363,7 +1376,8 @@ export const testCases: TestCase[] = [
   },
   {
     testCase: 80,
-    soql: 'SELECT Type, BillingCountry, GROUPING(Type) grpType, GROUPING(BillingCountry) grpCty, COUNT(id) accts FROM Account GROUP BY CUBE(Type, BillingCountry) ORDER BY GROUPING(Type), GROUPING(BillingCountry)',
+    soql:
+      'SELECT Type, BillingCountry, GROUPING(Type) grpType, GROUPING(BillingCountry) grpCty, COUNT(id) accts FROM Account GROUP BY CUBE(Type, BillingCountry) ORDER BY GROUPING(Type), GROUPING(BillingCountry)',
     output: {
       fields: [
         { type: 'Field', field: 'Type' },
@@ -1401,7 +1415,8 @@ export const testCases: TestCase[] = [
   },
   {
     testCase: 81,
-    soql: 'SELECT HOUR_IN_DAY(convertTimezone(CreatedDate)), SUM(Amount) FROM Opportunity GROUP BY HOUR_IN_DAY(convertTimezone(CreatedDate))',
+    soql:
+      'SELECT HOUR_IN_DAY(convertTimezone(CreatedDate)), SUM(Amount) FROM Opportunity GROUP BY HOUR_IN_DAY(convertTimezone(CreatedDate))',
     output: {
       fields: [
         {
@@ -1793,7 +1808,7 @@ export const testCases: TestCase[] = [
           operator: 'IN',
           value: ['TODAY', 'LAST_N_DAYS:4'],
           dateLiteralVariable: [null, 4],
-        },
+        } as ValueWithDateNLiteralCondition,
       },
     },
   },
@@ -1892,7 +1907,8 @@ export const testCases: TestCase[] = [
   },
   {
     testCase: 101,
-    soql: 'SELECT Id FROM LoginHistory WHERE LoginTime > 2020-04-23T09:00:00.00000000000000000000000000000000+00:00 AND LoginTime < 2020-04-15T02:40:03.000+0000',
+    soql:
+      'SELECT Id FROM LoginHistory WHERE LoginTime > 2020-04-23T09:00:00.00000000000000000000000000000000+00:00 AND LoginTime < 2020-04-15T02:40:03.000+0000',
     output: {
       fields: [{ type: 'Field', field: 'Id' }],
       sObject: 'LoginHistory',
@@ -2531,6 +2547,91 @@ export const testCases: TestCase[] = [
       fields: [{ type: 'Field', field: 'Id' }],
       sObject: 'Account',
       withAccessLevel: 'SYSTEM_MODE',
+    },
+  },
+  {
+    testCase: 124,
+    soql: `SELECT Id, BillingCity FROM Account WHERE NOT (NOT BillingCity LIKE '%123%')`,
+    output: {
+      fields: [
+        { type: 'Field', field: 'Id' },
+        { type: 'Field', field: 'BillingCity' },
+      ],
+      sObject: 'Account',
+      where: {
+        left: null,
+        operator: 'NOT',
+        right: {
+          left: {
+            openParen: 1,
+          },
+          operator: 'NOT',
+          right: {
+            left: {
+              field: 'BillingCity',
+              operator: 'LIKE',
+              value: `'%123%'`,
+              literalType: 'STRING',
+              closeParen: 1,
+            },
+          },
+        },
+      },
+    },
+  },
+  {
+    testCase: 125,
+    soql: `SELECT Id FROM Account WHERE NOT (NOT Invoice_Type__c LIKE '%Usage%')`,
+    output: {
+      fields: [{ type: 'Field', field: 'Id' }],
+      sObject: 'Account',
+      where: {
+        left: null,
+        operator: 'NOT',
+        right: {
+          left: {
+            openParen: 1,
+          },
+          operator: 'NOT',
+          right: {
+            left: {
+              field: 'Invoice_Type__c',
+              operator: 'LIKE',
+              value: `'%Usage%'`,
+              literalType: 'STRING',
+              closeParen: 1,
+            },
+          },
+        },
+      },
+    },
+  },
+  {
+    testCase: 126,
+    soql: `SELECT Id FROM Account WHERE (NOT Invoice_Type__c LIKE '%Usage%')`,
+    output: {
+      fields: [
+        {
+          type: 'Field',
+          field: 'Id',
+        },
+      ],
+      sObject: 'Account',
+      where: {
+        left: {
+          openParen: 1,
+        },
+        operator: 'NOT',
+        right: {
+          left: {
+            field: 'Invoice_Type__c',
+            operator: 'LIKE',
+            literalType: 'STRING',
+            value: "'%Usage%'",
+            closeParen: 1,
+          },
+        },
+      },
     },
   },
 ];

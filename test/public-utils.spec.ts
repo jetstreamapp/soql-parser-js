@@ -21,7 +21,7 @@ describe('getField', () => {
     expect(utils.getField({ functionName: 'COUNT' })).toEqual({
       type: 'FieldFunctionExpression',
       functionName: 'COUNT',
-      parameters: undefined,
+      parameters: [],
       alias: undefined,
     });
     expect(utils.getField({ functionName: 'FORMAT', parameters: ['Amount'] })).toEqual({

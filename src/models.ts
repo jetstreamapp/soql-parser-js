@@ -18,7 +18,7 @@ export interface ExpressionTree<T> {
  */
 
 interface WithIdentifier {
-  Identifier?: IToken[];
+  Identifier: IToken[];
 }
 
 export interface SelectStatementContext {
@@ -61,7 +61,7 @@ export interface SelectClauseFunctionIdentifierContext extends WithIdentifier {
 }
 
 export interface SelectClauseSubqueryIdentifierContext extends WithIdentifier {
-  selectStatement?: CstNode[];
+  selectStatement: CstNode[];
 }
 
 export interface SelectClauseTypeOfContext extends WithIdentifier {
@@ -102,10 +102,24 @@ export interface ConditionExpressionContext {
   expression: CstNode[];
 }
 
-export interface WithClauseContext {
-  withSecurityEnforced?: CstNode[];
-  withAccessLevel?: IToken[];
-  withDataCategory?: CstNode[];
+export type WithClauseContext = WithSecurityEnforcedClauseContext | WithAccessLevelClauseContext | WithDataCategoryClauseContext;
+
+export interface WithSecurityEnforcedClauseContext {
+  withSecurityEnforced: CstNode[];
+  withAccessLevel?: never;
+  withDataCategory?: never;
+}
+
+export interface WithAccessLevelClauseContext {
+  withSecurityEnforced?: never;
+  withAccessLevel: IToken[];
+  withDataCategory?: never;
+}
+
+export interface WithDataCategoryClauseContext {
+  withSecurityEnforced?: never;
+  withAccessLevel?: never;
+  withDataCategory: CstNode[];
 }
 
 export interface WithDateCategoryContext {
@@ -161,6 +175,17 @@ export interface ValueContext {
 
 export interface OperatorContext {
   operator: IToken[];
+}
+
+export type OperatorOrNotInContext = OperatorWithoutNotInContext | OperatorNotInContext;
+
+export interface OperatorWithoutNotInContext extends OperatorContext {
+  notIn?: never;
+}
+
+export interface OperatorNotInContext {
+  operator?: never;
+  notIn: CstNode[];
 }
 
 export interface BooleanContext {
@@ -249,10 +274,22 @@ export interface ApexBindVariableFunctionArrayAccessorContext {
   value: IToken[];
 }
 
-export interface ExpressionOperatorContext {
+export type ExpressionOperatorContext = ExpressionOperatorRhsContext & ExpressionWithRelationalOrSetOperatorContext;
+
+export interface ExpressionOperatorRhsContext {
   rhs: CstNode[];
-  relationalOperator?: CstNode[];
-  setOperator?: CstNode[];
+}
+
+type ExpressionWithRelationalOrSetOperatorContext = ExpressionWithRelationalOperatorContext | ExpressionWithSetOperatorOperatorContext;
+
+export interface ExpressionWithRelationalOperatorContext {
+  relationalOperator: CstNode[];
+  setOperator?: never;
+}
+
+export interface ExpressionWithSetOperatorOperatorContext {
+  relationalOperator?: never;
+  setOperator: CstNode[];
 }
 
 export interface FromClauseContext extends WithIdentifier {

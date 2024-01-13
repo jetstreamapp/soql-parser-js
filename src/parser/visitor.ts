@@ -59,6 +59,7 @@ import {
   LiteralTypeWithSubquery,
   LocationFunctionContext,
   OperatorContext,
+  OperatorOrNotInContext,
   OrderByClauseContext,
   OrderByExpressionContext,
   OrderByGroupingFunctionExpressionContext,
@@ -80,6 +81,7 @@ import {
 } from '../models';
 import { isString, isSubqueryFromFlag, isToken } from '../utils';
 import { parse, ParseQueryConfig, SoqlParser } from './parser';
+import { CstNode } from 'chevrotain';
 
 const parser = new SoqlParser();
 
@@ -144,9 +146,7 @@ class SOQLVisitor extends BaseSoqlVisitor {
 
   private helpers = {
     $_getFieldFunction: (ctx: FieldFunctionContext, isAggregateFn = false, includeType = true): FunctionExp | FieldFunctionExpression => {
-      const args = ctx.functionExpression
-        ? ctx.functionExpression.map((node: any) => this.visit(ctx.functionExpression, { includeType })).flat()
-        : [];
+      const args = ctx.functionExpression ? ctx.functionExpression.map((node: CstNode) => this.visit(node, { includeType })).flat() : [];
       const output: any = {};
       if (includeType) {
         output.type = 'FieldFunctionExpression';
@@ -202,11 +202,13 @@ class SOQLVisitor extends BaseSoqlVisitor {
       let output: Partial<Query | Subquery> = {};
 
       if (ctx.selectClause) {
+        // @ts-ignore - this.visit is not properly detected as an available function - "this" context is not correctly detected
         output.fields = this.visit(ctx.selectClause);
       }
 
       if (ctx.fromClause) {
         if (isSubqueryFromFlag(output, isSubquery)) {
+          // @ts-ignore - this.visit is not properly detected as an available function - "this" context is not correctly detected
           const { sObject, alias, sObjectPrefix } = this.visit(ctx.fromClause);
           output.relationshipName = sObject;
           if (alias) {
@@ -216,6 +218,7 @@ class SOQLVisitor extends BaseSoqlVisitor {
             output.sObjectPrefix = sObjectPrefix;
           }
         } else {
+          // @ts-ignore - this.visit is not properly detected as an available function - "this" context is not correctly detected
           const { sObject, alias } = this.visit(ctx.fromClause);
           (output as Query).sObject = sObject;
           if (alias) {
@@ -239,6 +242,7 @@ class SOQLVisitor extends BaseSoqlVisitor {
         }
       }
 
+      // @ts-ignore - this.visit is not properly detected as an available function - "this" context is not correctly detected
       output = { ...output, ...this.visit(ctx.clauseStatements) };
 
       return output;
@@ -461,7 +465,7 @@ class SOQLVisitor extends BaseSoqlVisitor {
       },
       { prevExpression: undefined, expressionTree: undefined },
     );
-    return where.expressionTree;
+    return where.expressionTree!;
   }
 
   conditionExpression(ctx: ConditionExpressionContext, options?: { prevExpression?: any }) {
@@ -473,30 +477,41 @@ class SOQLVisitor extends BaseSoqlVisitor {
     let currExpression: Partial<WhereClause> = baseExpression;
 
     if (Array.isArray(ctx.expressionNegation)) {
-      baseExpression = this.visit(ctx.expressionNegation);
-      currExpression = (baseExpression as WhereClauseWithRightCondition).right;
+      if (ctx.expressionNegation.length === 1) {
+        baseExpression = this.visit(ctx.expressionNegation);
+        currExpression = (baseExpression as WhereClauseWithRightCondition).right;
+      } else {
+        baseExpression = this.visit(ctx.expressionNegation[0]);
+        const currNestedExpression = baseExpression as WhereClauseWithRightCondition;
+        ctx.expressionNegation.slice(1).forEach(item => {
+          currNestedExpression.right = this.visit(item);
+          currExpression = (currNestedExpression.right as WhereClauseWithRightCondition).right;
+        });
+      }
     }
 
     currExpression.left = this.visit(ctx.expression);
     return baseExpression;
   }
+
   withClause(ctx: WithClauseContext) {
     if (ctx.withSecurityEnforced) {
       return {
         withSecurityEnforced: true,
       };
-    } else if (ctx.withAccessLevel) {
+    }
+    if (ctx.withAccessLevel) {
       return {
         withAccessLevel: ctx.withAccessLevel[0].image,
       };
-    } else {
-      return {
-        withDataCategory: {
-          conditions: this.visit(ctx.withDataCategory),
-        },
-      };
     }
+    return {
+      withDataCategory: {
+        conditions: this.visit(ctx.withDataCategory),
+      },
+    };
   }
+
   withDataCategory(ctx: WithDateCategoryContext): WithDataCategoryCondition[] {
     return ctx.withDataCategoryArr.map(item => this.visit(item));
   }
@@ -532,7 +547,7 @@ class SOQLVisitor extends BaseSoqlVisitor {
       },
       { prevExpression: undefined, expressionTree: undefined },
     );
-    return having.expressionTree;
+    return having.expressionTree!;
   }
 
   orderByClause(ctx: OrderByClauseContext): OrderByClause | OrderByClause[] {
@@ -728,15 +743,27 @@ class SOQLVisitor extends BaseSoqlVisitor {
   }
 
   expressionWithRelationalOperator(ctx: ExpressionOperatorContext): Condition {
+    if (ctx.relationalOperator) {
+      return {
+        operator: this.visit(ctx.relationalOperator),
+        ...this.visit(ctx.rhs, { returnLiteralType: true }),
+      };
+    }
     return {
-      operator: this.visit(ctx.relationalOperator) || this.visit(ctx.setOperator),
+      operator: this.visit(ctx.setOperator),
       ...this.visit(ctx.rhs, { returnLiteralType: true }),
     };
   }
 
   expressionWithSetOperator(ctx: ExpressionOperatorContext): Condition {
+    if (ctx.relationalOperator) {
+      return {
+        operator: this.visit(ctx.relationalOperator),
+        ...this.visit(ctx.rhs, { returnLiteralType: true }),
+      };
+    }
     return {
-      operator: this.visit(ctx.relationalOperator) || this.visit(ctx.setOperator),
+      operator: this.visit(ctx.setOperator),
       ...this.visit(ctx.rhs, { returnLiteralType: true }),
     };
   }
@@ -774,7 +801,7 @@ class SOQLVisitor extends BaseSoqlVisitor {
       value = ctx.DateTime[0].image;
       literalType = 'DATETIME';
     } else if (ctx.date) {
-      value = ctx.DateToken[0].image;
+      value = ctx.DateToken![0].image;
       literalType = 'DATE';
     } else if (ctx.NULL) {
       value = 'NULL';
@@ -817,7 +844,7 @@ class SOQLVisitor extends BaseSoqlVisitor {
     if (options.returnLiteralType) {
       return {
         value,
-        literalType,
+        literalType: literalType!,
         dateLiteralVariable,
       };
     } else {
@@ -877,9 +904,8 @@ class SOQLVisitor extends BaseSoqlVisitor {
           type: (item as IToken).tokenType.name,
           value: (item as IToken).image,
         };
-      } else {
-        return this.visit(item, { includeType: true });
       }
+      return this.visit(item, { includeType: true });
     });
   }
 
@@ -887,8 +913,17 @@ class SOQLVisitor extends BaseSoqlVisitor {
     return ctx.operator[0].image;
   }
 
-  setOperator(ctx: OperatorContext) {
-    return ctx.operator[0].tokenType.name.replace('_', ' ');
+  setOperator(ctx: OperatorOrNotInContext) {
+    if (Array.isArray(ctx.operator)) {
+      return ctx.operator[0].tokenType.name.replace('_', ' ');
+    }
+    if (Array.isArray(ctx.notIn)) {
+      return this.visit(ctx.notIn);
+    }
+  }
+
+  notInOperator(ctx: OperatorContext) {
+    return 'NOT IN';
   }
 
   booleanValue(ctx: BooleanContext) {

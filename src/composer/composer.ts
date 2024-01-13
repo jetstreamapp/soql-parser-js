@@ -76,8 +76,8 @@ export class Compose {
   constructor(private soql: Query, config: Partial<SoqlComposeConfig> = {}) {
     config = { autoCompose: true, ...config };
     const { logging, format } = config;
-    this.logging = logging;
-    this.format = format;
+    this.logging = !!logging;
+    this.format = !!format;
     this.query = '';
 
     this.formatter = new Formatter(this.format, {
@@ -126,7 +126,7 @@ export class Compose {
       output += ` ${fn.alias}`;
     }
 
-    return output;
+    return output!;
   }
 
   /**
@@ -262,7 +262,7 @@ export class Compose {
   public parseFields(fields: FieldType[]): { text: string; typeOfClause?: string[] }[] {
     return fields.map(field => {
       let text = '';
-      let typeOfClause: string[];
+      let typeOfClause: string[] | undefined;
 
       const objPrefix = (field as any).objectPrefix ? `${(field as any).objectPrefix}.` : '';
       switch (field.type) {
