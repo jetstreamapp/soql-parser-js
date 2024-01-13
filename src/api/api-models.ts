@@ -1,4 +1,7 @@
-export type LogicalOperator = 'AND' | 'OR' | 'NOT';
+export type LogicalOperatorAnd = 'AND';
+export type LogicalOperatorOr = 'OR';
+export type LogicalOperatorNot = 'NOT';
+export type LogicalOperator = LogicalOperatorAnd | LogicalOperatorOr | LogicalOperatorNot;
 export type Operator = '=' | '!=' | '<=' | '>=' | '>' | '<' | 'LIKE' | 'IN' | 'NOT IN' | 'INCLUDES' | 'EXCLUDES';
 export type FieldTypeOfConditionType = 'WHEN' | 'ELSE';
 export type GroupSelector = 'ABOVE' | 'AT' | 'BELOW' | 'ABOVE_OR_BELOW';
@@ -154,7 +157,7 @@ export interface Subquery extends QueryBase {
   sObjectPrefix?: string[];
 }
 
-export type WhereClause = WhereClauseWithoutOperator | WhereClauseWithRightCondition;
+export type WhereClause = WhereClauseWithoutOperator | WhereClauseWithoutNegationOperator | WhereClauseWithRightCondition;
 
 export interface WhereClauseWithoutOperator {
   left: ConditionWithValueQuery;
@@ -162,6 +165,15 @@ export interface WhereClauseWithoutOperator {
 
 export interface WhereClauseWithRightCondition extends WhereClauseWithoutOperator {
   operator: LogicalOperator;
+  right: WhereClause;
+}
+
+/**
+ * This is a special case where the left side of the where clause can potentially be null if there is a negation without parentheses
+ */
+export interface WhereClauseWithoutNegationOperator {
+  left: NegationCondition | null;
+  operator: LogicalOperatorNot;
   right: WhereClause;
 }
 

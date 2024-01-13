@@ -30,6 +30,7 @@ import {
   ValueWithDateNLiteralCondition,
   WhereClause,
   WhereClauseWithRightCondition,
+  WhereClauseWithoutNegationOperator,
   WithDataCategoryCondition,
 } from '../api/api-models';
 import {
@@ -732,8 +733,8 @@ class SOQLVisitor extends BaseSoqlVisitor {
   }
 
   expressionPartWithNegation(ctx: any) {
-    const output: Partial<WhereClauseWithRightCondition> = {
-      left: ctx.L_PAREN ? { openParen: ctx.L_PAREN.length } : (null as any), // FIXME: type does not allow null, but changing is a breaking change
+    const output: Partial<WhereClauseWithoutNegationOperator> = {
+      left: ctx.L_PAREN ? { openParen: ctx.L_PAREN.length } : null,
       operator: 'NOT',
       right: {
         left: {} as ValueCondition,

@@ -1,5 +1,15 @@
 # Changelog
 
+## 5.0.0
+
+Jan 13, 2024
+
+💥 Breaking Changes
+Fixed a bug where with typescript types to properly represent that `WhereClause` can have a null value for `left` in the case of a negation operator.
+This was always the case, but prior to enabling strict typescript types, this went under the radar.
+
+For Typescript consumers that have strict null checks enabled, they may need to make code changes depending on usage.
+
 ## 4.10.1
 
 Jan 13, 2024
