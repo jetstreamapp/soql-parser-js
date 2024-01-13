@@ -100,7 +100,7 @@ export function getField(input: string | ComposeFieldInput): SoqlModels.FieldTyp
       field: input,
     };
   } else if (isComposeFieldFunction(input)) {
-    let parameters: string[] | SoqlModels.FieldFunctionExpression[];
+    let parameters: string[] | SoqlModels.FieldFunctionExpression[] = [];
     if (input.parameters) {
       parameters = (Array.isArray(input.parameters) ? input.parameters : [input.parameters]) as
         | string[]
@@ -108,7 +108,7 @@ export function getField(input: string | ComposeFieldInput): SoqlModels.FieldTyp
     }
     return {
       type: 'FieldFunctionExpression',
-      functionName: input.functionName || input.fn,
+      functionName: (input.functionName || input.fn)!,
       parameters,
       alias: input.alias,
     };
@@ -122,7 +122,7 @@ export function getField(input: string | ComposeFieldInput): SoqlModels.FieldTyp
   } else if (isComposeFieldSubquery(input)) {
     return {
       type: 'FieldSubquery',
-      subquery: input.subquery,
+      subquery: input.subquery!,
     };
   } else if (isComposeFieldTypeof(input)) {
     return {
@@ -259,7 +259,7 @@ export function getFlattenedFields(
           break;
       }
     })
-    .filter(field => isString(field));
+    .filter(field => isString(field)) as string[];
 
   return parsedFields;
 }

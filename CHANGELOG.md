@@ -1,5 +1,15 @@
 # Changelog
 
+## 4.10.0
+
+Jan 13, 2024
+
+- Fixed where clause's that have a field name beginning with `In` preceded by the `NOT` operator. These were parsed as `NOT IN` instead of `NOT` followed by a field name, example: `NOT Invoice__c`
+  - https://github.com/jetstreamapp/jetstream/issues/702
+- Fixed queries that have two consecutive `NOT` operators (#237)
+- Enabled Typescript strict mode and made a number of minor fixes related to this.
+- When using `getField` which return `FieldFunctionExpression` will now always return an empty array even if no parameters are provided.
+
 ## 4.9.2
 
 July 24, 2023

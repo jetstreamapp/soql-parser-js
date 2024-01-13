@@ -231,7 +231,7 @@ export function getWhereValue(value: any | any[], literalType?: LiteralType | Li
 
   if (Array.isArray(literalType) && Array.isArray(value)) {
     return value.map((val, i) => {
-      return whereValueHelper(val, literalType[i] as LiteralType);
+      return whereValueHelper(val, literalType?.[i] as LiteralType);
     });
   } else {
     // This path should never hit, but on the off chance that literal type is an array and value is a string

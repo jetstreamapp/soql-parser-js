@@ -16,12 +16,14 @@ export interface FieldData {
 export interface FormatOptions {
   /**
    * @default 1
+   *
    * Number of tabs to indent by
    * These defaults to one
    */
   numIndent?: number;
   /**
    * @default 60
+   *
    * Number of characters before wrapping to a new line.
    * Set to 0 or 1 to force every field on a new line.
    * TYPEOF fields do not honor this setting, they will always be on one line unless `newLineAfterKeywords` is true,
@@ -30,6 +32,7 @@ export interface FormatOptions {
   fieldMaxLineLength?: number;
   /**
    * @default true
+   *
    * Set to true to have a subquery parentheses start and end on a new line.
    * This will be set to true if `newLineAfterKeywords` is true, in which case this property can be omitted
    */
@@ -38,6 +41,7 @@ export interface FormatOptions {
   whereClauseOperatorsIndented?: boolean;
   /**
    * @default false
+   *
    * Adds a new line and indent after all keywords (such as SELECT, FROM, WHERE, ORDER BY, etc..)
    * Setting this to true will add new lines in other places as well, such as complex WHERE clauses
    */
@@ -52,18 +56,18 @@ export interface FormatOptions {
  */
 export class Formatter {
   enabled: boolean;
-  private options: FormatOptions;
+  private options: Required<FormatOptions>;
   private currIndent = 1;
 
   constructor(enabled: boolean, options: FormatOptions) {
     this.enabled = enabled;
     this.options = {
-      numIndent: 1,
-      fieldMaxLineLength: 60,
-      fieldSubqueryParensOnOwnLine: true,
-      newLineAfterKeywords: false,
-      logging: false,
-      ...options,
+      numIndent: options.numIndent ?? 1,
+      fieldMaxLineLength: options.fieldMaxLineLength ?? 60,
+      fieldSubqueryParensOnOwnLine: options.fieldSubqueryParensOnOwnLine ?? true,
+      whereClauseOperatorsIndented: true,
+      newLineAfterKeywords: options.newLineAfterKeywords ?? false,
+      logging: options.logging ?? false,
     };
     if (this.options.newLineAfterKeywords) {
       this.options.fieldSubqueryParensOnOwnLine = true;
@@ -77,7 +81,7 @@ export class Formatter {
   }
 
   private getIndent(additionalIndent = 0) {
-    return this.repeatChar((this.currIndent + additionalIndent) * this.options.numIndent, '\t');
+    return this.repeatChar((this.currIndent + additionalIndent) * (this.options.numIndent || 1), '\t');
   }
 
   private repeatChar(numTimes: number, char: string) {
@@ -236,7 +240,7 @@ export class Formatter {
       groupBy.forEach((token, i) => {
         const nextToken = groupBy[i + 1];
         currLen += token.length;
-        if (nextToken && (currLen + nextToken.length > this.options.fieldMaxLineLength || this.options.newLineAfterKeywords)) {
+        if (nextToken && (currLen + nextToken.length > (this.options.fieldMaxLineLength || 0) || this.options.newLineAfterKeywords)) {
           output += `${token},\n\t`;
           currLen = 0;
         } else {
@@ -256,7 +260,7 @@ export class Formatter {
    * @param [leadingParenInline] Make the leading paren inline (last for "(" and first for ")") used for negation condition
    * @returns
    */
-  formatParens(count: number, character: '(' | ')', leadingParenInline = false) {
+  formatParens(count: number | undefined, character: '(' | ')', leadingParenInline = false) {
     let output = '';
     if (isNumber(count) && count > 0) {
       if (this.enabled) {

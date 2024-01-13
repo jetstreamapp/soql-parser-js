@@ -45,14 +45,14 @@ export class SoqlParser extends CstParser {
   public allowApexBindVariables = false;
   public ignoreParseErrors = false;
 
-  constructor({ ignoreParseErrors }: { ignoreParseErrors: boolean } = { ignoreParseErrors: false }) {
+  constructor({ ignoreParseErrors }: { ignoreParseErrors?: boolean | null } = { ignoreParseErrors: false }) {
     super(lexer.allTokens, {
       // true in production (webpack replaces this string)
       skipValidations: false,
-      recoveryEnabled: ignoreParseErrors,
+      recoveryEnabled: !!ignoreParseErrors,
       // nodeLocationTracking: 'full', // not sure if needed, could look at
     });
-    this.ignoreParseErrors = ignoreParseErrors;
+    this.ignoreParseErrors = !!ignoreParseErrors;
     this.performSelfAnalysis();
   }
 
@@ -157,7 +157,7 @@ export class SoqlParser extends CstParser {
         this.$_selectClauseFunctionIdentifier ||
           (this.$_selectClauseFunctionIdentifier = [
             { ALT: () => this.SUBRULE(this.dateFunction, { LABEL: 'fn' }) },
-            { ALT: () => this.SUBRULE(this.aggregateFunction, { LABEL: 'fn', ARGS: [true] }) },
+            { ALT: () => this.SUBRULE(this.aggregateFunction, { LABEL: 'fn' }) },
             { ALT: () => this.SUBRULE(this.locationFunction, { LABEL: 'fn' }) },
             { ALT: () => this.SUBRULE(this.fieldsFunction, { LABEL: 'fn' }) },
             { ALT: () => this.SUBRULE(this.otherFunction, { LABEL: 'fn' }) },
@@ -261,7 +261,7 @@ export class SoqlParser extends CstParser {
     const parenCount = this.getParenCount();
     this.AT_LEAST_ONE({
       DEF: () => {
-        this.SUBRULE(this.conditionExpression, { ARGS: [parenCount, false, true, true] });
+        this.SUBRULE(this.conditionExpression, { ARGS: [parenCount, true, true] });
       },
     });
 
@@ -280,7 +280,7 @@ export class SoqlParser extends CstParser {
 
   private conditionExpression = this.RULE(
     'conditionExpression',
-    (parenCount?: ParenCount, allowSubquery?: boolean, allowAggregateFn?: boolean, allowLocationFn?: boolean) => {
+    (parenCount?: ParenCount, allowAggregateFn?: boolean, allowLocationFn?: boolean) => {
       // argument is undefined during self-analysis, need to initialize to avoid exception
       parenCount = this.getParenCount(parenCount);
       this.OPTION(() => {
@@ -292,7 +292,7 @@ export class SoqlParser extends CstParser {
 
       // MAX_LOOKAHEAD -> this is increased because an arbitrary number of parens could be used causing a parsing error
       // this does not allow infinite parentheses, but is more than enough for any real use-cases
-      // Under no circumstances would large numbers of nested expressions not be expressable with fewer conditions
+      // Under no circumstances would large numbers of nested expressions not be expressible with fewer conditions
       this.MANY({
         MAX_LOOKAHEAD: 10,
         DEF: () => this.SUBRULE(this.expressionPartWithNegation, { ARGS: [parenCount], LABEL: 'expressionNegation' }),
@@ -300,7 +300,7 @@ export class SoqlParser extends CstParser {
 
       this.OR1({
         MAX_LOOKAHEAD: 10,
-        DEF: [{ ALT: () => this.SUBRULE(this.expression, { ARGS: [parenCount, allowSubquery, allowAggregateFn, allowLocationFn] }) }],
+        DEF: [{ ALT: () => this.SUBRULE(this.expression, { ARGS: [parenCount, false, allowAggregateFn, allowLocationFn] }) }],
       });
     },
   );
@@ -372,7 +372,7 @@ export class SoqlParser extends CstParser {
     const parenCount = this.getParenCount();
     this.AT_LEAST_ONE({
       DEF: () => {
-        this.SUBRULE(this.conditionExpression, { ARGS: [parenCount, true, undefined, undefined] });
+        this.SUBRULE(this.conditionExpression, { ARGS: [parenCount, true, false] });
       },
     });
 
@@ -575,8 +575,8 @@ export class SoqlParser extends CstParser {
       });
 
       this.OR1([
-        { GATE: () => allowAggregateFn, ALT: () => this.SUBRULE(this.aggregateFunction, { LABEL: 'lhs' }) },
-        { GATE: () => allowLocationFn, ALT: () => this.SUBRULE(this.locationFunction, { LABEL: 'lhs' }) },
+        { GATE: () => !!allowAggregateFn, ALT: () => this.SUBRULE(this.aggregateFunction, { LABEL: 'lhs' }) },
+        { GATE: () => !!allowLocationFn, ALT: () => this.SUBRULE(this.locationFunction, { LABEL: 'lhs' }) },
         { ALT: () => this.SUBRULE(this.dateFunction, { LABEL: 'lhs' }) },
         { ALT: () => this.SUBRULE(this.otherFunction, { LABEL: 'lhs' }) },
         { ALT: () => this.CONSUME(lexer.Identifier, { LABEL: 'lhs' }) },
@@ -757,10 +757,15 @@ export class SoqlParser extends CstParser {
   private setOperator = this.RULE('setOperator', () => {
     this.OR([
       { ALT: () => this.CONSUME(lexer.In, { LABEL: 'operator' }) },
-      { ALT: () => this.CONSUME(lexer.NotIn, { LABEL: 'operator' }) },
+      { ALT: () => this.SUBRULE(this.notInOperator, { LABEL: 'notIn' }) },
       { ALT: () => this.CONSUME(lexer.Includes, { LABEL: 'operator' }) },
       { ALT: () => this.CONSUME(lexer.Excludes, { LABEL: 'operator' }) },
     ]);
+  });
+
+  private notInOperator = this.RULE('notInOperator', () => {
+    this.CONSUME(lexer.Not, { LABEL: 'operator' });
+    this.CONSUME(lexer.In, { LABEL: 'operator' });
   });
 
   private booleanValue = this.RULE('booleanValue', () => {

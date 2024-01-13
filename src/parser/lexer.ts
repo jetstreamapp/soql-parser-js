@@ -230,9 +230,6 @@ export const GroupBy = createToken({ name: 'GROUP_BY', pattern: /GROUP BY/i, lon
 export const Having = createToken({ name: 'HAVING', pattern: /HAVING/i, longer_alt: Identifier, categories: [Keyword, ReservedKeyword] });
 export const In = createToken({ name: 'IN', pattern: /IN/i, longer_alt: Identifier, categories: [Keyword, ReservedKeyword] });
 
-// FIXME: split into two tokens, NOT is a reserved keyword, IN is not
-export const NotIn = createToken({ name: 'NOT_IN', pattern: /NOT IN/i, longer_alt: Identifier });
-
 export const Includes = createToken({
   name: 'INCLUDES',
   pattern: /INCLUDES/i,
@@ -1025,7 +1022,6 @@ export const allTokens = [
   Standard,
 
   In,
-  NotIn,
   For,
   Or,
   Last,
