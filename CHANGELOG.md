@@ -1,5 +1,12 @@
 # Changelog
 
+## 4.10.1
+
+Jan 13, 2024
+
+Revert accidental breaking change to types. `WhereClause` left can have `null` in the negation case, but the types did not represent this.
+Updating types to match reality is a breaking change for consumers, so worked around issue and will publish version 5 with breaking change.
+
 ## 4.10.0
 
 Jan 13, 2024
