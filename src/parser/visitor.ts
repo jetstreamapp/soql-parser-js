@@ -733,7 +733,7 @@ class SOQLVisitor extends BaseSoqlVisitor {
 
   expressionPartWithNegation(ctx: any) {
     const output: Partial<WhereClauseWithRightCondition> = {
-      left: ctx.L_PAREN ? { openParen: ctx.L_PAREN.length } : null,
+      left: ctx.L_PAREN ? { openParen: ctx.L_PAREN.length } : (null as any), // FIXME: type does not allow null, but changing is a breaking change
       operator: 'NOT',
       right: {
         left: {} as ValueCondition,
