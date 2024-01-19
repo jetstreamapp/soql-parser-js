@@ -80,7 +80,7 @@ import {
   WithClauseContext,
   WithDateCategoryContext,
 } from '../models';
-import { isString, isSubqueryFromFlag, isToken } from '../utils';
+import { isString, isSubqueryFromFlag, isToken, isWhereClauseWithRightCondition } from '../utils';
 import { parse, ParseQueryConfig, SoqlParser } from './parser';
 import { CstNode } from 'chevrotain';
 
@@ -453,15 +453,27 @@ class SOQLVisitor extends BaseSoqlVisitor {
   whereClause(ctx: WhereClauseContext): WhereClause {
     const where = ctx.conditionExpression.reduce(
       (expressions: ExpressionTree<WhereClause>, currExpression: any) => {
+        let tempExpression: WhereClauseWithRightCondition;
         if (!expressions.expressionTree) {
-          const tempExpression: WhereClauseWithRightCondition = this.visit(currExpression);
+          tempExpression = this.visit(currExpression);
           expressions.expressionTree = tempExpression;
-          expressions.prevExpression = tempExpression.right ? tempExpression.right : tempExpression;
         } else {
-          const tempExpression: WhereClauseWithRightCondition = this.visit(currExpression, { prevExpression: expressions.prevExpression });
+          tempExpression = this.visit(currExpression, { prevExpression: expressions.prevExpression });
           (expressions.prevExpression as WhereClauseWithRightCondition).right = tempExpression;
-          expressions.prevExpression = tempExpression.right ? tempExpression.right : tempExpression;
         }
+
+        /**
+         * Find the last expression in the chain to set as the prevExpression
+         * negation expressions will sometimes return multiple chains of expressions
+         */
+        let currentRightExpression = tempExpression.right;
+        let nextRightExpression = tempExpression.right;
+        while (isWhereClauseWithRightCondition(nextRightExpression)) {
+          currentRightExpression = nextRightExpression;
+          nextRightExpression = nextRightExpression.right;
+        }
+        expressions.prevExpression = nextRightExpression || tempExpression;
+
         return expressions;
       },
       { prevExpression: undefined, expressionTree: undefined },
