@@ -125,5 +125,6 @@
   "SELECT Id FROM Account WITH SYSTEM_MODE",
   "SELECT Id, BillingCity FROM Account WHERE NOT (NOT BillingCity LIKE '%123%')",
   "SELECT Id FROM Account WHERE NOT (NOT Invoice_Type__c LIKE '%Usage%')",
-  "SELECT Id FROM Account WHERE (NOT Invoice_Type__c LIKE '%Usage%')"
+  "SELECT Id FROM Account WHERE (NOT Invoice_Type__c LIKE '%Usage%')",
+  "SELECT Id, City FROM Lead WHERE NOT ((NOT (City LIKE '%LHR%')) AND City LIKE '%KHR%')"
 ]
