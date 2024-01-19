@@ -1,5 +1,11 @@
 # Changelog
 
+## 5.0.2
+
+Jan 18, 2024
+
+- Nested NOT negation WHERE clauses were not properly formed (#242)
+
 ## 5.0.1
 
 Jan 13, 2024

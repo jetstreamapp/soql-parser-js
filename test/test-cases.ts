@@ -2634,6 +2634,53 @@ export const testCases: TestCase[] = [
       },
     },
   },
+  {
+    testCase: 127,
+    soql: `SELECT Id, City FROM Lead WHERE NOT ((NOT (City LIKE '%LHR%')) AND City LIKE '%KHR%')`,
+    output: {
+      fields: [
+        {
+          type: 'Field',
+          field: 'Id',
+        },
+        {
+          type: 'Field',
+          field: 'City',
+        },
+      ],
+      sObject: 'Lead',
+      where: {
+        left: null,
+        operator: 'NOT',
+        right: {
+          left: {
+            openParen: 2,
+          },
+          operator: 'NOT',
+          right: {
+            left: {
+              field: 'City',
+              operator: 'LIKE',
+              literalType: 'STRING',
+              value: "'%LHR%'",
+              openParen: 1,
+              closeParen: 2,
+            },
+            operator: 'AND',
+            right: {
+              left: {
+                field: 'City',
+                operator: 'LIKE',
+                literalType: 'STRING',
+                value: "'%KHR%'",
+                closeParen: 1,
+              },
+            },
+          },
+        },
+      },
+    },
+  },
 ];
 
 export default testCases;
