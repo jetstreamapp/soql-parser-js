@@ -3,8 +3,6 @@
 ![build](https://github.com/jetstreamapp/soql-parser-js/actions/workflows/ci.yml/badge.svg)
 [![npm version](https://badge.fury.io/js/@jetstreamapp%2Fsoql-parser-js.svg)](https://badge.fury.io/js/@jetstreamapp%2Fsoql-parser-js)
 
-https://github.com/OWNER/REPOSITORY/actions/workflows/ci/badge.svg
-
 ## Description
 
 **This library allows parsing and composing SOQL queries from Salesforce using JavaScript or Typescript.**
