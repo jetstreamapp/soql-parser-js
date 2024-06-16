@@ -3,8 +3,8 @@
     "lib": ["esnext"],
     "module": "commonjs",
     "noImplicitAny": true,
-    "outDir": "./dist_cli",
-    "target": "es6",
+    "outDir": "./dist",
+    "target": "ESNext",
     "resolveJsonModule": true,
     "skipLibCheck": true,
     "typeRoots": ["node_modules/@types"]

@@ -10,7 +10,7 @@ module.exports = {
     modules: true,
     reasons: true,
   },
-  entry: './dist_cli/src/cli/index.js',
+  entry: './dist/cli/src/cli/index.js',
   output: {
     path: path.resolve(__dirname, './bin/'),
     filename: 'index.js',

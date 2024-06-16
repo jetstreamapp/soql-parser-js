@@ -8,15 +8,14 @@ const banner = `/*! ${pkg.name} - v${pkg.version} */`;
 
 module.exports = {
   mode: 'production',
-  devtool: 'source-map',
   stats: {
     colors: true,
     modules: true,
     reasons: true,
   },
-  entry: './dist/src/index.js',
+  entry: './dist/cjs/src/index.js',
   output: {
-    path: path.resolve(__dirname, './dist/'),
+    path: path.resolve(__dirname, './dist/cjs'),
     filename: 'index.js',
     library: 'soqlParserJs',
     libraryTarget: 'umd',
