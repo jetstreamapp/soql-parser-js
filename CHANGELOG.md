@@ -1,5 +1,11 @@
 # Changelog
 
+## 6.1.0
+
+June 16, 2024
+
+- Add support for [negative currency values](https://help.salesforce.com/s/articleView?id=release-notes.rn_api_soql.htm&release=250&type=5) (#244)
+
 ## 6.0.0
 
 June 16, 2024
