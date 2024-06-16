@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { parseQuery, Query } from 'soql-parser-js';
+import { parseQuery, Query } from '@jetstreamapp/soql-parser-js';
 
 export interface ParsedOutputProps {
   query: string;

@@ -9,7 +9,7 @@ sidebar_position: 4
 Parsing a SOQL query can be completed by calling `parseQuery(soqlQueryString)`. A `Query` data structure will be returned.
 
 ```typescript
-import { parseQuery } from 'soql-parser-js';
+import { parseQuery } from '@jetstreamapp/soql-parser-js';
 
 const soql = `
   SELECT UserId, COUNT(Id)
@@ -71,7 +71,7 @@ console.log(JSON.stringify(soqlQuery, null, 2));
 Added support for `allowPartialQuery` in version `4.4.0`
 
 ```typescript
-import { parseQuery } from 'soql-parser-js';
+import { parseQuery } from '@jetstreamapp/soql-parser-js';
 
 const soql = `
   WHERE LoginTime > 2010-09-20T22:16:30.000Z
@@ -117,7 +117,7 @@ console.log(JSON.stringify(soqlQuery, null, 2));
 ### Validating Queries
 
 ```typescript
-import { isQueryValid } from 'soql-parser-js';
+import { isQueryValid } from '@jetstreamapp/soql-parser-js';
 
 const invalidSoql = `SELECT UserId, COUNT(Id) Account`;
 const validSoql = `SELECT UserId, COUNT(Id) Account`;
@@ -141,7 +141,7 @@ Some utility methods have been provided to make it easier to build the field dat
 **Note:** There are a number of fields populated on the Query object when `parseQuery()` is called that are not required to compose a query. Look at the examples below and the comments in the data model for more information.
 
 ```typescript
-import { composeQuery, getField, Query } from 'soql-parser-js';
+import { composeQuery, getField, Query } from '@jetstreamapp/soql-parser-js';
 
 // Build a subquery
 const oppLineItemsSubquery = {
@@ -221,7 +221,7 @@ Starting in version `4.4`, compose will not fail if there are missing `SELECT` a
 Partial compose support it supported without any additional steps.
 
 ```typescript
-import { Compose, parseQuery } from 'soql-parser-js';
+import { Compose, parseQuery } from '@jetstreamapp/soql-parser-js';
 
 const soql = `WHERE Name LIKE 'A%' AND MailingCity = 'California`;
 const parsedQuery = parseQuery(soql, { allowPartialQuery: true });
@@ -256,7 +256,7 @@ If you need to compose just a part of a query instead of the entire query, you c
 For example, if you just need the `WHERE` clause from a query as a string, you can do the following:
 
 ```typescript
-import { Compose, parseQuery } from 'soql-parser-js';
+import { Compose, parseQuery } from '@jetstreamapp/soql-parser-js';
 
 const soql = `SELECT Id FROM Account WHERE Name = 'Foo'`;
 const parsedQuery = parseQuery(soql);
@@ -312,7 +312,7 @@ This function is provided as a convenience and just calls parse and compose.
 [Check out the demo](https://paustint.github.io/soql-parser-js/) to see the outcome of the various format options.
 
 ```typescript
-import { formatQuery } from 'soql-parser-js';
+import { formatQuery } from '@jetstreamapp/soql-parser-js';
 
 const query = `SELECT Id, Name, AccountNumber, AccountSource, AnnualRevenue, BillingAddress, BillingCity, BillingCountry, BillingGeocodeAccuracy, ShippingStreet, Sic, SicDesc, Site, SystemModstamp, TickerSymbol, Type, Website, (SELECT Id, Name, AccountId, Amount, CampaignId, CloseDate, CreatedById, Type FROM Opportunities), (SELECT Id, Name, AccountNumber, AccountSource, AnnualRevenue, BillingAddress, Website FROM ChildAccounts) FROM Account WHERE Name LIKE 'a%' OR Name LIKE 'b%' OR Name LIKE 'c%'`;
 

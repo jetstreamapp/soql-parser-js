@@ -22,7 +22,7 @@ These are the most common functions exported by the library:
 ## Parse a query
 
 ```typescript
-import { parseQuery, Query } from 'soql-parser-js';
+import { parseQuery, Query } from '@jetstreamapp/soql-parser-js';
 
 const query = parseQuery(`SELECT Id FROM Account WHERE Name = 'foo'`);
 
@@ -53,7 +53,7 @@ console.log(query);
 Composing a query will take a query object and return a soql query.
 
 ```typescript
-import { composeQuery, Query } from 'soql-parser-js';
+import { composeQuery, Query } from '@jetstreamapp/soql-parser-js';
 
 const query = {
   fields: [
@@ -85,7 +85,7 @@ console.log(soql);
 You can use the `getField` helper function to simplify the field generation. Read the api docs for more information.
 
 ```typescript
-import { composeQuery, getField } from 'soql-parser-js';
+import { composeQuery, getField } from '@jetstreamapp/soql-parser-js';
 
 const soql = composeQuery({
   fields: [
