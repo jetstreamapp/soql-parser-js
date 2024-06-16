@@ -8,10 +8,10 @@ const darkCodeTheme = themes.shadesOfPurple;
 
 /** @type {import('@docusaurus/types').Config} */
 const config = {
-  title: 'Soql Parser JS',
+  title: 'SOQL Parser JS',
   tagline: 'Parse and generate SOQL queries',
-  url: 'https://jetstreamapp.github.io',
-  baseUrl: '/soql-parser-js/',
+  url: 'https://soql-parser-js.getjetstream.app',
+  baseUrl: '/',
   onBrokenLinks: 'throw',
   onBrokenMarkdownLinks: 'warn',
   favicon: 'img/favicon.ico',
@@ -19,7 +19,7 @@ const config = {
   // GitHub pages deployment config.
   // If you aren't using GitHub pages, you don't need these.
   organizationName: 'jetstreamapp',
-  projectName: '@jetstreamapp/soql-parser-js',
+  projectName: 'soql-parser-js',
   deploymentBranch: 'gh-pages',
   trailingSlash: false,
 
