@@ -1,6 +1,7 @@
 import React from 'react';
 import clsx from 'clsx';
 import styles from './styles.module.css';
+import { Highlight } from '../Utilities/Highlight';
 
 type FeatureItem = {
   title: string;
@@ -48,16 +49,9 @@ const FeatureList: FeatureItem[] = [
     title: 'Parse',
     description: (
       <>
-        <p className={styles.featuresSubHeading}>turn</p>
-        <div>
-          <pre>
-            <code>{exampleSoql}</code>
-          </pre>
-        </div>
+        <Highlight code={exampleSoql} language="sql" />
         <p className={styles.featuresSubHeading}>into</p>
-        <pre>
-          <code>{exampleCompose}</code>
-        </pre>
+        <Highlight code={exampleCompose} language="json" />
       </>
     ),
   },
@@ -65,16 +59,9 @@ const FeatureList: FeatureItem[] = [
     title: 'Compose',
     description: (
       <>
-        <p className={styles.featuresSubHeading}>turn</p>
-        <div>
-          <pre>
-            <code>{exampleCompose}</code>
-          </pre>
-        </div>
+        <Highlight code={exampleCompose} language="json" />
         <p className={styles.featuresSubHeading}>into</p>
-        <pre>
-          <code>{exampleSoql}</code>
-        </pre>
+        <Highlight code={exampleSoql} language="sql" />
       </>
     ),
   },
@@ -83,7 +70,7 @@ const FeatureList: FeatureItem[] = [
     description: (
       <>
         <p>
-          Your SOQL query is parsed using a proper language parser,{' '}
+          Your SOQL query is parsed using a language parser,{' '}
           <a href="https://chevrotain.io/docs/features/blazing_fast.html" target="_blank">
             Chevrotain JS
           </a>
@@ -106,7 +93,7 @@ function Feature({ title, description }: FeatureItem) {
     <div className={clsx('col col--4')}>
       <div className="padding-horiz--md">
         <h2 className="text--center">{title}</h2>
-        <p>{description}</p>
+        {description}
       </div>
     </div>
   );

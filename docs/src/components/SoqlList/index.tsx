@@ -2,6 +2,7 @@ import React from 'react';
 import clsx from 'clsx';
 import styles from './styles.module.css';
 import sampleQueriesJson from '@site/static/sample-queries-json.json';
+import { Highlight } from '../Utilities/Highlight';
 
 const sampleQueries: string[] = sampleQueriesJson;
 
@@ -26,7 +27,7 @@ export default function SoqlList({ isOpen = true, selected, onSelected, onToggle
               className={clsx(styles.listItem, { [styles.selected]: selected === query })}
               onClick={() => onSelected(query)}
             >
-              {query}
+              <Highlight code={query} language="sql" classNames={{ pre: 'wrap-text' }} />
             </li>
           ))}
         </ul>

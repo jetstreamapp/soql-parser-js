@@ -27,28 +27,25 @@
   padding: 0;
   max-height: calc(100vh - var(--ifm-navbar-height) - 62px - 1rem);
   overflow-y: scroll;
+  margin-top: 0.2rem;
 }
 
 .listItem {
   padding: 0.5rem;
-  border-top: 1px solid #e5e5e5;
   cursor: pointer;
-}
-
-[data-theme='dark'] .listItem.selected {
-  background-color: #373535;
+  border-left: 5px solid transparent;
 }
 
 .listItem.selected {
-  background-color: #d7d1d1;
+  border-left: 5px solid #808080;
 }
 
 [data-theme='dark'] .listItem:hover {
-  background-color: #373535;
+  border-left: 5px solid #e5e5e5;
   text-decoration: none;
 }
 
 .listItem:hover {
-  background-color: #d7d1d1;
+  border-left: 5px solid #808080;
   text-decoration: none;
 }

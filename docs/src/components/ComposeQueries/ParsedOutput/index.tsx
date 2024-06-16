@@ -1,4 +1,5 @@
 import React from 'react';
+import { Highlight } from '../../Utilities/Highlight';
 
 export interface ParsedOutputProps {
   query: string;
@@ -10,9 +11,7 @@ export default function ParsedOutput({ query }: ParsedOutputProps): JSX.Element 
       {query && (
         <>
           <div className="label">Output</div>
-          <pre>
-            <code>{query}</code>
-          </pre>
+          <Highlight code={query} language="sql" />
         </>
       )}
     </div>

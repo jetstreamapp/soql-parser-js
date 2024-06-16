@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { parseQuery, Query } from '@jetstreamapp/soql-parser-js';
+import { Highlight } from '../../Utilities/Highlight';
 
 export interface ParsedOutputProps {
   query: string;
@@ -23,6 +24,8 @@ export default function ParsedOutput({ query }: ParsedOutputProps): JSX.Element 
       setInvalidMessage(ex.message);
     }
   }, [query, allowPartialQuery, ignoreParseErrors, allowApexBindVariables]);
+
+  const code = parsedQuery ? JSON.stringify(parsedQuery, null, 2) : invalidMessage;
 
   return (
     <div className="">
@@ -50,9 +53,7 @@ export default function ParsedOutput({ query }: ParsedOutputProps): JSX.Element 
       {(parsedQuery || invalidMessage) && (
         <>
           <div className="label">Output</div>
-          <pre>
-            <code>{parsedQuery ? JSON.stringify(parsedQuery, null, 2) : invalidMessage}</code>
-          </pre>
+          <Highlight code={code} language="json" />
         </>
       )}
     </div>

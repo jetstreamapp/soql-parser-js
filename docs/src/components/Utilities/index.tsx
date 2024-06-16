@@ -33,6 +33,7 @@ import {
   ValueWithDateNLiteralCondition,
   WhereClause,
 } from '@jetstreamapp/soql-parser-js';
+import { Highlight } from './Highlight';
 
 const sampleQuery: Query = {
   fields: [
@@ -316,15 +317,11 @@ export default function Utilities({}: UtilitiesProps) {
           <div className="row">
             <div className="col col--6">
               <div>Input</div>
-              <pre>
-                <code>{item.input}</code>
-              </pre>
+              <Highlight code={item.input} language="javascript" />
             </div>
             <div className="col col--6">
               <div>Output</div>
-              <pre>
-                <code>{item.output}</code>
-              </pre>
+              <Highlight code={item.output} language="javascript" />
             </div>
           </div>
         </div>
