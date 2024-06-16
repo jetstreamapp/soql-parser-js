@@ -1,15 +1,17 @@
 // @ts-check
 // Note: type annotations allow type checking and IDEs autocompletion
 
-const lightCodeTheme = require('prism-react-renderer/themes/github');
-const darkCodeTheme = require('prism-react-renderer/themes/dracula');
+const { themes } = require('prism-react-renderer');
+
+const lightCodeTheme = themes.github;
+const darkCodeTheme = themes.shadesOfPurple;
 
 /** @type {import('@docusaurus/types').Config} */
 const config = {
-  title: 'Soql Parser JS',
+  title: 'SOQL Parser JS',
   tagline: 'Parse and generate SOQL queries',
-  url: 'https://jetstreamapp.github.io',
-  baseUrl: '/soql-parser-js/',
+  url: 'https://soql-parser-js.getjetstream.app',
+  baseUrl: '/',
   onBrokenLinks: 'throw',
   onBrokenMarkdownLinks: 'warn',
   favicon: 'img/favicon.ico',
@@ -17,7 +19,7 @@ const config = {
   // GitHub pages deployment config.
   // If you aren't using GitHub pages, you don't need these.
   organizationName: 'jetstreamapp',
-  projectName: '@jetstreamapp/soql-parser-js',
+  projectName: 'soql-parser-js',
   deploymentBranch: 'gh-pages',
   trailingSlash: false,
 
@@ -93,10 +95,18 @@ const config = {
           },
         ],
       },
+      markdown: {
+        mdx1Compat: {
+          comments: false,
+          admonitions: false,
+          headingIds: false,
+        },
+      },
       prism: {
         theme: lightCodeTheme,
         darkTheme: darkCodeTheme,
       },
+      additionalLanguages: ['javascript', 'json', 'sql'],
     }),
 };
 

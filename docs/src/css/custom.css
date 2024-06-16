@@ -51,3 +51,8 @@ label > input[type='checkbox'] {
 label > input[type='number'] {
   margin-left: 0.5rem;
 }
+
+.wrap-text {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
