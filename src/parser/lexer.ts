@@ -768,7 +768,8 @@ export const Minus = createToken({ name: 'MINUS', pattern: '-', categories: [Sym
 
 export const DateTime = createToken({
   name: 'DATETIME',
-  pattern: /[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(\.[0-9]+)?(\Z|\.[0-9]+Z|\+[0-9]{2}:[0-9]{2}|\-[0-9]{2}:[0-9]{2}|\+[0-9]{4}|\-[0-9]{4})/i,
+  pattern:
+    /[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(\.[0-9]+)?(\Z|\.[0-9]+Z|\+[0-9]{2}:[0-9]{2}|\-[0-9]{2}:[0-9]{2}|\+[0-9]{4}|\-[0-9]{4})/i,
   categories: [DateIdentifier],
 });
 
@@ -792,7 +793,7 @@ export const UnsignedDecimal = createToken({
 });
 export const CurrencyPrefixedInteger = createToken({
   name: 'CURRENCY_PREFIXED_INTEGER',
-  pattern: /[a-zA-Z]{3}[0-9]+/,
+  pattern: /[a-zA-Z]{3}-?[0-9]+/,
   longer_alt: Identifier,
   categories: [DecimalNumberIdentifier, Identifier],
 });
