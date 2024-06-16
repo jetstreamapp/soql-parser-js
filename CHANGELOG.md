@@ -644,7 +644,7 @@ Minified, uncompressed:
 - Version 2.0: **207kb**
 
 ```javascript
-var soqlParser = require('soql-parser-js');
+var soqlParser = require('@jetstreamapp/soql-parser-js');
 
 const query = soqlParser.parseQuery(`SELECT Id FROM Account WHERE Id = 'FOO'`);
 console.log('query', query);

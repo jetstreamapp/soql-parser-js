@@ -17,7 +17,7 @@ const config = {
   // GitHub pages deployment config.
   // If you aren't using GitHub pages, you don't need these.
   organizationName: 'jetstreamapp',
-  projectName: 'soql-parser-js',
+  projectName: '@jetstreamapp/soql-parser-js',
   deploymentBranch: 'gh-pages',
   trailingSlash: false,
 

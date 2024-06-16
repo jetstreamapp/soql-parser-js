@@ -1,6 +1,6 @@
 import clsx from 'clsx';
 import React, { useEffect, useState } from 'react';
-import { composeQuery, parseQuery } from 'soql-parser-js';
+import { composeQuery, parseQuery } from '@jetstreamapp/soql-parser-js';
 import ParsedOutput from './ParsedOutput';
 import QueryInput from './QueryInput';
 

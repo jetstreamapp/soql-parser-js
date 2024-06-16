@@ -32,7 +32,7 @@ import {
   ValueWithDateLiteralCondition,
   ValueWithDateNLiteralCondition,
   WhereClause,
-} from 'soql-parser-js';
+} from '@jetstreamapp/soql-parser-js';
 
 const sampleQuery: Query = {
   fields: [
