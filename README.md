@@ -1,8 +1,9 @@
 <img src="./assets/soql-parser-js-logo.svg">
 
-[![build](https://api.travis-ci.com/jetstreamapp/soql-parser-js.png?branch=master)](https://travis-ci.com/jetstreamapp/soql-parser-js)
-[![npm version](https://badge.fury.io/js/soql-parser-js.svg)](https://badge.fury.io/js/soql-parser-js)
-[![dependencies](https://david-dm.org/jetstreamapp/soql-parser-js.svg)](https://david-dm.org/jetstreamapp/soql-parser-js)
+![build](https://github.com/jetstreamapp/soql-parser-js/actions/workflows/ci.yml/badge.svg)
+[![npm version](https://badge.fury.io/js/@jetstreamapp%2Fsoql-parser-js.svg)](https://badge.fury.io/js/@jetstreamapp%2Fsoql-parser-js)
+
+https://github.com/OWNER/REPOSITORY/actions/workflows/ci/badge.svg
 
 ## Description
 
