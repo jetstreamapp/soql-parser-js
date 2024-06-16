@@ -1,23 +1,19 @@
 {
-  "name": "soql-parser-js",
+  "name": "@jetstreamapp/soql-parser-js",
   "version": "5.0.2",
   "description": "Salesforce.com SOQL parser and composer",
-  "main": "dist/index.js",
-  "module": "dist_esm/index.js",
-  "types": "dist/src/index.d.ts",
+  "main": "dist/cjs/index.js",
+  "module": "dist/esm/index.js",
+  "types": "dist/cjs/src/index.d.ts",
   "scripts": {
     "clean": "rm -rf ./dist/*",
-    "clean:esm": "rm -rf ./dist_esm/*",
-    "clean:cli": "rm -rf ./dist_cli/*",
     "prebuild": "npm run clean",
-    "build": "npm-run-all compile bundle:min build:esm build:cli",
-    "build:esm": "npm-run-all clean:esm compile:esm",
-    "build:cli": "npm-run-all clean:cli compile:cli",
-    "compile": "tsc --project tsconfig.json",
-    "compile:esm": "tsc --project tsconfig-esm.json",
-    "compile:cli": "tsc --project tsconfig-cli.json",
+    "build": "npm-run-all build:cjs bundle:cjs build:esm build:cli",
+    "build:cjs": "tsc --project tsconfig.json",
+    "build:esm": "tsc --project tsconfig-esm.json",
+    "build:cli": "tsc --project tsconfig-cli.json",
     "bundle:regular": "webpack --config webpack-regular.config.js",
-    "bundle:min": "webpack --config webpack.config.js",
+    "bundle:cjs": "webpack --config webpack.config.js",
     "tsc": "./node_modules/.bin/tsc",
     "release": "release-it",
     "copy-tc-to-docs": "ts-node ./tasks/copy-test-cases-to-docs.ts",
@@ -30,11 +26,11 @@
   "bin": {
     "soql-parser-js": "bin/soql-parser-js"
   },
+  "publishConfig": {
+    "access": "public"
+  },
   "files": [
     "dist/**",
-    "dist_esm/**",
-    "dist_cli/**",
-    "src/**",
     "bin/**",
     "AUTHORS.md",
     "CHANGELOG.md",

@@ -1,5 +1,11 @@
 # Changelog
 
+## 6.0.0
+
+June 16, 2024
+
+- Package has been moved to `@jetstreamapp` npm organization
+
 ## 5.0.2
 
 Jan 18, 2024

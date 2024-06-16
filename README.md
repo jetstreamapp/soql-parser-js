@@ -8,6 +8,14 @@
 
 **This library allows parsing and composing SOQL queries from Salesforce using JavaScript or Typescript.**
 
+### Installation
+
+👉 **As of version 6.0.0**, this package is now part of the `@jetstreamapp` npm organization.
+
+```bash
+npm install @jetstreamapp/soql-parser-js
+```
+
 **Available Features:**
 
 1. Parse SOQL queries into a common `Query` data structure.
