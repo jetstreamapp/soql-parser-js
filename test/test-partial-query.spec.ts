@@ -1,3 +1,4 @@
+import { describe, expect, it } from 'vitest';
 import { composeQuery, parseQuery, Query, WhereClause } from '../src';
 import { isValueQueryCondition, isWhereClauseWithRightCondition } from '../src/api/public-utils';
 import testCases from './test-cases-for-partial-parse';

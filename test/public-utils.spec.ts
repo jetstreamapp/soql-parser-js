@@ -1,6 +1,7 @@
+import { describe, expect, it } from 'vitest';
+import { FieldSubquery } from '../src';
 import * as utils from '../src/api/public-utils';
 import { testCases } from './public-utils-test-data';
-import { FieldSubquery, Query } from '../src';
 const lodashGet = require('lodash.get');
 
 describe('getField', () => {
