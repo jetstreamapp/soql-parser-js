@@ -1,5 +1,11 @@
 # Changelog
 
+## 6.2.0
+
+May 8, 2025
+
+- Updated build tooling and dependencies, no externally facing changes.
+
 ## 6.1.0
 
 June 16, 2024
