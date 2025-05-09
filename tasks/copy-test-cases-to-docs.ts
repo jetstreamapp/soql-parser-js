@@ -1,13 +1,16 @@
 import { testCases, TestCase } from '../test/test-cases';
-import { writeJSONSync } from 'fs-extra';
+import { writeFileSync } from 'fs';
 import { join } from 'path';
 
 const outputPath = join(__dirname, '../docs/static/sample-queries-json.json');
 
 console.log('copying test-cases to docs');
 
-writeJSONSync(
+writeFileSync(
   outputPath,
-  testCases.map((tc: TestCase) => tc.soql),
-  { spaces: 2 },
+  JSON.stringify(
+    testCases.map((tc: TestCase) => tc.soql),
+    null,
+    2,
+  ),
 );

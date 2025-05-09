@@ -1,6 +1,7 @@
-import testCases from './test-cases';
-import { performance } from 'perf_hooks';
 import * as chalk from 'chalk';
+import { performance } from 'perf_hooks';
+import { describe, it } from 'vitest';
+import testCases from './test-cases';
 
 // SKIPPED -
 // describe.only('parse queries', () => {

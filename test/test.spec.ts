@@ -1,4 +1,5 @@
-import { parseQuery, WhereClause, Query, Compose, composeQuery, formatQuery } from '../src';
+import { describe, expect, it } from 'vitest';
+import { Compose, composeQuery, formatQuery, parseQuery, Query, WhereClause } from '../src';
 import { isValueQueryCondition, isWhereClauseWithRightCondition } from '../src/api/public-utils';
 import { isQueryValid } from '../src/parser/visitor';
 import testCases from './test-cases';

@@ -1,13 +1,18 @@
 {
   "compilerOptions": {
+    "emitDeclarationOnly": true,
     "declaration": true,
-    "lib": ["dom", "esnext"],
-    "module": "commonjs",
+    "importHelpers": true,
+    "isolatedModules": true,
+    "lib": ["esnext"],
+    "module": "ESNext",
+    "moduleResolution": "node",
     "noImplicitAny": true,
-    "outDir": "dist/cjs/src",
+    "declarationDir": "dist/types",
+    "outDir": "dist",
     "removeComments": true,
     "strict": true,
-    "target": "es5",
+    "target": "ES2017",
     "typeRoots": ["node_modules/@types"]
   },
   "include": ["src/**/*.ts"],

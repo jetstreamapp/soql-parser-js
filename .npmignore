@@ -19,9 +19,5 @@ CHANGELOG.md
 CONTRIBUTING.md
 CONTRIBUTORS.md
 ISSUE_TEMPLATE
-tsconfig-cli.json
-tsconfig-esm.json
 tsconfig.json
-webpack-cli.config.js
-webpack-min.config.js
-webpack-regular.config.js
+vitest.config.ts

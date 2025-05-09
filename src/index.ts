@@ -7,4 +7,4 @@ export { parseQuery, isQueryValid } from './parser/visitor';
 export * from './api/api-models';
 export * from './api/public-utils';
 export * from './composer/composer';
-export { FormatOptions } from './formatter/formatter';
+export type { FormatOptions } from './formatter/formatter';
