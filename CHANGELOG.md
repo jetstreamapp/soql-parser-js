@@ -1,5 +1,11 @@
 # Changelog
 
+## 6.2.1
+
+July 7, 2025
+
+- Updated build scripts to ensure esm build works correctly. (#259)
+
 ## 6.2.0
 
 May 8, 2025
