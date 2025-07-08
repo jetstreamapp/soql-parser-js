@@ -1,6 +1,6 @@
 {
   "name": "@jetstreamapp/soql-parser-js",
-  "version": "6.1.0",
+  "version": "6.2.0",
   "description": "Salesforce.com SOQL parser and composer",
   "main": "dist/cjs/index.js",
   "module": "dist/esm/index.mjs",
@@ -19,7 +19,7 @@
     "build:cjs": "esbuild src/index.ts --bundle --outfile=dist/cjs/index.js --minify --format=cjs --target=es2022",
     "build:cli": "esbuild cli/index.ts --bundle --outfile=dist/cli/index.js --minify --format=cjs --target=es2022 --platform=node",
     "build:declarations": "tsc --project tsconfig.json",
-    "tsc": "./node_modules/.bin/tsc",
+    "tsc": "tsc",
     "release": "release-it",
     "copy-tc-to-docs": "tsx ./tasks/copy-test-cases-to-docs.ts",
     "test": "vitest --passWithNoTests --testTimeout 10000",
@@ -71,6 +71,6 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/jetstreamapp/soql-parser-js"
+    "url": "git+https://github.com/jetstreamapp/soql-parser-js.git"
   }
 }
