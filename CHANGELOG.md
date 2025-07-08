@@ -1,5 +1,11 @@
 # Changelog
 
+## 6.2.2
+
+July 8, 2025
+
+- Ensure types are referenced in exports. (#263)
+
 ## 6.2.1
 
 July 7, 2025
