@@ -15,8 +15,9 @@
   "scripts": {
     "clean": "rm -rf ./dist/*",
     "prebuild": "npm run clean",
-    "build": "npm-run-all build:esm build:cjs build:cli build:declarations",
+    "build": "npm-run-all build:esm build:lwc build:cjs build:cli build:declarations",
     "build:esm": "esbuild src/index.ts --bundle --outfile=dist/esm/index.mjs --minify --format=esm --target=es2022",
+    "build:lwc": "esbuild src/index.ts --bundle --outfile=dist/lwc/index.js --format=esm --target=es2022",
     "build:cjs": "esbuild src/index.ts --bundle --outfile=dist/cjs/index.js --minify --format=cjs --target=es2022",
     "build:cli": "esbuild cli/index.ts --bundle --outfile=dist/cli/index.js --minify --format=cjs --target=es2022 --platform=node",
     "build:declarations": "tsc --project tsconfig.json",
