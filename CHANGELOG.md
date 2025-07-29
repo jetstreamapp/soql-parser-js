@@ -1,5 +1,12 @@
 # Changelog
 
+## 6.2.3
+
+July 28, 2025
+
+- Add LWC compatible output (#264)
+  - Added deployment instructions on readme
+
 ## 6.2.2
 
 July 8, 2025

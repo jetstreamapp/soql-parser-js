@@ -508,6 +508,74 @@ WHERE Name LIKE 'a%'
 	OR Name LIKE 'c%'
 ```
 
+## Using in LWC
+
+The easiest way to utilize this library in LWC is to deploy the compiled code as a web component in your org.
+
+:warning: The minified version ends up with `$A` characters in the output, which causes the deployment to SFD to fail, so we have created an unminified version of the library just for Salesforce.
+
+### Obtaining the build artifacts
+
+We don't store the built artifacts on github, so you will need to obtain from NPM or run the build command yourself.
+
+#### Download from NPM
+
+Download from [npm](https://www.npmjs.com/package/@jetstreamapp/soql-parser-js)
+
+**Either:**
+
+1. Go to the "Code Tab" on the [npm](https://www.npmjs.com/package/@jetstreamapp/soql-parser-js) listing
+   1. Navigate to `/dist/lwc.index.mjs`
+2. Install this project in an existing node library by running `npm install @jetstreamapp/soql-parser-js`
+   1. then navigating to the downloaded code in this folder: `node_modules/@jetstreamapp/soql-parser-js/dist/lwc`
+
+#### Build the files yourself
+
+1. Clone/download the repository from GitHub
+2. Ensure you have node installed (version 22 or higher)
+3. Install dependencies with `npm install`
+4. Run `npm build:lwc`
+5. The output will be placed in `/dist/lwc.index.mjs`
+
+### Deploying and Using in Salesforce
+
+Copy `index.mjs` into an LWC component.
+
+For example:
+
+```
+soqlParserJsLib
+- soqlParserJsLib.js <--- copy the code here
+- soqlParserJsLib.js-meta.xml
+```
+
+After you have deployed the LWC, you can import it just like any other LWC import.
+
+```js
+import { LightningElement } from 'lwc';
+import { parseQuery } from 'c/soqlParserJsLib';
+
+export default class SoqlParserJs extends LightningElement {
+  parsedQuery;
+
+  get parsedQueryString() {
+    return this.parsedQuery ? JSON.stringify(this.parsedQuery, null, 2) : '';
+  }
+
+  handleClick() {
+    this.parsedQuery = parseQuery("SELECT Id, Name FROM Account WHERE Industry = 'Technology'");
+  }
+}
+```
+
+```html
+<template>
+  <button class="slds-button slds-button_neutral" onclick="{handleClick}">Click Me</button>
+
+  <p>Parsed Query: {parsedQueryString}</p>
+</template>
+```
+
 ## CLI
 
 Install globally or use `npx` to interact with the cli.
