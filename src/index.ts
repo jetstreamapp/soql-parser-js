@@ -8,3 +8,7 @@ export * from './api/api-models';
 export * from './api/public-utils';
 export * from './composer/composer';
 export type { FormatOptions } from './formatter/formatter';
+export type { ParseQueryConfig } from './parser/parser';
+
+// Re-export chevrotain types that are used in public APIs
+export type { CstNode, CstParser, ILexingError, IRecognitionException } from 'chevrotain';

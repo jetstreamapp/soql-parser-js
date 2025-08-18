@@ -1,13 +1,13 @@
 # Changelog
 
-## 6.2.3
+## 6.2.4
 
-July 28, 2025
+Aug 18, 2025
 
-- Add LWC compatible output (#264)
-  - Added deployment instructions on readme
+- Ensure all types are emitted during the build process (#266)
+  - Some types were missing from the build process which caused build errors for some typescript users
 
-## 6.2.2
+## 6.2.2 / 6.2.3
 
 July 8, 2025
 
