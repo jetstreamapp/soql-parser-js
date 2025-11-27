@@ -2686,6 +2686,19 @@ export const testCases: TestCase[] = [
       },
     },
   },
+  {
+    testCase: 129,
+    soql: 'SELECT Name, Id FROM Contact USING SCOPE mru ORDER BY Name ASC',
+    output: {
+      fields: [
+        { type: 'Field', field: 'Name' },
+        { type: 'Field', field: 'Id' },
+      ],
+      sObject: 'Contact',
+      usingScope: 'mru',
+      orderBy: [{ field: 'Name', order: 'ASC' }],
+    },
+  },
 ];
 
 export default testCases;

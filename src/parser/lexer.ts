@@ -881,6 +881,13 @@ export const AllPrivate = createToken({
   categories: [UsingScopeEnumeration, Identifier],
   start_chars_hint: ['A', 'a'],
 });
+export const Mru = createToken({
+  name: 'Mru',
+  pattern: /MRU/i,
+  longer_alt: Identifier,
+  categories: [UsingScopeEnumeration, Identifier],
+  start_chars_hint: ['M', 'm'],
+});
 
 export const allTokens = [
   // we place WhiteSpace first as it is very common thus it will speed up the lexer.
@@ -921,6 +928,7 @@ export const allTokens = [
   Everything,
   MineAndMyGroups,
   Mine,
+  Mru,
   MyTerritory,
   MyTeamTerritory,
   Team,
