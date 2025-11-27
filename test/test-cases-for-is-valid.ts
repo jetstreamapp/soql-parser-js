@@ -493,5 +493,6 @@ WHERE
     soql: `SELECT Id FROM Account WITH SYSTEM_MODE`,
     isValid: true,
   },
+  { testCase: 161, soql: `SELECT Name, Id FROM Contact USING SCOPE mru ORDER BY Name ASC`, isValid: true },
 ];
 export default testCases;
