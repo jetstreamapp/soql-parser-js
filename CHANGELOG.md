@@ -1,5 +1,12 @@
 # Changelog
 
+## 6.3.0
+
+Nov 27, 2025
+
+- Add support for `mru` in `USING SCOPE`. (#268)
+  - Thank you @jimmyhogerty
+
 ## 6.2.4
 
 Aug 18, 2025
