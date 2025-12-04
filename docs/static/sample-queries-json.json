@@ -127,5 +127,6 @@
   "SELECT Id FROM Account WHERE NOT (NOT Invoice_Type__c LIKE '%Usage%')",
   "SELECT Id FROM Account WHERE (NOT Invoice_Type__c LIKE '%Usage%')",
   "SELECT Id, City FROM Lead WHERE NOT ((NOT (City LIKE '%LHR%')) AND City LIKE '%KHR%')",
-  "SELECT Name FROM Invoice__c WHERE Balance__c < USD-500"
+  "SELECT Name FROM Invoice__c WHERE Balance__c < USD-500",
+  "SELECT Name, Id FROM Contact USING SCOPE mru ORDER BY Name ASC"
 ]
