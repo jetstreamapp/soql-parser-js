@@ -454,6 +454,12 @@ export const Grouping = createToken({
   longer_alt: Identifier,
   categories: [OtherFunction, Identifier],
 });
+export const Isblank = createToken({
+  name: 'ISBLANK',
+  pattern: /ISBLANK/i,
+  longer_alt: Identifier,
+  categories: [OtherFunction, Identifier],
+});
 
 // FIELDS() PARAMETERS
 export const All = createToken({
@@ -979,6 +985,7 @@ export const allTokens = [
   Tolabel,
   ConvertTimeZone,
   ConvertCurrency,
+  Isblank,
   Yesterday,
   Today,
   Tomorrow,

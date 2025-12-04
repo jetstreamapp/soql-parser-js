@@ -493,6 +493,7 @@ export class SoqlParser extends CstParser {
           { ALT: () => this.CONSUME(lexer.ConvertTimeZone, { LABEL: 'fn' }) },
           { ALT: () => this.CONSUME(lexer.ConvertCurrency, { LABEL: 'fn' }) },
           { ALT: () => this.CONSUME(lexer.Grouping, { LABEL: 'fn' }) },
+          { ALT: () => this.CONSUME(lexer.Isblank, { LABEL: 'fn' }) },
         ]),
     );
     this.SUBRULE(this.functionExpression);

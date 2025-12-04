@@ -2699,6 +2699,63 @@ export const testCases: TestCase[] = [
       orderBy: [{ field: 'Name', order: 'ASC' }],
     },
   },
+  {
+    testCase: 130,
+    soql: 'SELECT Id, Name FROM Account WHERE ISBLANK(Description) = TRUE',
+    output: {
+      fields: [
+        { type: 'Field', field: 'Id' },
+        { type: 'Field', field: 'Name' },
+      ],
+      sObject: 'Account',
+      where: {
+        left: {
+          operator: '=',
+          value: 'TRUE',
+          literalType: 'BOOLEAN',
+          fn: { functionName: 'ISBLANK', rawValue: 'ISBLANK(Description)', parameters: ['Description'] },
+        },
+      },
+    },
+  },
+  {
+    testCase: 131,
+    soql: 'SELECT Id, ISBLANK(Description) FROM Account',
+    output: {
+      fields: [
+        { type: 'Field', field: 'Id' },
+        { type: 'FieldFunctionExpression', functionName: 'ISBLANK', rawValue: 'ISBLANK(Description)', parameters: ['Description'] },
+      ],
+      sObject: 'Account',
+    },
+  },
+  {
+    testCase: 132,
+    soql: 'SELECT Id, ISBLANK(Description) isDescBlank FROM Account',
+    output: {
+      fields: [
+        { type: 'Field', field: 'Id' },
+        { type: 'FieldFunctionExpression', functionName: 'ISBLANK', rawValue: 'ISBLANK(Description)', parameters: ['Description'], alias: 'isDescBlank' },
+      ],
+      sObject: 'Account',
+    },
+  },
+  {
+    testCase: 133,
+    soql: 'SELECT Id FROM Account WHERE ISBLANK(Description) = FALSE',
+    output: {
+      fields: [{ type: 'Field', field: 'Id' }],
+      sObject: 'Account',
+      where: {
+        left: {
+          operator: '=',
+          value: 'FALSE',
+          literalType: 'BOOLEAN',
+          fn: { functionName: 'ISBLANK', rawValue: 'ISBLANK(Description)', parameters: ['Description'] },
+        },
+      },
+    },
+  },
 ];
 
 export default testCases;
