@@ -214,7 +214,7 @@ export class Formatter {
    */
   formatClause(clause: string): string {
     if (this.enabled) {
-      return this.options.newLineAfterKeywords ? `\n${clause}\n\t` : `\n${clause}`;
+      return this.options.newLineAfterKeywords ? `\n${clause}\n${this.getIndent()}` : `\n${clause}`;
     }
     return ` ${clause}`;
   }
