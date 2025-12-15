@@ -233,7 +233,8 @@ ORDER BY GROUPING(Type),
     testCase: 10,
     soql: `SELECT Id, Name, Foo, Bar, Baz, Bax, aaa, bbb, ccc, ddd, Id, Name, Foo, Bar, Baz, Bax, aaa, bbb, ccc, ddd, Id, Name, Foo, Bar, Baz, Bax, aaa, bbb, ccc, ddd, Account.Name, (SELECT Id, Name, Foo, Bar, Baz, Bax, aaa, bbb, ccc, ddd, Id, Name, Foo, Bar, Baz, Bax, aaa, bbb, ccc, ddd, Contact.LastName FROM Account.Contacts WHERE Id = '123' OR Id = '456' OR pimped = TRUE), baz, (SELECT Id FROM account WHERE Boo.baz = 'bar'), bax, bar FROM Account WHERE Id IN (SELECT AccountId FROM Contact WHERE LastName LIKE 'apple%') AND Foo = 'bar' OR Baz = 'boom' AND Id IN (SELECT AccountId FROM Opportunity WHERE isClosed = TRUE) ORDER BY GROUPING(Type), GROUPING(Id, BillingCountry), Name DESC NULLS FIRST, Id ASC NULLS LAST`,
     formatOptions: { fieldMaxLineLength: 170, fieldSubqueryParensOnOwnLine: false },
-    formattedSoql: `SELECT Id, Name, Foo, Bar, Baz, Bax, aaa, bbb, ccc, ddd, Id, Name, Foo, Bar, Baz, Bax, aaa, bbb, ccc, ddd, Id, Name, Foo, Bar, Baz, Bax, aaa, bbb, ccc, ddd, Account.Name,
+    formattedSoql:
+      `SELECT Id, Name, Foo, Bar, Baz, Bax, aaa, bbb, ccc, ddd, Id, Name, Foo, Bar, Baz, Bax, aaa, bbb, ccc, ddd, Id, Name, Foo, Bar, Baz, Bax, aaa, bbb, ccc, ddd, Account.Name,
 \t(SELECT Id, Name, Foo, Bar, Baz, Bax, aaa, bbb, ccc, ddd, Id, Name, Foo, Bar, Baz, Bax, aaa, bbb, ccc, ddd, Contact.LastName
 \tFROM Account.Contacts
 \tWHERE Id = '123'
@@ -309,8 +310,7 @@ WHERE Name LIKE 'a%'
   },
   {
     testCase: 12,
-    soql:
-      'SELECT AccountNumber, (SELECT AccountNumber FROM ChildAccounts WHERE CreatedDate = 2017-04-05T10:41:42.000+0000) FROM Account WHERE CreatedDate >= 2017-04-05T10:41:42.000+0000 AND CreatedDate <= 2017-05-05T10:41:42.000+0000',
+    soql: 'SELECT AccountNumber, (SELECT AccountNumber FROM ChildAccounts WHERE CreatedDate = 2017-04-05T10:41:42.000+0000) FROM Account WHERE CreatedDate >= 2017-04-05T10:41:42.000+0000 AND CreatedDate <= 2017-05-05T10:41:42.000+0000',
     formatOptions: { newLineAfterKeywords: true, fieldMaxLineLength: 1 },
     formattedSoql: `SELECT
 \tAccountNumber,
@@ -427,6 +427,23 @@ FROM Event
 \tTYPEOF What WHEN Account THEN Phone, NumberOfEmployees WHEN Opportunity THEN Amount, CloseDate ELSE Name, Email END,
 \tName
 FROM Event
+`.trim(),
+  },
+  {
+    testCase: 18,
+    soql: `SELECT Id, Name, Account__pc, CurrencyIsoCode, Description FROM Account WHERE percent__c IN (1, 3, 4, 5) AND PersonOtherCity NOT IN ('zurich')`,
+    formatOptions: { newLineAfterKeywords: true, fieldMaxLineLength: 1, numIndent: 2 },
+    formattedSoql: `SELECT
+\t\tId,
+\t\tName,
+\t\tAccount__pc,
+\t\tCurrencyIsoCode,
+\t\tDescription
+FROM
+\t\tAccount
+WHERE
+\t\tpercent__c IN (1, 3, 4, 5)
+\t\tAND PersonOtherCity NOT IN ('zurich')
 `.trim(),
   },
 ];

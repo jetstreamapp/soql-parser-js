@@ -1,5 +1,11 @@
 # Changelog
 
+## 6.3.1
+
+Dec 15, 2025
+
+- Fix indent for query format
+
 ## 6.3.0
 
 Nov 27, 2025
