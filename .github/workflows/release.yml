@@ -12,6 +12,9 @@ on:
           - minor
           - patch
 
+permissions:
+  contents: write
+
 jobs:
   release:
     runs-on: ubuntu-latest
