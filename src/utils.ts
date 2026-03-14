@@ -1,4 +1,3 @@
-import { IToken } from 'chevrotain';
 import {
   FieldFunctionExpression,
   FieldRelationshipWithAlias,
@@ -22,11 +21,6 @@ import {
   WhereClauseWithRightCondition,
 } from './api/api-models';
 import { ComposeField, ComposeFieldFunction, ComposeFieldRelationship, ComposeFieldSubquery, ComposeFieldTypeof } from './api/public-utils';
-
-export function isToken(val: any): val is IToken[] | IToken {
-  val = Array.isArray(val) ? val[0] : val;
-  return val.image && true;
-}
 
 export function isSubqueryFromFlag(val: any, isSubquery: boolean): val is Subquery {
   return isSubquery;

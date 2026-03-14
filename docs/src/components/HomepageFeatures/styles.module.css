@@ -1,8 +1,87 @@
 .features {
   display: flex;
-  align-items: center;
-  padding: 2rem 0;
+  align-items: flex-start;
+  padding: 3rem 0;
   width: 100%;
+}
+
+.featureCard {
+  padding: 1.5rem;
+  border-radius: 12px;
+  background: var(--ifm-card-background-color, rgba(255, 255, 255, 0.05));
+  border: 1px solid var(--ifm-color-emphasis-200);
+  height: 100%;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.featureCard:hover {
+  border-color: var(--ifm-color-primary);
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.12);
+}
+
+.featureIcon {
+  font-family: var(--ifm-font-family-monospace);
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--ifm-color-primary);
+  margin-bottom: 0.5rem;
+  letter-spacing: 0.05em;
+}
+
+.featureTitle {
+  font-size: 1.4rem;
+  margin-bottom: 0.75rem;
+}
+
+.featureTagline {
+  color: var(--ifm-color-emphasis-700);
+  font-size: 0.9rem;
+  margin-bottom: 1rem;
+}
+
+.codeBlock {
+  border-radius: 8px;
+  overflow: hidden;
+  font-size: 0.8rem;
+}
+
+.arrow {
+  text-align: center;
+  font-size: 1.2rem;
+  color: var(--ifm-color-primary);
+  margin: 0.5rem 0;
+  font-weight: bold;
+}
+
+.statsGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.stat {
+  text-align: center;
+  padding: 0.75rem;
+  border-radius: 8px;
+  background: var(--ifm-color-emphasis-100);
+}
+
+.statNumber {
+  display: block;
+  font-size: 1.8rem;
+  font-weight: 800;
+  color: var(--ifm-color-primary);
+  line-height: 1.2;
+}
+
+.statLabel {
+  display: block;
+  font-size: 0.75rem;
+  color: var(--ifm-color-emphasis-700);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-top: 0.25rem;
 }
 
 .featuresSubHeading {
