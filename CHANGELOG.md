@@ -1,5 +1,31 @@
 # Changelog
 
+## 7.0.0
+
+Mar 14, 2026
+
+🚀🚀🚀🚀🚀 Performed a complete re-write using a hand-rolled parser, complements of Claude Code which did 100% of the work.
+
+The new parser is **~4,600x faster** and has a **75% smaller bundle size** since there are no longer any external dependencies.
+
+|                                 | Old Parser (Chevrotain) | New Parser (Hand-rolled) |
+| ------------------------------- | ----------------------- | ------------------------ |
+| **Parse time per iteration**    | 3,224 ms                | 0.7 ms                   |
+| **Bundle size (ESM, minified)** | 194 KB                  | 48 KB                    |
+| **External dependencies**       | 2 (chevrotain, lodash)  | 0                        |
+
+In addition, we re-wrote the CLI to drop all 3rd party dependencies since the CLI is very simple and doesn't need a library to manage it.
+
+### 💥Breaking changes💥
+
+This library no longer exports some of the types used by the previous parser, shown below. These types were only exported as they were used in some public APIs.
+
+This is very unlikely to impact most users, and if it does, the required changes should be very minimal.
+
+```typescript
+export type { CstNode, CstParser, ILexingError, IRecognitionException } from 'chevrotain';
+```
+
 ## 6.3.1
 
 Dec 15, 2025

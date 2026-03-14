@@ -13,7 +13,7 @@ import {
 } from '../api/api-models';
 import * as utils from '../utils';
 import { FieldData, Formatter, FormatOptions } from '../formatter/formatter';
-import { parseQuery } from '../parser/visitor';
+import { parseQuery } from '../parser/parser';
 import { ParseQueryConfig } from '../parser/parser';
 
 export interface SoqlComposeConfig {

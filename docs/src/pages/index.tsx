@@ -11,16 +11,25 @@ function HomepageHeader() {
   const { siteConfig } = useDocusaurusContext();
   return (
     <header className={clsx('hero', styles.heroBanner)}>
+      <div className={styles.heroBackground} />
       <div className="container">
-        <h1 className="hero__title">{siteConfig.title}</h1>
-        <p className="hero__subtitle">{siteConfig.tagline}</p>
-        <div className={styles.buttons}>
-          <Link className="button button--secondary button--lg" to="/docs/overview">
-            Documentation
-          </Link>
-          <Link className="button button--secondary button--lg" to="/playground">
-            Playground
-          </Link>
+        <div className={styles.heroContent}>
+          <p className={styles.heroEyebrow}>Open Source SOQL Toolkit</p>
+          <h1 className={styles.heroTitle}>{siteConfig.title}</h1>
+          <p className={styles.heroSubtitle}>
+            Parse, compose, and format SOQL queries with zero runtime dependencies.
+          </p>
+          <div className={styles.heroInstall}>
+            <code>npm install @jetstreamapp/soql-parser-js</code>
+          </div>
+          <div className={styles.buttons}>
+            <Link className={clsx('button button--lg', styles.buttonPrimary)} to="/docs/overview">
+              Get Started
+            </Link>
+            <Link className={clsx('button button--lg', styles.buttonSecondary)} to="/playground">
+              Playground
+            </Link>
+          </div>
         </div>
       </div>
     </header>

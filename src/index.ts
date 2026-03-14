@@ -3,12 +3,9 @@
  * The software in this package is published under the terms of the MIT license,
  * a copy of which has been included with this distribution in the LICENSE.txt file.
  */
-export { parseQuery, isQueryValid } from './parser/visitor';
+export { parseQuery, isQueryValid } from './parser/parser';
 export * from './api/api-models';
 export * from './api/public-utils';
 export * from './composer/composer';
 export type { FormatOptions } from './formatter/formatter';
 export type { ParseQueryConfig } from './parser/parser';
-
-// Re-export chevrotain types that are used in public APIs
-export type { CstNode, CstParser, ILexingError, IRecognitionException } from 'chevrotain';

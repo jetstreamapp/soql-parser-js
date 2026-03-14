@@ -1,141 +1,188 @@
-import { parseQuery, composeQuery, isQueryValid, formatQuery, FormatOptions } from '../src';
-import { Command } from 'commander';
+import { parseQuery, composeQuery, formatQuery, isQueryValid, FormatOptions } from '../src';
 import { ParseQueryConfig } from '../src/parser/parser';
 
-interface ParseCommandActions {
-  allowApex: boolean;
-  allowPartial: boolean;
-  ignoreErrors: boolean;
+interface ParsedArgs {
+  command: string;
+  query: string;
+  flags: Record<string, string | boolean>;
 }
 
-interface ComposeCommandOptions {
-  allowApex: boolean;
-  allowPartial: boolean;
-  format: boolean;
-  indent: number;
-  lineLength: number;
-  subqueryParensNewLine: boolean;
-  keywordsNewLine: boolean;
-  json: boolean;
+function parseArgs(argv: string[]): ParsedArgs {
+  const args = argv.slice(2);
+  const command = args[0] ?? '';
+  const query = args[1] ?? '';
+  const flags: Record<string, string | boolean> = {};
+
+  for (let i = 2; i < args.length; i++) {
+    const arg = args[i];
+    if (arg.startsWith('--')) {
+      const key = arg.slice(2);
+      const next = args[i + 1];
+      if (next && !next.startsWith('-')) {
+        flags[key] = next;
+        i++;
+      } else {
+        flags[key] = true;
+      }
+    } else if (arg.startsWith('-') && arg.length === 2) {
+      const key = arg.slice(1);
+      const next = args[i + 1];
+      if (next && !next.startsWith('-')) {
+        flags[key] = next;
+        i++;
+      } else {
+        flags[key] = true;
+      }
+    }
+  }
+
+  return { command, query, flags };
 }
 
-type FormatCommandOptions = Omit<ComposeCommandOptions, 'format'>;
-type IsValidCommandOptions = Pick<ComposeCommandOptions, 'allowApex' | 'allowPartial' | 'json'>;
+function hasFlag(flags: Record<string, string | boolean>, long: string, short: string): boolean {
+  return flags[long] === true || flags[short] === true;
+}
 
-const program = new Command();
+function getFlagValue(flags: Record<string, string | boolean>, long: string, short: string): string | undefined {
+  const val = flags[long] ?? flags[short];
+  return typeof val === 'string' ? val : undefined;
+}
 
-program
-  .command('parse <soql>')
-  .option('-a, --allow-apex', 'allow apex bind variables')
-  .option('-p, --allow-partial', 'allow partial queries')
-  .option('-i, --ignore-errors', 'ignore parse errors, return as much of query as possible')
-  .action((query: string, options: ParseCommandActions) => {
+function printUsage(): void {
+  console.log(`Usage: soql-parser-js <command> <query> [options]
+
+Commands:
+  parse <soql>     Parse a SOQL query and output JSON AST
+  compose <json>   Compose a SOQL query from a JSON AST
+  format <soql>    Format a SOQL query
+  valid <soql>     Check if a SOQL query is valid
+
+Parse options:
+  -a, --allow-apex       Allow apex bind variables
+  -p, --allow-partial    Allow partial queries
+  -i, --ignore-errors    Ignore parse errors, return as much of query as possible
+
+Compose options:
+  -f, --format                   Format output
+  -i, --indent <chars>           Number of tab characters to indent (default: 1)
+  -m, --line-length <chars>      Max number of characters per line (default: 60)
+  -s, --subquery-parens-new-line Subquery parens on own line
+  -k, --keywords-new-line        New line after keywords
+  -j, --json                     Output as JSON
+
+Format options:
+  -a, --allow-apex               Allow apex bind variables
+  -p, --allow-partial            Allow partial queries
+  -i, --indent <chars>           Number of tab characters to indent (default: 1)
+  -m, --line-length <chars>      Max number of characters per line (default: 60)
+  -s, --subquery-parens-new-line Subquery parens on own line
+  -k, --keywords-new-line        New line after keywords
+  -j, --json                     Output as JSON
+
+Valid options:
+  -a, --allow-apex       Allow apex bind variables
+  -p, --allow-partial    Allow partial queries
+  -j, --json             Output as JSON`);
+}
+
+const { command, query, flags } = parseArgs(process.argv);
+
+if (!command || !query) {
+  printUsage();
+  process.exit(command ? 1 : 0);
+}
+
+switch (command) {
+  case 'parse': {
     console.log(
       JSON.stringify(
         parseQuery(query, {
-          allowApexBindVariables: options.allowApex,
-          allowPartialQuery: options.allowPartial,
-          ignoreParseErrors: options.ignoreErrors,
+          allowApexBindVariables: hasFlag(flags, 'allow-apex', 'a'),
+          allowPartialQuery: hasFlag(flags, 'allow-partial', 'p'),
+          ignoreParseErrors: hasFlag(flags, 'ignore-errors', 'i'),
         }),
       ),
     );
-  });
+    break;
+  }
 
-program
-  .command('compose <query>')
-  .option('-f, --format', 'format output')
-  .option('-i --indent <chars>', 'number of tab characters to indent', 1)
-  .option('-m --line-length <chars>', 'max number of characters per lins', 60)
-  .option('-s --subquery-parens-new-line', 'subquery parens on own line')
-  .option('-k --keywords-new-line', 'new line after keywords')
-  .option('-j, --json', 'output as JSON')
-  .action((query: string, options: ComposeCommandOptions) => {
+  case 'compose': {
     const formatOptions: FormatOptions = {};
-    if (options.indent) {
-      formatOptions.numIndent = options.indent;
+    const indent = getFlagValue(flags, 'indent', 'i');
+    const lineLength = getFlagValue(flags, 'line-length', 'm');
+
+    if (indent) {
+      formatOptions.numIndent = Number(indent);
+    }
+    if (lineLength) {
+      formatOptions.fieldMaxLineLength = Number(lineLength);
+    }
+    if (hasFlag(flags, 'subquery-parens-new-line', 's')) {
+      formatOptions.fieldSubqueryParensOnOwnLine = true;
+    }
+    if (hasFlag(flags, 'keywords-new-line', 'k')) {
+      formatOptions.newLineAfterKeywords = true;
     }
 
-    if (options.lineLength) {
-      formatOptions.fieldMaxLineLength = options.lineLength;
-    }
+    const shouldFormat = hasFlag(flags, 'format', 'f');
+    const output = composeQuery(JSON.parse(query), { format: shouldFormat, formatOptions });
 
-    if (options.subqueryParensNewLine) {
-      formatOptions.fieldSubqueryParensOnOwnLine = options.subqueryParensNewLine;
-    }
-
-    if (options.keywordsNewLine) {
-      formatOptions.newLineAfterKeywords = options.keywordsNewLine;
-    }
-
-    let output = composeQuery(JSON.parse(query), { format: options.format, formatOptions });
-    if (options.json) {
+    if (hasFlag(flags, 'json', 'j')) {
       console.log(JSON.stringify({ query: output }));
     } else {
       console.log(output);
     }
-  });
+    break;
+  }
 
-program
-  .command('format <soql>')
-  .option('-a, --allow-apex', 'allow apex bind variables')
-  .option('-p, --allow-partial', 'allow partial queries')
-  .option('-i --indent <chars>', 'number of tab characters to indent', 1)
-  .option('-m --line-length <chars>', 'max number of characters per lins', 60)
-  .option('-s --subquery-parens-new-line', 'subquery parens on own line')
-  .option('-k --keywords-new-line', 'new line after keywords')
-  .option('-j, --json', 'output as JSON')
-  .action((query: string, options: FormatCommandOptions) => {
+  case 'format': {
     const parseQueryConfig: ParseQueryConfig = {};
     const formatOptions: FormatOptions = {};
 
-    if (options.allowApex) {
+    if (hasFlag(flags, 'allow-apex', 'a')) {
       parseQueryConfig.allowApexBindVariables = true;
     }
-    if (options.allowPartial) {
+    if (hasFlag(flags, 'allow-partial', 'p')) {
       parseQueryConfig.allowPartialQuery = true;
     }
 
-    if (options.indent) {
-      formatOptions.numIndent = options.indent;
-    }
+    const indent = getFlagValue(flags, 'indent', 'i');
+    const lineLength = getFlagValue(flags, 'line-length', 'm');
 
-    if (options.lineLength) {
-      formatOptions.fieldMaxLineLength = options.lineLength;
+    if (indent) {
+      formatOptions.numIndent = Number(indent);
     }
-
-    if (options.subqueryParensNewLine) {
-      formatOptions.fieldSubqueryParensOnOwnLine = options.subqueryParensNewLine;
+    if (lineLength) {
+      formatOptions.fieldMaxLineLength = Number(lineLength);
     }
-
-    if (options.keywordsNewLine) {
-      formatOptions.newLineAfterKeywords = options.keywordsNewLine;
+    if (hasFlag(flags, 'subquery-parens-new-line', 's')) {
+      formatOptions.fieldSubqueryParensOnOwnLine = true;
+    }
+    if (hasFlag(flags, 'keywords-new-line', 'k')) {
+      formatOptions.newLineAfterKeywords = true;
     }
 
     const output = formatQuery(query, formatOptions, parseQueryConfig);
-    if (options.json) {
+    if (hasFlag(flags, 'json', 'j')) {
       console.log(JSON.stringify({ query: output }));
     } else {
       console.log(output);
     }
-  });
+    break;
+  }
 
-program
-  .command('valid <soql>')
-  .option('-a, --allow-apex', 'allow apex bind variables')
-  .option('-p, --allow-partial', 'allow partial queries')
-  .option('-j, --json', 'output as JSON')
-  .action((query: string, options: IsValidCommandOptions) => {
+  case 'valid': {
     const parseQueryConfig: ParseQueryConfig = {};
 
-    if (options.allowApex) {
+    if (hasFlag(flags, 'allow-apex', 'a')) {
       parseQueryConfig.allowApexBindVariables = true;
     }
-    if (options.allowPartial) {
+    if (hasFlag(flags, 'allow-partial', 'p')) {
       parseQueryConfig.allowPartialQuery = true;
     }
 
     const isValid = isQueryValid(query, parseQueryConfig);
-    if (options.json) {
+    if (hasFlag(flags, 'json', 'j')) {
       console.log(JSON.stringify({ isValid }));
     } else {
       if (isValid) {
@@ -145,6 +192,12 @@ program
         process.exit(1);
       }
     }
-  });
+    break;
+  }
 
-program.parse(process.argv);
+  default: {
+    console.error(`Unknown command: ${command}`);
+    printUsage();
+    process.exit(1);
+  }
+}

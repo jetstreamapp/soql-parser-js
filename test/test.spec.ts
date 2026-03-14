@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { Compose, composeQuery, formatQuery, parseQuery, Query, WhereClause } from '../src';
 import { isValueQueryCondition, isWhereClauseWithRightCondition } from '../src/api/public-utils';
-import { isQueryValid } from '../src/parser/visitor';
+import { isQueryValid } from '../src/parser/parser';
 import testCases from './test-cases';
 import testCasesForComposeStandAlone from './test-cases-compose';
 import testCasesForFormat from './test-cases-for-format';
