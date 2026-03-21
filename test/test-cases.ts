@@ -901,7 +901,7 @@ export const testCases: TestCase[] = [
           right: {
             left: { field: 'Baz', operator: 'IN', value: ['101.00', '102.50'], literalType: 'DECIMAL' },
             operator: 'OR',
-            right: { left: { field: 'Bam', operator: 'IN', value: ["'FOO'", 'null'], literalType: ['STRING', 'NULL'] } },
+            right: { left: { field: 'Bam', operator: 'IN', value: ["'FOO'", 'NULL'], literalType: ['STRING', 'NULL'] } },
           },
         },
       },
@@ -1084,7 +1084,7 @@ export const testCases: TestCase[] = [
         left: {
           field: 'Industry',
           operator: 'IN',
-          value: ["'media'", 'null', '1', "'media'", '2'],
+          value: ["'media'", 'NULL', '1', "'media'", '2'],
           literalType: ['STRING', 'NULL', 'INTEGER', 'STRING', 'INTEGER'],
         },
       },
@@ -1547,7 +1547,7 @@ export const testCases: TestCase[] = [
             closeParen: 1,
             field: 'Name',
             operator: 'IN',
-            value: [`'4/30 testing account'`, `'amendment quote doc testing'`, 'null'],
+            value: [`'4/30 testing account'`, `'amendment quote doc testing'`, 'NULL'],
             literalType: ['STRING', 'STRING', 'NULL'],
           },
         },

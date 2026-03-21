@@ -258,6 +258,9 @@ function whereValueHelper(value: any, literalType?: LiteralType) {
     case 'STRING': {
       return isString(value) && value.startsWith("'") ? value : `'${value ?? ''}'`;
     }
+    case 'NULL': {
+      return 'null';
+    }
     default: {
       return value;
     }
