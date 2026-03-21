@@ -487,7 +487,6 @@ const _tokenTypeNames: string[] = [];
   _tokenTypeNames[TokenKind.TEAM] = 'Team';
   _tokenTypeNames[TokenKind.MRU] = 'Mru';
   _tokenTypeNames[TokenKind.IDENTIFIER] = 'Identifier';
-  _tokenTypeNames[TokenKind.DOT] = 'DECIMAL';
   _tokenTypeNames[TokenKind.EQUAL] = 'EQUAL';
   _tokenTypeNames[TokenKind.UNSIGNED_INTEGER] = 'UNSIGNED_INTEGER';
   _tokenTypeNames[TokenKind.SIGNED_INTEGER] = 'SIGNED_INTEGER';

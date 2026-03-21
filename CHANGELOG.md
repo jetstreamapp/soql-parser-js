@@ -1,5 +1,19 @@
 # Changelog
 
+## 7.1.0
+
+Mar 21, 2026
+
+### Bug Fixes
+
+- **Fixed error recovery dropping subsequent clauses** - When using `ignoreParseErrors: true`, if a clause failed to parse, all subsequent clauses (ORDER BY, LIMIT, OFFSET, etc.) were silently dropped. The parser now correctly synchronizes forward and continues parsing remaining clauses.
+- **Standardized `NULL` value casing in array expressions** - `NULL` values inside `IN` / `NOT IN` / `INCLUDES` / `EXCLUDES` arrays now use uppercase `'NULL'` in the parsed `value` field, consistent with scalar `NULL` comparisons. The composer still outputs lowercase `null` in SOQL strings. If you were comparing `condition.value` items with a case-sensitive `=== 'null'` check, update to `=== 'NULL'`.
+- **Removed incorrect `DOT` token name alias** - `tokenTypeName(TokenKind.DOT)` now returns `'DOT'` instead of the incorrect `'DECIMAL'`. This only affects consumers using the low-level `tokenTypeName` API.
+
+### Internal
+
+- Removed singleton parser pattern — `parseQuery` now creates a fresh parser instance per call, eliminating shared mutable state and making the parser safe for concurrent use in worker threads.
+
 ## 7.0.0
 
 Mar 14, 2026

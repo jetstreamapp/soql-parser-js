@@ -689,8 +689,8 @@ describe('Lexer - tokenTypeName', () => {
     expect(tokenTypeName(TokenKind.CONVERT_CURRENCY)).toBe('convertCurrency');
   });
 
-  it('should return "DECIMAL" for DOT', () => {
-    expect(tokenTypeName(TokenKind.DOT)).toBe('DECIMAL');
+  it('should return "DOT" for DOT', () => {
+    expect(tokenTypeName(TokenKind.DOT)).toBe('DOT');
   });
 
   it('should return "new" for APEX_NEW', () => {

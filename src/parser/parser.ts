@@ -80,13 +80,12 @@ const CLAUSE_KEYWORDS = new Set<TokenKind>([
 ]);
 
 class SoqlParser {
-  private tokens: Token[] = [];
+  private tokens: Token[];
   private pos: number = 0;
-  private config: ParseQueryConfig = {};
+  private config: ParseQueryConfig;
 
-  init(tokens: Token[], config: ParseQueryConfig): void {
+  constructor(tokens: Token[], config: ParseQueryConfig) {
     this.tokens = tokens;
-    this.pos = 0;
     this.config = config;
   }
 
@@ -482,7 +481,6 @@ class SoqlParser {
 
     const tryParse = (fn: () => void, cleanup?: () => void) => {
       if (this.config.ignoreParseErrors) {
-        const savedPos = this.pos;
         try {
           fn();
           // After successful parse, check if we're at a valid clause boundary.
@@ -496,7 +494,9 @@ class SoqlParser {
             console.log(e);
           }
           if (cleanup) cleanup();
-          this.pos = savedPos;
+          // Don't restore pos — synchronize forward from where the error occurred.
+          // Restoring to savedPos would land on the clause keyword (a boundary token),
+          // causing synchronize() to return immediately and leaving the parser stuck.
           this.synchronize();
         }
       } else {
@@ -1073,7 +1073,7 @@ class SoqlParser {
     }
     if (t.kind === TokenKind.NULL) {
       this.advance();
-      return { value: 'null', type: 'NULL' };
+      return { value: 'NULL', type: 'NULL' };
     }
     if (t.kind === TokenKind.TRUE) {
       return { value: this.advance().text, type: 'TRUE' };
@@ -1617,19 +1617,13 @@ class SoqlParser {
   }
 }
 
-// ====================================================================
-// Module-level parser instance, reused per parse call
-// ====================================================================
-
-const parser = new SoqlParser();
-
 /**
  * Parse a SOQL query string into a Query AST.
  */
 export function parseQuery(soql: string, options?: ParseQueryConfig): Query {
   const config = options || {};
   const tokens = tokenize(soql);
-  parser.init(tokens, config);
+  const parser = new SoqlParser(tokens, config);
 
   let query: Query;
   if (config.allowPartialQuery) {
