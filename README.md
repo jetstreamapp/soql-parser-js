@@ -1013,4 +1013,4 @@ export interface WithDataCategoryCondition {
 
 ## Contributing
 
-All contributions are welcome on the project. Please read the [contribution guidelines](https://github.com/jetstreamapp/soql-parser-js/blob/master/CONTRIBUTING.md).
+All contributions are welcome on the project. Please read the [contribution guidelines](https://github.com/jetstreamapp/soql-parser-js/blob/main/CONTRIBUTING.md).

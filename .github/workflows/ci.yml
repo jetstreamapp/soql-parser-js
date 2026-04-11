@@ -10,7 +10,7 @@ jobs:
     timeout-minutes: 60
     steps:
       - uses: actions/checkout@v3
-        name: Checkout [master]
+        name: Checkout [main]
         with:
           fetch-depth: 0
 
