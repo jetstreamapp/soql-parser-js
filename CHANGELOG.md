@@ -1,5 +1,11 @@
 # Changelog
 
+## 7.1.1
+
+Apr 25, 2026
+
+- Upgrade dependencies
+
 ## 7.1.0
 
 Mar 21, 2026

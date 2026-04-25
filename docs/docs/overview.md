@@ -142,7 +142,7 @@ const soql = composeQuery({
 
 ## Contributing
 
-All contributions are welcome on the project. Please read the [contribution guidelines](https://github.com/paustint/soql-parser-js/blob/master/CONTRIBUTING.md).
+All contributions are welcome on the project. Please read the [contribution guidelines](https://github.com/jetstreamapp/soql-parser-js/blob/master/CONTRIBUTING.md).
 
 ## Data Models
 
