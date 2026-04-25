@@ -20,21 +20,22 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout [main]
-        uses: actions/checkout@v3
+        uses: actions/checkout@v6
         with:
           fetch-depth: 0
       - name: Init npm cache
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v6
         with:
-          node-version: '18'
-          cache: 'yarn'
+          node-version: '24'
+          cache: 'npm'
       - name: install dependencies
-        run: yarn install --frozen-lockfile
+        run: npm ci
       - name: git config
         run: |
           git config --global user.name "Release Workflow"
           git config --global user.email "support@getjetstream.app"
       - name: Run Release
-        run: yarn release ${{ github.event.inputs.increment }} --ci
+        run: npm run release -- "$INCREMENT" --ci
         env:
+          INCREMENT: ${{ github.event.inputs.increment }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
