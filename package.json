@@ -1,6 +1,6 @@
 {
   "name": "@jetstreamapp/soql-parser-js",
-  "version": "7.1.0",
+  "version": "7.1.1",
   "description": "Salesforce.com SOQL parser and composer",
   "main": "dist/cjs/index.js",
   "module": "dist/esm/index.mjs",
