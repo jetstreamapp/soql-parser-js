@@ -2699,6 +2699,90 @@ export const testCases: TestCase[] = [
       orderBy: [{ field: 'Name', order: 'ASC' }],
     },
   },
+  {
+    testCase: 130,
+    soql: 'SELECT Id FROM Task USING SCOPE delegated',
+    output: {
+      fields: [{ type: 'Field', field: 'Id' }],
+      sObject: 'Task',
+      usingScope: 'delegated',
+    },
+  },
+  {
+    testCase: 131,
+    soql: 'SELECT Id FROM Account USING SCOPE everything',
+    output: {
+      fields: [{ type: 'Field', field: 'Id' }],
+      sObject: 'Account',
+      usingScope: 'everything',
+    },
+  },
+  {
+    testCase: 132,
+    soql: 'SELECT Id FROM Account USING SCOPE mine',
+    output: {
+      fields: [{ type: 'Field', field: 'Id' }],
+      sObject: 'Account',
+      usingScope: 'mine',
+    },
+  },
+  {
+    testCase: 133,
+    soql: 'SELECT Id FROM ProcessInstanceWorkitem USING SCOPE mine_and_my_groups',
+    output: {
+      fields: [{ type: 'Field', field: 'Id' }],
+      sObject: 'ProcessInstanceWorkitem',
+      usingScope: 'mine_and_my_groups',
+    },
+  },
+  {
+    testCase: 134,
+    soql: 'SELECT Id FROM Account USING SCOPE my_territory',
+    output: {
+      fields: [{ type: 'Field', field: 'Id' }],
+      sObject: 'Account',
+      usingScope: 'my_territory',
+    },
+  },
+  {
+    testCase: 135,
+    soql: 'SELECT Id FROM Account USING SCOPE my_team_territory',
+    output: {
+      fields: [{ type: 'Field', field: 'Id' }],
+      sObject: 'Account',
+      usingScope: 'my_team_territory',
+    },
+  },
+  {
+    testCase: 136,
+    soql: 'SELECT Id FROM Account USING SCOPE team',
+    output: {
+      fields: [{ type: 'Field', field: 'Id' }],
+      sObject: 'Account',
+      usingScope: 'team',
+    },
+  },
+  {
+    testCase: 137,
+    soql: 'SELECT Id FROM Account USING SCOPE scopingRule',
+    output: {
+      fields: [{ type: 'Field', field: 'Id' }],
+      sObject: 'Account',
+      usingScope: 'scopingRule',
+    },
+  },
+  {
+    testCase: 138,
+    soql: 'SELECT Id, Name FROM Account USING SCOPE myRule',
+    output: {
+      fields: [
+        { type: 'Field', field: 'Id' },
+        { type: 'Field', field: 'Name' },
+      ],
+      sObject: 'Account',
+      usingScope: 'myRule',
+    },
+  },
 ];
 
 export default testCases;

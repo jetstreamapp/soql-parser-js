@@ -494,5 +494,10 @@ WHERE
     isValid: true,
   },
   { testCase: 161, soql: `SELECT Name, Id FROM Contact USING SCOPE mru ORDER BY Name ASC`, isValid: true },
+  { testCase: 162, soql: `SELECT Id FROM Account USING SCOPE scopingRule`, isValid: true },
+  { testCase: 163, soql: `SELECT Id FROM Account USING SCOPE mine_and_my_groups`, isValid: true },
+  { testCase: 164, soql: `SELECT Id FROM Account USING SCOPE my_territory`, isValid: true },
+  { testCase: 165, soql: `SELECT Id FROM Account USING SCOPE my_team_territory`, isValid: true },
+  { testCase: 166, soql: `SELECT Id, Name FROM Account USING SCOPE myRule`, isValid: true },
 ];
 export default testCases;

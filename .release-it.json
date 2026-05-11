@@ -3,11 +3,16 @@
     "commitMessage": "chore: release v${version}"
   },
   "github": {
-    "release": true
+    "release": true,
+    "assets": [
+      "jetstreamapp-soql-parser-js-${version}.tgz",
+      "dist/soql-parser-js-lwc-v${version}.zip",
+      "dist/lwc/soqlParserJs.js"
+    ]
   },
   "hooks": {
     "before:init": ["npm run build", "npm test"],
-    "after:bump": "npm run build",
+    "after:bump": ["npm run build", "npm pack"],
     "after:release": "npm run copy-tc-to-docs && cd docs && npm install @jetstreamapp/soql-parser-js@${version} && git add package*.json && git add static/sample-queries-json.json && git commit -m \"Updated docs version\" && git push && npm run deploy"
   }
 }

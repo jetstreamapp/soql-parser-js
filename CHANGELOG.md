@@ -1,5 +1,24 @@
 # Changelog
 
+## 7.2.0
+
+May 11, 2026
+
+### LWC Distribution
+
+The LWC build now produces two artifacts to support different deployment workflows:
+
+- **Standalone JS file** at `dist/lwc/soqlParserJs.js` — a single bundled file that SFDX users can drop directly into their project's `lwc/soqlParserJs/` folder alongside their own `.js-meta.xml`. Also published to npm and attached to each GitHub Release.
+- **Ready-to-deploy metadata package** at `dist/lwc-packaged/` — contains `package.xml`, `lwc/soqlParserJs/soqlParserJs.js`, and `soqlParserJs.js-meta.xml`. Deploy directly with `sf project deploy start --metadata-dir dist/lwc-packaged --target-org <alias>`, no SFDX project required.
+- **Pre-zipped metadata package on GitHub Releases** — every release attaches `soql-parser-js-lwc-v<version>.zip` (the metadata package, pre-zipped) so users can grab a single archive, and deploy without cloning or running `npm install`.
+- **Fixed LWC compiler compatibility** — lowered the LWC bundle's esbuild target to `es2020`, which down-levels ES2022 syntax (e.g. static class initialization blocks) that the Salesforce LWC compiler does not yet support.
+- **Configurable Salesforce API version** — added the `salesforceApiVersion` field to `package.json` (currently `66.0`); the value is stamped into both `package.xml` and `.js-meta.xml` at build time, so bumping the API version is a one-line change.
+
+### Release Pipeline
+
+- **npm tarball attached to GitHub Releases** — every release now attaches `jetstreamapp-soql-parser-js-<version>.tgz`.
+- **Version banner on all bundles** — `esm`, `cjs`, `cli`, and `lwc` bundles all start with a `/*! ... */` header listing the package name, version, repository URL, and license. Banner values are sourced from `package.json`, so they stay in sync automatically with each release.
+
 ## 7.1.1
 
 Apr 25, 2026
