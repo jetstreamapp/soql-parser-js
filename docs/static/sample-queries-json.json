@@ -128,5 +128,14 @@
   "SELECT Id FROM Account WHERE (NOT Invoice_Type__c LIKE '%Usage%')",
   "SELECT Id, City FROM Lead WHERE NOT ((NOT (City LIKE '%LHR%')) AND City LIKE '%KHR%')",
   "SELECT Name FROM Invoice__c WHERE Balance__c < USD-500",
-  "SELECT Name, Id FROM Contact USING SCOPE mru ORDER BY Name ASC"
+  "SELECT Name, Id FROM Contact USING SCOPE mru ORDER BY Name ASC",
+  "SELECT Id FROM Task USING SCOPE delegated",
+  "SELECT Id FROM Account USING SCOPE everything",
+  "SELECT Id FROM Account USING SCOPE mine",
+  "SELECT Id FROM ProcessInstanceWorkitem USING SCOPE mine_and_my_groups",
+  "SELECT Id FROM Account USING SCOPE my_territory",
+  "SELECT Id FROM Account USING SCOPE my_team_territory",
+  "SELECT Id FROM Account USING SCOPE team",
+  "SELECT Id FROM Account USING SCOPE scopingRule",
+  "SELECT Id, Name FROM Account USING SCOPE myRule"
 ]

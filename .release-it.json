@@ -4,7 +4,7 @@
   },
   "github": {
     "release": true,
-    "assets": ["jetstreamapp-soql-parser-js-${version}.tgz", "dist/soql-parser-js-lwc-v${version}.zip", "dist/lwc/soqlParserJs.js"]
+    "assets": ["jetstreamapp-soql-parser-js-${version}.tgz", "dist/soql-parser-js-lwc-v${version}.zip"]
   },
   "npm": {
     "skipChecks": true
