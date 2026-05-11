@@ -510,52 +510,74 @@ WHERE Name LIKE 'a%'
 
 ## Using in LWC
 
-The easiest way to utilize this library in LWC is to deploy the compiled code as a web component in your org.
+The library can be used as a Lightning Web Component in your Salesforce org. The build produces two artifacts to support different workflows:
 
-:warning: The minified version ends up with `$A` characters in the output, which causes the deployment to SFD to fail, so we have created an unminified version of the library just for Salesforce.
+| Artifact                                    | What it is                                                                 | Best for                                                              |
+| ------------------------------------------- | -------------------------------------------------------------------------- | --------------------------------------------------------------------- |
+| `dist/lwc/soqlParserJs.js`                  | Standalone bundled JS file (no metadata)                                   | SFDX projects — drop into your existing `lwc/soqlParserJs/` folder    |
+| `dist/lwc-packaged/` (and the release zip)  | Full Salesforce metadata package: `package.xml` + `lwc/soqlParserJs/{js,js-meta.xml}` | Direct deployment to an org via `sf project deploy start` — no SFDX project required |
 
-### Obtaining the build artifacts
+The Salesforce API version used for the metadata package is configured via the `salesforceApiVersion` field in [package.json](package.json) and is applied to both `package.xml` and `soqlParserJs.js-meta.xml` at build time.
 
-We don't store the built artifacts on github, so you will need to obtain from NPM or run the build command yourself.
+### Option 1: SFDX project — drop in the standalone JS file
 
-#### Download from NPM
+If you already have an SFDX project, the easiest path is to grab the standalone `soqlParserJs.js` and place it in your project's `lwc/soqlParserJs/` folder alongside a `soqlParserJs.js-meta.xml` file you provide yourself.
 
-Download from [npm](https://www.npmjs.com/package/@jetstreamapp/soql-parser-js)
+Sources for the standalone JS:
 
-**Either:**
+- **GitHub Releases** — every release attaches `soqlParserJs.js` directly to the [Releases page](https://github.com/jetstreamapp/soql-parser-js/releases).
+- **npm** — `npm install @jetstreamapp/soql-parser-js`, then copy from `node_modules/@jetstreamapp/soql-parser-js/dist/lwc/soqlParserJs.js`.
+- **Local build** — clone the repo, run `npm install && npm run build:lwc`, and find the file at `dist/lwc/soqlParserJs.js`.
 
-1. Go to the "Code Tab" on the [npm](https://www.npmjs.com/package/@jetstreamapp/soql-parser-js) listing
-   1. Navigate to `/dist/lwc.index.mjs`
-2. Install this project in an existing node library by running `npm install @jetstreamapp/soql-parser-js`
-   1. then navigating to the downloaded code in this folder: `node_modules/@jetstreamapp/soql-parser-js/dist/lwc`
-
-#### Build the files yourself
-
-1. Clone/download the repository from GitHub
-2. Ensure you have node installed (version 22 or higher)
-3. Install dependencies with `npm install`
-4. Run `npm build:lwc`
-5. The output will be placed in `/dist/lwc.index.mjs`
-
-### Deploying and Using in Salesforce
-
-Copy `index.mjs` into an LWC component.
-
-For example:
+Your SFDX folder should look like:
 
 ```
-soqlParserJsLib
-- soqlParserJsLib.js <--- copy the code here
-- soqlParserJsLib.js-meta.xml
+force-app/main/default/lwc/soqlParserJs/
+├── soqlParserJs.js          <-- copied from this project
+└── soqlParserJs.js-meta.xml <-- your own (example below)
 ```
 
-After you have deployed the LWC, you can import it just like any other LWC import.
+A minimal `soqlParserJs.js-meta.xml`:
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<LightningComponentBundle xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>65.0</apiVersion>
+    <isExposed>false</isExposed>
+</LightningComponentBundle>
+```
+
+### Option 2: Direct deployment — use the pre-built metadata package
+
+If you don't have an SFDX project, download the pre-zipped metadata package, extract, and deploy:
+
+```bash
+# Download soql-parser-js-lwc-v<version>.zip from the GitHub Releases page, then:
+unzip soql-parser-js-lwc-v<version>.zip -d soql-parser-js-lwc
+sf project deploy start --metadata-dir soql-parser-js-lwc --target-org <your-org-alias>
+```
+
+Or, if you've built locally, the equivalent directory is `dist/lwc-packaged/`:
+
+```bash
+sf project deploy start --metadata-dir dist/lwc-packaged --target-org <your-org-alias>
+```
+
+Legacy `sfdx` CLI alternative:
+
+```bash
+sfdx force:mdapi:deploy -d <path-to-package> -w 10
+```
+
+### Using in Salesforce
+
+The deployed component is `c/soqlParserJs`. It is intentionally a library component (`isExposed=false`), so you don't drop it on a Lightning page directly — instead, import its exports from your own LWC:
 
 ```js
 import { LightningElement } from 'lwc';
-import { parseQuery } from 'c/soqlParserJsLib';
+import { parseQuery } from 'c/soqlParserJs';
 
-export default class SoqlParserJs extends LightningElement {
+export default class MyComponent extends LightningElement {
   parsedQuery;
 
   get parsedQueryString() {
@@ -570,11 +592,13 @@ export default class SoqlParserJs extends LightningElement {
 
 ```html
 <template>
-  <button class="slds-button slds-button_neutral" onclick="{handleClick}">Click Me</button>
+  <button class="slds-button slds-button_neutral" onclick={handleClick}>Click Me</button>
 
   <p>Parsed Query: {parsedQueryString}</p>
 </template>
 ```
+
+All public exports of the library (`parseQuery`, `composeQuery`, `formatQuery`, `isQueryValid`, the various utility functions, etc.) are available as named imports from `c/soqlParserJs`.
 
 ## CLI
 
