@@ -13,6 +13,7 @@ on:
           - patch
 
 permissions:
+  id-token: write
   contents: write
 
 jobs:
@@ -28,6 +29,8 @@ jobs:
         with:
           node-version: '24'
           cache: 'npm'
+          registry-url: 'https://registry.npmjs.org'
+          package-manager-cache: false
       - name: install dependencies
         run: npm ci
       - name: git config
