@@ -8,9 +8,9 @@ on:
         description: Increment
         required: true
         options:
-          - major
-          - minor
           - patch
+          - minor
+          - major
 
 permissions:
   id-token: write
