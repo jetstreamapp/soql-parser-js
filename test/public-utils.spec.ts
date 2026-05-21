@@ -2,7 +2,9 @@ import { describe, expect, it } from 'vitest';
 import { FieldSubquery } from '../src';
 import * as utils from '../src/api/public-utils';
 import { testCases } from './public-utils-test-data';
-const lodashGet = require('lodash.get');
+
+const getByPath = (obj: any, path: string) =>
+  path.split('.').reduce((acc, key) => (acc == null ? acc : acc[key]), obj);
 
 describe('getField', () => {
   it('Should compose Field', () => {
@@ -206,7 +208,7 @@ describe('getFlattenedFields', () => {
       const fields = utils.getFlattenedFields(testCase.query);
       expect(fields).toEqual(testCase.expectedFields);
       fields.forEach(field => {
-        expect(lodashGet(testCase.sfdcObj, field)).not.toBeUndefined();
+        expect(getByPath(testCase.sfdcObj, field)).not.toBeUndefined();
       });
     });
   });
