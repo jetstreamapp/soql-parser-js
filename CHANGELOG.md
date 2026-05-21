@@ -1,5 +1,9 @@
 # Changelog
 
+[unreleased]
+
+Upgrade dependencies
+
 ## 7.2.0
 
 May 11, 2026
