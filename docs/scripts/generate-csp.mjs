@@ -26,7 +26,8 @@ const BUILD_DIR = fileURLToPath(new URL('../build', import.meta.url));
 // Anything else (e.g. application/ld+json structured data) is inert and needs no hash.
 const EXECUTABLE_SCRIPT_TYPES = new Set(['', 'module', 'text/javascript', 'application/javascript']);
 
-const SCRIPT_TAG_REGEX = /<script\b([^>]*)>([\s\S]*?)<\/script>/gi;
+// `\b[^>]*` tolerates end tags like `</script >`, which browsers accept as terminating
+const SCRIPT_TAG_REGEX = /<script\b([^>]*)>([\s\S]*?)<\/script\b[^>]*>/gi;
 
 function collectHtmlFiles(dir) {
   return readdirSync(dir, { withFileTypes: true }).flatMap((entry) => {
