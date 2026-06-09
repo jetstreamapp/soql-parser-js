@@ -237,10 +237,9 @@ export function getWhereValue(value: any | any[], literalType?: LiteralType | Li
     switch (literalType) {
       case 'STRING': {
         if (Array.isArray(value)) {
-          return value.filter(Boolean).map(val => (isString(val) && val.startsWith("'") ? val : `'${val ?? ''}'`));
+          return value.filter(Boolean).map(val => wrapStringLiteral(val));
         } else {
-          value = String(value ?? '');
-          return isString(value) && value.startsWith("'") ? value : `'${value ?? ''}'`;
+          return wrapStringLiteral(value);
         }
       }
       case 'APEX_BIND_VARIABLE': {
@@ -256,7 +255,7 @@ export function getWhereValue(value: any | any[], literalType?: LiteralType | Li
 function whereValueHelper(value: any, literalType?: LiteralType) {
   switch (literalType) {
     case 'STRING': {
-      return isString(value) && value.startsWith("'") ? value : `'${value ?? ''}'`;
+      return wrapStringLiteral(value);
     }
     case 'NULL': {
       return 'null';
@@ -265,4 +264,55 @@ function whereValueHelper(value: any, literalType?: LiteralType) {
       return value;
     }
   }
+}
+
+/**
+ * Wraps a raw value as a SOQL string literal, escaping unescaped single quotes
+ * and lone backslashes. If the value already starts with `'`, it is assumed to
+ * be pre-quoted (e.g. from a parsed query) and is returned unchanged.
+ */
+function wrapStringLiteral(value: any): string {
+  if (isString(value) && value.startsWith("'") && value.endsWith("'") && value.length >= 2) {
+    return value;
+  }
+  const str = String(value ?? '');
+  return `'${escapeStringLiteral(str)}'`;
+}
+
+// SOQL recognizes these chars as valid escape sequences after a backslash.
+// See: https://developer.salesforce.com/docs/atlas.en-us.soql_sosl.meta/soql_sosl/sforce_api_calls_soql_select_quotedstringescapes.htm
+const SOQL_ESCAPE_FOLLOW_CHARS = /[nNrRtTbBfF"'\\_%]/;
+const HEX_QUAD = /^[0-9a-fA-F]{4}$/;
+
+/**
+ * Escapes characters that would otherwise break a SOQL string literal.
+ *
+ * - A single quote (`'`) is escaped to `\'`.
+ * - A backslash followed by a known SOQL escape character is left as-is so
+ *   users can supply already-escaped values (e.g. `\n`, `\%`, `\uXXXX`).
+ * - A lone backslash (one not part of a known escape sequence) is escaped to
+ *   `\\`.
+ */
+export function escapeStringLiteral(value: string): string {
+  let out = '';
+  for (let i = 0; i < value.length; i++) {
+    const ch = value[i];
+    if (ch === '\\') {
+      const next = value[i + 1];
+      if (next !== undefined && SOQL_ESCAPE_FOLLOW_CHARS.test(next)) {
+        out += ch + next;
+        i++;
+      } else if (next === 'u' && HEX_QUAD.test(value.substr(i + 2, 4))) {
+        out += value.substr(i, 6);
+        i += 5;
+      } else {
+        out += '\\\\';
+      }
+    } else if (ch === "'") {
+      out += "\\'";
+    } else {
+      out += ch;
+    }
+  }
+  return out;
 }

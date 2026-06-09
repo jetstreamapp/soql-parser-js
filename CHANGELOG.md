@@ -1,5 +1,13 @@
 # Changelog
 
+## 7.2.1
+
+Jun 8, 2026
+
+### Bug Fixes
+
+- **Escape single quotes and lone backslashes in composed `STRING` values** — `composeQuery` previously wrapped `STRING` literal values in single quotes without escaping their contents, so a value like `med'ia` produced invalid SOQL (`Industry = 'med'ia'`). String values are now escaped before being wrapped: bare single quotes become `\'` and lone backslashes become `\\`. Backslash sequences that are already valid SOQL escapes (`\n`, `\r`, `\t`, `\b`, `\f`, `\"`, `\'`, `\\`, `\_`, `\%`, `\uXXXX`, including their uppercase variants) are left unchanged so callers can pre-escape values themselves. Values that are already wrapped in single quotes (e.g. round-tripped through `parseQuery`) are passed through unchanged.
+
 ## 7.2.0
 
 May 11, 2026
