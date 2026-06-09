@@ -1,0 +1,5 @@
+/*!
+ * @jetstreamapp/soql-parser-js v7.2.1
+ * https://github.com/jetstreamapp/soql-parser-js
+ * @license MIT
+ */
