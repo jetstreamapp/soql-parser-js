@@ -1,5 +1,11 @@
 # Changelog
 
+## 7.2.2
+
+Jun 9, 2026
+
+- Updated dependencies to resolve security vulnerabilities
+
 ## 7.2.1
 
 Jun 8, 2026

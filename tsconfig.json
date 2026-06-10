@@ -2,18 +2,18 @@
   "compilerOptions": {
     "emitDeclarationOnly": true,
     "declaration": true,
-    "importHelpers": true,
     "isolatedModules": true,
-    "lib": ["esnext"],
+    "lib": ["esnext", "dom"],
     "module": "ESNext",
-    "moduleResolution": "node",
+    "moduleResolution": "bundler",
     "noImplicitAny": true,
+    "rootDir": "src",
     "declarationDir": "dist/types",
     "outDir": "dist",
     "removeComments": true,
     "strict": true,
-    "target": "ES2017",
-    "typeRoots": ["node_modules/@types"]
+    "skipLibCheck": true,
+    "target": "ES2017"
   },
   "include": ["src/**/*.ts"],
   "exclude": ["node_modules", "test", "docs"]
