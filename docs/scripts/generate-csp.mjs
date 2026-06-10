@@ -60,11 +60,13 @@ const scriptHashes = getInlineScriptHashes();
 
 const csp = [
   `default-src 'self'`,
-  `script-src 'self' ${scriptHashes.join(' ')}`,
+  // static.cloudflareinsights.com / cloudflareinsights.com allow the Cloudflare Web Analytics
+  // beacon, which Cloudflare injects at the edge (it is not present in the origin HTML)
+  `script-src 'self' ${scriptHashes.join(' ')} https://static.cloudflareinsights.com`,
   `style-src 'self' 'unsafe-inline'`,
   `img-src 'self' data:`,
   `font-src 'self' data:`,
-  `connect-src 'self'`,
+  `connect-src 'self' https://cloudflareinsights.com`,
   `frame-ancestors 'none'`,
   `base-uri 'self'`,
   `form-action 'self'`,
