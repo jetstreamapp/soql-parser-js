@@ -499,5 +499,10 @@ WHERE
   { testCase: 164, soql: `SELECT Id FROM Account USING SCOPE my_territory`, isValid: true },
   { testCase: 165, soql: `SELECT Id FROM Account USING SCOPE my_team_territory`, isValid: true },
   { testCase: 166, soql: `SELECT Id, Name FROM Account USING SCOPE myRule`, isValid: true },
+  {
+    testCase: 167,
+    soql: `SELECT Id // single-line comment\nFROM Account /* multi-line\ncomment */ WHERE Name = 'has // and /* inside */'`,
+    isValid: true,
+  },
 ];
 export default testCases;

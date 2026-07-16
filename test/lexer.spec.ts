@@ -403,6 +403,126 @@ describe('Lexer - string literals', () => {
 });
 
 // ===========================================================================
+// Comments
+// ===========================================================================
+
+describe('Lexer - comments', () => {
+  it('should skip a single-line comment at the end of input without a trailing newline', () => {
+    const tokens = tokenize('SELECT Id FROM Account // trailing comment');
+    expect(texts(tokens)).toEqual(['SELECT', 'Id', 'FROM', 'Account']);
+  });
+
+  it('should skip a single-line comment terminated by LF', () => {
+    const tokens = tokenize('SELECT Id // fields\nFROM Account');
+    expect(texts(tokens)).toEqual(['SELECT', 'Id', 'FROM', 'Account']);
+  });
+
+  it('should skip a single-line comment terminated by CRLF', () => {
+    const tokens = tokenize('SELECT Id // fields\r\nFROM Account');
+    expect(texts(tokens)).toEqual(['SELECT', 'Id', 'FROM', 'Account']);
+  });
+
+  it('should skip a single-line comment on its own line', () => {
+    const tokens = tokenize('SELECT Id\n// a whole line comment\nFROM Account');
+    expect(texts(tokens)).toEqual(['SELECT', 'Id', 'FROM', 'Account']);
+  });
+
+  it('should produce only EOF for comment-only input', () => {
+    const tokens = tokenize('// nothing but a comment');
+    expect(tokens).toHaveLength(1);
+    expect(tokens[0].kind).toBe(TokenKind.EOF);
+  });
+
+  it('should skip an inline multi-line comment between tokens', () => {
+    const tokens = tokenize('SELECT /* fields */ Id FROM Account');
+    expect(texts(tokens)).toEqual(['SELECT', 'Id', 'FROM', 'Account']);
+  });
+
+  it('should skip a multi-line comment spanning multiple lines', () => {
+    const tokens = tokenize('SELECT Id\n/* this comment\nspans several\nlines */\nFROM Account');
+    expect(texts(tokens)).toEqual(['SELECT', 'Id', 'FROM', 'Account']);
+  });
+
+  it('should skip multi-line comments at the start and end of input', () => {
+    const tokens = tokenize('/* start */ SELECT Id FROM Account /* end */');
+    expect(texts(tokens)).toEqual(['SELECT', 'Id', 'FROM', 'Account']);
+  });
+
+  it('should skip the minimal empty multi-line comment', () => {
+    const tokens = tokenize('SELECT/**/Id FROM Account');
+    expect(texts(tokens)).toEqual(['SELECT', 'Id', 'FROM', 'Account']);
+  });
+
+  it('should not treat */ inside a single-line comment specially', () => {
+    const tokens = tokenize('SELECT Id // has */ in it\nFROM Account');
+    expect(texts(tokens)).toEqual(['SELECT', 'Id', 'FROM', 'Account']);
+  });
+
+  it('should not nest multi-line comments (first */ closes)', () => {
+    const tokens = tokenize('SELECT /* outer /* inner */ Id FROM Account');
+    expect(texts(tokens)).toEqual(['SELECT', 'Id', 'FROM', 'Account']);
+  });
+
+  it('should ignore // inside a multi-line comment', () => {
+    const tokens = tokenize('SELECT /* has // inside */ Id FROM Account');
+    expect(texts(tokens)).toEqual(['SELECT', 'Id', 'FROM', 'Account']);
+  });
+
+  it('should NOT treat // inside a string literal as a comment', () => {
+    const tokens = tokenize("SELECT Id FROM Account WHERE Url = 'http://example.com'");
+    const literal = tokens.find(t => t.kind === TokenKind.STRING_LITERAL);
+    expect(literal?.text).toBe("'http://example.com'");
+    expect(texts(tokens)).toEqual(['SELECT', 'Id', 'FROM', 'Account', 'WHERE', 'Url', '=', "'http://example.com'"]);
+  });
+
+  it('should NOT treat /* */ inside a string literal as a comment', () => {
+    const tokens = tokenize("SELECT Id FROM Account WHERE Name = 'a /* not a comment */ b'");
+    const literal = tokens.find(t => t.kind === TokenKind.STRING_LITERAL);
+    expect(literal?.text).toBe("'a /* not a comment */ b'");
+  });
+
+  it('should tokenize a string literal containing only a comment marker', () => {
+    const tokens = tokenize("SELECT Id FROM Account WHERE Name = '//'");
+    const literal = tokens.find(t => t.kind === TokenKind.STRING_LITERAL);
+    expect(literal?.text).toBe("'//'");
+  });
+
+  it('should NOT treat comment markers after an escaped quote in a string as a comment', () => {
+    const tokens = tokenize("SELECT Id FROM Account WHERE Name = 'it\\'s http://x /* here */'");
+    const literal = tokens.find(t => t.kind === TokenKind.STRING_LITERAL);
+    expect(literal?.text).toBe("'it\\'s http://x /* here */'");
+  });
+
+  it('should NOT treat a lone */ inside a string literal specially', () => {
+    const tokens = tokenize("SELECT Id FROM Account WHERE Name = 'ends */ here'");
+    const literal = tokens.find(t => t.kind === TokenKind.STRING_LITERAL);
+    expect(literal?.text).toBe("'ends */ here'");
+    expect(texts(tokens)).toEqual(['SELECT', 'Id', 'FROM', 'Account', 'WHERE', 'Name', '=', "'ends */ here'"]);
+  });
+
+  it('should handle real comments alongside strings containing comment markers', () => {
+    const tokens = tokenize("SELECT Id // real comment\nFROM Account WHERE Url = 'http://x' /* real */ AND Name = 'a // b'");
+    expect(texts(tokens)).toEqual(['SELECT', 'Id', 'FROM', 'Account', 'WHERE', 'Url', '=', "'http://x'", 'AND', 'Name', '=', "'a // b'"]);
+  });
+
+  it('should preserve original input offsets for tokens after a comment', () => {
+    const soql = '/* lead */ SELECT Id';
+    const tokens = tokenize(soql);
+    expect(tokens[0].kind).toBe(TokenKind.SELECT);
+    expect(tokens[0].start).toBe(soql.indexOf('SELECT'));
+    expect(tokens[1].start).toBe(soql.indexOf('Id'));
+  });
+
+  it('should throw for an unterminated multi-line comment', () => {
+    expect(() => tokenize('SELECT /* oops')).toThrow('Unterminated comment at position 7');
+  });
+
+  it('should still throw for a lone forward slash', () => {
+    expect(() => tokenize('SELECT Id / FROM Account')).toThrow(/Unexpected character/);
+  });
+});
+
+// ===========================================================================
 // Date and DateTime tokens
 // ===========================================================================
 
