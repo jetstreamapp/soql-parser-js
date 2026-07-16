@@ -137,5 +137,9 @@
   "SELECT Id FROM Account USING SCOPE my_team_territory",
   "SELECT Id FROM Account USING SCOPE team",
   "SELECT Id FROM Account USING SCOPE scopingRule",
-  "SELECT Id, Name FROM Account USING SCOPE myRule"
+  "SELECT Id, Name FROM Account USING SCOPE myRule",
+  "SELECT Id, Name // the fields we need\nFROM Account // the target object",
+  "/* leading comment */ SELECT Id /* inline\ncomment */ FROM Account WHERE Website = 'https://example.com' /* trailing comment */",
+  "SELECT Id FROM Account WHERE Name = 'not // a comment' AND Description = 'still /* not */ a comment'",
+  "SELECT Id // real comment\nFROM Account /* real\ncomment */ WHERE Website = 'http://example.com' AND Name = 'a /* fake */ // comment'"
 ]
