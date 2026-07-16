@@ -1,5 +1,13 @@
 # Changelog
 
+## 7.3.0
+
+Jul 16, 2026
+
+### Features
+
+- **Added support for line-level and block-level comments** — Queries may now contain comments, which are ignored during parsing: `//` runs to the end of the line and `/* ... */` may span multiple lines (non-nesting; an unterminated `/*` throws `Unterminated comment at position N`). Comment markers inside string literals (e.g. `WHERE Url = 'https://example.com'`) are treated as literal text. Comments are not represented in the parsed `Query`, so they are not preserved by `composeQuery`/`formatQuery`. Applies to all entry points (`parseQuery`, `isQueryValid`, partial parsing, and the CLI). Note that Salesforce itself does not accept comments in SOQL, so compose the parsed query before sending it to the Salesforce API.
+
 ## 7.2.2
 
 Jun 9, 2026

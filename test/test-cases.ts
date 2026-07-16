@@ -2783,6 +2783,66 @@ export const testCases: TestCase[] = [
       usingScope: 'myRule',
     },
   },
+  {
+    testCase: 139,
+    soql: 'SELECT Id, Name // the fields we need\nFROM Account // the target object',
+    soqlComposed: 'SELECT Id, Name FROM Account',
+    output: {
+      fields: [
+        { type: 'Field', field: 'Id' },
+        { type: 'Field', field: 'Name' },
+      ],
+      sObject: 'Account',
+    },
+  },
+  {
+    testCase: 140,
+    soql: "/* leading comment */ SELECT Id /* inline\ncomment */ FROM Account WHERE Website = 'https://example.com' /* trailing comment */",
+    soqlComposed: "SELECT Id FROM Account WHERE Website = 'https://example.com'",
+    output: {
+      fields: [{ type: 'Field', field: 'Id' }],
+      sObject: 'Account',
+      where: {
+        left: {
+          field: 'Website',
+          operator: '=',
+          value: "'https://example.com'",
+          literalType: 'STRING',
+        },
+      },
+    },
+  },
+  {
+    testCase: 141,
+    soql: "SELECT Id FROM Account WHERE Name = 'not // a comment' AND Description = 'still /* not */ a comment'",
+    output: {
+      fields: [{ type: 'Field', field: 'Id' }],
+      sObject: 'Account',
+      where: {
+        left: { field: 'Name', operator: '=', value: "'not // a comment'", literalType: 'STRING' },
+        operator: 'AND',
+        right: {
+          left: { field: 'Description', operator: '=', value: "'still /* not */ a comment'", literalType: 'STRING' },
+        },
+      },
+    },
+  },
+  {
+    testCase: 142,
+    soql: "SELECT Id // real comment\nFROM Account /* real\ncomment */ WHERE Website = 'http://example.com' AND Name = 'a /* fake */ // comment'",
+    soqlComposed: "SELECT Id FROM Account WHERE Website = 'http://example.com' AND Name = 'a /* fake */ // comment'",
+    output: {
+      fields: [{ type: 'Field', field: 'Id' }],
+      sObject: 'Account',
+      where: {
+        left: { field: 'Website', operator: '=', value: "'http://example.com'", literalType: 'STRING' },
+        operator: 'AND',
+        right: {
+          left: { field: 'Name', operator: '=', value: "'a /* fake */ // comment'", literalType: 'STRING' },
+        },
+      },
+    },
+  },
 ];
 
 export default testCases;

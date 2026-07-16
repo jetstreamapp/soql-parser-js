@@ -61,6 +61,8 @@ isQueryValid('SELECT Id Foo FROM Baz'); // false
 | composeQuery | Turn a Query object back into a SOQL statement.        | soql: Query<br> config?: SoqlComposeConfig |
 | formatQuery  | Format a SOQL query string.                            | soql: Query<br> config?: FormatOptions     |
 
+Queries may contain comments (`// single-line` and `/* multi-line */`), which are ignored during parsing. See [Comments in queries](#comments-in-queries) for details.
+
 ## Utility Functions
 
 **General Utility**
@@ -182,6 +184,29 @@ console.log(JSON.stringify(soqlQuery, null, 2));
 ```
 
 </details>
+
+### Comments in queries
+
+Queries passed to `parseQuery`, `isQueryValid`, and `formatQuery` may contain comments, which are ignored during parsing:
+
+- Single-line comments: everything from `//` through the end of the line
+- Multi-line comments: everything from `/*` through the closing `*/` (comments do not nest)
+
+Comment markers inside string literals are treated as literal text, e.g. `WHERE Url = 'https://example.com'` works as expected. Since comments are not represented in the parsed `Query`, they are not preserved when composing a query back to a string.
+
+> [!NOTE]
+> Salesforce itself does not support comments in SOQL, so strip or compose the query before sending it to the Salesforce API.
+
+```typescript
+import { parseQuery, composeQuery } from '@jetstreamapp/soql-parser-js';
+
+const soql = `
+  SELECT Id, Name // the fields we need
+  FROM Account /* the target object */
+`;
+
+composeQuery(parseQuery(soql)); // SELECT Id, Name FROM Account
+```
 
 ### Parsing a partial query
 

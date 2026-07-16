@@ -539,7 +539,44 @@ export function tokenize(input: string): Token[] {
       continue;
     }
 
-    // 2. String literal: '...' with backslash escape handling
+    // 2. Skip comments: // to end of line, /* ... */ (non-nesting)
+    if (ch === 47) {
+      // forward slash
+      const next = pos + 1 < len ? input.charCodeAt(pos + 1) : 0;
+      if (next === 47) {
+        // '//' - consume to end of line or end of input
+        pos += 2;
+        while (pos < len) {
+          const c = input.charCodeAt(pos);
+          if (c === 10 || c === 13) {
+            break; // leave newline for whitespace skip
+          }
+          pos++;
+        }
+        continue;
+      }
+      if (next === 42) {
+        // '/*' - consume until '*/'
+        const start = pos;
+        pos += 2;
+        let terminated = false;
+        while (pos < len) {
+          if (input.charCodeAt(pos) === 42 && pos + 1 < len && input.charCodeAt(pos + 1) === 47) {
+            pos += 2;
+            terminated = true;
+            break;
+          }
+          pos++;
+        }
+        if (!terminated) {
+          throw new Error(`Unterminated comment at position ${start}`);
+        }
+        continue;
+      }
+      // lone '/' falls through to the "Unexpected character" throw below
+    }
+
+    // 3. String literal: '...' with backslash escape handling
     if (ch === 39) {
       // single quote
       const start = pos;
@@ -570,7 +607,7 @@ export function tokenize(input: string): Token[] {
       continue;
     }
 
-    // 3. Check for DateTime/Date (starts with a digit, could be date/datetime or number)
+    // 4. Check for DateTime/Date (starts with a digit, could be date/datetime or number)
     if (isDigit(ch)) {
       // Try to match datetime or date pattern: YYYY-MM-DD...
       if (pos + 9 < len && input.charCodeAt(pos + 4) === 45 && input.charCodeAt(pos + 7) === 45) {
@@ -670,7 +707,7 @@ export function tokenize(input: string): Token[] {
       continue;
     }
 
-    // 4. Multi-char and single-char operators/symbols
+    // 5. Multi-char and single-char operators/symbols
     if (ch === 33) {
       // !
       if (pos + 1 < len && input.charCodeAt(pos + 1) === 61) {
@@ -825,7 +862,7 @@ export function tokenize(input: string): Token[] {
       continue;
     }
 
-    // 5. Identifiers and keywords
+    // 6. Identifiers and keywords
     if (isAlpha(ch)) {
       const start = pos;
       pos++;
