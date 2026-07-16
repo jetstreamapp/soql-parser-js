@@ -74,6 +74,9 @@ Many of hte utility functions are provided to easily determine the shape of spec
 | hasAlias                                | Returns `true` if the field passed in has the `alias` property.                                                                                                                                                         | input: `string \| ComposeFieldInput`                                        |
 | getField                                | Convenience method to construct fields in the correct format when using `composeQuery()`. Look in the data models section below for the structure of `ComposeFieldInput`.                                               | input: `string \| ComposeFieldInput`                                        |
 | getFlattenedFields                      | Flatten a Salesforce record based on the parsed SOQL Query. this is useful if you have relationships in your query and want to show the results in a table, using `.` dot notation for the relationship field headings. | soql: `Query \| Subquery \| FieldSubquery`<br> config?: `SoqlComposeConfig` |
+| hasComments                             | Returns `true` if the query string contains at least one comment. Operates on the raw string without parsing it, so it works on any input and never throws.                                                             | soql: `string`                                                              |
+| getComments                             | Returns all comments in the query string (type, text, and position), in order of appearance. Operates on the raw string without parsing it, so it works on any input and never throws.                                  | soql: `string`                                                              |
+| stripComments                           | Removes comments from a query string without otherwise modifying it. Returns the original string as-is if there are no comments. See [Comments in queries](#comments-in-queries).                                       | soql: `string`                                                              |
 | isSubquery                              | Returns `true` if the data passed in is a subquery.                                                                                                                                                                     | query: `Query \| Subquery`                                                  |
 | isFieldSubquery                         | Returns `true` if the data passed in is a FieldSubquery.                                                                                                                                                                | value: `any`                                                                |
 | isWhereClauseWithRightCondition         | Returns `true` if the value passed in is a `WhereClause` with an `operator` and `right` property                                                                                                                        | value: `WhereClause`                                                        |
@@ -206,6 +209,30 @@ const soql = `
 `;
 
 composeQuery(parseQuery(soql)); // SELECT Id, Name FROM Account
+```
+
+If you want to remove comments from a query **without otherwise modifying it** (no reformatting, no whitespace or keyword normalization), use `stripComments`. It operates on the raw string without parsing it, so it works even on invalid SOQL and never throws — an unterminated `/*` is stripped through the end of the input rather than throwing like `parseQuery` does. When the query contains no comments the original string is returned unchanged, so it is safe to call on every query before sending it to the Salesforce API. A single space is inserted where removing a comment would otherwise merge adjacent tokens.
+
+`hasComments` and `getComments` follow the same rules and can be used to detect or inspect comments without modifying the query.
+
+```typescript
+import { stripComments, hasComments, getComments } from '@jetstreamapp/soql-parser-js';
+
+stripComments(`SELECT Id, Name // the fields we need
+FROM Account`);
+// 'SELECT Id, Name \nFROM Account'
+
+stripComments('SELECT Id/* comment */FROM Account'); // 'SELECT Id FROM Account'
+
+const soql = "SELECT Id FROM Account WHERE Url = 'https://example.com'";
+stripComments(soql) === soql; // true - no comments, original string returned as-is
+hasComments(soql); // false
+
+getComments('SELECT Id /* fields */ FROM Account // trailing');
+// [
+//   { type: 'block', text: '/* fields */', start: 10, end: 22 },
+//   { type: 'line', text: '// trailing', start: 36, end: 47 },
+// ]
 ```
 
 ### Parsing a partial query
@@ -537,10 +564,10 @@ WHERE Name LIKE 'a%'
 
 The library can be used as a Lightning Web Component in your Salesforce org. The build produces two artifacts to support different workflows:
 
-| Artifact                                    | What it is                                                                 | Best for                                                              |
-| ------------------------------------------- | -------------------------------------------------------------------------- | --------------------------------------------------------------------- |
-| `dist/lwc/soqlParserJs.js`                  | Standalone bundled JS file (no metadata)                                   | SFDX projects — drop into your existing `lwc/soqlParserJs/` folder    |
-| `dist/lwc-packaged/` (and the release zip)  | Full Salesforce metadata package: `package.xml` + `lwc/soqlParserJs/{js,js-meta.xml}` | Direct deployment to an org via `sf project deploy start` — no SFDX project required |
+| Artifact                                   | What it is                                                                            | Best for                                                                             |
+| ------------------------------------------ | ------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------ |
+| `dist/lwc/soqlParserJs.js`                 | Standalone bundled JS file (no metadata)                                              | SFDX projects — drop into your existing `lwc/soqlParserJs/` folder                   |
+| `dist/lwc-packaged/` (and the release zip) | Full Salesforce metadata package: `package.xml` + `lwc/soqlParserJs/{js,js-meta.xml}` | Direct deployment to an org via `sf project deploy start` — no SFDX project required |
 
 The Salesforce API version used for the metadata package is configured via the `salesforceApiVersion` field in [package.json](package.json) and is applied to both `package.xml` and `soqlParserJs.js-meta.xml` at build time.
 
@@ -615,6 +642,8 @@ export default class MyComponent extends LightningElement {
 }
 ```
 
+<!-- LWC event bindings must be unquoted (onclick={handleClick}); prettier would add quotes -->
+<!-- prettier-ignore -->
 ```html
 <template>
   <button class="slds-button slds-button_neutral" onclick={handleClick}>Click Me</button>

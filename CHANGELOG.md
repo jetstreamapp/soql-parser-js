@@ -1,5 +1,13 @@
 # Changelog
 
+## 7.4.0
+
+Jul 16, 2026
+
+### Features
+
+- **Added comment utilities: `stripComments`, `hasComments`, and `getComments`** — These operate on the raw query string without parsing it, so they work on any input (including invalid SOQL) and never throw. `stripComments` removes comments without otherwise modifying the query — no reformatting, no whitespace or keyword normalization — making it safe for proxying user-authored queries to the Salesforce API, which does not accept comments. When the query contains no comments, the original string is returned as-is, so it can be called unconditionally. A single space is inserted where removing a comment would otherwise merge adjacent tokens (`SELECT Id/*c*/FROM Account` → `SELECT Id FROM Account`). Comment markers inside string literals are treated as literal text, and an unterminated `/*` is stripped through the end of the input rather than throwing. `hasComments` returns whether a query contains any comments, and `getComments` returns each comment's type (`line` | `block`), text, and position.
+
 ## 7.3.0
 
 Jul 16, 2026

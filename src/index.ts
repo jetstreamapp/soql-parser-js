@@ -4,6 +4,8 @@
  * a copy of which has been included with this distribution in the LICENSE.txt file.
  */
 export { parseQuery, isQueryValid } from './parser/parser';
+export { getComments, hasComments, stripComments } from './parser/comments';
+export type { SoqlComment } from './parser/comments';
 export * from './api/api-models';
 export * from './api/public-utils';
 export * from './composer/composer';
