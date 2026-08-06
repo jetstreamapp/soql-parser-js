@@ -1,48 +1,46 @@
 # Changelog
 
-## 7.4.1
+All notable changes to this project will be documented in this file.
 
-Aug 6, 2026
+## [Unreleased]
 
-No changes to the published library — this release updates devDependencies and overhauls the release pipeline.
+### Changed
 
-### Dependencies
+- Changelog now follows the [Keep a Changelog](https://keepachangelog.com/) format — entries are added to the Unreleased section and stamped with a version and date automatically at release time, and GitHub release notes are generated from that content
 
-- Updated devDependencies to latest versions (prettier, release-it, tsx, vitest) and docs site dependencies (Docusaurus 3.10.2, React 19.2.8, TypeScript 6)
+## [7.4.1] - 2026-08-06
 
-## 7.4.0
+### Changed
 
-Jul 16, 2026
+- Updated devDependencies to latest versions (prettier, release-it, tsx, vitest) and docs site dependencies (Docusaurus 3.10.2, React 19.2.8, TypeScript 6) — no changes to the published library
+
+### Removed
+
+- Removed the docs deployment from the release pipeline — documentation at https://soql-parser-js.getjetstream.app is now built and hosted by Cloudflare Pages
+
+## [7.4.0] - 2026-07-16
 
 ### Features
 
 - **Added comment utilities: `stripComments`, `hasComments`, and `getComments`** — These operate on the raw query string without parsing it, so they work on any input (including invalid SOQL) and never throw. `stripComments` removes comments without otherwise modifying the query — no reformatting, no whitespace or keyword normalization — making it safe for proxying user-authored queries to the Salesforce API, which does not accept comments. When the query contains no comments, the original string is returned as-is, so it can be called unconditionally. A single space is inserted where removing a comment would otherwise merge adjacent tokens (`SELECT Id/*c*/FROM Account` → `SELECT Id FROM Account`). Comment markers inside string literals are treated as literal text, and an unterminated `/*` is stripped through the end of the input rather than throwing. `hasComments` returns whether a query contains any comments, and `getComments` returns each comment's type (`line` | `block`), text, and position.
 
-## 7.3.0
-
-Jul 16, 2026
+## [7.3.0] - 2026-07-16
 
 ### Features
 
 - **Added support for line-level and block-level comments** — Queries may now contain comments, which are ignored during parsing: `//` runs to the end of the line and `/* ... */` may span multiple lines (non-nesting; an unterminated `/*` throws `Unterminated comment at position N`). Comment markers inside string literals (e.g. `WHERE Url = 'https://example.com'`) are treated as literal text. Comments are not represented in the parsed `Query`, so they are not preserved by `composeQuery`/`formatQuery`. Applies to all entry points (`parseQuery`, `isQueryValid`, partial parsing, and the CLI). Note that Salesforce itself does not accept comments in SOQL, so compose the parsed query before sending it to the Salesforce API.
 
-## 7.2.2
-
-Jun 9, 2026
+## [7.2.2] - 2026-06-09
 
 - Updated dependencies to resolve security vulnerabilities
 
-## 7.2.1
-
-Jun 8, 2026
+## [7.2.1] - 2026-06-08
 
 ### Bug Fixes
 
 - **Escape single quotes and lone backslashes in composed `STRING` values** — `composeQuery` previously wrapped `STRING` literal values in single quotes without escaping their contents, so a value like `med'ia` produced invalid SOQL (`Industry = 'med'ia'`). String values are now escaped before being wrapped: bare single quotes become `\'` and lone backslashes become `\\`. Backslash sequences that are already valid SOQL escapes (`\n`, `\r`, `\t`, `\b`, `\f`, `\"`, `\'`, `\\`, `\_`, `\%`, `\uXXXX`, including their uppercase variants) are left unchanged so callers can pre-escape values themselves. Values that are already wrapped in single quotes (e.g. round-tripped through `parseQuery`) are passed through unchanged.
 
-## 7.2.0
-
-May 11, 2026
+## [7.2.0] - 2026-05-11
 
 ### LWC Distribution
 
@@ -59,15 +57,11 @@ The LWC build now produces two artifacts to support different deployment workflo
 - **npm tarball attached to GitHub Releases** — every release now attaches `jetstreamapp-soql-parser-js-<version>.tgz`.
 - **Version banner on all bundles** — `esm`, `cjs`, `cli`, and `lwc` bundles all start with a `/*! ... */` header listing the package name, version, repository URL, and license. Banner values are sourced from `package.json`, so they stay in sync automatically with each release.
 
-## 7.1.1
-
-Apr 25, 2026
+## [7.1.1] - 2026-04-25
 
 - Upgrade dependencies
 
-## 7.1.0
-
-Mar 21, 2026
+## [7.1.0] - 2026-03-21
 
 ### Bug Fixes
 
@@ -79,9 +73,7 @@ Mar 21, 2026
 
 - Removed singleton parser pattern — `parseQuery` now creates a fresh parser instance per call, eliminating shared mutable state and making the parser safe for concurrent use in worker threads.
 
-## 7.0.0
-
-Mar 14, 2026
+## [7.0.0] - 2026-03-14
 
 🚀🚀🚀🚀🚀 Performed a complete re-write using a hand-rolled parser, complements of Claude Code which did 100% of the work.
 
@@ -105,65 +97,45 @@ This is very unlikely to impact most users, and if it does, the required changes
 export type { CstNode, CstParser, ILexingError, IRecognitionException } from 'chevrotain';
 ```
 
-## 6.3.1
-
-Dec 15, 2025
+## [6.3.1] - 2025-12-15
 
 - Fix indent for query format
 
-## 6.3.0
-
-Nov 27, 2025
+## [6.3.0] - 2025-11-27
 
 - Add support for `mru` in `USING SCOPE`. (#268)
   - Thank you @jimmyhogerty
 
-## 6.2.4
-
-Aug 18, 2025
+## [6.2.4] - 2025-08-18
 
 - Ensure all types are emitted during the build process (#266)
   - Some types were missing from the build process which caused build errors for some typescript users
 
-## 6.2.2 / 6.2.3
-
-July 8, 2025
+## [6.2.2] / [6.2.3] - 2025-07-08
 
 - Ensure types are referenced in exports. (#263)
 
-## 6.2.1
-
-July 7, 2025
+## [6.2.1] - 2025-07-07
 
 - Updated build scripts to ensure esm build works correctly. (#259)
 
-## 6.2.0
-
-May 8, 2025
+## [6.2.0] - 2025-05-08
 
 - Updated build tooling and dependencies, no externally facing changes.
 
-## 6.1.0
-
-June 16, 2024
+## [6.1.0] - 2024-06-16
 
 - Add support for [negative currency values](https://help.salesforce.com/s/articleView?id=release-notes.rn_api_soql.htm&release=250&type=5) (#244)
 
-## 6.0.0
-
-June 16, 2024
+## [6.0.0] - 2024-06-16
 
 - Package has been moved to `@jetstreamapp` npm organization
 
-## 5.0.2
-
-Jan 18, 2024
+## [5.0.2] - 2024-01-18
 
 - Nested NOT negation WHERE clauses were not properly formed (#242)
 
-## 5.0.1
-
-Jan 13, 2024
+## [5.0.1] - 2024-01-13
 
 💥 Breaking Changes
 Fixed a bug where with typescript types to properly represent that `WhereClause` can have a null value for `left` in the case of a negation operator.
@@ -171,22 +143,18 @@ This was always the case, but prior to enabling strict typescript types, this we
 
 For Typescript consumers that have strict null checks enabled, they may need to make code changes depending on usage.
 
-## 5.0.0
+## [5.0.0]
 
 💥 Did not publish correct assets - package was marked as deprecated on npm.
 
-## 4.10.1
-
-Jan 13, 2024
+## [4.10.1] - 2024-01-13
 
 Revert accidental breaking change to types. `WhereClause` left can have `null` in the negation case, but the types did not represent this.
 Updating types to match reality is a breaking change for consumers, so worked around issue and will publish version 5 with breaking change.
 
-## 4.10.0
+## [4.10.0] - 2024-01-13
 
 💥 Use 4.10.1, this version was marked as deprecated because of accidental breaking change with is reverted in 4.10.1
-
-Jan 13, 2024
 
 - Fixed where clause's that have a field name beginning with `In` preceded by the `NOT` operator. These were parsed as `NOT IN` instead of `NOT` followed by a field name, example: `NOT Invoice__c`
   - https://github.com/jetstreamapp/jetstream/issues/702
@@ -194,46 +162,32 @@ Jan 13, 2024
 - Enabled Typescript strict mode and made a number of minor fixes related to this.
 - When using `getField` which return `FieldFunctionExpression` will now always return an empty array even if no parameters are provided.
 
-## 4.9.2
-
-July 24, 2023
+## [4.9.2] - 2023-07-24
 
 Ensure `getFlattenedFields` does not throw exception if query does not have `fields` property.
 
-## 4.9.1
-
-May 29, 2023
+## [4.9.1] - 2023-05-29
 
 Fixed bug with composeQuery when some of the WHERE clause values were not strings.
 
-## 4.9.0
-
-May 23, 2023
+## [4.9.0] - 2023-05-23
 
 Upgraded Chevrotain to version 10. Chevrotain dropped support for older browsers, but since this library has a build step, the target output from the processed build should remain in the same target format that was previously available.
 
-## 4.8.3
-
-May 22, 2023
+## [4.8.3] - 2023-05-22
 
 - Included `src` folder in npm package
 
-## 4.8.2
-
-May 22, 2023
+## [4.8.2] - 2023-05-22
 
 - Fix output files to ensure sourcemaps are included in npm package for esm_build. (#227)
   - There was a typo in one of the output paths.
 
-## 4.8.1
-
-April 9, 2023
+## [4.8.1] - 2023-04-09
 
 - Fix output files to ensure sourcemaps are included in npm package. (#227)
 
-## 4.8.0
-
-April 9, 2023
+## [4.8.0] - 2023-04-09
 
 - Fix `isAggregateFn` (#228)
   - Date functions, such as `HOUR_IN_DAY(CreatedDate)` did not properly have the `isAggregateFn` property set to true for the field.
@@ -244,37 +198,29 @@ April 9, 2023
   - Removed non-minified version of application which had incorrect path to sourcemaps
   - Ensure webpack generates a sourcemap for the minified code output
 
-## 4.7.1
+## [4.7.1]
 
 January 23rd, 2023
 
 The repository was moved from `paustint` to `jetstreamapp`. No code changes.
 
-## 4.7.0
-
-October 6, 2022
+## [4.7.0] - 2022-10-06
 
 - Ensure the `literalType` is populated on subqueries that are part of a WHERE clause.
 
-## 4.6.1
-
-July 17, 2022
+## [4.6.1] - 2022-07-17
 
 - Ensure boolean return from some utility functions.
 - Re-designed the documentation website.
 
-## 4.6
-
-July 7, 2022
+## [4.6] - 2022-07-07
 
 - Converted test framework from mocha to jest.
 - Fixed bug where non-string values passed in to a where clause would throw an exception. (#121)
 - Fixed bug where in some cases a soql query would be improperly formed if the operator was an array type, such as `IN`, but the value and literal types were not arrays. (#107)
 - Added additional test-cases for stand-alone compose functions to test non-standard usage.
 
-## 4.5.0 / 4.5.1
-
-June 21, 2022
+## [4.5.0] / [4.5.1] - 2022-06-21
 
 - Added support for [accessLevel parameters](https://developer.salesforce.com/docs/atlas.en-us.238.0.apexcode.meta/apexcode/apex_classes_enforce_usermode.htm) in a `WITH` clause (#193)
   - Examples:
@@ -283,16 +229,12 @@ June 21, 2022
   - Thank you @ghingis
 - Patch release - changed property from `accessLevel` to `withAccessLevel`
 
-## 4.4.1
-
-June 11, 2022
+## [4.4.1] - 2022-06-11
 
 - Fixed parser error where `'mi'` and `'km'` could not be used in a WHERE clause because they were being parsed as a GeoLocationUnit (#188)
   - Thank you @divijklenty for reporting this.
 
-## 4.4
-
-March 11, 2022
+## [4.4] - 2022-03-11
 
 - Add support for partial parse and compose #182
   - Added support for parsing and composing partial queries. When parsing, the new option `allowPartialQuery` enables this functionality.
@@ -300,36 +242,26 @@ March 11, 2022
   - Some types on the `Query` interface were made optional to support partial queries
   - Updated CLI to include additional commands
 
-## 4.3
-
-September 19, 2021
+## [4.3] - 2021-09-19
 
 - Added cli support, check out the readme for usage details
 
-## 4.2.2
-
-August 1, 2021
+## [4.2.2] - 2021-08-01
 
 #160 - `getFlattenedFields()` Did not return correct results if a normal field used an alias, such as `SELECT Count(Id), Name account_name FROM Account GROUP BY Name`
 
-## 4.2.1
-
-June 18, 2021
+## [4.2.1] - 2021-06-18
 
 #157 - `getFlattenedFields()` Did not return correct results if the aggregate function was nested in another function, such as `FORMAT(MAX(CreatedDate))`.
 This bug only applied if there was not a field alias defined.
 
-## 4.2.0
-
-June 8, 2021
+## [4.2.0] - 2021-06-08
 
 #155 - Apex bind variable support is improved to allow parsing of more complex Apex.
 
 Review test cases 112 - 117 for examples of supported apex bind variables.
 
-## 4.1.1
-
-June 6, 2021
+## [4.1.1] - 2021-06-06
 
 #153 - A new parser option has been added named `ignoreParseErrors`, which will remove invalid parts of a query if there are parsing errors.
 
@@ -337,7 +269,7 @@ The general structure of the query must be valid and the `SELECT` and `WHERE` cl
 
 This option has been added to the documentation application.
 
-## 4.0.0
+## [4.0.0]
 
 April 13, 20201
 
@@ -475,9 +407,7 @@ Here are a few examples of how the `groupBy` is parsed or expected when composin
 }
 ```
 
-## 3.2.0
-
-March 27, 2021
+## [3.2.0] - 2021-03-27
 
 A number of improvements to the formatter have been made with this release.
 
@@ -511,15 +441,11 @@ FROM
   Event
 ```
 
-## 3.1.0
-
-March 27, 2021
+## [3.1.0] - 2021-03-27
 
 1. Added support for the `FIELDS()` function
 
-## 3.0.2
-
-March 6, 2021
+## [3.0.2] - 2021-03-06
 
 1. Date functions were not properly parsed when used in order by clauses. (#139)
 2. Modified names of functions / types (internal)
@@ -527,15 +453,13 @@ March 6, 2021
 
 Changes also released to 2.5.6
 
-## 3.0.1
+## [3.0.1]
 
 January 7, 20201
 
 1. `getFlattenedFields` did not properly handle the alias for an aggregate function within an aggregate query. (#131)
 
-## 3.0.0
-
-October 14, 2020
+## [3.0.0] - 2020-10-14
 
 🔥 Breaking Changes 🔥
 
@@ -678,62 +602,44 @@ export type FieldType =
 +export type HavingClause = HavingClauseWithoutOperator | HavingClauseWithRightCondition;
 ```
 
-## 2.5.5
-
-Aug 23, 2020
+## [2.5.5] - 2020-08-23
 
 1. `getFlattenedFields` ignores `typeof` clauses in query. (#115)
 
-## 2.5.4
-
-April 12, 2020
+## [2.5.4] - 2020-04-12
 
 1. `getFlattenedFields` returns incorrect results if relationship field is grouped and you are grouping for only one field (#113)
 
-## 2.5.3
-
-April 24, 2020
+## [2.5.3] - 2020-04-24
 
 1. Fixed nanoseconds on date (#102)
 
-## 2.5.2
-
-April 23, 2020
+## [2.5.2] - 2020-04-23
 
 1. Added support for dates formatted with nanoseconds, such as `2020-04-15T02:40:03.000+0000`. (#102)
 2. Added support for aggregate function in the `ORDER BY` clause (#103)
 3. Queries would not be properly composed if an order by had a function and also specified ASC or DESC (#104)
 
-## 2.5.1
-
-April 23, 2020
+## [2.5.1] - 2020-04-23
 
 1. Queries with date functions in a WHERE clause would throw an error when parsing. (#100)
 
-## 2.5.0
-
-April 3, 2020
+## [2.5.0] - 2020-04-03
 
 1. Passing in null or undefined to compose query no longer throws an exception, but instead returns an empty string. (#95)
 2. Regular fields in a select clause now allow aliases because this is allowed if the field is used as part of a group by clause. (#97)
 3. `getFlattenedFields()` now considers if a relationship field was used as part of a group by, and if so it returns just the field name instead of the entire field path, as this is how Salesforce will return the records. (#98)
 
-## 2.4.1
-
-Mar 22, 2020
+## [2.4.1] - 2020-03-22
 
 1. Updated dependencies to resolve known security vulnerabilities.
 
-## 2.4
-
-Feb 25, 2020
+## [2.4] - 2020-02-25
 
 1. Date literals were not properly parsed if they were included as part of a SET within a WHERE clause, such as `WHERE IN (TODAY, LAST_N_DAYS:5)`.
    1. As part of this change, the `dateLiteralVariable` property in the `Condition` will be an array if a variable date literal is included in a SET where clause. Refer to test cases `93` through `98` for examples
 
-## 2.3.0
-
-Jan 13, 2020
+## [2.3.0] - 2020-01-13
 
 1. The `DESC` operator in the `ORDER BY` clause was treated as a case-sensitive field.
 2. The following fields we treated as case-sensitive:
@@ -742,40 +648,28 @@ Jan 13, 2020
 3. Updated the `DISTANCE` function to properly be tagged as `isAggregateFn=true` if used as a field
    1. This fixed an issue where `getFlattenedFields()` would throw an exception
 
-## 2.2.3
-
-Jan 4, 2020
+## [2.2.3] - 2020-01-04
 
 1. Added logo to README and updated docs.
 
-## 2.2.2
-
-Dec 2, 2019
+## [2.2.2] - 2019-12-02
 
 1. When composing a query, if an empty OrderBy array was provided, the composed query would still include the `ORDER BY` clause in the composed query.
 
-## 2.2.1
-
-Nov 17, 2019
+## [2.2.1] - 2019-11-17
 
 1. `GROUP BY` did not allow multiple fields to be listed, for example: `SELECT BillingState, BillingStreet, COUNT(Id) FROM Account GROUP BY BillingState, BillingStreet` would fail to parse.
 
-## 2.2.0
-
-Nov 6, 2019
+## [2.2.0] - 2019-11-06
 
 1. `DISTANCE` and `GEOLOCATION` functions failed to parse when used in a `WHERE` clauses and `ORDER BY` clauses.
 
-## 2.1.0
-
-Oct 28, 2019
+## [2.1.0] - 2019-10-28
 
 1. The method signature for `getFlattenedFields` has changed to allow `Query | Subquery | FieldSubquery` to be passed in. this is not being considered a breaking change because it is fully backwards compatible.
 2. A new helper method `isFieldSubquery(value: any)` was added to allow determining if a Field is a FieldSubquery. This is used internally for `getFlattenedFields()`.
 
-## 2.0.0
-
-Oct 6, 2019
+## [2.0.0] - 2019-10-06
 
 ### Summary
 
@@ -1058,35 +952,35 @@ export interface FunctionExp {
 }
 ```
 
-## 1.2.1
+## [1.2.1]
 
 - Queries with multiple consecutive left parens in a where clause were not correctly parsed. (#69)
 - Fixed npm reported security vulnerabilities.
 
-## 1.2.0
+## [1.2.0]
 
 - Changed compose methods to public to allow external access (#65)
 - Fixed lodash security vulnerability
 - Updated README to reflect new changes and other minor changes
 
-## 1.1.1
+## [1.1.1]
 
 - Removed files that accidentally got included with release with update of `release-it`
 
-## 1.1.0
+## [1.1.0]
 
 - Updated `Contributing.md` with more detailed instructions on grammar updates
 - Added support for `WITH SECURITY_ENFORCED` (#61)
 
-## 1.0.2
+## [1.0.2]
 
 - If a field in a query happened to have a function reserved word, such as `Format`, then parsing the query failed. (#59)
 
-## 1.0.1
+## [1.0.1]
 
 - Ensured that nothing is logged directly to the console unless logging is enabled
 
-## 1.0.0
+## [1.0.0]
 
 ### Changed
 
@@ -1106,3 +1000,6 @@ export interface FunctionExp {
   - `function getFlattenedFields(query: Query, isAggregateResult?: boolean): string[]`
   - `function isSubquery(query: Query | Subquery): query is Subquery`
   - Look at the README and refer to the unit tests for example usage.
+
+[Unreleased]: https://github.com/jetstreamapp/soql-parser-js/compare/7.4.1...HEAD
+[7.4.1]: https://github.com/jetstreamapp/soql-parser-js/compare/7.4.0...7.4.1
