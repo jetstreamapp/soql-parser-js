@@ -1,5 +1,15 @@
 # Changelog
 
+## 7.4.1
+
+Aug 6, 2026
+
+No changes to the published library — this release updates devDependencies and overhauls the release pipeline.
+
+### Dependencies
+
+- Updated devDependencies to latest versions (prettier, release-it, tsx, vitest) and docs site dependencies (Docusaurus 3.10.2, React 19.2.8, TypeScript 6)
+
 ## 7.4.0
 
 Jul 16, 2026

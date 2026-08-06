@@ -49,5 +49,3 @@ jobs:
         env:
           INCREMENT: ${{ github.event.inputs.increment }}
           GITHUB_TOKEN: ${{ steps.app-token.outputs.token }}
-          GIT_USER: x-access-token
-          GIT_PASS: ${{ steps.app-token.outputs.token }}
