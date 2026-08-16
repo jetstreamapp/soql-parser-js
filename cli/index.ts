@@ -48,6 +48,30 @@ function getFlagValue(flags: Record<string, string | boolean>, long: string, sho
   return typeof val === 'string' ? val : undefined;
 }
 
+function getFormatOptions(flags: Record<string, string | boolean>): FormatOptions {
+  const formatOptions: FormatOptions = {};
+  const indent = getFlagValue(flags, 'indent', 'i');
+  const indentString = getFlagValue(flags, 'indent-string', 't');
+  const lineLength = getFlagValue(flags, 'line-length', 'm');
+
+  if (indent) {
+    formatOptions.numIndent = Number(indent);
+  }
+  if (indentString !== undefined) {
+    formatOptions.indentString = indentString;
+  }
+  if (lineLength) {
+    formatOptions.fieldMaxLineLength = Number(lineLength);
+  }
+  if (hasFlag(flags, 'subquery-parens-new-line', 's')) {
+    formatOptions.fieldSubqueryParensOnOwnLine = true;
+  }
+  if (hasFlag(flags, 'keywords-new-line', 'k')) {
+    formatOptions.newLineAfterKeywords = true;
+  }
+  return formatOptions;
+}
+
 function printUsage(): void {
   console.log(`Usage: soql-parser-js <command> <query> [options]
 
@@ -64,7 +88,8 @@ Parse options:
 
 Compose options:
   -f, --format                   Format output
-  -i, --indent <chars>           Number of tab characters to indent (default: 1)
+  -i, --indent <count>           Number of times the indent string is repeated per level (default: 1)
+  -t, --indent-string <string>   String used for one unit of indentation (default: tab), e.g. --indent-string "  "
   -m, --line-length <chars>      Max number of characters per line (default: 60)
   -s, --subquery-parens-new-line Subquery parens on own line
   -k, --keywords-new-line        New line after keywords
@@ -73,7 +98,8 @@ Compose options:
 Format options:
   -a, --allow-apex               Allow apex bind variables
   -p, --allow-partial            Allow partial queries
-  -i, --indent <chars>           Number of tab characters to indent (default: 1)
+  -i, --indent <count>           Number of times the indent string is repeated per level (default: 1)
+  -t, --indent-string <string>   String used for one unit of indentation (default: tab), e.g. --indent-string "  "
   -m, --line-length <chars>      Max number of characters per line (default: 60)
   -s, --subquery-parens-new-line Subquery parens on own line
   -k, --keywords-new-line        New line after keywords
@@ -107,23 +133,7 @@ switch (command) {
   }
 
   case 'compose': {
-    const formatOptions: FormatOptions = {};
-    const indent = getFlagValue(flags, 'indent', 'i');
-    const lineLength = getFlagValue(flags, 'line-length', 'm');
-
-    if (indent) {
-      formatOptions.numIndent = Number(indent);
-    }
-    if (lineLength) {
-      formatOptions.fieldMaxLineLength = Number(lineLength);
-    }
-    if (hasFlag(flags, 'subquery-parens-new-line', 's')) {
-      formatOptions.fieldSubqueryParensOnOwnLine = true;
-    }
-    if (hasFlag(flags, 'keywords-new-line', 'k')) {
-      formatOptions.newLineAfterKeywords = true;
-    }
-
+    const formatOptions = getFormatOptions(flags);
     const shouldFormat = hasFlag(flags, 'format', 'f');
     const output = composeQuery(JSON.parse(query), { format: shouldFormat, formatOptions });
 
@@ -137,7 +147,6 @@ switch (command) {
 
   case 'format': {
     const parseQueryConfig: ParseQueryConfig = {};
-    const formatOptions: FormatOptions = {};
 
     if (hasFlag(flags, 'allow-apex', 'a')) {
       parseQueryConfig.allowApexBindVariables = true;
@@ -146,23 +155,7 @@ switch (command) {
       parseQueryConfig.allowPartialQuery = true;
     }
 
-    const indent = getFlagValue(flags, 'indent', 'i');
-    const lineLength = getFlagValue(flags, 'line-length', 'm');
-
-    if (indent) {
-      formatOptions.numIndent = Number(indent);
-    }
-    if (lineLength) {
-      formatOptions.fieldMaxLineLength = Number(lineLength);
-    }
-    if (hasFlag(flags, 'subquery-parens-new-line', 's')) {
-      formatOptions.fieldSubqueryParensOnOwnLine = true;
-    }
-    if (hasFlag(flags, 'keywords-new-line', 'k')) {
-      formatOptions.newLineAfterKeywords = true;
-    }
-
-    const output = formatQuery(query, formatOptions, parseQueryConfig);
+    const output = formatQuery(query, getFormatOptions(flags), parseQueryConfig);
     if (hasFlag(flags, 'json', 'j')) {
       console.log(JSON.stringify({ query: output }));
     } else {

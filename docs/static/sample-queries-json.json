@@ -141,5 +141,8 @@
   "SELECT Id, Name // the fields we need\nFROM Account // the target object",
   "/* leading comment */ SELECT Id /* inline\ncomment */ FROM Account WHERE Website = 'https://example.com' /* trailing comment */",
   "SELECT Id FROM Account WHERE Name = 'not // a comment' AND Description = 'still /* not */ a comment'",
-  "SELECT Id // real comment\nFROM Account /* real\ncomment */ WHERE Website = 'http://example.com' AND Name = 'a /* fake */ // comment'"
+  "SELECT Id // real comment\nFROM Account /* real\ncomment */ WHERE Website = 'http://example.com' AND Name = 'a /* fake */ // comment'",
+  "SELECT Id FROM Account WHERE Name = 'a' WITH SECURITY_ENFORCED ORDER BY Name LIMIT 5",
+  "SELECT COUNT(Id) FROM Account WITH USER_MODE GROUP BY Name HAVING COUNT(Id) > 1",
+  "SELECT Title FROM KnowledgeArticleVersion WHERE PublishStatus = 'online' WITH DATA CATEGORY Geography__c AT usa__c ORDER BY Title OFFSET 10"
 ]

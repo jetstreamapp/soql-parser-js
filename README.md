@@ -106,21 +106,22 @@ Many of hte utility functions are provided to easily determine the shape of spec
 
 | Property      | Type          | Description                                                                                                                                                                                                              | required | default |
 | ------------- | ------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | -------- | ------- |
-| format        | boolean       | Apply formatting the the composed query. This will result in a multi-line soql statement.                                                                                                                                | FALSE    | TRUE    |
+| format        | boolean       | Apply formatting to the composed query. This will result in a multi-line soql statement.                                                                                                                                 | FALSE    | FALSE   |
 | formatOptions | FormatOptions | Options to apply to the formatter.                                                                                                                                                                                       | FALSE    |         |
 | autoCompose   | boolean       | If you need to compose just part of a query, you can create your own instance of the Compose class and set this to false, then call any methods that you need to just for what you would like to turn into a SOQL query. | FALSE    | TRUE    |
 | logging       | boolean       | Print out logging statements to the console about the format operation.                                                                                                                                                  | FALSE    | FALSE   |
 
 **FormatOptions**
 
-| Property                         | Type    | Description                                                                                                                                                                                 | required | default |
-| -------------------------------- | ------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------- | ------- |
-| numIndent                        | number  | The number of tab characters to indent.                                                                                                                                                     | FALSE    | 1       |
-| fieldMaxLineLength               | number  | The number of characters that the fields should take up before making a new line. Set this to 1 to have every field on its own line.                                                        | FALSE    | 60      |
-| fieldSubqueryParensOnOwnLine     | boolean | If true, the opening and closing parentheses will be on their own line for subqueries.                                                                                                      | FALSE    | TRUE    |
-| newLineAfterKeywords             | boolean | Adds a new line and indent after all keywords (such as SELECT, FROM, WHERE, ORDER BY, etc..) Setting this to true will add new lines in other places as well, such as complex WHERE clauses | FALSE    | FALSE   |
-| ~~whereClauseOperatorsIndented~~ | boolean | **Deprecated** If true, indents the where clause operators.                                                                                                                                 | FALSE    | FALSE   |
-| logging                          | boolean | Print out logging statements to the console about the format operation.                                                                                                                     | FALSE    | FALSE   |
+| Property                         | Type    | Description                                                                                                                                                                                        | required | default |
+| -------------------------------- | ------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------- | ------- |
+| numIndent                        | number  | The number of times `indentString` is repeated for each level of indentation.                                                                                                                      | FALSE    | 1       |
+| indentString                     | string  | The string used for one unit of indentation. e.g. `{ indentString: ' ', numIndent: 2 }` indents with two spaces per level. Must be whitespace only (spaces and/or tabs); other values are ignored. | FALSE    | `\t`    |
+| fieldMaxLineLength               | number  | The number of characters that the fields should take up before making a new line. Set this to 1 to have every field on its own line. Also applies to GROUP BY and ORDER BY items.                  | FALSE    | 60      |
+| fieldSubqueryParensOnOwnLine     | boolean | If true, the opening and closing parentheses will be on their own line for subqueries.                                                                                                             | FALSE    | TRUE    |
+| newLineAfterKeywords             | boolean | Adds a new line and indent after all keywords (such as SELECT, FROM, WHERE, ORDER BY, etc..) Setting this to true will add new lines in other places as well, such as complex WHERE clauses        | FALSE    | FALSE   |
+| ~~whereClauseOperatorsIndented~~ | boolean | **Deprecated** If true, indents the where clause operators.                                                                                                                                        | FALSE    | FALSE   |
+| ~~logging~~                      | boolean | **Deprecated** - this is ignored and will be removed in a future version.                                                                                                                          | FALSE    | FALSE   |
 
 ## Examples
 
@@ -467,7 +468,7 @@ These are used internally, but are public and available for use.
 parseQuery(query: Query | Subquery): string;
 parseFields(fields: FieldType[]): { text: string; typeOfClause?: string[] }[];
 parseTypeOfField(typeOfField: FieldTypeOf): string[];
-parseWhereOrHavingClause(whereOrHaving: WhereClause | HavingClause, tabOffset = 0, priorConditionIsNegation = false): string;
+parseWhereOrHavingClause(whereOrHaving: WhereClause | HavingClause, indent = 0): string; // indent only applies when format is enabled
 parseGroupByClause(groupBy: GroupByClause | GroupByClause[]): string;
 parseOrderBy(orderBy: OrderByClause | OrderByClause[]): string;
 parseWithDataCategory(withDataCategory: WithDataCategoryClause): string;
@@ -478,7 +479,7 @@ parseWithDataCategory(withDataCategory: WithDataCategoryClause): string;
 ## Format Query
 
 This function is provided as a convenience and just calls parse and compose.
-[Check out the demo](https://jetstreamapp.github.io/soql-parser-js/) to see the outcome of the various format options.
+[Check out the playground](https://soql-parser-js.getjetstream.app/playground) to see the outcome of the various format options.
 
 ```typescript
 import { formatQuery } from '@jetstreamapp/soql-parser-js';
@@ -486,20 +487,17 @@ import { formatQuery } from '@jetstreamapp/soql-parser-js';
 const query = `SELECT Id, Name, AccountNumber, AccountSource, AnnualRevenue, BillingAddress, BillingCity, BillingCountry, BillingGeocodeAccuracy, ShippingStreet, Sic, SicDesc, Site, SystemModstamp, TickerSymbol, Type, Website, (SELECT Id, Name, AccountId, Amount, CampaignId, CloseDate, CreatedById, Type FROM Opportunities), (SELECT Id, Name, AccountNumber, AccountSource, AnnualRevenue, BillingAddress, Website FROM ChildAccounts) FROM Account WHERE Name LIKE 'a%' OR Name LIKE 'b%' OR Name LIKE 'c%'`;
 
 const formattedQuery1 = formatQuery(query);
-const formattedQuery2 = formatQuery(query, {
-  fieldMaxLineLength: 20,
-  fieldSubqueryParensOnOwnLine: false,
-  whereClauseOperatorsIndented: true,
-});
-const formattedQuery3 = formatQuery(query, { fieldSubqueryParensOnOwnLine: true, whereClauseOperatorsIndented: true });
+const formattedQuery2 = formatQuery(query, { fieldMaxLineLength: 20, fieldSubqueryParensOnOwnLine: false });
+const formattedQuery3 = formatQuery(query, { newLineAfterKeywords: true });
+const formattedQuery4 = formatQuery(query, { indentString: ' ', numIndent: 2, fieldMaxLineLength: 40 });
 ```
 
 ```sql
 -- formattedQuery1
 SELECT Id, Name, AccountNumber, AccountSource, AnnualRevenue,
-	BillingAddress, BillingCity, BillingCountry, BillingGeocodeAccuracy,
-	ShippingStreet, Sic, SicDesc, Site, SystemModstamp, TickerSymbol, Type,
-	Website,
+	BillingAddress, BillingCity, BillingCountry,
+	BillingGeocodeAccuracy, ShippingStreet, Sic, SicDesc, Site,
+	SystemModstamp, TickerSymbol, Type, Website,
 	(
 		SELECT Id, Name, AccountId, Amount, CampaignId, CloseDate,
 			CreatedById, Type
@@ -512,25 +510,34 @@ SELECT Id, Name, AccountNumber, AccountSource, AnnualRevenue,
 	)
 FROM Account
 WHERE Name LIKE 'a%'
-OR Name LIKE 'b%'
-OR Name LIKE 'c%'
+	OR Name LIKE 'b%'
+	OR Name LIKE 'c%'
 
 -- formattedQuery2
 SELECT Id, Name,
-	AccountNumber, AccountSource,
-	AnnualRevenue, BillingAddress,
-	BillingCity, BillingCountry,
-	BillingGeocodeAccuracy, ShippingStreet,
+	AccountNumber,
+	AccountSource,
+	AnnualRevenue,
+	BillingAddress,
+	BillingCity,
+	BillingCountry,
+	BillingGeocodeAccuracy,
+	ShippingStreet,
 	Sic, SicDesc, Site,
-	SystemModstamp, TickerSymbol, Type,
+	SystemModstamp,
+	TickerSymbol, Type,
 	Website,
 	(SELECT Id, Name,
-		AccountId, Amount, CampaignId,
-		CloseDate, CreatedById, Type
+		AccountId, Amount,
+		CampaignId,
+		CloseDate,
+		CreatedById, Type
 	FROM Opportunities),
 	(SELECT Id, Name,
-		AccountNumber, AccountSource,
-		AnnualRevenue, BillingAddress,
+		AccountNumber,
+		AccountSource,
+		AnnualRevenue,
+		BillingAddress,
 		Website
 	FROM ChildAccounts)
 FROM Account
@@ -538,26 +545,54 @@ WHERE Name LIKE 'a%'
 	OR Name LIKE 'b%'
 	OR Name LIKE 'c%'
 
-
 -- formattedQuery3
-SELECT Id, Name, AccountNumber, AccountSource, AnnualRevenue,
-	BillingAddress, BillingCity, BillingCountry, BillingGeocodeAccuracy,
-	ShippingStreet, Sic, SicDesc, Site, SystemModstamp, TickerSymbol, Type,
-	Website,
+SELECT
+	Id, Name, AccountNumber, AccountSource, AnnualRevenue,
+	BillingAddress, BillingCity, BillingCountry,
+	BillingGeocodeAccuracy, ShippingStreet, Sic, SicDesc, Site,
+	SystemModstamp, TickerSymbol, Type, Website,
 	(
-		SELECT Id, Name, AccountId, Amount, CampaignId, CloseDate,
+		SELECT
+			Id, Name, AccountId, Amount, CampaignId, CloseDate,
 			CreatedById, Type
-		FROM Opportunities
+		FROM
+			Opportunities
 	),
 	(
-		SELECT Id, Name, AccountNumber, AccountSource, AnnualRevenue,
+		SELECT
+			Id, Name, AccountNumber, AccountSource, AnnualRevenue,
 			BillingAddress, Website
-		FROM ChildAccounts
+		FROM
+			ChildAccounts
 	)
-FROM Account
-WHERE Name LIKE 'a%'
+FROM
+	Account
+WHERE
+	Name LIKE 'a%'
 	OR Name LIKE 'b%'
 	OR Name LIKE 'c%'
+
+-- formattedQuery4
+SELECT Id, Name, AccountNumber, AccountSource,
+  AnnualRevenue, BillingAddress,
+  BillingCity, BillingCountry,
+  BillingGeocodeAccuracy, ShippingStreet,
+  Sic, SicDesc, Site, SystemModstamp,
+  TickerSymbol, Type, Website,
+  (
+    SELECT Id, Name, AccountId, Amount,
+      CampaignId, CloseDate, CreatedById, Type
+    FROM Opportunities
+  ),
+  (
+    SELECT Id, Name, AccountNumber, AccountSource,
+      AnnualRevenue, BillingAddress, Website
+    FROM ChildAccounts
+  )
+FROM Account
+WHERE Name LIKE 'a%'
+  OR Name LIKE 'b%'
+  OR Name LIKE 'c%'
 ```
 
 ## Using in LWC
@@ -772,8 +807,9 @@ Usage: compose [options] <query>
 
 Options:
   -f, --format                   format output
-  -i --indent <chars>            number of tab characters to indent (default: 1)
-  -m --line-length <chars>       max number of characters per lins (default: 60)
+  -i --indent <count>            number of times the indent string is repeated per level (default: 1)
+  -t --indent-string <string>    string used for one unit of indentation (default: tab), e.g. --indent-string "  "
+  -m --line-length <chars>       max number of characters per line (default: 60)
   -s --subquery-parens-new-line  subquery parens on own line
   -k --keywords-new-line         new line after keywords
   -j, --json                     output as JSON
@@ -788,8 +824,9 @@ Usage: format [options] <sql>
 Options:
   -a, --allow-apex     allow apex bind variables
   -p, --allow-partial  allow partial queries
-  -i --indent <chars>            number of tab characters to indent (default: 1)
-  -m --line-length <chars>       max number of characters per lins (default: 60)
+  -i --indent <count>            number of times the indent string is repeated per level (default: 1)
+  -t --indent-string <string>    string used for one unit of indentation (default: tab), e.g. --indent-string "  "
+  -m --line-length <chars>       max number of characters per line (default: 60)
   -s --subquery-parens-new-line  subquery parens on own line
   -k --keywords-new-line         new line after keywords
   -j, --json                     output as JSON

@@ -4,9 +4,40 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+This is a major release. The composed and formatted output changes in the cases listed under Bug Fixes, and the internals of the formatter were rewritten. `composeQuery`, `formatQuery`, `parseQuery` and the `FormatOptions` type are source compatible - see Breaking Changes for the two exceptions.
+
+### Breaking Changes
+
+- **The `Formatter` class has an entirely new shape.** It is not exported from the package root, but it is reachable as the type of `Compose.formatter`, so it appears in the emitted type declarations. Its constructor is now `new Formatter(options?: FormatOptions)` (previously `new Formatter(enabled: boolean, options: FormatOptions)`), and the previous methods (`formatFields`, `formatSubquery`, `formatClause`, `formatText`, `formatOrderByArray`, `formatParens`, and the rest) along with the `FieldData` interface no longer exist. Code that only uses `composeQuery`, `formatQuery`, or the documented `Compose.parse*` methods is unaffected.
+- **`Compose.parseWhereOrHavingClause` lost its third parameter.** The signature is now `parseWhereOrHavingClause(whereOrHaving, indent = 0)`. The removed `priorConditionIsNegation` parameter was only ever used internally. The second parameter also changed meaning: it was `tabOffset` (a number of tabs) and is now `indent` (an indentation level, only used when formatting), so a caller passing a number other than `0` will get different output.
+- **`SELECT`, `GROUP BY` and `ORDER BY` items now all wrap using one shared rule.** Two things changed. `fieldMaxLineLength` previously ignored the `", "` separators when wrapping `ORDER BY` items, so those lines ran a few characters longer than the same setting produced for `SELECT`. Separately, a wrapped item's own width was discarded when starting a new row, so every continuation row began with an empty budget and overran `fieldMaxLineLength` by the width of its first item. All three clauses now count separators, and a wrapped item carries its own width onto the new row, so a row never exceeds `fieldMaxLineLength` unless a single item is longer than the whole budget. **This changes `SELECT` field wrapping at the default `fieldMaxLineLength` of 60**, not only at unusual values — continuation rows are now slightly shorter. Expect diffs if you commit formatted SOQL to source control.
+- **`FormatOptions.logging` is deprecated and ignored.** The rewritten formatter has no per-field intermediate state to log. The option remains in the type for source compatibility and will be removed in a future version. `SoqlComposeConfig.logging` (the `Compose`-level option) still works, but now logs only the final composed query instead of emitting a line after each clause as it was built.
+
+### Features
+
+- **Added `indentString` format option** — Controls the string used for one unit of indentation (default `'\t'`). Combined with `numIndent`, this allows indenting with spaces, e.g. `formatQuery(soql, { indentString: ' ', numIndent: 2 })` indents each level with two spaces. The CLI `format` and `compose --format` commands accept the equivalent `-t, --indent-string <string>` flag.
+
+### Bug Fixes
+
+- **`numIndent` is now honored everywhere** — With `numIndent` greater than 1, subquery bodies and closing parens (in both the SELECT and WHERE clauses), TYPEOF fields, and ORDER BY continuation lines were indented by a hard-coded single tab, producing misaligned output. Every line is now indented consistently. (Completes the fix started in #272)
+- **No more blank or whitespace-only lines with `newLineAfterKeywords`** — A blank line containing a tab was emitted when the first SELECT field was a subquery or TYPEOF, and a whitespace-only line was emitted after `WITH SECURITY_ENFORCED` / `WITH USER_MODE` / `WITH SYSTEM_MODE` when another clause followed.
+- **Subqueries inside parenthesized WHERE conditions are indented relative to their condition** — e.g. `WHERE (Name = 'a' OR Id IN (SELECT ...))` previously rendered the subquery at the same level as the condition and its closing paren one level too far to the left.
+- **`GROUP BY` items now wrap like `ORDER BY` items** — at `fieldMaxLineLength`, or one per line when `newLineAfterKeywords` is true. Previously the GROUP BY clause was always emitted on a single line.
+- **Negations inside parenthesized groups are indented correctly** — Conditions such as `WHERE ((NOT A > 0) AND B < 2)`, `WHERE (NOT A = 'a' AND B = '1')`, or `WHERE NOT ((NOT (x)) AND y)` emitted lines at column 0 inside an indented group. `(NOT <condition>)` is kept inline as a single unit; every other paren group is now consistently indented with its closing paren on its own line.
+- **An empty `groupBy` array no longer emits a dangling `GROUP BY`** — `composeQuery({ ..., groupBy: [] })` produced `SELECT Id FROM Account GROUP BY`, which Salesforce rejects. Empty `groupBy` arrays are now skipped, matching how empty `orderBy` arrays were already handled.
+- **A non-whitespace `indentString` is ignored instead of producing invalid SOQL** — `formatQuery(soql, { indentString: 'XX' })` emitted `XX` into the query itself. Values that are not made up of spaces and/or tabs now fall back to the default tab.
+- **`composeQuery` no longer mutates the provided query** — Composing the same parsed query twice previously corrupted the `sObjectPrefix` of subqueries (e.g. `Account.Contacts` became `Account.Contacts.Contacts` on the second call).
+- **`WITH SECURITY_ENFORCED`, `WITH USER_MODE` / `WITH SYSTEM_MODE`, and `WITH DATA CATEGORY` are now composed in the correct position** — Between the `WHERE` and `GROUP BY` clauses, as required by SOQL. Previously they were emitted after `LIMIT` / `OFFSET`, which produced invalid SOQL when combined with `GROUP BY`, `ORDER BY`, `LIMIT`, or `OFFSET`. This applies to both `composeQuery` and `formatQuery`.
+
 ### Changed
 
 - Changelog now follows the [Keep a Changelog](https://keepachangelog.com/) format — entries are added to the Unreleased section and stamped with a version and date automatically at release time, and GitHub release notes are generated from that content
+
+### Internal
+
+- **The formatter was rewritten** as a line-based printer that tracks indentation explicitly (`src/formatter/formatter.ts`), with the single-line composer (`src/composer/plain.ts`) and the formatter sharing the same leaf renderers (`src/composer/leaf.ts`). Apart from the wrapping and layout changes listed under Bug Fixes and Breaking Changes — which include a change to `SELECT` field wrapping at the default `fieldMaxLineLength` — previous formatted output is unchanged.
+- **Clause order lives in one place.** `queryClauses()` in `src/composer/leaf.ts` yields the clauses of a query in the order SOQL requires, and both the plain composer and the formatter walk that sequence - they only decide layout. Previously each maintained its own copy of the clause ordering and presence checks, which is what allowed the `WITH SECURITY_ENFORCED` positioning bug above. Supporting a new clause is now a single edit.
+- Added a format round-trip test suite that asserts every formatted query is valid, idempotent, parses to the same AST as the input, and contains no whitespace-only lines or trailing whitespace, across a representative matrix of format options.
 
 ## [7.4.1] - 2026-08-06
 

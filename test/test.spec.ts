@@ -1,11 +1,11 @@
 import { describe, expect, it } from 'vitest';
-import { Compose, composeQuery, formatQuery, parseQuery, Query, WhereClause } from '../src';
-import { isValueQueryCondition, isWhereClauseWithRightCondition } from '../src/api/public-utils';
+import { Compose, composeQuery, formatQuery, parseQuery, Query } from '../src';
 import { isQueryValid } from '../src/parser/parser';
 import testCases from './test-cases';
 import testCasesForComposeStandAlone from './test-cases-compose';
 import testCasesForFormat from './test-cases-for-format';
 import testCasesForIsValid from './test-cases-for-is-valid';
+import { removeComposeOnlyFields } from './test-utils';
 
 const replacements = [{ matching: / last /i, replace: ' LAST ' }];
 
@@ -135,6 +135,29 @@ describe('compose queries', () => {
     const soqlQuery = composeQuery(query);
     expect(soqlQuery).toEqual(`SELECT Id FROM Account`);
   });
+
+  it('Should not add extraneous group by clauses', () => {
+    const query: Query = {
+      fields: [
+        {
+          type: 'Field',
+          field: 'Id',
+        },
+      ],
+      sObject: 'Account',
+      groupBy: [],
+    };
+    expect(composeQuery(query)).toEqual(`SELECT Id FROM Account`);
+    expect(composeQuery(query, { format: true })).toEqual(`SELECT Id\nFROM Account`);
+  });
+
+  it('Should ignore an indentString that is not whitespace', () => {
+    const soql = 'SELECT Id, Name FROM Account WHERE Id = 1';
+    expect(formatQuery(soql, { indentString: 'XX', fieldMaxLineLength: 1 })).toEqual(
+      formatQuery(soql, { indentString: '\t', fieldMaxLineLength: 1 }),
+    );
+    expect(formatQuery(soql, { indentString: '  ', fieldMaxLineLength: 1 })).toContain('\n  ');
+  });
 });
 
 describe('compose queries - standalone', () => {
@@ -151,6 +174,7 @@ describe('format queries', () => {
     it(`should format query - test case ${testCase.testCase} - ${testCase.soql}`, () => {
       const formattedQuery = formatQuery(testCase.soql, testCase.formatOptions);
       expect(formattedQuery).toEqual(testCase.formattedSoql);
+      expect(isQueryValid(formattedQuery)).toEqual(true);
     });
   });
 });
@@ -193,36 +217,34 @@ describe('calls individual compose methods', () => {
     const whereClause = composer.parseWhereOrHavingClause(parsedQuery.where);
     expect(whereClause).toEqual(`Id IN (SELECT AccountId FROM Contact WHERE Name LIKE '%foo%')`);
   });
-});
-
-function removeComposeOnlyFields(query: Query): Query {
-  query.fields.forEach(removeComposeOnlyField);
-  query.fields.forEach(field => {
-    if (field.type === 'FieldSubquery') {
-      field.subquery.fields.forEach(removeComposeOnlyField);
-      removeFieldsFromWhere(field.subquery.where);
-    }
+  it(`Should compose the where clause with formatting`, () => {
+    const soql = `SELECT Id FROM Account WHERE Name = 'Foo' AND (Id = '1' OR Id IN (SELECT AccountId FROM Contact))`;
+    const parsedQuery = parseQuery(soql);
+    const composer = new Compose(parsedQuery, { autoCompose: false, format: true });
+    const whereClause = composer.parseWhereOrHavingClause(parsedQuery.where);
+    expect(whereClause).toEqual(
+      `Name = 'Foo'\n\tAND (\n\t\tId = '1'\n\t\tOR Id IN (\n\t\t\tSELECT AccountId\n\t\t\tFROM Contact\n\t\t)\n\t)`,
+    );
   });
-  removeFieldsFromWhere(query.where);
-  return query;
-}
+  it(`Should compose individual parts with and without formatting`, () => {
+    const soql = `SELECT Id, (SELECT Id FROM Contacts), TYPEOF What WHEN Account THEN Phone ELSE Name END FROM Account GROUP BY Name, Type ORDER BY Name DESC, Type`;
+    const parsedQuery = parseQuery(soql);
+    const plain = new Compose(parsedQuery, { autoCompose: false });
+    expect(plain.parseFields(parsedQuery.fields!).map(field => field.text)).toEqual([
+      'Id',
+      '(SELECT Id FROM Contacts)',
+      'TYPEOF What WHEN Account THEN Phone ELSE Name END',
+    ]);
+    expect(plain.parseGroupByClause(parsedQuery.groupBy!)).toEqual('Name, Type');
+    expect(plain.parseOrderBy(parsedQuery.orderBy!)).toEqual('Name DESC, Type');
 
-function removeFieldsFromWhere(where?: WhereClause) {
-  if (!where) {
-    return;
-  }
-
-  if (isValueQueryCondition(where.left)) {
-    where.left.valueQuery.fields.forEach(removeComposeOnlyField);
-  }
-
-  if (isWhereClauseWithRightCondition(where)) {
-    removeFieldsFromWhere(where.right);
-  }
-}
-
-function removeComposeOnlyField(field: any) {
-  delete field.isAggregateFn;
-  delete field.rawValue;
-  delete field.from;
-}
+    const formatted = new Compose(parsedQuery, { autoCompose: false, format: true, formatOptions: { newLineAfterKeywords: true } });
+    expect(formatted.parseFields(parsedQuery.fields!).map(field => field.text)).toEqual([
+      'Id',
+      '(\n\tSELECT\n\t\tId\n\tFROM\n\t\tContacts\n)',
+      'TYPEOF What WHEN Account THEN Phone ELSE Name END',
+    ]);
+    expect(formatted.parseGroupByClause(parsedQuery.groupBy!)).toEqual('Name,\n\tType');
+    expect(formatted.parseOrderBy(parsedQuery.orderBy!)).toEqual('Name DESC,\n\tType');
+  });
+});

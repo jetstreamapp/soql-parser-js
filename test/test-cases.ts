@@ -2843,6 +2843,52 @@ export const testCases: TestCase[] = [
       },
     },
   },
+  {
+    testCase: 143,
+    soql: "SELECT Id FROM Account WHERE Name = 'a' WITH SECURITY_ENFORCED ORDER BY Name LIMIT 5",
+    output: {
+      fields: [{ type: 'Field', field: 'Id' }],
+      sObject: 'Account',
+      where: {
+        left: { field: 'Name', operator: '=', value: "'a'", literalType: 'STRING' },
+      },
+      withSecurityEnforced: true,
+      orderBy: [{ field: 'Name' }],
+      limit: 5,
+    },
+  },
+  {
+    testCase: 144,
+    soql: 'SELECT COUNT(Id) FROM Account WITH USER_MODE GROUP BY Name HAVING COUNT(Id) > 1',
+    output: {
+      fields: [{ type: 'FieldFunctionExpression', functionName: 'COUNT', parameters: ['Id'], isAggregateFn: true, rawValue: 'COUNT(Id)' }],
+      sObject: 'Account',
+      withAccessLevel: 'USER_MODE',
+      groupBy: [{ field: 'Name' }],
+      having: {
+        left: {
+          fn: { functionName: 'COUNT', parameters: ['Id'], rawValue: 'COUNT(Id)' },
+          operator: '>',
+          value: '1',
+          literalType: 'INTEGER',
+        },
+      },
+    },
+  },
+  {
+    testCase: 145,
+    soql: "SELECT Title FROM KnowledgeArticleVersion WHERE PublishStatus = 'online' WITH DATA CATEGORY Geography__c AT usa__c ORDER BY Title OFFSET 10",
+    output: {
+      fields: [{ type: 'Field', field: 'Title' }],
+      sObject: 'KnowledgeArticleVersion',
+      where: {
+        left: { field: 'PublishStatus', operator: '=', value: "'online'", literalType: 'STRING' },
+      },
+      withDataCategory: { conditions: [{ groupName: 'Geography__c', selector: 'AT', parameters: ['usa__c'] }] },
+      orderBy: [{ field: 'Title' }],
+      offset: 10,
+    },
+  },
 ];
 
 export default testCases;

@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
-import { composeQuery, parseQuery, Query, WhereClause } from '../src';
-import { isValueQueryCondition, isWhereClauseWithRightCondition } from '../src/api/public-utils';
+import { composeQuery, parseQuery } from '../src';
 import testCases from './test-cases-for-partial-parse';
+import { removeComposeOnlyFields } from './test-utils';
 
 const replacements = [{ matching: / last /i, replace: ' LAST ' }];
 
@@ -24,35 +24,3 @@ describe('compose queries', () => {
     });
   });
 });
-
-function removeComposeOnlyFields(query: Partial<Query>): Partial<Query> {
-  (query.fields || []).forEach(removeComposeOnlyField);
-  (query.fields || []).forEach(field => {
-    if (field.type === 'FieldSubquery') {
-      field.subquery.fields.forEach(removeComposeOnlyField);
-      removeFieldsFromWhere(field.subquery.where);
-    }
-  });
-  removeFieldsFromWhere(query.where);
-  return query;
-}
-
-function removeFieldsFromWhere(where?: WhereClause) {
-  if (!where) {
-    return;
-  }
-
-  if (isValueQueryCondition(where.left)) {
-    where.left.valueQuery.fields.forEach(removeComposeOnlyField);
-  }
-
-  if (isWhereClauseWithRightCondition(where)) {
-    removeFieldsFromWhere(where.right);
-  }
-}
-
-function removeComposeOnlyField(field: any) {
-  delete field.isAggregateFn;
-  delete field.rawValue;
-  delete field.from;
-}

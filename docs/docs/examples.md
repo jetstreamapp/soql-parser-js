@@ -298,7 +298,7 @@ These are used internally, but are public and available for use.
 parseQuery(query: Query | Subquery): string;
 parseFields(fields: FieldType[]): { text: string; typeOfClause?: string[] }[];
 parseTypeOfField(typeOfField: FieldTypeOf): string[];
-parseWhereOrHavingClause(whereOrHaving: WhereClause | HavingClause, tabOffset = 0, priorConditionIsNegation = false): string;
+parseWhereOrHavingClause(whereOrHaving: WhereClause | HavingClause, indent = 0): string; // indent only applies when format is enabled
 parseGroupByClause(groupBy: GroupByClause | GroupByClause[]): string;
 parseOrderBy(orderBy: OrderByClause | OrderByClause[]): string;
 parseWithDataCategory(withDataCategory: WithDataCategoryClause): string;
@@ -309,7 +309,7 @@ parseWithDataCategory(withDataCategory: WithDataCategoryClause): string;
 ## Format Query
 
 This function is provided as a convenience and just calls parse and compose.
-[Check out the demo](https://paustint.github.io/soql-parser-js/) to see the outcome of the various format options.
+[Check out the playground](/playground) to see the outcome of the various format options.
 
 ```typescript
 import { formatQuery } from '@jetstreamapp/soql-parser-js';
@@ -317,20 +317,17 @@ import { formatQuery } from '@jetstreamapp/soql-parser-js';
 const query = `SELECT Id, Name, AccountNumber, AccountSource, AnnualRevenue, BillingAddress, BillingCity, BillingCountry, BillingGeocodeAccuracy, ShippingStreet, Sic, SicDesc, Site, SystemModstamp, TickerSymbol, Type, Website, (SELECT Id, Name, AccountId, Amount, CampaignId, CloseDate, CreatedById, Type FROM Opportunities), (SELECT Id, Name, AccountNumber, AccountSource, AnnualRevenue, BillingAddress, Website FROM ChildAccounts) FROM Account WHERE Name LIKE 'a%' OR Name LIKE 'b%' OR Name LIKE 'c%'`;
 
 const formattedQuery1 = formatQuery(query);
-const formattedQuery2 = formatQuery(query, {
-  fieldMaxLineLength: 20,
-  fieldSubqueryParensOnOwnLine: false,
-  whereClauseOperatorsIndented: true,
-});
-const formattedQuery3 = formatQuery(query, { fieldSubqueryParensOnOwnLine: true, whereClauseOperatorsIndented: true });
+const formattedQuery2 = formatQuery(query, { fieldMaxLineLength: 20, fieldSubqueryParensOnOwnLine: false });
+const formattedQuery3 = formatQuery(query, { newLineAfterKeywords: true });
+const formattedQuery4 = formatQuery(query, { indentString: ' ', numIndent: 2, fieldMaxLineLength: 40 });
 ```
 
 ```sql
 -- formattedQuery1
 SELECT Id, Name, AccountNumber, AccountSource, AnnualRevenue,
-	BillingAddress, BillingCity, BillingCountry, BillingGeocodeAccuracy,
-	ShippingStreet, Sic, SicDesc, Site, SystemModstamp, TickerSymbol, Type,
-	Website,
+	BillingAddress, BillingCity, BillingCountry,
+	BillingGeocodeAccuracy, ShippingStreet, Sic, SicDesc, Site,
+	SystemModstamp, TickerSymbol, Type, Website,
 	(
 		SELECT Id, Name, AccountId, Amount, CampaignId, CloseDate,
 			CreatedById, Type
@@ -343,25 +340,34 @@ SELECT Id, Name, AccountNumber, AccountSource, AnnualRevenue,
 	)
 FROM Account
 WHERE Name LIKE 'a%'
-OR Name LIKE 'b%'
-OR Name LIKE 'c%'
+	OR Name LIKE 'b%'
+	OR Name LIKE 'c%'
 
 -- formattedQuery2
 SELECT Id, Name,
-	AccountNumber, AccountSource,
-	AnnualRevenue, BillingAddress,
-	BillingCity, BillingCountry,
-	BillingGeocodeAccuracy, ShippingStreet,
+	AccountNumber,
+	AccountSource,
+	AnnualRevenue,
+	BillingAddress,
+	BillingCity,
+	BillingCountry,
+	BillingGeocodeAccuracy,
+	ShippingStreet,
 	Sic, SicDesc, Site,
-	SystemModstamp, TickerSymbol, Type,
+	SystemModstamp,
+	TickerSymbol, Type,
 	Website,
 	(SELECT Id, Name,
-		AccountId, Amount, CampaignId,
-		CloseDate, CreatedById, Type
+		AccountId, Amount,
+		CampaignId,
+		CloseDate,
+		CreatedById, Type
 	FROM Opportunities),
 	(SELECT Id, Name,
-		AccountNumber, AccountSource,
-		AnnualRevenue, BillingAddress,
+		AccountNumber,
+		AccountSource,
+		AnnualRevenue,
+		BillingAddress,
 		Website
 	FROM ChildAccounts)
 FROM Account
@@ -369,24 +375,52 @@ WHERE Name LIKE 'a%'
 	OR Name LIKE 'b%'
 	OR Name LIKE 'c%'
 
-
 -- formattedQuery3
-SELECT Id, Name, AccountNumber, AccountSource, AnnualRevenue,
-	BillingAddress, BillingCity, BillingCountry, BillingGeocodeAccuracy,
-	ShippingStreet, Sic, SicDesc, Site, SystemModstamp, TickerSymbol, Type,
-	Website,
+SELECT
+	Id, Name, AccountNumber, AccountSource, AnnualRevenue,
+	BillingAddress, BillingCity, BillingCountry,
+	BillingGeocodeAccuracy, ShippingStreet, Sic, SicDesc, Site,
+	SystemModstamp, TickerSymbol, Type, Website,
 	(
-		SELECT Id, Name, AccountId, Amount, CampaignId, CloseDate,
+		SELECT
+			Id, Name, AccountId, Amount, CampaignId, CloseDate,
 			CreatedById, Type
-		FROM Opportunities
+		FROM
+			Opportunities
 	),
 	(
-		SELECT Id, Name, AccountNumber, AccountSource, AnnualRevenue,
+		SELECT
+			Id, Name, AccountNumber, AccountSource, AnnualRevenue,
 			BillingAddress, Website
-		FROM ChildAccounts
+		FROM
+			ChildAccounts
 	)
-FROM Account
-WHERE Name LIKE 'a%'
+FROM
+	Account
+WHERE
+	Name LIKE 'a%'
 	OR Name LIKE 'b%'
 	OR Name LIKE 'c%'
+
+-- formattedQuery4
+SELECT Id, Name, AccountNumber, AccountSource,
+  AnnualRevenue, BillingAddress,
+  BillingCity, BillingCountry,
+  BillingGeocodeAccuracy, ShippingStreet,
+  Sic, SicDesc, Site, SystemModstamp,
+  TickerSymbol, Type, Website,
+  (
+    SELECT Id, Name, AccountId, Amount,
+      CampaignId, CloseDate, CreatedById, Type
+    FROM Opportunities
+  ),
+  (
+    SELECT Id, Name, AccountNumber, AccountSource,
+      AnnualRevenue, BillingAddress, Website
+    FROM ChildAccounts
+  )
+FROM Account
+WHERE Name LIKE 'a%'
+  OR Name LIKE 'b%'
+  OR Name LIKE 'c%'
 ```
