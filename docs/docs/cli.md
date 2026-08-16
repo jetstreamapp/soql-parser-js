@@ -120,8 +120,9 @@ Usage: compose [options] <query>
 
 Options:
   -f, --format                   format output
-  -i --indent <chars>            number of tab characters to indent (default: 1)
-  -m --line-length <chars>       max number of characters per lins (default: 60)
+  -i --indent <count>            number of times the indent string is repeated per level (default: 1)
+  -t --indent-string <string>    string used for one unit of indentation (default: tab), e.g. --indent-string "  "
+  -m --line-length <chars>       max number of characters per line (default: 60)
   -s --subquery-parens-new-line  subquery parens on own line
   -k --keywords-new-line         new line after keywords
   -j, --json                     output as JSON
@@ -136,8 +137,9 @@ Usage: format [options] <sql>
 Options:
   -a, --allow-apex     allow apex bind variables
   -p, --allow-partial  allow partial queries
-  -i --indent <chars>            number of tab characters to indent (default: 1)
-  -m --line-length <chars>       max number of characters per lins (default: 60)
+  -i --indent <count>            number of times the indent string is repeated per level (default: 1)
+  -t --indent-string <string>    string used for one unit of indentation (default: tab), e.g. --indent-string "  "
+  -m --line-length <chars>       max number of characters per line (default: 60)
   -s --subquery-parens-new-line  subquery parens on own line
   -k --keywords-new-line         new line after keywords
   -j, --json                     output as JSON

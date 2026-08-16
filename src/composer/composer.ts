@@ -1,20 +1,23 @@
+/*
+ * Copyright (c) Austin Turner
+ * The software in this package is published under the terms of the MIT license,
+ * a copy of which has been included with this distribution in the LICENSE.txt file.
+ */
 import {
   FieldType,
-  FunctionExp,
+  FieldTypeOf,
   GroupByClause,
   HavingClause,
   OrderByClause,
   Query,
+  Subquery,
   WhereClause,
   WithDataCategoryClause,
-  FieldTypeOf,
-  Subquery,
-  FieldFunctionExpression,
 } from '../api/api-models';
-import * as utils from '../utils';
-import { FieldData, Formatter, FormatOptions } from '../formatter/formatter';
-import { parseQuery } from '../parser/parser';
-import { ParseQueryConfig } from '../parser/parser';
+import { Formatter, FormatOptions } from '../formatter/formatter';
+import { parseQuery, ParseQueryConfig } from '../parser/parser';
+import { asArray, renderFieldText, renderGroupByItem, renderOrderByItem, renderTypeOfParts, renderWithDataCategory } from './leaf';
+import { composePlain, composePlainConditions } from './plain';
 
 export interface SoqlComposeConfig {
   logging: boolean; // default=false
@@ -22,6 +25,7 @@ export interface SoqlComposeConfig {
   formatOptions?: FormatOptions;
   autoCompose: boolean; // default=true
 }
+
 /**
  * Formats query - This will compose and then parse a query with the provided format options
  * or the defaults if omitted
@@ -64,8 +68,10 @@ export function composeQuery(soql: Query, config: Partial<SoqlComposeConfig> = {
 
 /**
  * Compose
- * This class handles all the logic for turning a Query into a SOQL query
- * This depends on the Format class for parts of the processing
+ * This class handles all the logic for turning a Query into a SOQL query.
+ * The individual methods are public so that parts of a query can be composed in isolation
+ * (create an instance with `autoCompose: false` and call the method for the part you need).
+ * With `format: false` (the default) the output is a single line, otherwise the `Formatter` produces multi-line output.
  */
 export class Compose {
   public logging: boolean = false;
@@ -73,17 +79,17 @@ export class Compose {
   public query: string;
   public formatter: Formatter;
 
-  constructor(private soql: Query, config: Partial<SoqlComposeConfig> = {}) {
+  constructor(
+    private soql: Query,
+    config: Partial<SoqlComposeConfig> = {},
+  ) {
     config = { autoCompose: true, ...config };
     const { logging, format } = config;
     this.logging = !!logging;
     this.format = !!format;
     this.query = '';
 
-    this.formatter = new Formatter(this.format, {
-      logging: this.logging,
-      ...config.formatOptions,
-    });
+    this.formatter = new Formatter(config.formatOptions);
     if (config.autoCompose) {
       this.start();
     }
@@ -107,150 +113,15 @@ export class Compose {
   }
 
   /**
-   * Parses FunctionExp object
-   * Prefers functionName if populated, otherwise will fallback to rawValue
-   * @param fn
-   * @returns fn
-   */
-  private parseFn(fn: FunctionExp): string {
-    let output: string | undefined;
-
-    if (fn.rawValue) {
-      output = fn.rawValue;
-    } else {
-      output = fn.functionName;
-      output += `(${(fn.parameters || []).map(param => (utils.isString(param) ? param : this.parseFn(param))).join(', ')})`;
-    }
-
-    if (fn.alias) {
-      output += ` ${fn.alias}`;
-    }
-
-    return output!;
-  }
-
-  /**
    * Parses query
    * Base entry point for the query
-   * this may be called multiple times recursively for subqueries and WHERE queries
    * @param query
    * @returns query
    */
   public parseQuery(query: Query | Subquery): string {
-    const fieldData: FieldData = {
-      fields: this.parseFields(query.fields || []).map(field => ({
-        text: field.text,
-        typeOfClause: field.typeOfClause,
-        isSubquery: field.text.startsWith('('),
-        prefix: '',
-        suffix: '',
-      })),
-      isSubquery: utils.isSubquery(query),
-      lineBreaks: [],
-    };
-
-    let output = '';
-
-    if (query.fields) {
-      output += this.formatter.formatClause('SELECT').trimStart();
-    }
-
-    // Format fields based on configuration
-    this.formatter.formatFields(fieldData);
-
-    let fieldsOutput = '';
-    fieldData.fields.forEach(field => {
-      if (Array.isArray(field.typeOfClause)) {
-        fieldsOutput += `${field.prefix}${this.formatter.formatTyeOfField(field.text, field.typeOfClause)}${field.suffix}`;
-      } else {
-        fieldsOutput += `${field.prefix}${field.text}${field.suffix}`;
-      }
-    });
-    output += this.formatter.formatText(fieldsOutput);
-
-    if (!!(utils.isSubquery(query) ? query.relationshipName : query.sObject)) {
-      output += this.formatter.formatClause('FROM');
-    }
-
-    if (utils.isSubquery(query)) {
-      const sObjectPrefix = query.sObjectPrefix || [];
-      sObjectPrefix.push(query.relationshipName);
-      output += this.formatter.formatText(`${sObjectPrefix.join('.')}${utils.get(query.sObjectAlias, '', ' ')}`);
-    } else if (query.sObject) {
-      output += this.formatter.formatText(`${query.sObject}${utils.get(query.sObjectAlias, '', ' ')}`);
-    }
+    const output = this.format ? this.formatter.formatQuery(query) : composePlain(query);
     this.log(output);
-
-    if (query.usingScope) {
-      output += this.formatter.formatClause('USING SCOPE');
-      output += this.formatter.formatText(query.usingScope);
-      this.log(output);
-    }
-
-    if (query.where) {
-      output += this.formatter.formatClause('WHERE');
-      output += this.formatter.formatText(this.parseWhereOrHavingClause(query.where));
-      this.log(output);
-    }
-
-    if (query.groupBy) {
-      output += this.formatter.formatClause('GROUP BY');
-      output += this.formatter.formatText(this.parseGroupByClause(query.groupBy));
-      this.log(output);
-      if (query.having) {
-        output += this.formatter.formatClause('HAVING');
-        output += this.formatter.formatText(this.parseWhereOrHavingClause(query.having));
-        this.log(output);
-      }
-    }
-
-    if (query.orderBy && (!Array.isArray(query.orderBy) || query.orderBy.length > 0)) {
-      output += this.formatter.formatClause('ORDER BY');
-      output += this.formatter.formatText(this.parseOrderBy(query.orderBy));
-      this.log(output);
-    }
-
-    if (utils.isNumber(query.limit)) {
-      output += this.formatter.formatClause('LIMIT');
-      output += this.formatter.formatText(`${query.limit}`);
-      this.log(output);
-    }
-
-    if (utils.isNumber(query.offset)) {
-      output += this.formatter.formatClause('OFFSET');
-      output += this.formatter.formatText(`${query.offset}`);
-      this.log(output);
-    }
-
-    if (query.withDataCategory) {
-      output += this.formatter.formatClause('WITH DATA CATEGORY');
-      output += this.formatter.formatText(this.parseWithDataCategory(query.withDataCategory));
-      this.log(output);
-    }
-
-    if (query.withSecurityEnforced) {
-      output += this.formatter.formatClause('WITH SECURITY_ENFORCED');
-      this.log(output);
-    }
-
-    if (query.withAccessLevel) {
-      output += this.formatter.formatClause(`WITH ${query.withAccessLevel}`);
-      this.log(output);
-    }
-
-    if (query.for) {
-      output += this.formatter.formatClause('FOR');
-      output += this.formatter.formatText(query.for);
-      this.log(output);
-    }
-
-    if (query.update) {
-      output += this.formatter.formatClause('UPDATE');
-      output += this.formatter.formatText(query.update);
-      this.log(output);
-    }
-
-    return output.trim();
+    return output;
   }
 
   /**
@@ -261,42 +132,10 @@ export class Compose {
    */
   public parseFields(fields: FieldType[]): { text: string; typeOfClause?: string[] }[] {
     return fields.map(field => {
-      let text = '';
-      let typeOfClause: string[] | undefined;
-
-      const objPrefix = (field as any).objectPrefix ? `${(field as any).objectPrefix}.` : '';
-      switch (field.type) {
-        case 'Field': {
-          text = `${objPrefix}${field.field}${field.alias ? ` ${field.alias}` : ''}`;
-          break;
-        }
-        case 'FieldFunctionExpression': {
-          let params = '';
-          if (field.parameters) {
-            params = field.parameters
-              .map(param => (utils.isString(param) ? param : this.parseFields([param as FieldFunctionExpression]).map(param => param.text)))
-              .join(', ');
-          }
-          text = `${field.functionName}(${params})${field.alias ? ` ${field.alias}` : ''}`;
-          break;
-        }
-        case 'FieldRelationship': {
-          text = `${objPrefix}${field.relationships.join('.')}.${field.field}${utils.hasAlias(field) ? ` ${field.alias}` : ''}`;
-          break;
-        }
-        case 'FieldSubquery': {
-          text = this.formatter.formatSubquery(this.parseQuery(field.subquery));
-          break;
-        }
-        case 'FieldTypeof': {
-          typeOfClause = this.parseTypeOfField(field);
-          text = typeOfClause.join(' ');
-          break;
-        }
-        default:
-          break;
+      if (field.type === 'FieldSubquery') {
+        return { text: this.format ? this.formatter.formatSubqueryField(field.subquery) : `(${composePlain(field.subquery)})` };
       }
-      return { text, typeOfClause };
+      return { text: renderFieldText(field), typeOfClause: field.type === 'FieldTypeof' ? this.parseTypeOfField(field) : undefined };
     });
   }
 
@@ -307,57 +146,19 @@ export class Compose {
    * @returns type of field
    */
   public parseTypeOfField(typeOfField: FieldTypeOf): string[] {
-    const output = [`TYPEOF ${typeOfField.field}`].concat(
-      typeOfField.conditions.map(condition => this.formatter.formatTypeofFieldCondition(condition)),
-    );
-    output.push(`END`);
-    return output;
+    return renderTypeOfParts(typeOfField);
   }
 
   /**
    * Parses where clause
    * e.x.: WHERE LoginTime > 2010-09-20T22:16:30.000Z AND LoginTime < 2010-09-21T22:16:30.000Z
    * WHERE Id IN (SELECT AccountId FROM Contact WHERE LastName LIKE 'apple%') AND Id IN (SELECT AccountId FROM Opportunity WHERE isClosed = false)
-   * @param where
-   * @param priorIsNegationOperator - do not set this when calling manually. Recursive call will set this to ensure proper formatting.
+   * @param whereOrHaving
+   * @param [indent] - Only used when formatting: the indentation level of the clause. Defaults to 0.
    * @returns where clause
    */
-  public parseWhereOrHavingClause(whereOrHaving: WhereClause | HavingClause, tabOffset = 0, priorConditionIsNegation = false): string {
-    let output = '';
-    const left = whereOrHaving.left;
-    let trimPrecedingOutput = false;
-    if (left) {
-      output += this.formatter.formatParens(left.openParen, '(', utils.isNegationCondition(left));
-      if (!utils.isNegationCondition(left)) {
-        tabOffset = tabOffset + (left.openParen || 0) - (left.closeParen || 0);
-        if (priorConditionIsNegation) {
-          tabOffset++;
-        }
-        let expression = '';
-        expression += utils.isValueFunctionCondition(left) ? this.parseFn(left.fn) : left.field;
-        expression += ` ${left.operator} `;
-
-        if (utils.isValueQueryCondition(left)) {
-          expression += this.formatter.formatSubquery(this.parseQuery(left.valueQuery), 1, true);
-        } else {
-          expression += utils.getAsArrayStr(utils.getWhereValue(left.value, left.literalType, left.operator));
-        }
-        output += this.formatter.formatWithIndent(expression);
-        output += this.formatter.formatParens(left.closeParen, ')', priorConditionIsNegation);
-      }
-    }
-    if (utils.isWhereOrHavingClauseWithRightCondition(whereOrHaving)) {
-      const operator = utils.get(whereOrHaving.operator);
-      trimPrecedingOutput = operator === 'NOT';
-      const formattedData = this.formatter.formatWhereClauseOperators(
-        operator,
-        this.parseWhereOrHavingClause(whereOrHaving.right, tabOffset, utils.isNegationCondition(left)),
-        tabOffset,
-      );
-      return `${trimPrecedingOutput ? output.trimRight() : output}${formattedData}`.trim();
-    } else {
-      return output.trim();
-    }
+  public parseWhereOrHavingClause(whereOrHaving: WhereClause | HavingClause, indent = 0): string {
+    return this.format ? this.formatter.formatWhereOrHavingClause(whereOrHaving, indent) : composePlainConditions(whereOrHaving);
   }
 
   /**
@@ -367,9 +168,8 @@ export class Compose {
    * @returns group by clause
    */
   public parseGroupByClause(groupBy: GroupByClause | GroupByClause[]): string {
-    return (Array.isArray(groupBy) ? groupBy : [groupBy])
-      .map(clause => (utils.isGroupByField(clause) ? clause.field : this.parseFn(clause.fn)))
-      .join(', ');
+    const items = asArray(groupBy).map(renderGroupByItem);
+    return this.format ? this.formatter.formatList(items) : items.join(', ');
   }
 
   /**
@@ -379,18 +179,8 @@ export class Compose {
    * @returns order by
    */
   public parseOrderBy(orderBy: OrderByClause | OrderByClause[]): string {
-    if (Array.isArray(orderBy)) {
-      return this.formatter.formatOrderByArray(orderBy.map(ob => this.parseOrderBy(ob)));
-    } else {
-      let output = '';
-      if (utils.isOrderByField(orderBy)) {
-        output = `${utils.get(orderBy.field, ' ')}`;
-      } else {
-        output += `${this.parseFn(orderBy.fn)} `;
-      }
-      output += `${utils.get(orderBy.order, ' ')}${utils.get(orderBy.nulls, '', 'NULLS ')}`;
-      return output.trim();
-    }
+    const items = asArray(orderBy).map(renderOrderByItem);
+    return this.format ? this.formatter.formatList(items) : items.join(', ');
   }
 
   /**
@@ -400,11 +190,6 @@ export class Compose {
    * @returns with data category
    */
   public parseWithDataCategory(withDataCategory: WithDataCategoryClause): string {
-    return withDataCategory.conditions
-      .map(condition => {
-        const params = condition.parameters.length > 1 ? `(${condition.parameters.join(', ')})` : `${condition.parameters.join(', ')}`;
-        return `${condition.groupName} ${condition.selector} ${params}`;
-      })
-      .join(' AND ');
+    return renderWithDataCategory(withDataCategory);
   }
 }

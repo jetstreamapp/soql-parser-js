@@ -10,7 +10,7 @@ function run(args: string[]): Promise<{ stdout: string; stderr: string; exitCode
       resolve({
         stdout: stdout.toString(),
         stderr: stderr.toString(),
-        exitCode: error ? (error as any).code ?? 1 : 0,
+        exitCode: error ? ((error as any).code ?? 1) : 0,
       });
     });
   });
@@ -208,13 +208,30 @@ describe('CLI', () => {
     });
 
     it('should format with -s short flag', async () => {
-      const { stdout, exitCode } = await run([
-        'format',
-        'SELECT Id FROM Account WHERE Id IN (SELECT Id FROM Contact)',
-        '-s',
-      ]);
+      const { stdout, exitCode } = await run(['format', 'SELECT Id FROM Account WHERE Id IN (SELECT Id FROM Contact)', '-s']);
       expect(exitCode).toBe(0);
       expect(stdout).toContain('(\n');
+    });
+
+    it('should format with --indent-string and --indent flags', async () => {
+      const { stdout, exitCode } = await run([
+        'format',
+        "SELECT Id, (SELECT Id FROM Contacts) FROM Account WHERE Name = 'a' AND Id = '1'",
+        '--indent-string',
+        '  ',
+        '--indent',
+        '2',
+      ]);
+      expect(exitCode).toBe(0);
+      expect(stdout).toEqual(
+        "SELECT Id,\n    (\n        SELECT Id\n        FROM Contacts\n    )\nFROM Account\nWHERE Name = 'a'\n    AND Id = '1'\n",
+      );
+    });
+
+    it('should format with -t short flag', async () => {
+      const { stdout, exitCode } = await run(['format', "SELECT Id FROM Account WHERE Name = 'a' AND Id = '1'", '-t', '  ']);
+      expect(exitCode).toBe(0);
+      expect(stdout).toEqual("SELECT Id\nFROM Account\nWHERE Name = 'a'\n  AND Id = '1'\n");
     });
   });
 

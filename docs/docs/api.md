@@ -23,14 +23,15 @@ Parse a SOQL query string into a Query data structure.
 
 `function composeQuery(soql: Query, config?: Partial<SoqlComposeConfig>): string`
 
-- `format?: boolean` - Apply formatting the the composed query. This will result in a multi-line soql statement.
-- `formatOptions?: boolean` - Only applies if `format` is set to true. Options to apply to the formatter.
-  - `numIndent: number` - Number of tabs to indent on new lines.
-  - `fieldMaxLineLength: number` - Number of characters before wrapping fields.
+- `format?: boolean` - Apply formatting to the composed query. This will result in a multi-line soql statement.
+- `formatOptions?: FormatOptions` - Only applies if `format` is set to true. Options to apply to the formatter.
+  - `numIndent: number` - Number of times `indentString` is repeated for each level of indentation. Defaults to `1`.
+  - `indentString: string` - The string used for one unit of indentation. Defaults to a tab (`'\t'`). e.g. `{ indentString: ' ', numIndent: 2 }` indents with two spaces per level. Must be whitespace only (spaces and/or tabs); other values are ignored.
+  - `fieldMaxLineLength: number` - Number of characters before wrapping fields (also applies to GROUP BY and ORDER BY items). Defaults to `60`.
   - `fieldSubqueryParensOnOwnLine: boolean` - If true and the query includes a subquery, parentheses will be on their own line .
-  - `whereClauseOperatorsIndented: boolean` - If true, operators (such as `=` or `IN`) in WHERE clauses will be inputted on their own line.
+  - `whereClauseOperatorsIndented: boolean` - **Deprecated** - this is always applied and the option is ignored.
   - `newLineAfterKeywords: boolean` - If true, a new line will be inserted after keywords
-  - `logging: boolean`
+  - `logging: boolean` - **Deprecated** - this is ignored and will be removed in a future version.
 - `autoCompose?: boolean` - (superseded by `allowPartialQuery`, you normally don't need to change this setting.) If you need to compose just part of a query, you can create your own instance of the Compose class and set this to false, then call any methods that you need to just for what you would like to turn into a SOQL query.
 - `logging?: boolean` - Print out logging statements to the console about the format operation.
 
