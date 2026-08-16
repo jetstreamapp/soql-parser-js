@@ -52,6 +52,7 @@
     "README.md"
   ],
   "devDependencies": {
+    "@release-it/keep-a-changelog": "^8.0.0",
     "@types/node": "^25.5.0",
     "esbuild": "^0.28.0",
     "lodash.get": "^4.4.2",
