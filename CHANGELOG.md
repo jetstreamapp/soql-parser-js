@@ -4,6 +4,8 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [8.0.0] - 2026-08-16
+
 This is a major release. The composed and formatted output changes in the cases listed under Bug Fixes, and the internals of the formatter were rewritten. `composeQuery`, `formatQuery`, `parseQuery` and the `FormatOptions` type are source compatible - see Breaking Changes for the two exceptions.
 
 ### Breaking Changes
@@ -1032,5 +1034,6 @@ export interface FunctionExp {
   - `function isSubquery(query: Query | Subquery): query is Subquery`
   - Look at the README and refer to the unit tests for example usage.
 
-[Unreleased]: https://github.com/jetstreamapp/soql-parser-js/compare/7.4.1...HEAD
+[Unreleased]: https://github.com/jetstreamapp/soql-parser-js/compare/8.0.0...HEAD
+[8.0.0]: https://github.com/jetstreamapp/soql-parser-js/compare/7.4.1...8.0.0
 [7.4.1]: https://github.com/jetstreamapp/soql-parser-js/compare/7.4.0...7.4.1
