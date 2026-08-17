@@ -4,8 +4,11 @@ import Link from '@docusaurus/Link';
 import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
 import Layout from '@theme/Layout';
 import HomepageFeatures from '@site/src/components/HomepageFeatures';
+import { CopyButton } from '@site/src/components/Utilities/CopyButton';
 
 import styles from './index.module.css';
+
+const INSTALL_COMMAND = 'npm install @jetstreamapp/soql-parser-js';
 
 function HomepageHeader() {
   const { siteConfig } = useDocusaurusContext();
@@ -16,11 +19,12 @@ function HomepageHeader() {
         <div className={styles.heroContent}>
           <p className={styles.heroEyebrow}>Open Source SOQL Toolkit</p>
           <h1 className={styles.heroTitle}>{siteConfig.title}</h1>
-          <p className={styles.heroSubtitle}>
-            Parse, compose, and format SOQL queries with zero runtime dependencies.
-          </p>
+          <p className={styles.heroSubtitle}>Parse, compose, and format SOQL queries with zero runtime dependencies.</p>
           <div className={styles.heroInstall}>
-            <code>npm install @jetstreamapp/soql-parser-js</code>
+            <span className={styles.heroInstallCommand}>
+              <code>{INSTALL_COMMAND}</code>
+              <CopyButton code={INSTALL_COMMAND} className={styles.heroInstallCopyButton} />
+            </span>
           </div>
           <div className={styles.buttons}>
             <Link className={clsx('button button--lg', styles.buttonPrimary)} to="/docs/overview">

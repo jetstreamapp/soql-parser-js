@@ -45,7 +45,7 @@ function resolveFile(urlPath) {
     join(BUILD_DIR, `${safePath}.html`),
     join(BUILD_DIR, safePath, 'index.html'),
   ];
-  return candidates.find((candidate) => existsSync(candidate) && extname(candidate) !== '') ?? join(BUILD_DIR, '404.html');
+  return candidates.find(candidate => existsSync(candidate) && extname(candidate) !== '') ?? join(BUILD_DIR, '404.html');
 }
 
 createServer((req, res) => {

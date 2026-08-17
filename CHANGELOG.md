@@ -4,6 +4,94 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Changed
+
+- **Replaced Prettier with [oxfmt](https://oxc.rs/docs/guide/usage/formatter.html) and added
+  [oxlint](https://oxc.rs/docs/guide/usage/linter.html) as the project linter** — the repository had
+  no linter at all. Config moved from `.prettierrc` to `.oxfmtrc.json` (every option carried over
+  except the no-op `insertPragma`), with `.oxlintrc.json` alongside it and `npm run format`,
+  `format:check`, `lint` and `lint:fix`. oxlint runs the `correctness`, `suspicious` and `perf`
+  categories as errors; `style` and `pedantic` stay off because on a hand-written recursive-descent
+  parser they ask for the code to be restructured — function length, inline comments, negated
+  conditions — rather than pointing at defects. Individually disabled rules each carry their reason
+  inline, including two genuine false positives: `no-unmodified-loop-condition` does not see that
+  the parser's paren-matching loops mutate `parenCount.right`, and `no-await-in-loop` flags polling
+  loops whose iterations are sequential by design. The repository was reformatted in the process,
+  and the result is byte identical to what Prettier produced for the files it flagged
+- **The `pre-commit` hook blocks a commit when staged files are unformatted or fail lint**, running
+  both checks so one attempt reports everything to fix. `npm install` wires it up by pointing
+  `core.hooksPath` at `.githooks/`
+- **CI now gates on `format:check`, `lint` and `typecheck`** alongside the tests and build, since the
+  hook can be bypassed with `--no-verify`. CI installs with `npm ci` rather than `npm install`, and
+  runs on pushes to `main` and on pull requests instead of on every push
+- **A `Changelog` workflow requires an `[Unreleased]` entry on pull requests that touch published
+  code.** That section decides the version, so a change nobody wrote down was previously only
+  noticed at release time, after the bump had been derived. It fails when `CHANGELOG.md` is
+  untouched, then runs `scripts/derive-increment.mjs` so a file edited without a real entry fails
+  too. The `skip-changelog` label opts out
+- **The release version is derived from the changelog headings alone.** `scripts/derive-increment.mjs`
+  maps `Breaking Changes` to a major, `Added`/`Deprecated` to a minor and
+  `Changed`/`Removed`/`Fixed`/`Security` to a patch. Only headings are read, never the entry text —
+  scanning the body for a word like "BREAKING" fires on ordinary prose, and an entry that merely
+  mentions a breaking change would silently turn a patch into a major. An unrecognized heading is an
+  error rather than a guess, so an unclassified change cannot ship as a patch. `npm run release`
+  starts a release from the terminal, verifying that `main` is clean and matches origin, printing the
+  plan for confirmation, then dispatching the workflow and tailing the run. The release still runs
+  entirely in CI, which holds the publish credentials; `release-it` moved behind `npm run release:ci`
+- **The release workflow now matches the one in the Jetstream monorepo.** It authenticates with
+  `client-id` rather than `app-id`, which the action marks deprecated. Release commits are no longer
+  authored by `Release Workflow <support@getjetstream.app>`, which is not an account GitHub can
+  resolve: the identity is derived from the token, with `app-slug` naming the committer and the App's
+  numeric user id forming the `<id>+<slug>[bot]@users.noreply.github.com` address that links commits
+  back to the App, so they carry the bot's avatar. Every action is pinned to a commit SHA with the
+  version in a trailing comment, because a tag can be repointed at new code and a SHA cannot
+- **Tooling is now shared with [sf-formula-parser](https://github.com/jetstreamapp/sf-formula-parser)** —
+  `scripts/derive-increment.mjs`, `scripts/release.mjs`, `.githooks/pre-commit` and the `ci`,
+  `release` and `changelog` workflows are identical in both repositories, as are `.oxfmtrc.json` and
+  `.claude/settings.json`. `tasks/` was renamed to `scripts/` to match, and `CLAUDE.md` became
+  `AGENTS.md`, which records the formatter and linter workflow, the release rules, and the two
+  constraints that are not obvious from the code: `"type": "module"` must not be added to the root
+  package.json, and `docs/` is a separate npm project. `npm test` is now `vitest run` rather than
+  bare `vitest`, which started a watch session; `test:watch` ran `jest --watch` long after jest
+  stopped being a dependency; `test:coverage` was added along with `@vitest/coverage-v8` so it runs
+  without prompting for a provider; and the `--testTimeout 10000` that lived in the test script moved
+  into `vitest.config.mts`
+- **Upgraded dependencies** — TypeScript 7 in both the library and the docs site, plus the latest
+  esbuild, release-it and tsx. `npm-run-all` and `lodash.get` were dropped: the build chains its
+  steps with `&&`, and the single test that used `lodash.get` now resolves the dot separated path
+  locally. `vitest.config.ts` became `vitest.config.mts`, since it is ESM while the root package is
+  CommonJS, which Vite warned about under its upcoming native config loader
+- **Enabled `isolatedDeclarations` and raised the TypeScript target to ES2022.** The target only
+  affects the emitted declarations, and esbuild was already producing es2020/es2022 bundles, so
+  nothing about the shipped JavaScript changes. Two exported functions in `src/utils.ts` needed
+  explicit return types. `npm run typecheck` covers tests, scripts and the cli via
+  `tsconfig.typecheck.json`, which the build's declaration-only `tsconfig.json` excludes
+- **Removed `.npmignore`** — `package.json` `files` takes precedence over it, so it had no effect:
+  `npm pack --dry-run` produces a byte identical 21 file tarball without it. It had also drifted,
+  listing `CHANGELOG.md` and `AUTHORS.md` as excluded while `files` ships both. `files` is an
+  allowlist, which is the safer default — a new top-level directory is excluded unless it is named,
+  where a denylist would have published it
+- **Documentation** — the playground's parse, compose and utility function output, and the install
+  command on the home page, now reveal a copy to clipboard button on hover, matching the one
+  Docusaurus already renders on markdown code blocks. The site publishes `llms.txt` and
+  `llms-full.txt` via `docusaurus-plugin-llms`, with links in the footer
+
+### Fixed
+
+- **Doc comments are no longer stripped from the published type declarations** — `tsconfig.json` set
+  `removeComments`, so every JSDoc block was dropped from `dist/types` and editors showed no
+  documentation on hover for any exported symbol. Removing it restores them for 12 KB of declaration
+  output, and leaves the JavaScript bundles untouched since esbuild builds those
+- **Corrected the dependency note in the README** — it still described `commander`, `chevrotain` and
+  `lodash.get` as dependencies of the library. Those were removed in 8.0.0; the package has no
+  runtime dependencies
+- **Everything oxlint flagged, with no behavior change to the published library.** A redundant double
+  negation, a `? true : false` ternary, an unused local and an unused catch binding were removed;
+  `new Array(n).fill(' ').join('')` in `pad()` became `' '.repeat(n)`; and three shadowed variables
+  were renamed. In the tests, the performance benchmark had no assertion and now checks that every
+  iteration actually parsed, two `toThrow()` calls gained the message matcher their neighbours
+  already used, and unused imports were dropped
+
 ## [8.0.0] - 2026-08-16
 
 This is a major release. The composed and formatted output changes in the cases listed under Bug Fixes, and the internals of the formatter were rewritten. `composeQuery`, `formatQuery`, `parseQuery` and the `FormatOptions` type are source compatible - see Breaking Changes for the two exceptions.
