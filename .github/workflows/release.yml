@@ -1,51 +1,94 @@
-name: Create Release
+name: Release
+
+# Actions are pinned to a commit SHA with the version in a trailing comment: a tag is mutable
+# and can be repointed at new code, a SHA cannot.
+#
+# This file is shared verbatim with jetstreamapp/sf-formula-parser - keep the two copies in
+# sync when changing it.
 
 on:
   workflow_dispatch:
     inputs:
-      increment:
-        type: choice
-        description: Increment
-        required: true
-        options:
-          - patch
-          - minor
-          - major
+      version:
+        # Normally dispatched by `npm run release`, which derives this from the [Unreleased]
+        # section of CHANGELOG.md. `auto` derives it here instead, and a bump keyword or an
+        # explicit version both work when running the workflow by hand from the GitHub UI.
+        description: '`auto`, a bump keyword (major, minor, patch) or an explicit version (1.2.3)'
+        required: false
+        default: auto
+        type: string
 
 permissions:
-  id-token: write
   contents: write
+  id-token: write
 
 jobs:
   release:
     runs-on: ubuntu-latest
+
     steps:
-      - name: Generate Jetstream Bot token
+      - name: Generate GitHub App token
         id: app-token
-        uses: actions/create-github-app-token@v3
+        uses: actions/create-github-app-token@bcd2ba49218906704ab6c1aa796996da409d3eb1 # v3.2.0
         with:
           client-id: ${{ secrets.CLIENT_ID }}
           private-key: ${{ secrets.APP_PRIVATE_KEY }}
-      - name: Checkout [main]
-        uses: actions/checkout@v7
+
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           fetch-depth: 0
+          # Persisted for the release commit, tag and push that release-it makes later.
           token: ${{ steps.app-token.outputs.token }}
-      - name: Init npm cache
-        uses: actions/setup-node@v7
+
+      - name: Set up Node
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
-          node-version: '24'
-          cache: 'npm'
+          node-version: 24
+          cache: npm
           registry-url: 'https://registry.npmjs.org'
-          package-manager-cache: false
-      - name: install dependencies
-        run: npm ci
-      - name: git config
+
+      - name: Resolve version
+        id: resolve
         run: |
-          git config --global user.name "Release Workflow"
-          git config --global user.email "support@getjetstream.app"
-      - name: Run Release
-        run: npm run release -- "$INCREMENT" --ci
+          if [ -z "$INPUT" ] || [ "$INPUT" = "auto" ]; then
+            VALUE=$(node scripts/derive-increment.mjs)
+            echo "Derived '$VALUE' from the [Unreleased] section of CHANGELOG.md:"
+            node scripts/derive-increment.mjs --explain
+          else
+            VALUE="$INPUT"
+            echo "Using the version supplied to the workflow: $VALUE"
+          fi
+          echo "value=$VALUE" >> "$GITHUB_OUTPUT"
         env:
-          INCREMENT: ${{ github.event.inputs.increment }}
+          INPUT: ${{ inputs.version }}
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Get GitHub App user ID
+        id: app-user
+        env:
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
+          APP_SLUG: ${{ steps.app-token.outputs.app-slug }}
+        run: |
+          USER_ID=$(gh api "/users/${APP_SLUG}[bot]" --jq .id)
+          echo "user-id=${USER_ID}" >> "$GITHUB_OUTPUT"
+
+      - name: Configure git
+        env:
+          APP_SLUG: ${{ steps.app-token.outputs.app-slug }}
+          USER_ID: ${{ steps.app-user.outputs.user-id }}
+        run: |
+          # `<id>+<slug>[bot]@users.noreply.github.com` is the address GitHub matches back to the
+          # App account, so release commits are attributed to the bot with its avatar rather than
+          # to an unrecognized author. Both halves come from the token, so this identity follows
+          # whichever App the credential belongs to instead of being hardcoded per repository.
+          git config user.name "${APP_SLUG}[bot]"
+          git config user.email "${USER_ID}+${APP_SLUG}[bot]@users.noreply.github.com"
+
+      - name: Release
+        run: npm run release:ci -- "$VERSION" --ci
+        env:
+          VERSION: ${{ steps.resolve.outputs.value }}
           GITHUB_TOKEN: ${{ steps.app-token.outputs.token }}

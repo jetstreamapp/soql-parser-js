@@ -26,7 +26,7 @@ if (!Number.isFinite(timeoutSeconds) || timeoutSeconds <= 0) {
 const registryUrl = `https://registry.npmjs.org/${pkg.name.replaceAll('/', '%2F')}`;
 const deadline = Date.now() + timeoutSeconds * 1000;
 
-const sleep = (seconds) => new Promise((resolve) => setTimeout(resolve, seconds * 1000));
+const sleep = seconds => new Promise(resolve => setTimeout(resolve, seconds * 1000));
 
 async function isVersionAvailable() {
   try {
