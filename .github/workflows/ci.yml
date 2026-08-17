@@ -1,24 +1,67 @@
-name: Build and test
-on: [push]
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
 
 permissions:
   contents: read
 
 jobs:
-  build:
+  test:
     runs-on: ubuntu-latest
     timeout-minutes: 60
     steps:
-      - uses: actions/checkout@v7
-        name: Checkout [main]
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Use Node.js 24
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
-          fetch-depth: 0
+          node-version: 24
+          cache: npm
 
-      - name: Install dependencies
-        run: npm install
+      - run: npm ci
+      # The pre-commit hook runs these too, but it can be bypassed with --no-verify
+      - run: npm run format:check
+      - run: npm run lint
+      - run: npm run typecheck
+      - run: npm test
+      - run: npm run build
 
-      - name: Build application
-        run: npm run build
+  docs-build:
+    runs-on: ubuntu-latest
+    # Only run when docs-related files change
+    if: github.event_name == 'pull_request'
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
-      - name: Run Tests
-        run: npm run test
+      - uses: dorny/paths-filter@0e4a8c6effa4802afeda77dc8d303f8176d7dfad # v3.0.4
+        id: changes
+        with:
+          filters: |
+            docs:
+              - 'docs/**'
+
+      - name: Use Node.js 24
+        if: steps.changes.outputs.docs == 'true'
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: |
+            package-lock.json
+            docs/package-lock.json
+
+      - name: Build library
+        if: steps.changes.outputs.docs == 'true'
+        run: |
+          npm ci
+          npm run build
+
+      - name: Build docs
+        if: steps.changes.outputs.docs == 'true'
+        run: |
+          npm ci
+          npm run build
+        working-directory: docs
