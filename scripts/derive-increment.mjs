@@ -13,13 +13,15 @@
  *   minor   ### Added, ### Deprecated
  *   patch   ### Fixed, ### Security, ### Changed, ### Removed
  *
- * Two deliberate choices:
+ * Three deliberate choices:
  *
  * - Only headings are read. Scanning the body for a word like "BREAKING" looks convenient but
  *   fires on ordinary prose - an entry that merely mentions a breaking change, or describes
  *   this rule, would silently turn a patch into a major.
  * - An unrecognized heading is an error, not a guess. Guessing risks publishing a breaking
  *   change as a patch. Add the heading below, or pass the bump explicitly to `npm run release`.
+ * - Content outside a heading is an error too, for the same reason: it is invisible to the rules
+ *   above, so `Breaking: ...` written as loose prose would be dropped and released as a patch.
  *
  * Usage:
  *   node scripts/derive-increment.mjs             prints `major`, `minor` or `patch`
@@ -63,8 +65,11 @@ function incrementForSection(heading) {
   );
 }
 
-/** Returns the body of the `## [Unreleased]` section, without its heading line */
-export function readUnreleasedSection(changelog) {
+/**
+ * Returns the body of the `## [Unreleased]` section along with the 1-based line number that body
+ * starts on, so errors can point at a real CHANGELOG.md line.
+ */
+function findUnreleasedSection(changelog) {
   const start = changelog.search(/^## \[Unreleased\]/m);
   if (start === -1) {
     throw new Error('CHANGELOG.md has no `## [Unreleased]` section.');
@@ -72,7 +77,17 @@ export function readUnreleasedSection(changelog) {
   const rest = changelog.slice(start);
   const end = rest.indexOf('\n## ', 1);
   const section = end === -1 ? rest : rest.slice(0, end);
-  return section.slice(section.indexOf('\n') + 1);
+  return {
+    body: section.slice(section.indexOf('\n') + 1),
+    // `slice(0, start)` ends with the newline before the heading, so its line count is the
+    // heading's own line number and the body begins on the next one
+    startLine: changelog.slice(0, start).split('\n').length + 1,
+  };
+}
+
+/** Returns the body of the `## [Unreleased]` section, without its heading line */
+export function readUnreleasedSection(changelog) {
+  return findUnreleasedSection(changelog).body;
 }
 
 /**
@@ -81,24 +96,47 @@ export function readUnreleasedSection(changelog) {
  * Any non-blank line counts, not only list items - sections have been written as prose and as
  * tables, and skipping those could drop a `Breaking Changes` heading and turn a major into a
  * minor.
+ *
+ * Throws when a non-blank line sits before the first `### ` heading. Ignoring it would derive the
+ * bump from the remaining headings alone, so `Breaking: ...` written as loose prose above
+ * `### Fixed` would publish as a patch.
  */
 export function parseUnreleasedSections(changelog) {
+  const { body, startLine } = findUnreleasedSection(changelog);
   const sections = [];
+  const unsectioned = [];
   let current = null;
+  let lineNumber = startLine - 1;
 
-  for (const line of readUnreleasedSection(changelog).split('\n')) {
+  for (const line of body.split('\n')) {
+    lineNumber += 1;
     const heading = line.match(/^###\s+(.*\S)\s*$/);
     if (heading) {
       if (current) {
         sections.push(current);
       }
       current = { heading: heading[1], entries: 0 };
-    } else if (current && line.trim() !== '') {
-      current.entries += 1;
+    } else if (line.trim() !== '') {
+      if (current) {
+        current.entries += 1;
+      } else {
+        unsectioned.push(`    CHANGELOG.md:${lineNumber}: "${line.trim()}"`);
+      }
     }
   }
   if (current) {
     sections.push(current);
+  }
+
+  if (unsectioned.length > 0) {
+    const shown = unsectioned.slice(0, 3);
+    const more = unsectioned.length > shown.length ? `\n    (+${unsectioned.length - shown.length} more)` : '';
+    throw new Error(
+      'The [Unreleased] section has content that is not under a `### <Section>` heading, so the bump cannot be derived:\n' +
+        shown.join('\n') +
+        more +
+        '\n  Move it under one of: Breaking Changes, Added, Deprecated, Changed, Removed, Fixed, Security.',
+    );
   }
 
   return sections.filter(section => section.entries > 0);
@@ -109,11 +147,13 @@ export function deriveIncrement(changelog) {
   const sections = parseUnreleasedSections(changelog);
 
   if (sections.length === 0) {
+    // Unsectioned content already threw in parseUnreleasedSections, so anything left here is
+    // either an empty section or headings with nothing written under them
     throw new Error(
       unreleased.trim() === ''
         ? 'The [Unreleased] section of CHANGELOG.md is empty - there is nothing to release.'
-        : 'The [Unreleased] section has content but no `### <Section>` heading, so the bump cannot be derived.\n' +
-            '  Put the entries under one of: Breaking Changes, Added, Deprecated, Changed, Removed, Fixed, Security.',
+        : 'Every `### <Section>` heading in [Unreleased] is empty, so there is nothing to release.\n' +
+            '  Add entries under the heading, or remove the heading.',
     );
   }
 

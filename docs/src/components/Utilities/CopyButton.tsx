@@ -29,10 +29,18 @@ export function CopyButton({ code, className, style }: CopyButtonProps) {
       event.stopPropagation();
       // navigator.clipboard is only defined in secure contexts, which covers both the deployed
       // site and the local dev server
-      navigator.clipboard?.writeText(code).then(() => {
-        setIsCopied(true);
-        copyTimeout.current = window.setTimeout(() => setIsCopied(false), COPIED_INDICATOR_DURATION);
-      });
+      navigator.clipboard
+        ?.writeText(code)
+        .then(() => {
+          setIsCopied(true);
+          // A rapid second click would otherwise let the first timeout clear the indicator early
+          window.clearTimeout(copyTimeout.current);
+          copyTimeout.current = window.setTimeout(() => setIsCopied(false), COPIED_INDICATOR_DURATION);
+        })
+        .catch(() => {
+          // Writes reject when the document is not focused or the user denied permission - leave
+          // the button in its default state rather than surfacing an unhandled rejection
+        });
     },
     [code],
   );
