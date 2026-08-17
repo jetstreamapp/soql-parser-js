@@ -16,22 +16,31 @@
   "scripts": {
     "clean": "rm -rf ./dist/*",
     "prebuild": "npm run clean",
-    "build": "npm-run-all build:bundles build:declarations",
-    "build:bundles": "node tasks/build.mjs",
-    "build:esm": "node tasks/build.mjs esm",
-    "build:lwc": "node tasks/build.mjs lwc",
-    "build:cjs": "node tasks/build.mjs cjs",
-    "build:cli": "node tasks/build.mjs cli",
+    "build": "npm run build:bundles && npm run build:declarations",
+    "build:bundles": "node scripts/build.mjs",
+    "build:esm": "node scripts/build.mjs esm",
+    "build:lwc": "node scripts/build.mjs lwc",
+    "build:cjs": "node scripts/build.mjs cjs",
+    "build:cli": "node scripts/build.mjs cli",
     "build:declarations": "tsc --project tsconfig.json",
-    "tsc": "tsc",
-    "release": "release-it",
-    "copy-tc-to-docs": "tsx ./tasks/copy-test-cases-to-docs.ts",
-    "test": "vitest --passWithNoTests --testTimeout 10000",
-    "test:watch": "jest --watch",
-    "soql-parser-js": "node ./bin"
+    "format": "oxfmt",
+    "format:check": "oxfmt --check",
+    "lint": "oxlint",
+    "lint:fix": "oxlint --fix",
+    "release": "node scripts/release.mjs",
+    "release:ci": "release-it",
+    "release:increment": "node scripts/derive-increment.mjs --explain",
+    "typecheck": "tsc --noEmit -p tsconfig.typecheck.json",
+    "copy-tc-to-docs": "tsx ./scripts/copy-test-cases-to-docs.ts",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
+    "soql-parser-js": "node ./bin",
+    "prepare": "git config core.hooksPath .githooks || true"
   },
   "author": "Austin Turner <paustint@gmail.com>",
   "license": "MIT",
+  "sideEffects": false,
   "bin": {
     "soql-parser-js": "bin/soql-parser-js"
   },
@@ -54,13 +63,13 @@
   "devDependencies": {
     "@release-it/keep-a-changelog": "^8.0.0",
     "@types/node": "^25.5.0",
-    "esbuild": "^0.28.0",
-    "lodash.get": "^4.4.2",
-    "npm-run-all": "^4.1.5",
-    "prettier": "^3.9.6",
-    "release-it": "^21.0.1",
-    "tsx": "^4.23.9",
-    "typescript": "^6.0.3",
+    "@vitest/coverage-v8": "^4.1.10",
+    "esbuild": "^0.28.2",
+    "oxfmt": "^0.63.0",
+    "oxlint": "^1.78.0",
+    "release-it": "^21.0.2",
+    "tsx": "^4.23.12",
+    "typescript": "^7.0.2",
     "vitest": "^4.1.10"
   },
   "keywords": [
@@ -73,5 +82,9 @@
   "repository": {
     "type": "git",
     "url": "git+https://github.com/jetstreamapp/soql-parser-js.git"
+  },
+  "allowScripts": {
+    "esbuild@0.28.2": true,
+    "fsevents@2.3.3": true
   }
 }
