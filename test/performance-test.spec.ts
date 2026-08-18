@@ -1,5 +1,5 @@
 import { performance } from 'perf_hooks';
-import { describe, it } from 'vitest';
+import { describe, expect, it } from 'vitest';
 import testCases from './test-cases';
 
 // SKIPPED -
@@ -18,11 +18,13 @@ describe('parse queries', () => {
     console.log(`Duration: ${Number(importDuration).toFixed(4)} milliseconds`);
 
     console.log(`Parser testing: ${testCases.length} X ${numIterations} = ${testCases.length * numIterations} iterations.`);
+    let parsed = 0;
     const start = performance.now();
     for (let i = 0; i < numIterations; i++) {
       testCases.forEach(testCase => {
         try {
           parseQuery(testCase.soql, { allowApexBindVariables: true, logErrors: false, ...testCase.options });
+          parsed++;
         } catch (ex) {
           console.log('Exception on TC', testCase.testCase, testCase.soql);
           console.log(ex);
@@ -34,8 +36,7 @@ describe('parse queries', () => {
     const duration = end - start;
     console.log(`Duration: ${Number(duration / 1000).toFixed(4)} seconds`);
     console.log(`Average of ${Number(duration / (testCases.length * numIterations)).toFixed(4)} milliseconds per query`);
-    return;
+
+    expect(parsed).toBe(testCases.length * numIterations);
   });
 });
-
-export {};

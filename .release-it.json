@@ -1,7 +1,8 @@
 {
   "$schema": "./node_modules/release-it/schema/release-it.json",
   "git": {
-    "commitMessage": "chore: release v${version}"
+    "commitMessage": "chore: release v${version}",
+    "commitArgs": ["--no-verify"]
   },
   "github": {
     "release": true,
@@ -13,7 +14,7 @@
   "hooks": {
     "before:init": ["npm run build", "npm test"],
     "after:bump": ["npm run build", "npm pack"],
-    "after:release": "npm run copy-tc-to-docs && node tasks/wait-for-npm-version.mjs ${version} && cd docs && npm install @jetstreamapp/soql-parser-js@${version} --prefer-online && git add package*.json && git add static/sample-queries-json.json && git commit -m \"Updated docs version\" && git push"
+    "after:release": "npm run copy-tc-to-docs && node scripts/wait-for-npm-version.mjs ${version} && cd docs && npm install @jetstreamapp/soql-parser-js@${version} --prefer-online && git add package*.json && git add static/sample-queries-json.json && git commit --no-verify -m \"Updated docs version\" && git push"
   },
   "plugins": {
     "@release-it/keep-a-changelog": {

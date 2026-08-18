@@ -22,8 +22,8 @@ import {
 } from './api/api-models';
 import { ComposeField, ComposeFieldFunction, ComposeFieldRelationship, ComposeFieldSubquery, ComposeFieldTypeof } from './api/public-utils';
 
-export function isSubqueryFromFlag(val: any, isSubquery: boolean): val is Subquery {
-  return isSubquery;
+export function isSubqueryFromFlag(val: any, isSubqueryFlag: boolean): val is Subquery {
+  return isSubqueryFlag;
 }
 
 export function isString(val: any): val is string {
@@ -78,16 +78,16 @@ export function getAsArrayStr(val: string | string[], alwaysParens: boolean = fa
 }
 
 export function pad(val: string, len: number, left: number = 0): string {
-  let leftPad = left > 0 ? new Array(left).fill(' ').join('') : '';
+  let leftPad = left > 0 ? ' '.repeat(left) : '';
   if (val.length > len) {
     return `${leftPad}${val}`;
   } else {
-    return `${leftPad}${val}${new Array(len - val.length).fill(' ').join('')}`;
+    return `${leftPad}${val}${' '.repeat(len - val.length)}`;
   }
 }
 
-export function generateParens(count: number, character: '(' | ')', joinCharacter = '') {
-  return isNumber(count) && count > 0 ? new Array(count).fill(character).join(joinCharacter) : '';
+export function generateParens(count: number, character: '(' | ')', joinCharacter = ''): string {
+  return isNumber(count) && count > 0 ? Array.from({ length: count }, () => character).join(joinCharacter) : '';
 }
 
 /**
@@ -208,7 +208,7 @@ export function isGroupByFn(value: any): value is GroupByFnClause {
   return value && !isNil(value.fn);
 }
 
-export function isArrayOperator(operator: Operator) {
+export function isArrayOperator(operator: Operator): boolean {
   return ['IN', 'NOT IN', 'INCLUDES', 'EXCLUDES'].includes(operator);
 }
 

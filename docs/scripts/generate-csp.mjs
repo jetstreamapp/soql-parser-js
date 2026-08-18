@@ -30,7 +30,7 @@ const EXECUTABLE_SCRIPT_TYPES = new Set(['', 'module', 'text/javascript', 'appli
 const SCRIPT_TAG_REGEX = /<script\b([^>]*)>([\s\S]*?)<\/script\b[^>]*>/gi;
 
 function collectHtmlFiles(dir) {
-  return readdirSync(dir, { withFileTypes: true }).flatMap((entry) => {
+  return readdirSync(dir, { withFileTypes: true }).flatMap(entry => {
     const fullPath = join(dir, entry.name);
     if (entry.isDirectory()) {
       return collectHtmlFiles(fullPath);
@@ -92,6 +92,6 @@ const serveConfig = {
 writeFileSync(join(BUILD_DIR, 'serve.json'), `${JSON.stringify(serveConfig, null, 2)}\n`);
 
 console.log(`Found ${scriptHashes.length} inline script hash(es):`);
-scriptHashes.forEach((hash) => console.log(`  ${hash}`));
+scriptHashes.forEach(hash => console.log(`  ${hash}`));
 console.log('\nWrote build/_headers with the following policy:\n');
 console.log(csp);

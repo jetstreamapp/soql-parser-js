@@ -1,0 +1,17 @@
+.container {
+  position: relative;
+}
+
+/* Matches the placement Docusaurus uses on markdown code blocks */
+.copyButton {
+  position: absolute;
+  top: calc(var(--ifm-pre-padding) / 2);
+  /* rtl:ignore */
+  right: calc(var(--ifm-pre-padding) / 2);
+  opacity: 0;
+  transition: opacity var(--ifm-transition-fast) ease-in-out;
+}
+
+.container:hover .copyButton {
+  opacity: 0.4;
+}

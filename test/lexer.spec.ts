@@ -1,5 +1,22 @@
 import { describe, it, expect } from 'vitest';
-import { tokenize, TokenKind, Token, tokenTypeName, isDateFunction, isAggregateFunction, isLocationFunction, isFieldsFunction, isOtherFunction, isFieldsFunctionParam, isDateLiteral, isDateNLiteral, isUsingScopeEnumeration, isIdentifierLike, isNumberLiteral, isDecimalNumberLiteral, isIntegerNumberLiteral, isRelationalOperator } from '../src/parser/lexer';
+import {
+  tokenize,
+  TokenKind,
+  Token,
+  tokenTypeName,
+  isDateFunction,
+  isAggregateFunction,
+  isLocationFunction,
+  isFieldsFunction,
+  isOtherFunction,
+  isFieldsFunctionParam,
+  isUsingScopeEnumeration,
+  isIdentifierLike,
+  isNumberLiteral,
+  isDecimalNumberLiteral,
+  isIntegerNumberLiteral,
+  isRelationalOperator,
+} from '../src/parser/lexer';
 import { testCases as parserTestCases } from './test-cases';
 import { testCases as validationTestCases } from './test-cases-for-is-valid';
 
@@ -22,7 +39,6 @@ function texts(tokens: Token[]): string[] {
 // ===========================================================================
 
 describe('Lexer - basic tokens', () => {
-
   it('should produce EOF for empty input', () => {
     const tokens = tokenize('');
     expect(tokens).toHaveLength(1);
@@ -37,23 +53,13 @@ describe('Lexer - basic tokens', () => {
 
   it('should tokenize a simple SELECT query', () => {
     const tokens = tokenize('SELECT Id FROM Account');
-    expect(kinds(tokens)).toEqual([
-      TokenKind.SELECT,
-      TokenKind.IDENTIFIER,
-      TokenKind.FROM,
-      TokenKind.IDENTIFIER,
-    ]);
+    expect(kinds(tokens)).toEqual([TokenKind.SELECT, TokenKind.IDENTIFIER, TokenKind.FROM, TokenKind.IDENTIFIER]);
     expect(texts(tokens)).toEqual(['SELECT', 'Id', 'FROM', 'Account']);
   });
 
   it('should be case-insensitive for keywords', () => {
     const tokens = tokenize('select id from account');
-    expect(kinds(tokens)).toEqual([
-      TokenKind.SELECT,
-      TokenKind.IDENTIFIER,
-      TokenKind.FROM,
-      TokenKind.IDENTIFIER,
-    ]);
+    expect(kinds(tokens)).toEqual([TokenKind.SELECT, TokenKind.IDENTIFIER, TokenKind.FROM, TokenKind.IDENTIFIER]);
   });
 
   it('should preserve original text case', () => {
@@ -635,11 +641,7 @@ describe('Lexer - date N literals', () => {
 
   it('should tokenize LAST_N_DAYS:365 as three tokens', () => {
     const tokens = tokenize('LAST_N_DAYS:365');
-    expect(kinds(tokens)).toEqual([
-      TokenKind.LAST_N_DAYS,
-      TokenKind.COLON,
-      TokenKind.UNSIGNED_INTEGER,
-    ]);
+    expect(kinds(tokens)).toEqual([TokenKind.LAST_N_DAYS, TokenKind.COLON, TokenKind.UNSIGNED_INTEGER]);
   });
 });
 
@@ -649,9 +651,21 @@ describe('Lexer - date N literals', () => {
 
 describe('Lexer - function keywords', () => {
   it('should recognize date functions', () => {
-    const dateFns = ['CALENDAR_MONTH', 'CALENDAR_QUARTER', 'CALENDAR_YEAR', 'DAY_IN_MONTH',
-      'DAY_IN_WEEK', 'DAY_IN_YEAR', 'DAY_ONLY', 'FISCAL_MONTH', 'FISCAL_QUARTER',
-      'FISCAL_YEAR', 'HOUR_IN_DAY', 'WEEK_IN_MONTH', 'WEEK_IN_YEAR'];
+    const dateFns = [
+      'CALENDAR_MONTH',
+      'CALENDAR_QUARTER',
+      'CALENDAR_YEAR',
+      'DAY_IN_MONTH',
+      'DAY_IN_WEEK',
+      'DAY_IN_YEAR',
+      'DAY_ONLY',
+      'FISCAL_MONTH',
+      'FISCAL_QUARTER',
+      'FISCAL_YEAR',
+      'HOUR_IN_DAY',
+      'WEEK_IN_MONTH',
+      'WEEK_IN_YEAR',
+    ];
     dateFns.forEach(fn => {
       const tokens = tokenize(fn);
       expect(isDateFunction(tokens[0].kind)).toBe(true);
@@ -767,8 +781,8 @@ describe('Lexer - identifiers', () => {
 describe('Lexer - token positions', () => {
   it('should record correct start positions', () => {
     const tokens = tokenize('SELECT Id FROM Account');
-    expect(tokens[0].start).toBe(0);  // SELECT
-    expect(tokens[1].start).toBe(7);  // Id
+    expect(tokens[0].start).toBe(0); // SELECT
+    expect(tokens[1].start).toBe(7); // Id
     expect(tokens[2].start).toBe(10); // FROM
     expect(tokens[3].start).toBe(15); // Account
   });
@@ -904,8 +918,14 @@ describe('Lexer - complex queries', () => {
     const tokens = tokenize("SELECT Id FROM Contact WHERE Name LIKE 'A%'");
     const k = kinds(tokens);
     expect(k).toEqual([
-      TokenKind.SELECT, TokenKind.IDENTIFIER, TokenKind.FROM, TokenKind.IDENTIFIER,
-      TokenKind.WHERE, TokenKind.IDENTIFIER, TokenKind.LIKE, TokenKind.STRING_LITERAL,
+      TokenKind.SELECT,
+      TokenKind.IDENTIFIER,
+      TokenKind.FROM,
+      TokenKind.IDENTIFIER,
+      TokenKind.WHERE,
+      TokenKind.IDENTIFIER,
+      TokenKind.LIKE,
+      TokenKind.STRING_LITERAL,
     ]);
   });
 
@@ -913,10 +933,17 @@ describe('Lexer - complex queries', () => {
     const tokens = tokenize('SELECT LeadSource, COUNT(Name) FROM Lead GROUP BY LeadSource');
     const k = kinds(tokens);
     expect(k).toEqual([
-      TokenKind.SELECT, TokenKind.IDENTIFIER, TokenKind.COMMA,
-      TokenKind.COUNT, TokenKind.L_PAREN, TokenKind.IDENTIFIER, TokenKind.R_PAREN,
-      TokenKind.FROM, TokenKind.IDENTIFIER,
-      TokenKind.GROUP_BY, TokenKind.IDENTIFIER,
+      TokenKind.SELECT,
+      TokenKind.IDENTIFIER,
+      TokenKind.COMMA,
+      TokenKind.COUNT,
+      TokenKind.L_PAREN,
+      TokenKind.IDENTIFIER,
+      TokenKind.R_PAREN,
+      TokenKind.FROM,
+      TokenKind.IDENTIFIER,
+      TokenKind.GROUP_BY,
+      TokenKind.IDENTIFIER,
     ]);
   });
 
@@ -924,10 +951,17 @@ describe('Lexer - complex queries', () => {
     const tokens = tokenize('SELECT Name, (SELECT LastName FROM Contacts) FROM Account');
     const k = kinds(tokens);
     expect(k).toEqual([
-      TokenKind.SELECT, TokenKind.IDENTIFIER, TokenKind.COMMA,
-      TokenKind.L_PAREN, TokenKind.SELECT, TokenKind.IDENTIFIER,
-      TokenKind.FROM, TokenKind.IDENTIFIER, TokenKind.R_PAREN,
-      TokenKind.FROM, TokenKind.IDENTIFIER,
+      TokenKind.SELECT,
+      TokenKind.IDENTIFIER,
+      TokenKind.COMMA,
+      TokenKind.L_PAREN,
+      TokenKind.SELECT,
+      TokenKind.IDENTIFIER,
+      TokenKind.FROM,
+      TokenKind.IDENTIFIER,
+      TokenKind.R_PAREN,
+      TokenKind.FROM,
+      TokenKind.IDENTIFIER,
     ]);
   });
 
@@ -935,8 +969,15 @@ describe('Lexer - complex queries', () => {
     const tokens = tokenize('SELECT Name FROM Account ORDER BY Name DESC NULLS LAST');
     const k = kinds(tokens);
     expect(k).toEqual([
-      TokenKind.SELECT, TokenKind.IDENTIFIER, TokenKind.FROM, TokenKind.IDENTIFIER,
-      TokenKind.ORDER_BY, TokenKind.IDENTIFIER, TokenKind.DESC, TokenKind.NULLS, TokenKind.LAST,
+      TokenKind.SELECT,
+      TokenKind.IDENTIFIER,
+      TokenKind.FROM,
+      TokenKind.IDENTIFIER,
+      TokenKind.ORDER_BY,
+      TokenKind.IDENTIFIER,
+      TokenKind.DESC,
+      TokenKind.NULLS,
+      TokenKind.LAST,
     ]);
   });
 
@@ -944,12 +985,24 @@ describe('Lexer - complex queries', () => {
     const tokens = tokenize('SELECT Name, COUNT(Id) FROM Account GROUP BY Name HAVING COUNT(Id) > 1');
     const k = kinds(tokens);
     expect(k).toEqual([
-      TokenKind.SELECT, TokenKind.IDENTIFIER, TokenKind.COMMA,
-      TokenKind.COUNT, TokenKind.L_PAREN, TokenKind.IDENTIFIER, TokenKind.R_PAREN,
-      TokenKind.FROM, TokenKind.IDENTIFIER,
-      TokenKind.GROUP_BY, TokenKind.IDENTIFIER,
-      TokenKind.HAVING, TokenKind.COUNT, TokenKind.L_PAREN, TokenKind.IDENTIFIER, TokenKind.R_PAREN,
-      TokenKind.GREATER_THAN, TokenKind.UNSIGNED_INTEGER,
+      TokenKind.SELECT,
+      TokenKind.IDENTIFIER,
+      TokenKind.COMMA,
+      TokenKind.COUNT,
+      TokenKind.L_PAREN,
+      TokenKind.IDENTIFIER,
+      TokenKind.R_PAREN,
+      TokenKind.FROM,
+      TokenKind.IDENTIFIER,
+      TokenKind.GROUP_BY,
+      TokenKind.IDENTIFIER,
+      TokenKind.HAVING,
+      TokenKind.COUNT,
+      TokenKind.L_PAREN,
+      TokenKind.IDENTIFIER,
+      TokenKind.R_PAREN,
+      TokenKind.GREATER_THAN,
+      TokenKind.UNSIGNED_INTEGER,
     ]);
   });
 
@@ -957,10 +1010,19 @@ describe('Lexer - complex queries', () => {
     const tokens = tokenize("DISTANCE(Location, GEOLOCATION(37.775, -122.418), 'mi')");
     const k = kinds(tokens);
     expect(k).toEqual([
-      TokenKind.DISTANCE, TokenKind.L_PAREN, TokenKind.IDENTIFIER, TokenKind.COMMA,
-      TokenKind.GEOLOCATION, TokenKind.L_PAREN, TokenKind.UNSIGNED_DECIMAL, TokenKind.COMMA,
-      TokenKind.SIGNED_DECIMAL, TokenKind.R_PAREN, TokenKind.COMMA,
-      TokenKind.GEOLOCATION_UNIT, TokenKind.R_PAREN,
+      TokenKind.DISTANCE,
+      TokenKind.L_PAREN,
+      TokenKind.IDENTIFIER,
+      TokenKind.COMMA,
+      TokenKind.GEOLOCATION,
+      TokenKind.L_PAREN,
+      TokenKind.UNSIGNED_DECIMAL,
+      TokenKind.COMMA,
+      TokenKind.SIGNED_DECIMAL,
+      TokenKind.R_PAREN,
+      TokenKind.COMMA,
+      TokenKind.GEOLOCATION_UNIT,
+      TokenKind.R_PAREN,
     ]);
   });
 
@@ -968,8 +1030,12 @@ describe('Lexer - complex queries', () => {
     const tokens = tokenize('SELECT Name FROM Account WITH SECURITY_ENFORCED');
     const k = kinds(tokens);
     expect(k).toEqual([
-      TokenKind.SELECT, TokenKind.IDENTIFIER, TokenKind.FROM, TokenKind.IDENTIFIER,
-      TokenKind.WITH, TokenKind.SECURITY_ENFORCED,
+      TokenKind.SELECT,
+      TokenKind.IDENTIFIER,
+      TokenKind.FROM,
+      TokenKind.IDENTIFIER,
+      TokenKind.WITH,
+      TokenKind.SECURITY_ENFORCED,
     ]);
   });
 
@@ -988,9 +1054,15 @@ describe('Lexer - complex queries', () => {
     const tokens = tokenize('TYPEOF What WHEN Account THEN Phone ELSE Name END');
     const k = kinds(tokens);
     expect(k).toEqual([
-      TokenKind.TYPEOF, TokenKind.IDENTIFIER,
-      TokenKind.WHEN, TokenKind.IDENTIFIER, TokenKind.THEN, TokenKind.IDENTIFIER,
-      TokenKind.ELSE, TokenKind.IDENTIFIER, TokenKind.END,
+      TokenKind.TYPEOF,
+      TokenKind.IDENTIFIER,
+      TokenKind.WHEN,
+      TokenKind.IDENTIFIER,
+      TokenKind.THEN,
+      TokenKind.IDENTIFIER,
+      TokenKind.ELSE,
+      TokenKind.IDENTIFIER,
+      TokenKind.END,
     ]);
   });
 
@@ -1004,8 +1076,12 @@ describe('Lexer - complex queries', () => {
     const tokens = tokenize('GROUP BY ROLLUP(Status, LeadSource)');
     const k = kinds(tokens);
     expect(k).toEqual([
-      TokenKind.GROUP_BY, TokenKind.ROLLUP, TokenKind.L_PAREN,
-      TokenKind.IDENTIFIER, TokenKind.COMMA, TokenKind.IDENTIFIER,
+      TokenKind.GROUP_BY,
+      TokenKind.ROLLUP,
+      TokenKind.L_PAREN,
+      TokenKind.IDENTIFIER,
+      TokenKind.COMMA,
+      TokenKind.IDENTIFIER,
       TokenKind.R_PAREN,
     ]);
   });
@@ -1014,8 +1090,12 @@ describe('Lexer - complex queries', () => {
     const tokens = tokenize('FORMAT(MIN(closedate))');
     const k = kinds(tokens);
     expect(k).toEqual([
-      TokenKind.FORMAT, TokenKind.L_PAREN,
-      TokenKind.MIN, TokenKind.L_PAREN, TokenKind.IDENTIFIER, TokenKind.R_PAREN,
+      TokenKind.FORMAT,
+      TokenKind.L_PAREN,
+      TokenKind.MIN,
+      TokenKind.L_PAREN,
+      TokenKind.IDENTIFIER,
+      TokenKind.R_PAREN,
       TokenKind.R_PAREN,
     ]);
   });
@@ -1031,18 +1111,21 @@ describe('Lexer - complex queries', () => {
   it('should tokenize DATA CATEGORY with AT and ABOVE_OR_BELOW', () => {
     const tokens = tokenize('WITH DATA CATEGORY Product__c AT mobile_phones__c');
     const k = kinds(tokens);
-    expect(k).toEqual([
-      TokenKind.WITH, TokenKind.DATA_CATEGORY,
-      TokenKind.IDENTIFIER, TokenKind.AT, TokenKind.IDENTIFIER,
-    ]);
+    expect(k).toEqual([TokenKind.WITH, TokenKind.DATA_CATEGORY, TokenKind.IDENTIFIER, TokenKind.AT, TokenKind.IDENTIFIER]);
   });
 
   it('should tokenize datetime in WHERE clause', () => {
     const tokens = tokenize('WHERE LoginTime > 2010-09-20T22:16:30.000Z AND LoginTime < 2010-09-21');
     const k = kinds(tokens);
     expect(k).toEqual([
-      TokenKind.WHERE, TokenKind.IDENTIFIER, TokenKind.GREATER_THAN, TokenKind.DATETIME,
-      TokenKind.AND, TokenKind.IDENTIFIER, TokenKind.LESS_THAN, TokenKind.DATE_TOKEN,
+      TokenKind.WHERE,
+      TokenKind.IDENTIFIER,
+      TokenKind.GREATER_THAN,
+      TokenKind.DATETIME,
+      TokenKind.AND,
+      TokenKind.IDENTIFIER,
+      TokenKind.LESS_THAN,
+      TokenKind.DATE_TOKEN,
     ]);
   });
 
@@ -1050,8 +1133,14 @@ describe('Lexer - complex queries', () => {
     const tokens = tokenize("WHERE BillingState INCLUDES ('California','New York')");
     const k = kinds(tokens);
     expect(k).toEqual([
-      TokenKind.WHERE, TokenKind.IDENTIFIER, TokenKind.INCLUDES,
-      TokenKind.L_PAREN, TokenKind.STRING_LITERAL, TokenKind.COMMA, TokenKind.STRING_LITERAL, TokenKind.R_PAREN,
+      TokenKind.WHERE,
+      TokenKind.IDENTIFIER,
+      TokenKind.INCLUDES,
+      TokenKind.L_PAREN,
+      TokenKind.STRING_LITERAL,
+      TokenKind.COMMA,
+      TokenKind.STRING_LITERAL,
+      TokenKind.R_PAREN,
     ]);
   });
 
@@ -1072,14 +1161,11 @@ describe('Lexer - edge cases', () => {
   it('should handle COUNT() with no space before FROM', () => {
     const tokens = tokenize('SELECT COUNT()FROM Contact');
     const k = kinds(tokens);
-    expect(k).toEqual([
-      TokenKind.SELECT, TokenKind.COUNT, TokenKind.L_PAREN, TokenKind.R_PAREN,
-      TokenKind.FROM, TokenKind.IDENTIFIER,
-    ]);
+    expect(k).toEqual([TokenKind.SELECT, TokenKind.COUNT, TokenKind.L_PAREN, TokenKind.R_PAREN, TokenKind.FROM, TokenKind.IDENTIFIER]);
   });
 
   it('should throw on unexpected character', () => {
-    expect(() => tokenize('SELECT ~ FROM Account')).toThrow();
+    expect(() => tokenize('SELECT ~ FROM Account')).toThrow(/Unexpected character/);
   });
 
   it('should throw on lone !', () => {
@@ -1088,16 +1174,18 @@ describe('Lexer - edge cases', () => {
 
   it('should tokenize query with tabs and newlines', () => {
     const tokens = tokenize('SELECT\n\tId\n\tFROM\n\tAccount');
-    expect(kinds(tokens)).toEqual([
-      TokenKind.SELECT, TokenKind.IDENTIFIER, TokenKind.FROM, TokenKind.IDENTIFIER,
-    ]);
+    expect(kinds(tokens)).toEqual([TokenKind.SELECT, TokenKind.IDENTIFIER, TokenKind.FROM, TokenKind.IDENTIFIER]);
   });
 
   it('should handle multiple commas and parens', () => {
     const tokens = tokenize('(a, b, c)');
     expect(kinds(tokens)).toEqual([
-      TokenKind.L_PAREN, TokenKind.IDENTIFIER, TokenKind.COMMA,
-      TokenKind.IDENTIFIER, TokenKind.COMMA, TokenKind.IDENTIFIER,
+      TokenKind.L_PAREN,
+      TokenKind.IDENTIFIER,
+      TokenKind.COMMA,
+      TokenKind.IDENTIFIER,
+      TokenKind.COMMA,
+      TokenKind.IDENTIFIER,
       TokenKind.R_PAREN,
     ]);
   });
@@ -1109,30 +1197,22 @@ describe('Lexer - edge cases', () => {
 
   it('should handle FIELDS(ALL)', () => {
     const tokens = tokenize('FIELDS(ALL)');
-    expect(kinds(tokens)).toEqual([
-      TokenKind.FIELDS, TokenKind.L_PAREN, TokenKind.ALL, TokenKind.R_PAREN,
-    ]);
+    expect(kinds(tokens)).toEqual([TokenKind.FIELDS, TokenKind.L_PAREN, TokenKind.ALL, TokenKind.R_PAREN]);
   });
 
   it('should handle FIELDS(CUSTOM)', () => {
     const tokens = tokenize('FIELDS(CUSTOM)');
-    expect(kinds(tokens)).toEqual([
-      TokenKind.FIELDS, TokenKind.L_PAREN, TokenKind.CUSTOM, TokenKind.R_PAREN,
-    ]);
+    expect(kinds(tokens)).toEqual([TokenKind.FIELDS, TokenKind.L_PAREN, TokenKind.CUSTOM, TokenKind.R_PAREN]);
   });
 
   it('should handle FIELDS(STANDARD)', () => {
     const tokens = tokenize('FIELDS(STANDARD)');
-    expect(kinds(tokens)).toEqual([
-      TokenKind.FIELDS, TokenKind.L_PAREN, TokenKind.STANDARD, TokenKind.R_PAREN,
-    ]);
+    expect(kinds(tokens)).toEqual([TokenKind.FIELDS, TokenKind.L_PAREN, TokenKind.STANDARD, TokenKind.R_PAREN]);
   });
 
   it('should tokenize SELECT * FROM Account', () => {
     const tokens = tokenize('SELECT * FROM Account');
-    expect(kinds(tokens)).toEqual([
-      TokenKind.SELECT, TokenKind.ASTERISK, TokenKind.FROM, TokenKind.IDENTIFIER,
-    ]);
+    expect(kinds(tokens)).toEqual([TokenKind.SELECT, TokenKind.ASTERISK, TokenKind.FROM, TokenKind.IDENTIFIER]);
   });
 
   it('should handle dotted relationship paths with __r', () => {
@@ -1192,6 +1272,7 @@ describe('Lexer - invalid query test cases should not hang or crash unexpectedly
         expect(tokens[tokens.length - 1].kind).toBe(TokenKind.EOF);
       } catch (e) {
         // Lexer-level errors are also acceptable for invalid queries
+        // oxlint-disable-next-line vitest/no-conditional-expect -- either outcome is valid, so the assertion has to sit in the catch
         expect(e).toBeInstanceOf(Error);
       }
     });
