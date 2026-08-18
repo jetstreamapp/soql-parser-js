@@ -85,6 +85,16 @@ All notable changes to this project will be documented in this file.
 - **Corrected the dependency note in the README** — it still described `commander`, `chevrotain` and
   `lodash.get` as dependencies of the library. Those were removed in 8.0.0; the package has no
   runtime dependencies
+- **Corrected the Node compatibility claim in the README** — it advertised Node 11 or higher with an
+  [Array.flat](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/flat)
+  polyfill, which stopped being true once the parser started using `??` and `?.`. Those are ES2020
+  syntax and esbuild's `es2022` target leaves them in the published bundles, so Node 11 cannot run
+  them whatever is polyfilled. The stated minimum is now Node 20, the oldest release still in
+  maintenance, rather than the bare syntax floor of Node 14 — the library is only ever tested on
+  supported releases
+- **`CONTRIBUTING.md` sent contributors to a `master` branch that does not exist** — it asked them to
+  branch from and open pull requests against `master`, where the default branch is `main`. The
+  contribution guidelines link in the README pointed at the same dead branch
 - **Everything oxlint flagged, with no behavior change to the published library.** A redundant double
   negation, a `? true : false` ternary, an unused local and an unused catch binding were removed;
   `new Array(n).fill(' ').join('')` in `pad()` became `' '.repeat(n)`; and three shadowed variables

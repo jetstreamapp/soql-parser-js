@@ -32,7 +32,7 @@ Migrating from version 2 to version 3? [Check out the changelog](CHANGELOG.md#30
 
 ## Compatibility
 
-**Node**: version 11 or higher, or a polyfill for [Array.flat](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/flat)  
+**Node**: version 20 or higher  
 **Browser**: Tested in all modern browsers, may not work with older browsers.
 
 This library has no runtime dependencies - the parser, composer, formatter and cli are all self contained.
@@ -1118,4 +1118,4 @@ export interface WithDataCategoryCondition {
 
 ## Contributing
 
-All contributions are welcome on the project. Please read the [contribution guidelines](https://github.com/jetstreamapp/soql-parser-js/blob/master/CONTRIBUTING.md).
+All contributions are welcome on the project. Please read the [contribution guidelines](https://github.com/jetstreamapp/soql-parser-js/blob/main/CONTRIBUTING.md).
