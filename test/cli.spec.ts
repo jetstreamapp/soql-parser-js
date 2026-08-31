@@ -5,9 +5,9 @@ import { resolve } from 'path';
 const CLI_PATH = resolve(__dirname, '../dist/cli/index.js');
 
 function run(args: string[]): Promise<{ stdout: string; stderr: string; exitCode: number }> {
-  return new Promise(resolve => {
+  return new Promise(resolveResult => {
     execFile('node', [CLI_PATH, ...args], (error, stdout, stderr) => {
-      resolve({
+      resolveResult({
         stdout: stdout.toString(),
         stderr: stderr.toString(),
         exitCode: error ? ((error as any).code ?? 1) : 0,

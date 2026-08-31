@@ -169,13 +169,7 @@ export type LiteralType =
   | 'DATE_N_LITERAL'
   | 'APEX_BIND_VARIABLE';
 export type FieldType =
-  | Field
-  | FieldWithAlias
-  | FieldFunctionExpression
-  | FieldRelationship
-  | FieldRelationshipWithAlias
-  | FieldSubquery
-  | FieldTypeOf;
+  Field | FieldWithAlias | FieldFunctionExpression | FieldRelationship | FieldRelationshipWithAlias | FieldSubquery | FieldTypeOf;
 export type OrderByCriterion = 'ASC' | 'DESC';
 export type NullsOrder = 'FIRST' | 'LAST';
 export type GroupByType = 'CUBE' | 'ROLLUP';
@@ -314,11 +308,7 @@ export interface WhereClauseWithRightCondition extends WhereClauseWithoutOperato
 }
 
 export type Condition =
-  | ValueCondition
-  | ValueWithDateLiteralCondition
-  | ValueWithDateNLiteralCondition
-  | ValueFunctionCondition
-  | NegationCondition;
+  ValueCondition | ValueWithDateLiteralCondition | ValueWithDateNLiteralCondition | ValueFunctionCondition | NegationCondition;
 
 export type ConditionWithValueQuery = Condition | ValueQueryCondition;
 

@@ -1,0 +1,56 @@
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  // typescript, unicorn, oxc and import apply everywhere. vitest is enabled only in the test
+  // override below, so its rules cannot fire on source files.
+  "plugins": ["typescript", "unicorn", "oxc", "import"],
+  // correctness, suspicious and perf catch defects, so they are errors. style and pedantic stay
+  // off because oxfmt owns layout and the rest is opinion rather than defect detection.
+  // restriction and nursery are off by default, listed so the whole policy reads in one place.
+  "categories": {
+    "correctness": "error",
+    "suspicious": "error",
+    "perf": "error",
+    "pedantic": "off",
+    "style": "off",
+    "restriction": "off",
+    "nursery": "off"
+  },
+  "rules": {
+    // The lexer caches its token-name table in a module-private `_tokenTypeNames`; the
+    // leading underscore is the marker that it is not part of the public surface.
+    "no-underscore-dangle": "off",
+    // False positive on the paren-matching loops in the parser: the loop condition reads
+    // `parenCount.right`, which the body increments. The rule only tracks reassignment of
+    // the binding itself, not mutation of its properties.
+    "no-unmodified-loop-condition": "off"
+  },
+  "overrides": [
+    {
+      // The release and npm-publish-wait scripts poll external state; each iteration must
+      // observe the result of the previous one, so the sequential awaits are deliberate.
+      "files": ["scripts/**"],
+      "rules": {
+        "no-await-in-loop": "off"
+      }
+    },
+    {
+      "files": ["test/**/*.ts"],
+      "plugins": ["vitest"],
+      "rules": {
+        // test/test.spec.ts keeps a block of commented-out `describe.only` scaffolding, kept
+        // deliberately so a single failing test case can be isolated while debugging.
+        "vitest/no-commented-out-tests": "off",
+        // The suites are table driven - `describe(name)` and `it(\`test case ${n}\`)` take their
+        // titles from the test-case data, which this rule wants to be string literals.
+        "vitest/valid-title": "off"
+      }
+    }
+  ],
+  "ignorePatterns": [
+    "dist/**",
+    "tmp/**",
+    // docs/ is a separate npm project (Docusaurus, React) with its own dependencies and
+    // conventions - run its own tooling from inside that directory.
+    "docs/**"
+  ]
+}

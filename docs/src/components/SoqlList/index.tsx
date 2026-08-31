@@ -27,7 +27,8 @@ export default function SoqlList({ isOpen = true, selected, onSelected, onToggle
               className={clsx(styles.listItem, { [styles.selected]: selected === query })}
               onClick={() => onSelected(query)}
             >
-              <Highlight code={query} language="sql" classNames={{ pre: 'wrap-text' }} />
+              {/* These are pickers, not output - a copy button would cover the wrapped query text */}
+              <Highlight code={query} language="sql" showCopyButton={false} classNames={{ pre: 'wrap-text' }} />
             </li>
           ))}
         </ul>

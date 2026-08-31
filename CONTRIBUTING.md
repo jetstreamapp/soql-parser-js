@@ -9,11 +9,12 @@ Any feature that is part of the core project and does not deviate from what the 
 # Making Changes
 
 - Fork the repository
-- Create a new branch from master (usually) and with a meaningful name for your changes
+- Create a new branch from main (usually) and with a meaningful name for your changes
 - Make your changes
 - Commit and push your change
-  - Please run `prettier` on all modified files prior to opening your pull request
-- open a Pull Request for the master branch
+  - Run `npm run format` before committing - a pre-commit hook rejects unformatted files
+    (`npm install` enables it, and `npm run format:check` reports without writing)
+- open a Pull Request for the main branch
 
 # Re-generating parse after grammar change
 

@@ -2,7 +2,11 @@ import { describe, expect, it } from 'vitest';
 import { FieldSubquery } from '../src';
 import * as utils from '../src/api/public-utils';
 import { testCases } from './public-utils-test-data';
-const lodashGet = require('lodash.get');
+
+/** Resolves a dot separated path against an object, e.g. `Owner.Profile.Name` */
+function getPath(obj: unknown, path: string): unknown {
+  return path.split('.').reduce<any>((value, key) => (value == null ? undefined : value[key]), obj);
+}
 
 describe('getField', () => {
   it('Should compose Field', () => {
@@ -179,7 +183,7 @@ describe('getField', () => {
     });
   });
   it('Should fail with invalid combination of data', () => {
-    expect(() => utils.getField({})).toThrow();
+    expect(() => utils.getField({})).toThrow(TypeError);
     expect(() => utils.getField({ objectPrefix: 'foo' } as any)).toThrow(TypeError);
     expect(() => utils.getField({ parameters: 'foo' } as any)).toThrow(TypeError);
     expect(() => utils.getField({ parameters: ['foo'] } as any)).toThrow(TypeError);
@@ -206,7 +210,7 @@ describe('getFlattenedFields', () => {
       const fields = utils.getFlattenedFields(testCase.query);
       expect(fields).toEqual(testCase.expectedFields);
       fields.forEach(field => {
-        expect(lodashGet(testCase.sfdcObj, field)).not.toBeUndefined();
+        expect(getPath(testCase.sfdcObj, field)).not.toBeUndefined();
       });
     });
   });

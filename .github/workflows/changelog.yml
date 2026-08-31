@@ -1,0 +1,69 @@
+name: Changelog
+
+# A pull request that changes published code has to record it in CHANGELOG.md, because the
+# [Unreleased] section is what decides the next version (scripts/derive-increment.mjs). Without
+# this check the release is the first place anyone notices a missing or unclassifiable entry,
+# and by then the version has already been derived. Label a pull request `skip-changelog` to
+# opt out.
+#
+# This file is shared verbatim with jetstreamapp/sf-formula-parser - keep the two copies in
+# sync when changing it.
+
+on:
+  pull_request:
+    # labeled/unlabeled so adding `skip-changelog` re-runs the check rather than leaving a
+    # stale failure behind.
+    types: [opened, synchronize, reopened, labeled, unlabeled]
+
+permissions:
+  contents: read
+
+jobs:
+  changelog:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          # The whole history, so the pull request's base commit is available to diff against.
+          fetch-depth: 0
+
+      - name: Require a changelog entry for published code
+        env:
+          BASE: ${{ github.event.pull_request.base.sha }}
+          LABELS: ${{ toJSON(github.event.pull_request.labels.*.name) }}
+        run: |
+          # The label is checked here rather than in a job-level `if` so the check always
+          # reports a result. A skipped job is awkward to require in branch protection.
+          if printf '%s' "$LABELS" | grep -q '"skip-changelog"'; then
+            echo "skip-changelog label present - not requiring a changelog entry."
+            exit 0
+          fi
+
+          # Three dots: everything on this branch since it diverged from the base.
+          changed=$(git diff --name-only "$BASE"...HEAD)
+
+          # Only published code counts. Tooling and docs changes do not force an entry;
+          # cli/ and bin/ do not exist in every repo sharing this file, which is harmless.
+          if ! printf '%s\n' "$changed" | grep -qE '^(src|cli|bin)/'; then
+            echo "No published code changed - no changelog entry required."
+            exit 0
+          fi
+
+          # -x so docs/CHANGELOG.md does not satisfy the root one.
+          if ! printf '%s\n' "$changed" | grep -qx 'CHANGELOG.md'; then
+            echo "This pull request changes published code but does not touch CHANGELOG.md." >&2
+            echo "" >&2
+            echo "  Add an entry under '## [Unreleased]' using one of the seven headings:" >&2
+            echo "  Breaking Changes, Added, Deprecated, Changed, Removed, Fixed, Security." >&2
+            echo "" >&2
+            echo "  That section decides the next version, so an unrecorded change ships" >&2
+            echo "  unversioned. If this genuinely needs no entry, add the 'skip-changelog' label." >&2
+            exit 1
+          fi
+
+          # Touching the file is not enough - prove the section classifies to a bump, which is
+          # exactly what the release will do. Uses only Node builtins, so no install needed.
+          echo "CHANGELOG.md was updated. Checking that [Unreleased] derives a version:"
+          node scripts/derive-increment.mjs --explain

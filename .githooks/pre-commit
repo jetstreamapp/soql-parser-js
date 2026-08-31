@@ -1,0 +1,62 @@
+#!/bin/sh
+# Blocks a commit when any staged file is unformatted or fails lint.
+#
+# oxfmt is the formatter (.oxfmtrc.json); oxlint is the linter (.oxlintrc.json). Wired up by
+# the "prepare" script in package.json (git config core.hooksPath .githooks) on npm install.
+# Emergency bypass: git commit --no-verify
+#
+# This file is shared verbatim with jetstreamapp/sf-formula-parser - keep the two copies in
+# sync when changing it.
+
+OXFMT="./node_modules/.bin/oxfmt"
+OXLINT="./node_modules/.bin/oxlint"
+
+for bin in "$OXFMT" "$OXLINT"; do
+  if [ ! -x "$bin" ]; then
+    echo "pre-commit: $bin not found - run 'npm install' first." >&2
+    exit 1
+  fi
+done
+
+# Added, copied, modified and renamed paths only - deleted paths are not there to check.
+staged=$(git diff --cached --name-only --diff-filter=ACMR)
+
+if [ -z "$staged" ]; then
+  exit 0
+fi
+
+# Both tools skip what they do not handle, so the whole staged list goes to each rather than
+# being filtered by extension here, which would drift as the tools gain file types.
+# --no-error-on-unmatched-pattern: a staged list with nothing for that tool is not an error.
+# The list is newline delimited, so convert to NUL to keep paths containing spaces intact.
+check() {
+  printf '%s\n' "$staged" | tr '\n' '\0' | xargs -0 "$@" --no-error-on-unmatched-pattern
+}
+
+# Both run even when the first fails, so one commit attempt reports everything to fix.
+status=0
+
+if ! check "$OXFMT" --check; then
+  cat >&2 <<'MSG'
+
+Commit blocked: the staged files listed above are not formatted.
+
+  npm run format     # format the repo
+  git add -u         # re-stage the result
+MSG
+  status=1
+fi
+
+if ! check "$OXLINT"; then
+  cat >&2 <<'MSG'
+
+Commit blocked: the staged files listed above have lint errors.
+
+  npm run lint       # review the full report
+  npm run lint:fix   # apply the fixes oxlint can make automatically
+  git add -u         # re-stage the result
+MSG
+  status=1
+fi
+
+exit $status

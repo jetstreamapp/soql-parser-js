@@ -32,10 +32,10 @@ Migrating from version 2 to version 3? [Check out the changelog](CHANGELOG.md#30
 
 ## Compatibility
 
-**Node**: version 11 or higher, or a polyfill for [Array.flat](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/flat)  
+**Node**: version 20 or higher  
 **Browser**: Tested in all modern browsers, may not work with older browsers.
 
-The **commander** dependency is only required for the cli, the other two dependencies **chevrotain** and **lodash.get** are bundled with the non-cli code.
+This library has no runtime dependencies - the parser, composer, formatter and cli are all self contained.
 
 ## Quick Start
 
@@ -677,7 +677,7 @@ export default class MyComponent extends LightningElement {
 }
 ```
 
-<!-- LWC event bindings must be unquoted (onclick={handleClick}); prettier would add quotes -->
+<!-- LWC event bindings must be unquoted (onclick={handleClick}); the formatter would add quotes. oxfmt honors prettier-ignore in markdown -->
 <!-- prettier-ignore -->
 ```html
 <template>
@@ -870,13 +870,7 @@ export type LiteralType =
   | 'DATE_N_LITERAL'
   | 'APEX_BIND_VARIABLE';
 export type FieldType =
-  | Field
-  | FieldWithAlias
-  | FieldFunctionExpression
-  | FieldRelationship
-  | FieldRelationshipWithAlias
-  | FieldSubquery
-  | FieldTypeOf;
+  Field | FieldWithAlias | FieldFunctionExpression | FieldRelationship | FieldRelationshipWithAlias | FieldSubquery | FieldTypeOf;
 export type OrderByCriterion = 'ASC' | 'DESC';
 export type NullsOrder = 'FIRST' | 'LAST';
 export type GroupByType = 'CUBE' | 'ROLLUP';
@@ -1015,11 +1009,7 @@ export interface WhereClauseWithRightCondition extends WhereClauseWithoutOperato
 }
 
 export type Condition =
-  | ValueCondition
-  | ValueWithDateLiteralCondition
-  | ValueWithDateNLiteralCondition
-  | ValueFunctionCondition
-  | NegationCondition;
+  ValueCondition | ValueWithDateLiteralCondition | ValueWithDateNLiteralCondition | ValueFunctionCondition | NegationCondition;
 
 export type ConditionWithValueQuery = Condition | ValueQueryCondition;
 
@@ -1128,4 +1118,4 @@ export interface WithDataCategoryCondition {
 
 ## Contributing
 
-All contributions are welcome on the project. Please read the [contribution guidelines](https://github.com/jetstreamapp/soql-parser-js/blob/master/CONTRIBUTING.md).
+All contributions are welcome on the project. Please read the [contribution guidelines](https://github.com/jetstreamapp/soql-parser-js/blob/main/CONTRIBUTING.md).

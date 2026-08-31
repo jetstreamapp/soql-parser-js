@@ -207,21 +207,21 @@ describe('calls individual compose methods', () => {
     const soql = `SELECT Id FROM Account WHERE Name = 'Foo'`;
     const parsedQuery = parseQuery(soql);
     const composer = new Compose(parsedQuery, { autoCompose: false });
-    const whereClause = composer.parseWhereOrHavingClause(parsedQuery.where);
+    const whereClause = composer.parseWhereOrHavingClause(parsedQuery.where!);
     expect(whereClause).toEqual(`Name = 'Foo'`);
   });
   it(`Should compose the where clause properly with semi-join`, () => {
     const soql = `SELECT Id FROM Account WHERE Id IN (SELECT AccountId FROM Contact WHERE Name LIKE '%foo%')`;
     const parsedQuery = parseQuery(soql);
     const composer = new Compose(parsedQuery, { autoCompose: false });
-    const whereClause = composer.parseWhereOrHavingClause(parsedQuery.where);
+    const whereClause = composer.parseWhereOrHavingClause(parsedQuery.where!);
     expect(whereClause).toEqual(`Id IN (SELECT AccountId FROM Contact WHERE Name LIKE '%foo%')`);
   });
   it(`Should compose the where clause with formatting`, () => {
     const soql = `SELECT Id FROM Account WHERE Name = 'Foo' AND (Id = '1' OR Id IN (SELECT AccountId FROM Contact))`;
     const parsedQuery = parseQuery(soql);
     const composer = new Compose(parsedQuery, { autoCompose: false, format: true });
-    const whereClause = composer.parseWhereOrHavingClause(parsedQuery.where);
+    const whereClause = composer.parseWhereOrHavingClause(parsedQuery.where!);
     expect(whereClause).toEqual(
       `Name = 'Foo'\n\tAND (\n\t\tId = '1'\n\t\tOR Id IN (\n\t\t\tSELECT AccountId\n\t\t\tFROM Contact\n\t\t)\n\t)`,
     );

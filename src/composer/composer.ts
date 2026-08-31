@@ -50,7 +50,7 @@ export function composeQuery(soql: Query, config: Partial<SoqlComposeConfig> = {
     return '';
   }
   config = config || {};
-  config.format = config.format ? true : false;
+  config.format = Boolean(config.format);
   if (config.logging) {
     console.time('composer');
     console.log('Composing Query:', soql);

@@ -1456,7 +1456,7 @@ class SoqlParser {
   }
 
   private parseCubeOrRollupFunction(name: string): FunctionExp {
-    const fnToken = this.advance();
+    this.advance();
     const params = this.parseFunctionExpression(false);
     return {
       functionName: name,
@@ -1648,7 +1648,7 @@ export function isQueryValid(soql: string, options?: ParseQueryConfig): boolean 
   try {
     parseQuery(soql, options);
     return true;
-  } catch (e) {
+  } catch {
     return false;
   }
 }

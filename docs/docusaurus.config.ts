@@ -14,6 +14,23 @@ const config: Config = {
   onBrokenLinks: 'throw',
   favicon: 'img/favicon.ico',
 
+  future: {
+    v4: true,
+  },
+
+  plugins: [
+    [
+      'docusaurus-plugin-llms',
+      {
+        title: 'soql-parser-js',
+        description:
+          'A JavaScript and TypeScript library for parsing, composing and formatting Salesforce SOQL queries. Parses a query into a typed Query data structure, composes that structure back into SOQL, validates syntax, and formats queries. Zero runtime dependencies.',
+        generateLLMsTxt: true,
+        generateLLMsFullTxt: true,
+      },
+    ],
+  ],
+
   markdown: {
     hooks: {
       onBrokenMarkdownImages: 'throw',
@@ -90,6 +107,14 @@ const config: Config = {
             {
               label: 'GitHub',
               href: 'https://github.com/jetstreamapp/soql-parser-js',
+            },
+            {
+              label: 'llms.txt (summary)',
+              href: 'https://soql-parser-js.getjetstream.app/llms.txt',
+            },
+            {
+              label: 'llms-full.txt (complete)',
+              href: 'https://soql-parser-js.getjetstream.app/llms-full.txt',
             },
           ],
         },
