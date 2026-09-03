@@ -4,6 +4,15 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Added
+
+- **Added SOQL `FORMULA()` support in `WHERE` clauses** — arithmetic expressions containing
+  two field references joined by `+` or `-` are parsed into a typed nested AST, validated against
+  the supported grammar, and reconstructed by both the composer and formatter. `FORMULA()` is
+  rejected in unsupported clauses and remains dependency-free. An `isFormulaFunction()` type guard
+  narrows a condition's `fn` to `FormulaFunctionExp`, and composing a malformed formula AST throws
+  rather than emitting invalid SOQL.
+
 ### Changed
 
 - **Replaced Prettier with [oxfmt](https://oxc.rs/docs/guide/usage/formatter.html) and added

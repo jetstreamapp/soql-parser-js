@@ -52,6 +52,42 @@ isQueryValid('SELECT Id, Foo FROM Baz'); // true
 isQueryValid('SELECT Id Foo FROM Baz'); // false
 ```
 
+### `FORMULA()` in `WHERE`
+
+The parser supports Salesforce's arithmetic [`FORMULA()` WHERE function](https://developer.salesforce.com/docs/atlas.en-us.264.0.soql_sosl.meta/soql_sosl/sforce_api_calls_soql_select_formula.htm).
+The quoted expression must contain two field references separated by `+` or `-`; `FORMULA()` is not
+accepted in `SELECT`, `HAVING`, `GROUP BY`, or `ORDER BY`. Only comparison operators may follow it,
+and Apex bind variables are rejected because Salesforce does not support them after `FORMULA()`.
+Salesforce ships this function as a Beta feature as of Summer '26.
+
+```typescript
+const query = parseQuery("SELECT Id FROM Opportunity WHERE FORMULA('Amount - ExpectedRevenue') > 100");
+
+console.log(query.where?.left);
+// {
+//   fn: {
+//     functionName: 'FORMULA',
+//     parameters: ["'Amount - ExpectedRevenue'"],
+//     rawValue: "FORMULA('Amount - ExpectedRevenue')",
+//     formula: {
+//       type: 'BinaryExpression',
+//       operator: '-',
+//       left: { type: 'FieldReference', parts: ['Amount'] },
+//       right: { type: 'FieldReference', parts: ['ExpectedRevenue'] },
+//     },
+//   },
+//   operator: '>',
+//   value: '100',
+//   literalType: 'INTEGER',
+// }
+```
+
+The nested formula AST is also accepted by `composeQuery()`. When `formula` is present, `FORMULA()`
+is rebuilt from that AST and `rawValue` is ignored; a `FORMULA` function without `formula` composes
+from `rawValue` like any other function. `parameters` holds the normalized expression and `rawValue`
+keeps the original text. The parser validates the expression's shape, but it cannot validate
+metadata-dependent Salesforce rules such as field data types or type compatibility.
+
 ## Available Features
 
 | Function     | Description                                            | Arguments                                  |
@@ -79,6 +115,7 @@ Many of hte utility functions are provided to easily determine the shape of spec
 | stripComments                           | Removes comments from a query string without otherwise modifying it. Returns the original string as-is if there are no comments. See [Comments in queries](#comments-in-queries).                                       | soql: `string`                                                              |
 | isSubquery                              | Returns `true` if the data passed in is a subquery.                                                                                                                                                                     | query: `Query \| Subquery`                                                  |
 | isFieldSubquery                         | Returns `true` if the data passed in is a FieldSubquery.                                                                                                                                                                | value: `any`                                                                |
+| isFormulaFunction                       | Returns `true` if the value is a `FORMULA()` function that carries a nested `formula` AST.                                                                                                                              | value: `FunctionExp \| FormulaFunctionExp`                                  |
 | isWhereClauseWithRightCondition         | Returns `true` if the value passed in is a `WhereClause` with an `operator` and `right` property                                                                                                                        | value: `WhereClause`                                                        |
 | isHavingClauseWithRightCondition        | Returns `true` if the value passed in is a `HavingClause` with an `operator` and `right` property                                                                                                                       | value: `HavingClause`                                                       |
 | isWhereOrHavingClauseWithRightCondition | Returns `true` if the value passed in is a `WhereClause` or `HavingClause` with an `operator` and `right` property                                                                                                      | value: `WhereClause \| HavingClause`                                        |
@@ -1047,7 +1084,7 @@ export interface ValueQueryCondition extends OptionalParentheses {
 }
 
 export interface ValueFunctionCondition extends OptionalParentheses {
-  fn: FunctionExp;
+  fn: FunctionExp | FormulaFunctionExp; // narrow with isFormulaFunction(); checking functionName alone does not narrow the type
   operator: Operator;
   value: string | string[];
   literalType?: LiteralType | LiteralType[];
@@ -1103,6 +1140,25 @@ export interface FunctionExp {
   alias?: string;
   parameters?: (string | FunctionExp)[]; // only used for compose fields if useRawValueForFn=false, will be populated if SOQL is parsed
   isAggregateFn?: boolean; // not used for compose, will be populated if SOQL is parsed
+}
+
+export type FormulaArithmeticOperator = '+' | '-';
+
+export interface FormulaFieldReference {
+  type: 'FieldReference';
+  parts: string[];
+}
+
+export interface FormulaBinaryExpression {
+  type: 'BinaryExpression';
+  operator: FormulaArithmeticOperator;
+  left: FormulaFieldReference;
+  right: FormulaFieldReference;
+}
+
+export interface FormulaFunctionExp extends FunctionExp {
+  functionName: 'FORMULA';
+  formula: FormulaBinaryExpression;
 }
 
 export interface WithDataCategoryClause {

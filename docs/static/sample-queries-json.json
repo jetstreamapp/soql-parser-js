@@ -144,5 +144,8 @@
   "SELECT Id // real comment\nFROM Account /* real\ncomment */ WHERE Website = 'http://example.com' AND Name = 'a /* fake */ // comment'",
   "SELECT Id FROM Account WHERE Name = 'a' WITH SECURITY_ENFORCED ORDER BY Name LIMIT 5",
   "SELECT COUNT(Id) FROM Account WITH USER_MODE GROUP BY Name HAVING COUNT(Id) > 1",
-  "SELECT Title FROM KnowledgeArticleVersion WHERE PublishStatus = 'online' WITH DATA CATEGORY Geography__c AT usa__c ORDER BY Title OFFSET 10"
+  "SELECT Title FROM KnowledgeArticleVersion WHERE PublishStatus = 'online' WITH DATA CATEGORY Geography__c AT usa__c ORDER BY Title OFFSET 10",
+  "SELECT Id FROM Opportunity WHERE FORMULA('Amount - ExpectedRevenue') > 100",
+  "SELECT Id FROM Opportunity WHERE FORMULA('CloseDate - CreatedDate') > 10",
+  "SELECT Id FROM Opportunity WHERE formula('Account.Amount__c+ExpectedRevenue')<=500"
 ]

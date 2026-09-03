@@ -504,5 +504,31 @@ WHERE
     soql: `SELECT Id // single-line comment\nFROM Account /* multi-line\ncomment */ WHERE Name = 'has // and /* inside */'`,
     isValid: true,
   },
+  { testCase: 168, soql: `SELECT Id FROM Opportunity WHERE FORMULA('Amount + ExpectedRevenue') > 100`, isValid: true },
+  { testCase: 169, soql: `SELECT FORMULA('Amount + ExpectedRevenue') FROM Opportunity`, isValid: false },
+  {
+    testCase: 170,
+    soql: `SELECT COUNT(Id) FROM Opportunity GROUP BY Id HAVING FORMULA('Amount + ExpectedRevenue') > 100`,
+    isValid: false,
+  },
+  { testCase: 171, soql: `SELECT Id FROM Opportunity GROUP BY FORMULA('Amount + ExpectedRevenue')`, isValid: false },
+  { testCase: 172, soql: `SELECT Id FROM Opportunity ORDER BY FORMULA('Amount + ExpectedRevenue')`, isValid: false },
+  { testCase: 173, soql: `SELECT Id FROM Opportunity WHERE FORMULA(Amount + ExpectedRevenue) > 100`, isValid: false },
+  { testCase: 174, soql: `SELECT Id FROM Opportunity WHERE FORMULA() > 100`, isValid: false },
+  { testCase: 175, soql: `SELECT Id FROM Opportunity WHERE FORMULA('Amount + ExpectedRevenue', 'Other') > 100`, isValid: false },
+  { testCase: 176, soql: `SELECT Id FROM Opportunity WHERE FORMULA('Amount * ExpectedRevenue') > 100`, isValid: false },
+  { testCase: 177, soql: `SELECT Id FROM Opportunity WHERE FORMULA('Amount + ExpectedRevenue - Cost') > 100`, isValid: false },
+  { testCase: 178, soql: `SELECT Id FROM Opportunity WHERE FORMULA('100 + ExpectedRevenue') > 100`, isValid: false },
+  { testCase: 179, soql: `SELECT Id FROM Opportunity WHERE FORMULA('ABS(Amount) + ExpectedRevenue') > 100`, isValid: false },
+  { testCase: 180, soql: `SELECT Id FROM Opportunity WHERE FORMULA('(Amount + ExpectedRevenue)') > 100`, isValid: false },
+  { testCase: 181, soql: `SELECT Id FROM Opportunity WHERE FORMULA('Amount + ExpectedRevenue') LIKE '100'`, isValid: false },
+  { testCase: 182, soql: `SELECT Id FROM Opportunity WHERE FORMULA('Amount + ExpectedRevenue') IN (100)`, isValid: false },
+  // Salesforce: "Apex bind variables are not supported in FORMULA() WHERE for this release" (verified live, Summer '26 / v67)
+  {
+    testCase: 183,
+    soql: `SELECT Id FROM Opportunity WHERE FORMULA('Amount + ExpectedRevenue') > :minimumAmount`,
+    options: { allowApexBindVariables: true },
+    isValid: false,
+  },
 ];
 export default testCases;

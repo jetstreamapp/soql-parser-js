@@ -9,6 +9,7 @@ import {
   FieldType,
   FieldTypeOf,
   FieldTypeOfCondition,
+  FormulaFunctionExp,
   FunctionExp,
   GroupByClause,
   HavingClause,
@@ -20,6 +21,7 @@ import {
   WhereClause,
   WithDataCategoryClause,
 } from '../api/api-models';
+import { isFormulaFunction, renderFormulaExpression } from '../formula';
 import * as utils from '../utils';
 
 /**
@@ -33,10 +35,16 @@ import * as utils from '../utils';
  */
 
 /**
- * Renders a function expression, e.g. `COUNT(Id) total`.
- * Prefers `rawValue` when populated, otherwise builds the text from `functionName` and `parameters`.
+ * Renders a function expression, e.g. `COUNT(Id) total` or `FORMULA('Amount - Cost')`.
+ * A FORMULA that carries a nested `formula` AST is always rebuilt from that AST and its `rawValue` is ignored.
+ * Every other function, including a FORMULA without `formula`, prefers `rawValue` when populated,
+ * otherwise it is built from `functionName` and `parameters`.
  */
-export function renderFn(fn: FunctionExp): string {
+export function renderFn(fn: FunctionExp | FormulaFunctionExp): string {
+  if (isFormulaFunction(fn)) {
+    return `FORMULA('${renderFormulaExpression(fn.formula)}')`;
+  }
+
   let output: string;
   if (fn.rawValue) {
     output = fn.rawValue;

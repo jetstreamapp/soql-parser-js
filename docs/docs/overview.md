@@ -140,6 +140,43 @@ const soql = composeQuery({
 });
 ```
 
+## `FORMULA()` in `WHERE`
+
+The parser supports Salesforce's arithmetic [`FORMULA()` WHERE function](https://developer.salesforce.com/docs/atlas.en-us.264.0.soql_sosl.meta/soql_sosl/sforce_api_calls_soql_select_formula.htm).
+The quoted expression must contain two field references separated by `+` or `-`. The expression is
+parsed into its own nested AST rather than retained as a raw string. Only comparison operators may
+follow `FORMULA()`, and Apex bind variables are rejected because Salesforce does not support them
+there. Salesforce ships this function as a Beta feature as of Summer '26.
+
+```typescript
+const query = parseQuery("SELECT Id FROM Opportunity WHERE FORMULA('Amount - ExpectedRevenue') > 100");
+
+console.log(query.where?.left);
+// {
+//   fn: {
+//     functionName: 'FORMULA',
+//     parameters: ["'Amount - ExpectedRevenue'"],
+//     rawValue: "FORMULA('Amount - ExpectedRevenue')",
+//     formula: {
+//       type: 'BinaryExpression',
+//       operator: '-',
+//       left: { type: 'FieldReference', parts: ['Amount'] },
+//       right: { type: 'FieldReference', parts: ['ExpectedRevenue'] },
+//     },
+//   },
+//   operator: '>',
+//   value: '100',
+//   literalType: 'INTEGER',
+// }
+```
+
+`FORMULA()` is only accepted in `WHERE`, not in `SELECT`, `HAVING`, `GROUP BY`, or `ORDER BY`. When
+`formula` is present the composer rebuilds `FORMULA()` from that AST and ignores `rawValue`; a
+`FORMULA` function without `formula` composes from `rawValue` like any other function. `parameters`
+holds the normalized expression and `rawValue` keeps the original text. The parser validates the
+arithmetic shape but cannot check Salesforce metadata-dependent restrictions, including field data
+types and compatibility.
+
 ## Contributing
 
 All contributions are welcome on the project. Please read the [contribution guidelines](https://github.com/jetstreamapp/soql-parser-js/blob/master/CONTRIBUTING.md).
@@ -346,7 +383,7 @@ export interface ValueQueryCondition extends OptionalParentheses {
 }
 
 export interface ValueFunctionCondition extends OptionalParentheses {
-  fn: FunctionExp;
+  fn: FunctionExp | FormulaFunctionExp; // narrow with isFormulaFunction(); checking functionName alone does not narrow the type
   operator: Operator;
   value: string | string[];
   literalType?: LiteralType | LiteralType[];
@@ -402,6 +439,25 @@ export interface FunctionExp {
   alias?: string;
   parameters?: (string | FunctionExp)[]; // only used for compose fields if useRawValueForFn=false, will be populated if SOQL is parsed
   isAggregateFn?: boolean; // not used for compose, will be populated if SOQL is parsed
+}
+
+export type FormulaArithmeticOperator = '+' | '-';
+
+export interface FormulaFieldReference {
+  type: 'FieldReference';
+  parts: string[];
+}
+
+export interface FormulaBinaryExpression {
+  type: 'BinaryExpression';
+  operator: FormulaArithmeticOperator;
+  left: FormulaFieldReference;
+  right: FormulaFieldReference;
+}
+
+export interface FormulaFunctionExp extends FunctionExp {
+  functionName: 'FORMULA';
+  formula: FormulaBinaryExpression;
 }
 
 export interface WithDataCategoryClause {

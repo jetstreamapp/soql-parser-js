@@ -699,6 +699,15 @@ describe('Lexer - function keywords', () => {
     });
   });
 
+  it('should recognize FORMULA as a dedicated case-insensitive function token', () => {
+    for (const fn of ['FORMULA', 'formula', 'Formula']) {
+      const tokens = tokenize(fn);
+      expect(tokens[0].kind).toBe(TokenKind.FORMULA);
+      expect(isOtherFunction(tokens[0].kind)).toBe(false);
+      expect(isIdentifierLike(tokens[0].kind)).toBe(true);
+    }
+  });
+
   it('should recognize FIELDS function params', () => {
     ['ALL', 'CUSTOM', 'STANDARD'].forEach(fn => {
       const tokens = tokenize(fn);

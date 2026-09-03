@@ -221,7 +221,7 @@ export interface ValueQueryCondition extends OptionalParentheses {
 }
 
 export interface ValueFunctionCondition extends OptionalParentheses {
-  fn: FunctionExp;
+  fn: FunctionExp | FormulaFunctionExp;
   operator: Operator;
   value: string | string[];
   literalType?: LiteralType | LiteralType[];
@@ -273,6 +273,25 @@ export interface FunctionExp {
   alias?: string;
   parameters?: (string | FunctionExp)[]; // only used for compose fields if useRawValueForFn=false, will be populated if SOQL is parsed
   isAggregateFn?: boolean; // not used for compose, will be populated if SOQL is parsed
+}
+
+export type FormulaArithmeticOperator = '+' | '-';
+
+export interface FormulaFieldReference {
+  type: 'FieldReference';
+  parts: string[];
+}
+
+export interface FormulaBinaryExpression {
+  type: 'BinaryExpression';
+  operator: FormulaArithmeticOperator;
+  left: FormulaFieldReference;
+  right: FormulaFieldReference;
+}
+
+export interface FormulaFunctionExp extends FunctionExp {
+  functionName: 'FORMULA';
+  formula: FormulaBinaryExpression;
 }
 
 export interface WithDataCategoryClause {
