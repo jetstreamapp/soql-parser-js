@@ -2889,6 +2889,85 @@ export const testCases: TestCase[] = [
       offset: 10,
     },
   },
+  {
+    testCase: 146,
+    soql: "SELECT Id FROM Opportunity WHERE FORMULA('Amount - ExpectedRevenue') > 100",
+    output: {
+      fields: [{ type: 'Field', field: 'Id' }],
+      sObject: 'Opportunity',
+      where: {
+        left: {
+          fn: {
+            functionName: 'FORMULA',
+            parameters: ["'Amount - ExpectedRevenue'"],
+            rawValue: "FORMULA('Amount - ExpectedRevenue')",
+            formula: {
+              type: 'BinaryExpression',
+              operator: '-',
+              left: { type: 'FieldReference', parts: ['Amount'] },
+              right: { type: 'FieldReference', parts: ['ExpectedRevenue'] },
+            },
+          },
+          operator: '>',
+          value: '100',
+          literalType: 'INTEGER',
+        },
+      },
+    },
+  },
+  {
+    testCase: 147,
+    soql: "SELECT Id FROM Opportunity WHERE FORMULA('CloseDate - CreatedDate') > 10",
+    output: {
+      fields: [{ type: 'Field', field: 'Id' }],
+      sObject: 'Opportunity',
+      where: {
+        left: {
+          fn: {
+            functionName: 'FORMULA',
+            parameters: ["'CloseDate - CreatedDate'"],
+            rawValue: "FORMULA('CloseDate - CreatedDate')",
+            formula: {
+              type: 'BinaryExpression',
+              operator: '-',
+              left: { type: 'FieldReference', parts: ['CloseDate'] },
+              right: { type: 'FieldReference', parts: ['CreatedDate'] },
+            },
+          },
+          operator: '>',
+          value: '10',
+          literalType: 'INTEGER',
+        },
+      },
+    },
+  },
+  {
+    testCase: 148,
+    soql: "SELECT Id FROM Opportunity WHERE formula('Account.Amount__c+ExpectedRevenue')<=500",
+    soqlComposed: "SELECT Id FROM Opportunity WHERE FORMULA('Account.Amount__c + ExpectedRevenue') <= 500",
+    output: {
+      fields: [{ type: 'Field', field: 'Id' }],
+      sObject: 'Opportunity',
+      where: {
+        left: {
+          fn: {
+            functionName: 'FORMULA',
+            parameters: ["'Account.Amount__c + ExpectedRevenue'"],
+            rawValue: "formula('Account.Amount__c+ExpectedRevenue')",
+            formula: {
+              type: 'BinaryExpression',
+              operator: '+',
+              left: { type: 'FieldReference', parts: ['Account', 'Amount__c'] },
+              right: { type: 'FieldReference', parts: ['ExpectedRevenue'] },
+            },
+          },
+          operator: '<=',
+          value: '500',
+          literalType: 'INTEGER',
+        },
+      },
+    },
+  },
 ];
 
 export default testCases;

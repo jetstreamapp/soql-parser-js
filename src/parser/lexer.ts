@@ -95,6 +95,9 @@ export enum TokenKind {
   CONVERT_CURRENCY,
   GROUPING,
 
+  // ---- WHERE-only functions ----
+  FORMULA,
+
   // ---- Fields function params ----
   ALL,
   CUSTOM,
@@ -258,6 +261,8 @@ export function isIdentifierLike(kind: TokenKind): boolean {
   if (kind === TokenKind.FIELDS) return true;
   // Other functions
   if (kind >= TokenKind.FORMAT && kind <= TokenKind.GROUPING) return true;
+  // WHERE-only functions
+  if (kind === TokenKind.FORMULA) return true;
   // Fields function params
   if (kind >= TokenKind.ALL && kind <= TokenKind.STANDARD) return true;
   // Date literals
@@ -389,6 +394,9 @@ const keywordMap = new Map<string, TokenKind>([
   ['CONVERTTIMEZONE', TokenKind.CONVERT_TIMEZONE],
   ['CONVERTCURRENCY', TokenKind.CONVERT_CURRENCY],
   ['GROUPING', TokenKind.GROUPING],
+
+  // WHERE-only functions
+  ['FORMULA', TokenKind.FORMULA],
 
   // Fields function params
   ['ALL', TokenKind.ALL],

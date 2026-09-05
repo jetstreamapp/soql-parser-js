@@ -24,12 +24,14 @@ import {
   isWhereClauseWithRightCondition,
   isWhereOrHavingClauseWithRightCondition,
 } from '../utils';
+import { isFormulaFunction } from '../formula';
 import * as SoqlModels from './api-models';
 
 // re-exported utils available as public API
 export {
   hasAlias,
   isFieldSubquery,
+  isFormulaFunction,
   isGroupByField,
   isGroupByFn,
   isHavingClauseWithRightCondition,

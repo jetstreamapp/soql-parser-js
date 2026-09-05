@@ -10,6 +10,7 @@ import {
   FieldTypeOfCondition,
   FieldWithAlias,
   ForClause,
+  FormulaFunctionExp,
   FunctionExp,
   GroupByClause,
   GroupSelector,
@@ -24,6 +25,7 @@ import {
   WhereClause,
   WithDataCategoryCondition,
 } from '../api/api-models';
+import { parseFormulaExpression, renderFormulaExpression } from '../formula';
 import {
   Token,
   TokenKind,
@@ -49,6 +51,9 @@ export interface ParseQueryConfig {
   ignoreParseErrors?: boolean;
   logErrors?: boolean;
 }
+
+// WHERE and HAVING share the condition grammar, but some functions (FORMULA, DISTANCE) are only valid in WHERE
+type ConditionContext = 'WHERE' | 'HAVING';
 
 // ---- Clause-starting keywords that cannot be aliases ----
 const CLAUSE_KEYWORDS = new Set<TokenKind>([
@@ -629,10 +634,10 @@ class SoqlParser {
 
   private parseWhereClause(): WhereClause {
     this.expect(TokenKind.WHERE);
-    return this.parseConditionExpressions(true, true);
+    return this.parseConditionExpressions('WHERE');
   }
 
-  private parseConditionExpressions(allowAggregateFn: boolean, allowLocationFn: boolean): WhereClause {
+  private parseConditionExpressions(context: ConditionContext): WhereClause {
     let expressionTree: WhereClause | undefined;
     let prevExpression: any;
     // Track paren balance to avoid consuming R_PARENs that belong to an outer context (e.g., subquery wrapper)
@@ -689,7 +694,7 @@ class SoqlParser {
       }
 
       // Parse the expression (LHS operator RHS)
-      currExpression.left = this.parseExpression(allowAggregateFn, allowLocationFn, parenCount);
+      currExpression.left = this.parseExpression(context, parenCount);
 
       if (!expressionTree) {
         expressionTree = baseExpression;
@@ -750,11 +755,7 @@ class SoqlParser {
   // Expression (WHERE/HAVING condition)
   // ====================================================================
 
-  private parseExpression(
-    allowAggregateFn: boolean,
-    allowLocationFn: boolean,
-    parenCount?: { left: number; right: number },
-  ): ConditionWithValueQuery {
+  private parseExpression(context: ConditionContext, parenCount?: { left: number; right: number }): ConditionWithValueQuery {
     // Count left parens
     let openParenCount = 0;
     while (this.check(TokenKind.L_PAREN) && !this.isSubqueryStart() && !this.isArrayExpressionStart()) {
@@ -763,15 +764,19 @@ class SoqlParser {
       if (parenCount) parenCount.left++;
     }
 
-    // Parse LHS: function or identifier
+    // Parse LHS: function or identifier. FORMULA and DISTANCE are only valid in WHERE
+    const inWhere = context === 'WHERE';
     let lhs: any;
     let isLhsFn = false;
 
-    if (allowAggregateFn && isAggregateFunction(this.peek().kind) && this.peekAt(1).kind === TokenKind.L_PAREN) {
+    if (inWhere && this.peek().kind === TokenKind.FORMULA && this.peekAt(1).kind === TokenKind.L_PAREN) {
+      lhs = this.parseFormulaFunction();
+      isLhsFn = true;
+    } else if (isAggregateFunction(this.peek().kind) && this.peekAt(1).kind === TokenKind.L_PAREN) {
       lhs = this.parseAggregateFunction(false);
       isLhsFn = true;
     } else if (
-      allowLocationFn &&
+      inWhere &&
       isLocationFunction(this.peek().kind) &&
       this.peek().kind === TokenKind.DISTANCE &&
       this.peekAt(1).kind === TokenKind.L_PAREN
@@ -1219,6 +1224,43 @@ class SoqlParser {
   // Functions
   // ====================================================================
 
+  /**
+   * Parses `FORMULA('<expression>')` and also validates the comparison that follows it:
+   * FORMULA() supports only comparison operators (no LIKE or set operators) and no Apex bind variables.
+   * Every comparison operator is a single token, so the RHS is already visible one token ahead.
+   */
+  private parseFormulaFunction(): FormulaFunctionExp {
+    const fnToken = this.expect(TokenKind.FORMULA);
+    this.expect(TokenKind.L_PAREN);
+    const expression = this.expect(TokenKind.STRING_LITERAL);
+    this.expect(TokenKind.R_PAREN);
+
+    const formula = parseFormulaExpression(expression.text.slice(1, -1));
+    if (!formula) {
+      throw this.error(
+        `Invalid FORMULA expression at position ${expression.start + 1}. Expected two field references separated by + or -.`,
+      );
+    }
+
+    const op = this.peek();
+    if (!isRelationalOperator(op.kind)) {
+      throw this.error(`Expected comparison operator after FORMULA but found ${TokenKind[op.kind]} ("${op.text}") at position ${op.start}`);
+    }
+    // Salesforce rejects binds here: "Apex bind variables are not supported in FORMULA() WHERE for this release" (verified live, Summer '26 / v67)
+    const rhs = this.peekAt(1);
+    if (rhs.kind === TokenKind.COLON) {
+      throw this.error(`Expected value after FORMULA comparison but found COLON (":") at position ${rhs.start}`);
+    }
+
+    return {
+      functionName: 'FORMULA',
+      // parameters holds the normalized expression so a query and its formatted output parse to the same AST; rawValue keeps the source text
+      parameters: [`'${renderFormulaExpression(formula)}'`],
+      rawValue: `${fnToken.text}(${expression.text})`,
+      formula,
+    };
+  }
+
   // Parse any function type, used in SELECT clause function identifier context
   private parseAnyFunction(includeType: boolean): FunctionExp | FieldFunctionExpression {
     const t = this.peek();
@@ -1471,8 +1513,8 @@ class SoqlParser {
 
   private parseHavingClause(): HavingClause {
     this.expect(TokenKind.HAVING);
-    // HAVING uses the same condition expression logic as WHERE, with aggregate functions allowed but no location functions
-    return this.parseConditionExpressions(true, false) as any as HavingClause;
+    // HAVING uses the same condition expression logic as WHERE, but FORMULA and location functions are not allowed
+    return this.parseConditionExpressions('HAVING') as any as HavingClause;
   }
 
   // ====================================================================

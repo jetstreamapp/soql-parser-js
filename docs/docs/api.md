@@ -105,6 +105,7 @@ These are used internally in the compose function but can be used to aid in proc
 - `hasAlias(value)`
 - `isSubquery(value)`
 - `isFieldSubquery(value)`
+- `isFormulaFunction(value)`
 - `isWhereClauseWithRightCondition(value)`
 - `isHavingClauseWithRightCondition(value)`
 - `isWhereOrHavingClauseWithRightCondition(value)`
