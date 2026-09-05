@@ -4,6 +4,8 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [8.1.0] - 2026-09-05
+
 ### Added
 
 - **Added SOQL `FORMULA()` support in `WHERE` clauses** — arithmetic expressions containing
@@ -1141,6 +1143,7 @@ export interface FunctionExp {
   - `function isSubquery(query: Query | Subquery): query is Subquery`
   - Look at the README and refer to the unit tests for example usage.
 
-[Unreleased]: https://github.com/jetstreamapp/soql-parser-js/compare/8.0.0...HEAD
+[Unreleased]: https://github.com/jetstreamapp/soql-parser-js/compare/8.1.0...HEAD
+[8.1.0]: https://github.com/jetstreamapp/soql-parser-js/compare/8.0.0...8.1.0
 [8.0.0]: https://github.com/jetstreamapp/soql-parser-js/compare/7.4.1...8.0.0
 [7.4.1]: https://github.com/jetstreamapp/soql-parser-js/compare/7.4.0...7.4.1
