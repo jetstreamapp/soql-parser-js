@@ -18,7 +18,7 @@
   "dependencies": {
     "@docusaurus/core": "^3.10.2",
     "@docusaurus/preset-classic": "^3.10.2",
-    "@jetstreamapp/soql-parser-js": "^8.0.0",
+    "@jetstreamapp/soql-parser-js": "^8.1.0",
     "@mdx-js/react": "^3.1.1",
     "clsx": "^2.1.1",
     "docusaurus-plugin-llms": "^0.5.1",
