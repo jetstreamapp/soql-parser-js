@@ -7,7 +7,7 @@ export interface QueryInputProps {
   onChange: (value: string) => void;
 }
 
-export default function QueryInput({ queryObj, onChange }: QueryInputProps): JSX.Element {
+export default function QueryInput({ queryObj, onChange }: QueryInputProps): React.JSX.Element {
   return (
     <div>
       <label className="label">

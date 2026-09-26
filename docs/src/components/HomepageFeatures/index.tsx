@@ -6,7 +6,7 @@ import { Highlight } from '../Utilities/Highlight';
 type FeatureItem = {
   title: string;
   icon: string;
-  description: JSX.Element;
+  description: React.JSX.Element;
 };
 
 const exampleSoql = `SELECT Name
@@ -122,7 +122,7 @@ function Feature({ title, icon, description }: FeatureItem) {
   );
 }
 
-export default function HomepageFeatures(): JSX.Element {
+export default function HomepageFeatures(): React.JSX.Element {
   return (
     <section className={styles.features}>
       <div className="container">

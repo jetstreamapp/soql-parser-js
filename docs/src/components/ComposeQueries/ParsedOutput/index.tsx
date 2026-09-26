@@ -5,7 +5,7 @@ export interface ParsedOutputProps {
   query: string;
 }
 
-export default function ParsedOutput({ query }: ParsedOutputProps): JSX.Element {
+export default function ParsedOutput({ query }: ParsedOutputProps): React.JSX.Element {
   return (
     <div className="">
       {query && (

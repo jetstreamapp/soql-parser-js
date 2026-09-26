@@ -2,7 +2,12 @@
   // This file is not used in compilation. It is here just for a nice editor experience.
   "extends": "@docusaurus/tsconfig",
   "compilerOptions": {
-    "baseUrl": ".",
+    // TypeScript 7 removed `baseUrl`, which @docusaurus/tsconfig still sets. Clear it, and redeclare
+    // `paths` so `@site/*` resolves from this directory rather than from the base config's.
+    "baseUrl": null,
+    "paths": {
+      "@site/*": ["./*"]
+    },
     "resolveJsonModule": true
   }
 }
