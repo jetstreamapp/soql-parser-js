@@ -13,7 +13,7 @@ export interface SoqlListProps {
   onToggleOpen: () => void;
 }
 
-export default function SoqlList({ isOpen = true, selected, onSelected, onToggleOpen }: SoqlListProps): JSX.Element {
+export default function SoqlList({ isOpen = true, selected, onSelected, onToggleOpen }: SoqlListProps): React.JSX.Element {
   return (
     <div className={clsx(styles.container, { [styles.collapsed]: !isOpen })}>
       <button className={styles.collapseIcon} onClick={onToggleOpen} title="Toggle sidebar">

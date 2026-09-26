@@ -1,6 +1,6 @@
 import { performance } from 'perf_hooks';
 import { describe, expect, it } from 'vitest';
-import testCases from './test-cases';
+import { testCases } from './test-cases';
 
 // SKIPPED -
 // describe.only('parse queries', () => {

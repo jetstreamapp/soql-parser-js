@@ -11,7 +11,7 @@ export interface TabsProps {
   }[];
 }
 
-export default function Tabs({ initialTab, className, tabs = [] }: TabsProps): JSX.Element {
+export default function Tabs({ initialTab, className, tabs = [] }: TabsProps): React.JSX.Element {
   const [activeTab, setActiveTab] = useState(initialTab || tabs[0]?.id);
 
   return (

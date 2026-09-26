@@ -4,6 +4,22 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Changed
+
+- **Upgraded dependencies** — Vitest 5 (with `@vitest/coverage-v8` 5), oxfmt 0.70, oxlint 1.85,
+  `@types/node` 26 and the latest release-it, `@release-it/keep-a-changelog` and tsx, plus React
+  19.3 and `docusaurus-plugin-llms` 0.6 in the docs site, which also moves onto the published 8.1.0
+  of the library. No changes to the published library. oxlint 1.85 reports default-importing a
+  module whose default export is also a named export (`import(no-named-as-default)`), so four test
+  files now import `testCases` by name. Both lockfiles moved to lockfile v3 and had their transitive
+  dependencies refreshed, clearing 9 of the docs site's `npm audit` findings; the remaining 24 come
+  from versions pinned by Docusaurus and `docusaurus-plugin-llms` themselves. The plugin upgrade also
+  nests each page's headings under that page's title in `llms-full.txt`
+- **The docs site's `npm run typecheck` passes again.** It had stopped at TS5102 since the move to
+  TypeScript 7, which removed the `baseUrl` that `@docusaurus/tsconfig` still sets, and that hid the
+  errors behind it: React 19 dropped the global `JSX` namespace, so components now return
+  `React.JSX.Element`, and the playground narrows a caught parse error before reading its message
+
 ## [8.1.0] - 2026-09-05
 
 ### Added

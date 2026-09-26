@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { composeQuery, parseQuery } from '../src';
-import testCases from './test-cases-for-partial-parse';
+import { testCases } from './test-cases-for-partial-parse';
 import { removeComposeOnlyFields } from './test-utils';
 
 const replacements = [{ matching: / last /i, replace: ' LAST ' }];

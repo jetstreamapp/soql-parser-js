@@ -6,7 +6,7 @@ export interface ParsedOutputProps {
   query: string;
 }
 
-export default function ParsedOutput({ query }: ParsedOutputProps): JSX.Element {
+export default function ParsedOutput({ query }: ParsedOutputProps): React.JSX.Element {
   const [allowPartialQuery, setAllowPartialQuery] = useState(true);
   const [ignoreParseErrors, setIgnoreParseErrors] = useState(false);
   const [allowApexBindVariables, setAllowApexBindVariables] = useState(true);
@@ -21,7 +21,7 @@ export default function ParsedOutput({ query }: ParsedOutputProps): JSX.Element 
       }
     } catch (ex) {
       setParsedQuery(null);
-      setInvalidMessage(ex.message);
+      setInvalidMessage(ex instanceof Error ? ex.message : String(ex));
     }
   }, [query, allowPartialQuery, ignoreParseErrors, allowApexBindVariables]);
 
@@ -50,7 +50,7 @@ export default function ParsedOutput({ query }: ParsedOutputProps): JSX.Element 
           </label>
         </div>
       </fieldset>
-      {(parsedQuery || invalidMessage) && (
+      {code && (
         <>
           <div className="label">Output</div>
           <Highlight code={code} language="json" />

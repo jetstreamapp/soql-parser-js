@@ -7,7 +7,7 @@ export interface SoqlInputProps {
   onChange: (value: string) => void;
 }
 
-export default function SoqlInput({ soql, onChange }: SoqlInputProps): JSX.Element {
+export default function SoqlInput({ soql, onChange }: SoqlInputProps): React.JSX.Element {
   return (
     <div>
       <label className="label">

@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { composeQuery, formatQuery, FormatOptions, isQueryValid, parseQuery } from '../src';
-import testCases from './test-cases';
+import { testCases } from './test-cases';
 import { removeComposeOnlyFields } from './test-utils';
 
 /**

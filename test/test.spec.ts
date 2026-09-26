@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { Compose, composeQuery, formatQuery, parseQuery, Query } from '../src';
 import { isQueryValid } from '../src/parser/parser';
-import testCases from './test-cases';
+import { testCases } from './test-cases';
 import testCasesForComposeStandAlone from './test-cases-compose';
 import testCasesForFormat from './test-cases-for-format';
 import testCasesForIsValid from './test-cases-for-is-valid';
