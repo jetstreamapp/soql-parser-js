@@ -4,6 +4,18 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Changed
+
+- **Upgraded dependencies** — Vitest 5 (with `@vitest/coverage-v8` 5), oxfmt 0.70, oxlint 1.85,
+  `@types/node` 26 and the latest release-it, `@release-it/keep-a-changelog` and tsx, plus React
+  19.3 and `docusaurus-plugin-llms` 0.6 in the docs site, which also moves onto the published 8.1.0
+  of the library. No changes to the published library. oxlint 1.85 reports default-importing a
+  module whose default export is also a named export (`import(no-named-as-default)`), so four test
+  files now import `testCases` by name. Both lockfiles moved to lockfile v3 and had their transitive
+  dependencies refreshed, clearing 9 of the docs site's `npm audit` findings; the remaining 24 come
+  from versions pinned by Docusaurus and `docusaurus-plugin-llms` themselves. The plugin upgrade also
+  nests each page's headings under that page's title in `llms-full.txt`
+
 ## [8.1.0] - 2026-09-05
 
 ### Added

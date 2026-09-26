@@ -61,16 +61,16 @@
     "README.md"
   ],
   "devDependencies": {
-    "@release-it/keep-a-changelog": "^8.0.0",
-    "@types/node": "^25.5.0",
-    "@vitest/coverage-v8": "^4.1.10",
+    "@release-it/keep-a-changelog": "^8.0.1",
+    "@types/node": "^26.6.3",
+    "@vitest/coverage-v8": "^5.0.2",
     "esbuild": "^0.28.2",
-    "oxfmt": "^0.63.0",
-    "oxlint": "^1.78.0",
-    "release-it": "^21.0.2",
-    "tsx": "^4.23.12",
+    "oxfmt": "^0.70.0",
+    "oxlint": "^1.85.0",
+    "release-it": "^21.1.0",
+    "tsx": "^4.23.15",
     "typescript": "^7.0.2",
-    "vitest": "^4.1.10"
+    "vitest": "^5.0.2"
   },
   "keywords": [
     "soql",
