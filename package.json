@@ -62,15 +62,15 @@
   ],
   "devDependencies": {
     "@release-it/keep-a-changelog": "^8.0.1",
-    "@types/node": "^26.6.3",
-    "@vitest/coverage-v8": "^5.0.2",
+    "@types/node": "^26.6.4",
+    "@vitest/coverage-v8": "^5.0.3",
     "esbuild": "^0.28.2",
-    "oxfmt": "^0.70.0",
-    "oxlint": "^1.85.0",
+    "oxfmt": "^0.72.0",
+    "oxlint": "^1.87.0",
     "release-it": "^21.1.0",
     "tsx": "^4.23.15",
     "typescript": "^7.0.2",
-    "vitest": "^5.0.2"
+    "vitest": "^5.0.3"
   },
   "keywords": [
     "soql",

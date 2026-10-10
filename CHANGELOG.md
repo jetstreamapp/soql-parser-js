@@ -4,6 +4,13 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Changed
+
+- **Upgraded dependencies** — oxfmt 0.72, oxlint 1.87, Vitest 5.0.3 (with `@vitest/coverage-v8`) and
+  `@types/node` 26.6.4, with refreshed transitive dependencies in both lockfiles. No changes to the
+  published library. oxfmt 0.72 now breaks long union types onto one member per line, which
+  reformats two type listings in the README and the docs overview
+
 ## [8.1.1] - 2026-09-26
 
 ### Changed
