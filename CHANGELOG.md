@@ -4,6 +4,8 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [8.1.2] - 2026-10-10
+
 ### Changed
 
 - **Upgraded dependencies** — oxfmt 0.72, oxlint 1.87, Vitest 5.0.3 (with `@vitest/coverage-v8`) and
@@ -1168,7 +1170,8 @@ export interface FunctionExp {
   - `function isSubquery(query: Query | Subquery): query is Subquery`
   - Look at the README and refer to the unit tests for example usage.
 
-[Unreleased]: https://github.com/jetstreamapp/soql-parser-js/compare/8.1.1...HEAD
+[Unreleased]: https://github.com/jetstreamapp/soql-parser-js/compare/8.1.2...HEAD
+[8.1.2]: https://github.com/jetstreamapp/soql-parser-js/compare/8.1.1...8.1.2
 [8.1.1]: https://github.com/jetstreamapp/soql-parser-js/compare/8.1.0...8.1.1
 [8.1.0]: https://github.com/jetstreamapp/soql-parser-js/compare/8.0.0...8.1.0
 [8.0.0]: https://github.com/jetstreamapp/soql-parser-js/compare/7.4.1...8.0.0
