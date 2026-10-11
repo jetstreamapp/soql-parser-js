@@ -24,12 +24,17 @@ done
 # exactly what the commit will contain, so a file formatted on disk but never re-staged cannot
 # slip through, and unstaged edits cannot block a clean commit. git points GIT_INDEX_FILE at the
 # right index for `commit -a` and `commit <path>` too, and checkout-index honours it. Every
-# tracked file is exported, so the whole codebase is checked, not only the files being changed.
+# tracked file is exported, so the whole codebase is checked, not only the files being changed;
+# --ignore-skip-worktree-bits includes paths a sparse checkout or `update-index --skip-worktree`
+# leaves out of the working tree.
 snapshot=$(mktemp -d "${TMPDIR:-/tmp}/pre-commit.XXXXXX") || exit 1
+# A relative TMPDIR yields a relative path, which the EXIT trap would resolve from inside the
+# snapshot after the cd below, leaving it behind - anchor it to where git ran the hook.
+case $snapshot in /*) ;; *) snapshot="$PWD/$snapshot" ;; esac
 trap 'rm -rf "$snapshot"' EXIT
 trap 'exit 1' HUP INT TERM
 
-git -C "$root" checkout-index --all --prefix="$snapshot/" || exit 1
+git -C "$root" checkout-index --all --ignore-skip-worktree-bits --prefix="$snapshot/" || exit 1
 
 # Some lint rules resolve imports, so the snapshot shares the installed dependencies.
 ln -s "$root/node_modules" "$snapshot/node_modules" || exit 1
