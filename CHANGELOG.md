@@ -4,6 +4,20 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Changed
+
+- **Cleared the `npm audit` findings that upstream pins were holding open.** Both `package.json`
+  files now carry an `overrides` block for transitive dependencies whose parent asks for a
+  vulnerable range even though a patched release exists. At the root, `get-uri` (reached through
+  release-it, `proxy-agent` and `pac-proxy-agent`) pins `basic-ftp` 5, so it is overridden to
+  6.2.1+ and the root audit is clean. In the docs site, `docusaurus-plugin-llms` pins `minimatch`
+  and `yaml` exactly (overridden to 9.0.7+ and 2.8.3+), `sockjs` gets `uuid` 11, `argparse` 2
+  replaces the js-yaml 3 CLI-only dependency that pulled in `sprintf-js`, and
+  `postcss-selector-parser` 7.1.6+, `serialize-javascript` 7.0.5+ and `tinypool` 2.1.2+ replace the
+  majors Docusaurus 3.10 still resolves. That takes the docs audit from 52 findings to 29, all of
+  which trace back to a single `braces` advisory that has no patched release yet. No changes to the
+  published library.
+
 ## [8.1.3] - 2026-10-31
 
 ### Security

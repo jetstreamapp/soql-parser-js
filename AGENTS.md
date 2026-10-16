@@ -4,6 +4,19 @@
 
 Use conventional commit style messages.
 
+## Dependency overrides
+
+Both `package.json` files carry an `overrides` block whose only job is to clear `npm audit` findings
+that an upstream pin holds open: a dependency asking for a vulnerable range when a patched release
+already exists. Every entry is temporary. When upgrading dependencies, check whether each override
+is still needed by removing it, reinstalling and re-running `npm audit`, and drop the ones upstream
+has caught up on.
+
+Scope an override to its parent (`"sockjs": { "uuid": "^11.1.1" }`) when only that dependent should
+move; a top-level key applies to every copy in the tree. A nested key only reaches direct children
+reliably: `"gray-matter": { "argparse": ... }` did not apply to the `argparse` that js-yaml 3 asks
+for two levels down, which is why that override is top-level.
+
 ## Formatting
 
 **ALWAYS run `npm run format` after making any change.** This is not optional and applies to every
