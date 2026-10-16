@@ -72,6 +72,11 @@
     "typescript": "^7.0.2",
     "vitest": "^5.0.3"
   },
+  "overrides": {
+    "get-uri": {
+      "basic-ftp": "^6.2.1"
+    }
+  },
   "keywords": [
     "soql",
     "salesforce",
