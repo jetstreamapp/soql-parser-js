@@ -12,10 +12,15 @@ already exists. Every entry is temporary. When upgrading dependencies, check whe
 is still needed by removing it, reinstalling and re-running `npm audit`, and drop the ones upstream
 has caught up on.
 
-Scope an override to its parent (`"sockjs": { "uuid": "^11.1.1" }`) when only that dependent should
-move; a top-level key applies to every copy in the tree. A nested key only reaches direct children
-reliably: `"gray-matter": { "argparse": ... }` did not apply to the `argparse` that js-yaml 3 asks
-for two levels down, which is why that override is top-level.
+Key each override on the range the dependent asks for (`"uuid@8": "^11.1.1"`) rather than nesting
+it under a parent (`"sockjs": { "uuid": ... }`). A keyed rule only applies to edges whose requested
+range intersects the key, so every other dependent keeps the version it asked for. Nesting under a
+parent looks tighter but is not: once the overridden copy is hoisted, npm dedupes other dependents
+onto it too, which is how `"docusaurus-plugin-llms": { "minimatch": "^9.0.7" }` replaced
+serve-handler's own `minimatch@3.1.5` with 9.0.9 and left `docusaurus serve` calling an export that
+is no longer a function. A bare key (`"argparse": "^2.0.1"`) applies to every request of that
+package, which is fine when every dependent accepts the new range. After changing an override, check
+`npm ls <package>` for the dependents that should not have moved.
 
 ## Formatting
 

@@ -73,9 +73,7 @@
     "vitest": "^5.0.3"
   },
   "overrides": {
-    "get-uri": {
-      "basic-ftp": "^6.2.1"
-    }
+    "basic-ftp@5": "^6.2.1"
   },
   "keywords": [
     "soql",
