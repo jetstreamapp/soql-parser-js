@@ -14,7 +14,7 @@ Any feature that is part of the core project and does not deviate from what the 
 - Commit and push your change
   - Run `npm run format` before committing - a pre-commit hook rejects unformatted files
     (`npm install` enables it, and `npm run format:check` reports without writing)
-- open a Pull Request for the main branch
+- Open a pull request for the main branch
 
 # Re-generating parse after grammar change
 
