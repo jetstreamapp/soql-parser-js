@@ -4,6 +4,8 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [8.1.3] - 2026-10-31
+
 ### Security
 
 - **Fixed a SOQL injection through the already-quoted passthrough for composed `STRING` values.**
@@ -1182,7 +1184,8 @@ export interface FunctionExp {
   - `function isSubquery(query: Query | Subquery): query is Subquery`
   - Look at the README and refer to the unit tests for example usage.
 
-[Unreleased]: https://github.com/jetstreamapp/soql-parser-js/compare/8.1.2...HEAD
+[Unreleased]: https://github.com/jetstreamapp/soql-parser-js/compare/8.1.3...HEAD
+[8.1.3]: https://github.com/jetstreamapp/soql-parser-js/compare/8.1.2...8.1.3
 [8.1.2]: https://github.com/jetstreamapp/soql-parser-js/compare/8.1.1...8.1.2
 [8.1.1]: https://github.com/jetstreamapp/soql-parser-js/compare/8.1.0...8.1.1
 [8.1.0]: https://github.com/jetstreamapp/soql-parser-js/compare/8.0.0...8.1.0
