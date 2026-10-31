@@ -4,6 +4,18 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Security
+
+- **Fixed a SOQL injection through the already-quoted passthrough for composed `STRING` values.**
+  `composeQuery` and `formatQuery` returned any `STRING` value that merely started and ended with a
+  single quote unchanged, skipping escaping, so an untrusted value such as
+  `'x' OR Id != null OR Name = 'y'` ended the string literal early and added its own `WHERE`
+  conditions (also inside `IN` and `NOT IN` lists). A value is now passed through only when it is
+  exactly one well-formed string literal (every interior quote escaped, closing quote not escaped),
+  which still lets values from `parseQuery` round-trip. Any other value is escaped and wrapped.
+  Values that start and end with a quote but are not a single literal now come out escaped and
+  wrapped, for example `'a'b'` becomes `'\'a\'b\''`
+
 ## [8.1.2] - 2026-10-10
 
 ### Changed

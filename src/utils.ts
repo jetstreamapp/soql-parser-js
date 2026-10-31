@@ -267,12 +267,38 @@ function whereValueHelper(value: any, literalType?: LiteralType) {
 }
 
 /**
+ * True only when the whole value is exactly one well-formed SOQL string literal: it starts and
+ * ends with `'`, every interior `'` is escaped, and the closing `'` is not itself escaped.
+ * A value that merely starts and ends with a quote (e.g. `'x' OR Id != null OR Name = 'y'`) is not.
+ */
+function isSingleStringLiteral(value: string): boolean {
+  if (value.length < 2 || !value.startsWith("'") || !value.endsWith("'")) {
+    return false;
+  }
+  const last = value.length - 1;
+  for (let i = 1; i < last; i++) {
+    const ch = value[i];
+    if (ch === '\\') {
+      // The escaped character must stay inside the literal, so a backslash before the closing quote fails
+      if (i + 1 >= last) {
+        return false;
+      }
+      i++;
+    } else if (ch === "'") {
+      return false;
+    }
+  }
+  return true;
+}
+
+/**
  * Wraps a raw value as a SOQL string literal, escaping unescaped single quotes
- * and lone backslashes. If the value already starts with `'`, it is assumed to
- * be pre-quoted (e.g. from a parsed query) and is returned unchanged.
+ * and lone backslashes. If the value is already exactly one well-formed string literal
+ * (e.g. from a parsed query) it is returned unchanged; any other value, including one that only
+ * starts and ends with `'`, is escaped and wrapped so it cannot break out of the literal.
  */
 function wrapStringLiteral(value: any): string {
-  if (isString(value) && value.startsWith("'") && value.endsWith("'") && value.length >= 2) {
+  if (isString(value) && isSingleStringLiteral(value)) {
     return value;
   }
   const str = String(value ?? '');
