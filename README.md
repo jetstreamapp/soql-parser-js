@@ -392,7 +392,7 @@ const soqlQuery: Query = {
         field: 'StageName',
         operator: '=',
         value: 'Closed Won',
-        // literalType is optional, but if set to STRING and our value is not already wrapped in "'", they will be added
+        // literalType is optional, but if set to STRING and our value is not already a single well-formed string literal wrapped in "'", it will be escaped and wrapped
         // All other literalType values are ignored when composing a query
         literalType: 'STRING',
       },
