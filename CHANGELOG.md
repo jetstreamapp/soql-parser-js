@@ -10,14 +10,17 @@ All notable changes to this project will be documented in this file.
   files now carry an `overrides` block for transitive dependencies whose parent asks for a
   vulnerable range even though a patched release exists. At the root, `get-uri` (reached through
   release-it, `proxy-agent` and `pac-proxy-agent`) pins `basic-ftp` 5, so it is overridden to
-  6.2.1+ and the root audit is clean. In the docs site, `docusaurus-plugin-llms` pins `minimatch`
-  and `yaml` exactly (overridden to 9.0.7+ and 2.8.3+), `sockjs` gets `uuid` 11, `argparse` 2
-  replaces the js-yaml 3 CLI-only dependency that pulled in `sprintf-js`, and
-  `postcss-selector-parser` 7.1.6+, `serialize-javascript` 7.0.5+ and `tinypool` 2.1.2+ replace the
-  majors Docusaurus 3.10 still resolves. Each override is keyed on the range the dependent asks for
-  (`"minimatch@9": "^9.0.7"`) so it stops at that dependent, and serve-handler keeps its own
-  `minimatch` 3.1.5. That takes the docs audit from 52 findings to 29, all of which trace back to a
-  single `braces` advisory that has no patched release yet. No changes to the published library.
+  6.2.1+. The lockfile also moves release-it's `undici` to 7.30.1 for its batch of advisories, so
+  the root audit is clean. In the docs site, `docusaurus-plugin-llms` pins `minimatch` and `yaml`
+  exactly (overridden to 11.0.1+ and 2.8.3+), `sockjs` gets `uuid` 11, `argparse` 2 replaces the
+  js-yaml 3 CLI-only dependency that pulled in `sprintf-js`, and `postcss-selector-parser` 7.1.6+,
+  `serialize-javascript` 7.1.3+ and `tinypool` 2.1.2+ replace the majors Docusaurus 3.10 still
+  resolves. In-range lockfile bumps clear the `joi`, `follow-redirects`, `qs`, `body-parser` and
+  `fast-uri` advisories. Each override is keyed on the range the dependent asks for
+  (`"minimatch@9": "^11.0.1"`) so it stops at that dependent, and serve-handler keeps its own
+  `minimatch` 3.1.5. Two advisories have no patched release yet and remain: `minimatch` 3.1.5 in
+  serve-handler (only used by `docusaurus serve`) and a low-severity `deepmerge` advisory under
+  `@svgr/plugin-svgo`. No changes to the published library.
 
 ## [8.1.3] - 2026-10-31
 
