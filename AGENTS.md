@@ -4,6 +4,24 @@
 
 Use conventional commit style messages.
 
+## Dependency overrides
+
+Both `package.json` files carry an `overrides` block whose only job is to clear `npm audit` findings
+that an upstream pin holds open: a dependency asking for a vulnerable range when a patched release
+already exists. Every entry is temporary. When upgrading dependencies, check whether each override
+is still needed by removing it, reinstalling and re-running `npm audit`, and drop the ones upstream
+has caught up on.
+
+Key each override on the range the dependent asks for (`"uuid@8": "^11.1.1"`) rather than nesting
+it under a parent (`"sockjs": { "uuid": ... }`). A keyed rule only applies to edges whose requested
+range intersects the key, so every other dependent keeps the version it asked for. Nesting under a
+parent looks tighter but is not: once the overridden copy is hoisted, npm dedupes other dependents
+onto it too, which is how `"docusaurus-plugin-llms": { "minimatch": "^9.0.7" }` replaced
+serve-handler's own `minimatch@3.1.5` with 9.0.9 and left `docusaurus serve` calling an export that
+is no longer a function. A bare key (`"argparse": "^2.0.1"`) applies to every request of that
+package, which is fine when every dependent accepts the new range. After changing an override, check
+`npm ls <package>` for the dependents that should not have moved.
+
 ## Formatting
 
 **ALWAYS run `npm run format` after making any change.** This is not optional and applies to every
