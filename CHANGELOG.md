@@ -4,6 +4,8 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [8.1.4] - 2026-11-21
+
 ### Changed
 
 - **Cleared the `npm audit` findings that upstream pins were holding open.** Both `package.json`
@@ -1202,7 +1204,8 @@ export interface FunctionExp {
   - `function isSubquery(query: Query | Subquery): query is Subquery`
   - Look at the README and refer to the unit tests for example usage.
 
-[Unreleased]: https://github.com/jetstreamapp/soql-parser-js/compare/8.1.3...HEAD
+[Unreleased]: https://github.com/jetstreamapp/soql-parser-js/compare/8.1.4...HEAD
+[8.1.4]: https://github.com/jetstreamapp/soql-parser-js/compare/8.1.3...8.1.4
 [8.1.3]: https://github.com/jetstreamapp/soql-parser-js/compare/8.1.2...8.1.3
 [8.1.2]: https://github.com/jetstreamapp/soql-parser-js/compare/8.1.1...8.1.2
 [8.1.1]: https://github.com/jetstreamapp/soql-parser-js/compare/8.1.0...8.1.1
