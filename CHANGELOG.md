@@ -4,6 +4,8 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [8.1.5] - 2026-11-22
+
 ### Changed
 
 - **`fieldMaxLineLength` now applies to value lists in WHERE and HAVING conditions.** Previously a long
@@ -1213,7 +1215,8 @@ export interface FunctionExp {
   - `function isSubquery(query: Query | Subquery): query is Subquery`
   - Look at the README and refer to the unit tests for example usage.
 
-[Unreleased]: https://github.com/jetstreamapp/soql-parser-js/compare/8.1.4...HEAD
+[Unreleased]: https://github.com/jetstreamapp/soql-parser-js/compare/8.1.5...HEAD
+[8.1.5]: https://github.com/jetstreamapp/soql-parser-js/compare/8.1.4...8.1.5
 [8.1.4]: https://github.com/jetstreamapp/soql-parser-js/compare/8.1.3...8.1.4
 [8.1.3]: https://github.com/jetstreamapp/soql-parser-js/compare/8.1.2...8.1.3
 [8.1.2]: https://github.com/jetstreamapp/soql-parser-js/compare/8.1.1...8.1.2
