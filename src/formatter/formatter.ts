@@ -135,6 +135,8 @@ class Lines {
  *   The exception is `(NOT <condition>)`, which is kept inline as a single unit.
  * - Subqueries in WHERE conditions (`Id IN (SELECT ...)`) are one level deeper than the condition they belong to, with the closing paren at the level of the condition.
  * - GROUP BY / ORDER BY items wrap at `fieldMaxLineLength` (or one per line if `newLineAfterKeywords` is true) onto lines at `b + 1`.
+ * - Value lists in WHERE/HAVING conditions (`Id IN ('a', 'b')`) wrap at `fieldMaxLineLength`: the first row stays on the condition line and
+ *   the rest are one level deeper than the condition.
  */
 export class Formatter {
   readonly options: ResolvedFormatOptions;
@@ -485,7 +487,37 @@ export class Formatter {
         out.append(indent, ')');
       }
     } else {
-      out.append(indent, `${renderConditionLhs(condition)} ${renderConditionValue(condition)}`);
+      const value = utils.getWhereValue(condition.value, condition.literalType, condition.operator);
+      if (Array.isArray(value) && value.length > 1) {
+        this.valueList(out, renderConditionLhs(condition), value.map(String), indent);
+      } else {
+        out.append(indent, `${renderConditionLhs(condition)} ${renderConditionValue(condition)}`);
+      }
     }
+  }
+
+  /**
+   * A condition with a list of values, e.g. `Id IN ('a', 'b', 'c')`. The values wrap at `fieldMaxLineLength` like SELECT fields do:
+   * the first row stays on the condition line and the following rows are one level deeper, with the closing paren after the last value.
+   * A list that fits on one row is rendered inline.
+   */
+  private valueList(out: Lines, lhs: string, values: string[], indent: number): void {
+    const wrap = this.wrapper(false);
+    const rows: string[][] = [];
+    values.forEach((text, i) => {
+      const startsNewRow = wrap.startsNewRow(text, i === values.length - 1);
+      if (rows.length === 0 || startsNewRow) {
+        rows.push([text]);
+      } else {
+        rows[rows.length - 1].push(text);
+      }
+    });
+    const [first, ...rest] = rows.map(row => row.join(', '));
+    if (rest.length === 0) {
+      out.append(indent, `${lhs} (${first})`);
+      return;
+    }
+    out.append(indent, `${lhs} (${first},`);
+    rest.forEach((text, i) => out.push(indent + 1, i === rest.length - 1 ? `${text})` : `${text},`));
   }
 }
