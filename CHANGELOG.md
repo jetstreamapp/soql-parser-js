@@ -4,6 +4,15 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Changed
+
+- **`fieldMaxLineLength` now applies to value lists in WHERE and HAVING conditions.** Previously a long
+  `Id IN ('a', 'b', ...)` (or `NOT IN`, `INCLUDES`, `EXCLUDES`) list was always rendered on a single
+  line, so the option appeared to be ignored. A list that does not fit within `fieldMaxLineLength` now
+  breaks all-or-nothing: every value goes on its own line one level deeper than the condition, and the
+  closing parenthesis is on its own line, laid out like a subquery. Lists that fit are unchanged, and
+  the default of `60` means only longer lists reformat.
+
 ## [8.1.4] - 2026-11-21
 
 ### Changed

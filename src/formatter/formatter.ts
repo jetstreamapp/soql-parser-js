@@ -135,6 +135,8 @@ class Lines {
  *   The exception is `(NOT <condition>)`, which is kept inline as a single unit.
  * - Subqueries in WHERE conditions (`Id IN (SELECT ...)`) are one level deeper than the condition they belong to, with the closing paren at the level of the condition.
  * - GROUP BY / ORDER BY items wrap at `fieldMaxLineLength` (or one per line if `newLineAfterKeywords` is true) onto lines at `b + 1`.
+ * - Value lists in WHERE/HAVING conditions (`Id IN ('a', 'b')`) stay inline if they fit within `fieldMaxLineLength`, otherwise every value
+ *   goes on its own line one level deeper than the condition, with the closing paren on its own line at the condition's level, like a subquery.
  */
 export class Formatter {
   readonly options: ResolvedFormatOptions;
@@ -485,7 +487,28 @@ export class Formatter {
         out.append(indent, ')');
       }
     } else {
-      out.append(indent, `${renderConditionLhs(condition)} ${renderConditionValue(condition)}`);
+      const value = utils.getWhereValue(condition.value, condition.literalType, condition.operator);
+      if (Array.isArray(value) && value.length > 1) {
+        this.valueList(out, renderConditionLhs(condition), value.map(String), indent);
+      } else {
+        out.append(indent, `${renderConditionLhs(condition)} ${renderConditionValue(condition)}`);
+      }
     }
+  }
+
+  /**
+   * A condition with a list of values, e.g. `Id IN ('a', 'b', 'c')`. The list stays inline if it fits within `fieldMaxLineLength`.
+   * Otherwise it breaks all-or-nothing: every value goes on its own row one level deeper than the condition, and the closing paren
+   * is on its own line at the condition's level, like a subquery.
+   */
+  private valueList(out: Lines, lhs: string, values: string[], indent: number): void {
+    const inline = values.join(', ');
+    if (inline.length <= this.options.fieldMaxLineLength) {
+      out.append(indent, `${lhs} (${inline})`);
+      return;
+    }
+    out.append(indent, `${lhs} (`);
+    values.forEach((text, i) => out.push(indent + 1, i === values.length - 1 ? text : `${text},`));
+    out.push(indent, ')');
   }
 }

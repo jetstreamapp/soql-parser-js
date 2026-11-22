@@ -351,7 +351,11 @@ FROM
 \tAccount
 WHERE
 \t(
-\t\tId IN ('1', '2', '3')
+\t\tId IN (
+\t\t\t'1',
+\t\t\t'2',
+\t\t\t'3'
+\t\t)
 \t\tOR (NOT Id = '2')
 \t\tOR (
 \t\t\tName LIKE '%FOO%'
@@ -419,7 +423,12 @@ FROM Event
 FROM
 \t\tAccount
 WHERE
-\t\tpercent__c IN (1, 3, 4, 5)
+\t\tpercent__c IN (
+\t\t\t\t1,
+\t\t\t\t3,
+\t\t\t\t4,
+\t\t\t\t5
+\t\t)
 \t\tAND PersonOtherCity NOT IN ('zurich')
 `.trim(),
   },
@@ -727,6 +736,52 @@ WHERE Name = 'a'
         OR Id = '2'
     )
 ORDER BY Name
+`.trim(),
+  },
+  {
+    testCase: 38,
+    soql: "SELECT Id FROM Account WHERE Id IN ('001A', '001B', '001C', '001D') AND Name = 'a'",
+    formatOptions: { fieldMaxLineLength: 1 },
+    formattedSoql: `SELECT
+\tId
+FROM Account
+WHERE Id IN (
+\t\t'001A',
+\t\t'001B',
+\t\t'001C',
+\t\t'001D'
+\t)
+\tAND Name = 'a'
+`.trim(),
+  },
+  {
+    testCase: 39,
+    soql: "SELECT Id FROM Account WHERE Id IN ('001A', '001B', '001C', '001D') AND Id NOT IN ('x', 'y')",
+    formatOptions: { fieldMaxLineLength: 20 },
+    formattedSoql: `SELECT Id
+FROM Account
+WHERE Id IN (
+\t\t'001A',
+\t\t'001B',
+\t\t'001C',
+\t\t'001D'
+\t)
+\tAND Id NOT IN ('x', 'y')
+`.trim(),
+  },
+  {
+    testCase: 40,
+    soql: "SELECT COUNT(Id) FROM Account GROUP BY Name HAVING Name IN ('a', 'b', 'c')",
+    formatOptions: { fieldMaxLineLength: 1 },
+    formattedSoql: `SELECT
+\tCOUNT(Id)
+FROM Account
+GROUP BY Name
+HAVING Name IN (
+\t\t'a',
+\t\t'b',
+\t\t'c'
+\t)
 `.trim(),
   },
 ];
