@@ -135,8 +135,8 @@ class Lines {
  *   The exception is `(NOT <condition>)`, which is kept inline as a single unit.
  * - Subqueries in WHERE conditions (`Id IN (SELECT ...)`) are one level deeper than the condition they belong to, with the closing paren at the level of the condition.
  * - GROUP BY / ORDER BY items wrap at `fieldMaxLineLength` (or one per line if `newLineAfterKeywords` is true) onto lines at `b + 1`.
- * - Value lists in WHERE/HAVING conditions (`Id IN ('a', 'b')`) wrap at `fieldMaxLineLength`: the values are one level deeper than the condition
- *   and the closing paren is on its own line at the condition's level, like a subquery.
+ * - Value lists in WHERE/HAVING conditions (`Id IN ('a', 'b')`) stay inline if they fit within `fieldMaxLineLength`, otherwise every value
+ *   goes on its own line one level deeper than the condition, with the closing paren on its own line at the condition's level, like a subquery.
  */
 export class Formatter {
   readonly options: ResolvedFormatOptions;
@@ -497,28 +497,18 @@ export class Formatter {
   }
 
   /**
-   * A condition with a list of values, e.g. `Id IN ('a', 'b', 'c')`. The values wrap at `fieldMaxLineLength` like SELECT fields do:
-   * the values go on rows one level deeper than the condition and the closing paren is on its own line at the condition's level, like a
-   * subquery. A list that fits on one row is rendered inline.
+   * A condition with a list of values, e.g. `Id IN ('a', 'b', 'c')`. The list stays inline if it fits within `fieldMaxLineLength`.
+   * Otherwise it breaks all-or-nothing: every value goes on its own row one level deeper than the condition, and the closing paren
+   * is on its own line at the condition's level, like a subquery.
    */
   private valueList(out: Lines, lhs: string, values: string[], indent: number): void {
-    const wrap = this.wrapper(false);
-    const rows: string[][] = [];
-    values.forEach((text, i) => {
-      const startsNewRow = wrap.startsNewRow(text, i === values.length - 1);
-      if (rows.length === 0 || startsNewRow) {
-        rows.push([text]);
-      } else {
-        rows[rows.length - 1].push(text);
-      }
-    });
-    const [first, ...rest] = rows.map(row => row.join(', '));
-    if (rest.length === 0) {
-      out.append(indent, `${lhs} (${first})`);
+    const inline = values.join(', ');
+    if (inline.length <= this.options.fieldMaxLineLength) {
+      out.append(indent, `${lhs} (${inline})`);
       return;
     }
     out.append(indent, `${lhs} (`);
-    [first, ...rest].forEach((text, i, all) => out.push(indent + 1, i === all.length - 1 ? text : `${text},`));
+    values.forEach((text, i) => out.push(indent + 1, i === values.length - 1 ? text : `${text},`));
     out.push(indent, ')');
   }
 }

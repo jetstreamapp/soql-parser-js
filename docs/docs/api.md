@@ -27,7 +27,7 @@ Parse a SOQL query string into a Query data structure.
 - `formatOptions?: FormatOptions` - Only applies if `format` is set to true. Options to apply to the formatter.
   - `numIndent: number` - Number of times `indentString` is repeated for each level of indentation. Defaults to `1`.
   - `indentString: string` - The string used for one unit of indentation. Defaults to a tab (`'\t'`). e.g. `{ indentString: ' ', numIndent: 2 }` indents with two spaces per level. Must be whitespace only (spaces and/or tabs); other values are ignored.
-  - `fieldMaxLineLength: number` - Number of characters before wrapping fields (also applies to GROUP BY and ORDER BY items and to value lists in WHERE / HAVING conditions such as `Id IN (...)`). Defaults to `60`.
+  - `fieldMaxLineLength: number` - Number of characters before wrapping fields (also applies to GROUP BY and ORDER BY items and to value lists in WHERE / HAVING conditions such as `Id IN (...)`, which put every value on its own line when they do not fit). Defaults to `60`.
   - `fieldSubqueryParensOnOwnLine: boolean` - If true and the query includes a subquery, parentheses will be on their own line .
   - `whereClauseOperatorsIndented: boolean` - **Deprecated** - this is always applied and the option is ignored.
   - `newLineAfterKeywords: boolean` - If true, a new line will be inserted after keywords

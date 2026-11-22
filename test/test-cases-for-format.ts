@@ -761,8 +761,10 @@ WHERE Id IN (
     formattedSoql: `SELECT Id
 FROM Account
 WHERE Id IN (
-\t\t'001A', '001B',
-\t\t'001C', '001D'
+\t\t'001A',
+\t\t'001B',
+\t\t'001C',
+\t\t'001D'
 \t)
 \tAND Id NOT IN ('x', 'y')
 `.trim(),
