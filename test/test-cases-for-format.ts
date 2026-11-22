@@ -351,9 +351,11 @@ FROM
 \tAccount
 WHERE
 \t(
-\t\tId IN ('1',
+\t\tId IN (
+\t\t\t'1',
 \t\t\t'2',
-\t\t\t'3')
+\t\t\t'3'
+\t\t)
 \t\tOR (NOT Id = '2')
 \t\tOR (
 \t\t\tName LIKE '%FOO%'
@@ -421,7 +423,12 @@ FROM Event
 FROM
 \t\tAccount
 WHERE
-\t\tpercent__c IN (1,\n\t\t\t\t3,\n\t\t\t\t4,\n\t\t\t\t5)
+\t\tpercent__c IN (
+\t\t\t\t1,
+\t\t\t\t3,
+\t\t\t\t4,
+\t\t\t\t5
+\t\t)
 \t\tAND PersonOtherCity NOT IN ('zurich')
 `.trim(),
   },
@@ -738,10 +745,12 @@ ORDER BY Name
     formattedSoql: `SELECT
 \tId
 FROM Account
-WHERE Id IN ('001A',
+WHERE Id IN (
+\t\t'001A',
 \t\t'001B',
 \t\t'001C',
-\t\t'001D')
+\t\t'001D'
+\t)
 \tAND Name = 'a'
 `.trim(),
   },
@@ -751,8 +760,10 @@ WHERE Id IN ('001A',
     formatOptions: { fieldMaxLineLength: 20 },
     formattedSoql: `SELECT Id
 FROM Account
-WHERE Id IN ('001A', '001B',
-\t\t'001C', '001D')
+WHERE Id IN (
+\t\t'001A', '001B',
+\t\t'001C', '001D'
+\t)
 \tAND Id NOT IN ('x', 'y')
 `.trim(),
   },
@@ -764,9 +775,11 @@ WHERE Id IN ('001A', '001B',
 \tCOUNT(Id)
 FROM Account
 GROUP BY Name
-HAVING Name IN ('a',
+HAVING Name IN (
+\t\t'a',
 \t\t'b',
-\t\t'c')
+\t\t'c'
+\t)
 `.trim(),
   },
 ];

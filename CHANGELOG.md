@@ -9,8 +9,8 @@ All notable changes to this project will be documented in this file.
 - **`fieldMaxLineLength` now wraps value lists in WHERE and HAVING conditions.** Previously a long
   `Id IN ('a', 'b', ...)` (or `NOT IN`, `INCLUDES`, `EXCLUDES`) list was always rendered on a single
   line, so the option appeared to be ignored. The list now wraps at `fieldMaxLineLength` the same way
-  SELECT fields do: the first row stays on the condition line and the following rows are indented one
-  level deeper, with the closing parenthesis after the last value. Lists that fit within the limit
+  SELECT fields do: the values go on rows one level deeper than the condition and the closing
+  parenthesis is on its own line, laid out like a subquery. Lists that fit within the limit
   are unchanged, and the default of `60` means only longer lists reformat.
 
 ## [8.1.4] - 2026-11-21

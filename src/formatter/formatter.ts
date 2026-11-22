@@ -135,8 +135,8 @@ class Lines {
  *   The exception is `(NOT <condition>)`, which is kept inline as a single unit.
  * - Subqueries in WHERE conditions (`Id IN (SELECT ...)`) are one level deeper than the condition they belong to, with the closing paren at the level of the condition.
  * - GROUP BY / ORDER BY items wrap at `fieldMaxLineLength` (or one per line if `newLineAfterKeywords` is true) onto lines at `b + 1`.
- * - Value lists in WHERE/HAVING conditions (`Id IN ('a', 'b')`) wrap at `fieldMaxLineLength`: the first row stays on the condition line and
- *   the rest are one level deeper than the condition.
+ * - Value lists in WHERE/HAVING conditions (`Id IN ('a', 'b')`) wrap at `fieldMaxLineLength`: the values are one level deeper than the condition
+ *   and the closing paren is on its own line at the condition's level, like a subquery.
  */
 export class Formatter {
   readonly options: ResolvedFormatOptions;
@@ -498,8 +498,8 @@ export class Formatter {
 
   /**
    * A condition with a list of values, e.g. `Id IN ('a', 'b', 'c')`. The values wrap at `fieldMaxLineLength` like SELECT fields do:
-   * the first row stays on the condition line and the following rows are one level deeper, with the closing paren after the last value.
-   * A list that fits on one row is rendered inline.
+   * the values go on rows one level deeper than the condition and the closing paren is on its own line at the condition's level, like a
+   * subquery. A list that fits on one row is rendered inline.
    */
   private valueList(out: Lines, lhs: string, values: string[], indent: number): void {
     const wrap = this.wrapper(false);
@@ -517,7 +517,8 @@ export class Formatter {
       out.append(indent, `${lhs} (${first})`);
       return;
     }
-    out.append(indent, `${lhs} (${first},`);
-    rest.forEach((text, i) => out.push(indent + 1, i === rest.length - 1 ? `${text})` : `${text},`));
+    out.append(indent, `${lhs} (`);
+    [first, ...rest].forEach((text, i, all) => out.push(indent + 1, i === all.length - 1 ? text : `${text},`));
+    out.push(indent, ')');
   }
 }
